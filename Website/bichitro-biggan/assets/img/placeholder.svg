@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 380" width="600" height="380" role="img" aria-label="Bichitro Biggan">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1a2540"/>
+      <stop offset="1" stop-color="#0d1220"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="380" fill="url(#g)"/>
+  <circle cx="120" cy="90" r="2.5" fill="#ffffff" opacity=".7"/>
+  <circle cx="220" cy="60" r="1.8" fill="#ffffff" opacity=".5"/>
+  <circle cx="470" cy="120" r="2.2" fill="#ffffff" opacity=".6"/>
+  <circle cx="530" cy="300" r="1.6" fill="#ffffff" opacity=".45"/>
+  <circle cx="80"  cy="300" r="2" fill="#ffffff" opacity=".5"/>
+  <circle cx="360" cy="330" r="1.5" fill="#ffffff" opacity=".4"/>
+  <circle cx="300" cy="190" r="58" fill="none" stroke="#1a8cca" stroke-width="2" opacity=".85"/>
+  <ellipse cx="300" cy="190" rx="105" ry="34" fill="none" stroke="#f5a623" stroke-width="2" opacity=".7" transform="rotate(-22 300 190)"/>
+  <ellipse cx="300" cy="190" rx="105" ry="34" fill="none" stroke="#e53935" stroke-width="2" opacity=".55" transform="rotate(38 300 190)"/>
+  <circle cx="300" cy="190" r="9" fill="#f5a623"/>
+</svg>
