@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '1.7.0' );
+define( 'BB_VERSION', '1.9.6' );
 
 /**
  * Cache-busting version for an asset.
@@ -1084,6 +1084,7 @@ require_once get_template_directory() . '/inc/customizer.php';
 require_once get_template_directory() . '/inc/template-tags.php';
 require_once get_template_directory() . '/inc/live-search.php';
 require_once get_template_directory() . '/inc/editor.php';
+require_once get_template_directory() . '/inc/seo-meta-box.php';
 
 if ( is_admin() ) {
 	require_once get_template_directory() . '/inc/admin-settings.php';

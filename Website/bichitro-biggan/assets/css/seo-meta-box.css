@@ -1,0 +1,610 @@
+/*
+ * SEO Meta Box — Admin Styles
+ * Theme: BichitroBiggan
+ * Text Domain: bichitro-biggan
+ *
+ * Yoast-style SEO meta box for the classic post editor.
+ */
+
+/* ==========================================================================
+   1. Base Structure & Variables
+   ========================================================================== */
+
+.bb-seo-box {
+    --bb-color-primary: #0073aa;
+    --bb-color-primary-dark: #005a87;
+    --bb-color-good: #00a32a;
+    --bb-color-ok: #dba617;
+    --bb-color-bad: #d63638;
+    --bb-color-text: #1d2327;
+    --bb-color-text-muted: #646970;
+    --bb-color-light: #f0f0f1;
+    --bb-color-border: #c3c4c7;
+    --bb-border-radius: 4px;
+    --bb-transition: 0.2s ease;
+
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    color: var(--bb-color-text);
+    line-height: 1.5;
+    max-width: 680px;
+}
+
+.bb-seo-box *,
+.bb-seo-box *::before,
+.bb-seo-box *::after {
+    box-sizing: border-box;
+}
+
+/* --- Top status score bar (Yoast style) --- */
+.bb-seo-topbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 12px;
+    margin-bottom: 8px;
+    border-bottom: 2px solid #f0f0f1;
+}
+
+.bb-seo-tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.bb-seo-traffic-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+    transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.bb-seo-traffic-dot--good {
+    background-color: var(--bb-color-good);
+    box-shadow: 0 0 0 2px rgba(0, 163, 42, 0.2);
+}
+
+.bb-seo-traffic-dot--ok {
+    background-color: var(--bb-color-ok);
+    box-shadow: 0 0 0 2px rgba(219, 166, 23, 0.2);
+}
+
+.bb-seo-traffic-dot--bad {
+    background-color: var(--bb-color-bad);
+    box-shadow: 0 0 0 2px rgba(214, 54, 56, 0.2);
+}
+
+.bb-seo-score-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: 0.3px;
+}
+
+.bb-seo-score-badge--good {
+    background-color: #edfaef;
+    color: #008a20;
+}
+
+.bb-seo-score-badge--ok {
+    background-color: #fdf8e2;
+    color: #996800;
+}
+
+.bb-seo-score-badge--bad {
+    background-color: #fcf0f1;
+    color: #b32d2e;
+}
+
+/* ==========================================================================
+   2. Sections — Collapsible panels
+   ========================================================================== */
+
+.bb-seo-section {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--bb-color-border);
+}
+
+.bb-seo-section:first-child {
+    padding-top: 4px;
+}
+
+.bb-seo-section:last-child {
+    border-bottom: none;
+    padding-bottom: 4px;
+}
+
+/* --- Section header (clickable toggle) --- */
+.bb-seo-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 6px 0;
+    margin-bottom: 12px;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.bb-seo-section-header:hover .bb-seo-section-title {
+    color: var(--bb-color-primary);
+}
+
+.bb-seo-section-title {
+    font-size: 15px;
+    font-weight: 600;
+    transition: color var(--bb-transition);
+}
+
+.bb-seo-section-arrow {
+    font-size: 10px;
+    color: var(--bb-color-text-muted);
+    transition: transform 0.25s ease;
+}
+
+/* --- Collapsed state --- */
+.bb-seo-section--collapsed .bb-seo-section-body {
+    display: none;
+}
+
+.bb-seo-section--collapsed .bb-seo-section-arrow {
+    transform: rotate(180deg);
+}
+
+/* ==========================================================================
+   3. Fields, labels, helpers
+   ========================================================================== */
+
+.bb-seo-field {
+    margin-bottom: 16px;
+}
+
+.bb-seo-field:last-child {
+    margin-bottom: 0;
+}
+
+.bb-seo-field-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.bb-seo-label {
+    display: block;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: var(--bb-color-text);
+}
+
+.bb-seo-help {
+    font-size: 13px;
+    color: var(--bb-color-text-muted);
+    margin: 6px 0 0;
+    line-height: 1.5;
+}
+
+/* ==========================================================================
+   4. Inputs & Textarea
+   ========================================================================== */
+
+.bb-seo-input,
+.bb-seo-textarea {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--bb-color-border);
+    border-radius: var(--bb-border-radius);
+    background: #fff;
+    font-size: 14px;
+    font-family: inherit;
+    line-height: 1.5;
+    color: var(--bb-color-text);
+    transition: border-color var(--bb-transition),
+        box-shadow var(--bb-transition);
+}
+
+.bb-seo-input::placeholder,
+.bb-seo-textarea::placeholder {
+    color: #a7aaad;
+}
+
+.bb-seo-textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.bb-seo-input:focus,
+.bb-seo-textarea:focus {
+    border-color: var(--bb-color-primary);
+    box-shadow: 0 0 0 1px var(--bb-color-primary);
+    outline: none;
+}
+
+/* Readonly slug */
+.bb-seo-slug {
+    background-color: #f6f7f7;
+    color: var(--bb-color-text-muted);
+    cursor: default;
+}
+
+/* ==========================================================================
+   5. Mobile / Desktop Toggle
+   ========================================================================== */
+
+.bb-seo-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.bb-seo-toggle {
+    display: inline-flex;
+    gap: 0;
+    border: 1px solid var(--bb-color-border);
+    border-radius: var(--bb-border-radius);
+    overflow: hidden;
+}
+
+.bb-seo-toggle-btn {
+    background: #fff;
+    border: none;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    color: var(--bb-color-text-muted);
+    transition: all var(--bb-transition);
+    line-height: 1.4;
+}
+
+.bb-seo-toggle-btn + .bb-seo-toggle-btn {
+    border-left: 1px solid var(--bb-color-border);
+}
+
+.bb-seo-toggle-btn:hover {
+    background: var(--bb-color-light);
+}
+
+.bb-seo-toggle-btn--active {
+    background: var(--bb-color-primary);
+    color: #fff;
+}
+
+.bb-seo-toggle-btn--active:hover {
+    background: var(--bb-color-primary-dark);
+}
+
+/* ==========================================================================
+   6. Google Search Preview Card
+   ========================================================================== */
+
+.bb-seo-preview {
+    background: #fff;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 10px 0 20px;
+}
+
+.bb-seo-preview-card {
+    font-family: Arial, sans-serif;
+    line-height: 1.3;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    transition: max-width 0.3s ease;
+}
+
+/* Desktop mode */
+.bb-seo-preview--desktop {
+    max-width: 600px;
+}
+
+/* Mobile mode — card-like with shadow */
+.bb-seo-preview--mobile {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* --- Site identity row --- */
+.bb-seo-preview-site {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.bb-seo-preview-favicon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #f1f3f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #5f6368;
+    overflow: hidden;
+}
+
+.bb-seo-preview-favicon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.bb-seo-preview-favicon--placeholder {
+    background: #e8eaed;
+}
+
+.bb-seo-preview-site-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+}
+
+.bb-seo-preview-site-name {
+    font-size: 14px;
+    font-weight: 400;
+    color: #202124;
+    line-height: 1.3;
+}
+
+.bb-seo-preview-url {
+    font-size: 12px;
+    color: #4d5156;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bb-seo-preview-dots {
+    color: #70757a;
+    font-size: 18px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+/* --- Preview main body (flex layout for text + thumbnail) --- */
+.bb-seo-preview-main {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 4px;
+}
+
+.bb-seo-preview-text-col {
+    flex: 1;
+    min-width: 0;
+}
+
+.bb-seo-preview-image-col {
+    flex-shrink: 0;
+    width: 92px;
+    height: 92px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f1f3f4;
+    border: 1px solid #dfe1e5;
+    margin-top: 4px;
+}
+
+.bb-seo-preview-image-col img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.bb-seo-preview--mobile .bb-seo-preview-image-col {
+    width: 80px;
+    height: 80px;
+}
+
+/* --- Title link --- */
+.bb-seo-preview-title {
+    font-size: 20px;
+    line-height: 1.3;
+    color: #1a0dab;
+    margin: 0 0 6px;
+    display: block;
+    cursor: pointer;
+}
+
+.bb-seo-preview-title:hover {
+    text-decoration: underline;
+}
+
+.bb-seo-preview--mobile .bb-seo-preview-title {
+    font-size: 16px;
+}
+
+/* --- Description text --- */
+.bb-seo-preview-desc {
+    font-size: 14px;
+    color: #4d5156;
+    line-height: 1.58;
+}
+
+.bb-seo-preview-date {
+    color: #70757a;
+}
+
+/* ==========================================================================
+   7. Character Counter
+   ========================================================================== */
+
+.bb-seo-counter {
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.bb-seo-counter--good {
+    color: var(--bb-color-good);
+}
+
+.bb-seo-counter--ok {
+    color: var(--bb-color-ok);
+}
+
+.bb-seo-counter--bad {
+    color: var(--bb-color-bad);
+}
+
+/* ==========================================================================
+   8. Progress Bar
+   ========================================================================== */
+
+.bb-seo-progress {
+    height: 4px;
+    background: #e0e0e0;
+    border-radius: 2px;
+    margin-top: 6px;
+    overflow: hidden;
+}
+
+.bb-seo-progress-bar {
+    height: 100%;
+    width: 0;
+    border-radius: 2px;
+    transition: width 0.25s ease, background-color 0.25s ease;
+    background-color: var(--bb-color-good);
+}
+
+/* Progress bar colors matching counter state */
+.bb-seo-progress-bar.bb-seo-counter--good {
+    background-color: var(--bb-color-good);
+}
+
+.bb-seo-progress-bar.bb-seo-counter--ok {
+    background-color: var(--bb-color-ok);
+}
+
+.bb-seo-progress-bar.bb-seo-counter--bad {
+    background-color: var(--bb-color-bad);
+}
+
+/* ==========================================================================
+   9. Variable Tag Buttons
+   ========================================================================== */
+
+.bb-seo-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.bb-seo-tag-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--bb-color-light);
+    border: 1px solid var(--bb-color-border);
+    border-radius: 12px;
+    padding: 3px 12px;
+    font-size: 12px;
+    font-family: inherit;
+    color: var(--bb-color-text);
+    cursor: pointer;
+    line-height: 1.4;
+    transition: background var(--bb-transition), border-color var(--bb-transition);
+}
+
+.bb-seo-tag-btn:hover {
+    background: #dcdcde;
+    border-color: #a7aaad;
+}
+
+.bb-seo-tag-btn:active {
+    background: #c3c4c7;
+}
+
+/* ==========================================================================
+   10. SEO Analysis Checklist (Yoast-style)
+   ========================================================================== */
+
+.bb-seo-analysis-wrapper {
+    background: #fafafa;
+    border: 1px solid #e2e4e7;
+    border-radius: 6px;
+    padding: 14px 16px;
+}
+
+.bb-seo-analysis-status {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #ebebeb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.bb-seo-analysis-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.bb-seo-analysis-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #2c3338;
+}
+
+.bb-seo-analysis-item .bb-seo-item-bullet {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-top: 4px;
+    flex-shrink: 0;
+}
+
+.bb-seo-analysis-item.bb-seo-item--good .bb-seo-item-bullet {
+    background-color: var(--bb-color-good);
+}
+
+.bb-seo-analysis-item.bb-seo-item--ok .bb-seo-item-bullet {
+    background-color: var(--bb-color-ok);
+}
+
+.bb-seo-analysis-item.bb-seo-item--bad .bb-seo-item-bullet {
+    background-color: var(--bb-color-bad);
+}
+
+.bb-seo-item-text {
+    flex: 1;
+}
+
+.bb-seo-item-text strong {
+    color: #1d2327;
+}
