@@ -31,7 +31,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div class="bb-topbar">
 		<div class="bb-topbar__inner">
 			<span class="bb-topbar__date"><?php echo esc_html( wp_date( 'l, F j, Y' ) ); ?></span>
-			<button type="button" class="bb-topbar__mail bb-copy-email" title="<?php esc_attr_e( 'ইমেইল কপি করুন', 'bichitro-biggan' ); ?>">✉</button>
+			<div class="bb-topbar__actions">
+				<button type="button" class="bb-topbar__btn bb-topbar__btn--bookmarks" data-bb-toggle="bookmarks" title="<?php esc_attr_e( 'সংরক্ষিত লেখাগুলো দেখুন', 'bichitro-biggan' ); ?>" aria-label="<?php esc_attr_e( 'সংরক্ষিত লেখাগুলো দেখুন', 'bichitro-biggan' ); ?>">
+					<span aria-hidden="true">🔖</span>
+					<span class="bb-topbar__btn-text"><?php esc_html_e( 'পরে পড়ুন', 'bichitro-biggan' ); ?></span>
+					<span class="bb-count-pill" data-bb-count="bookmarks" style="display:none;">0</span>
+				</button>
+				<button type="button" class="bb-topbar__mail bb-copy-email" title="<?php esc_attr_e( 'ইমেইল কপি করুন', 'bichitro-biggan' ); ?>">✉</button>
+			</div>
 		</div>
 	</div>
 
@@ -93,7 +100,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<span class="bb-logo__text"><?php bloginfo( 'name' ); ?></span>
 				</a>
 			<?php endif; ?>
-			<button type="button" class="bb-hamburger bb-hide-desktop" data-bb-toggle="menu" aria-expanded="false" aria-controls="bb-mobile-menu" aria-label="<?php esc_attr_e( 'মেন্যু', 'bichitro-biggan' ); ?>">☰</button>
+			<div class="bb-nav__sticky-actions">
+				<button type="button" class="bb-nav-action-btn bb-nav-action-btn--bookmarks" data-bb-toggle="bookmarks" title="<?php esc_attr_e( 'সংরক্ষিত লেখাগুলো দেখুন', 'bichitro-biggan' ); ?>" aria-label="<?php esc_attr_e( 'সংরক্ষিত লেখাগুলো দেখুন', 'bichitro-biggan' ); ?>">
+					<span aria-hidden="true">🔖</span>
+					<span class="bb-nav-badge" data-bb-count="bookmarks" style="display:none;">0</span>
+				</button>
+				<?php
+				$bb_sticky_yt_url = get_theme_mod( 'bb_youtube_url', 'https://www.youtube.com/@bigganbichitro' );
+				if ( $bb_sticky_yt_url ) :
+					?>
+					<a class="bb-nav-action-btn bb-nav-action-btn--yt" href="<?php echo esc_url( $bb_sticky_yt_url ); ?>" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e( 'ইউটিউব চ্যানেল', 'bichitro-biggan' ); ?>" aria-label="<?php esc_attr_e( 'ইউটিউব চ্যানেল', 'bichitro-biggan' ); ?>">
+						<svg viewBox="0 0 28 20" width="18" height="13" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+							<path d="M27.42 3.13A3.51 3.51 0 0 0 24.96.65C22.76 0 14 0 14 0S5.24 0 3.04.65A3.51 3.51 0 0 0 .58 3.13 36.82 36.82 0 0 0 0 10a36.82 36.82 0 0 0 .58 6.87A3.51 3.51 0 0 0 3.04 19.35C5.24 20 14 20 14 20s8.76 0 10.96-.65a3.51 3.51 0 0 0 2.46-2.48A36.82 36.82 0 0 0 28 10a36.82 36.82 0 0 0-.58-6.87Z" fill="#FF0000"/>
+							<path d="m11.2 14.29 7.33-4.29-7.33-4.29v8.58Z" fill="#fff"/>
+						</svg>
+					</a>
+				<?php endif; ?>
+				<button type="button" class="bb-nav-action-btn bb-nav-action-btn--search" data-bb-toggle="search" title="<?php esc_attr_e( 'খুঁজুন', 'bichitro-biggan' ); ?>" aria-label="<?php esc_attr_e( 'খুঁজুন', 'bichitro-biggan' ); ?>">
+					<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path>
+					</svg>
+				</button>
+				<button type="button" class="bb-hamburger bb-hide-desktop" data-bb-toggle="menu" aria-expanded="false" aria-controls="bb-mobile-menu" aria-label="<?php esc_attr_e( 'মেন্যু', 'bichitro-biggan' ); ?>">☰</button>
+			</div>
 		</div>
 
 		<div class="bb-container-wide">
@@ -115,7 +144,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="bb-nav__mobilebar">
 				<span class="bb-nav__current"><?php echo esc_html( bb_current_label() ); ?></span>
-				<button type="button" class="bb-hamburger" data-bb-toggle="menu" aria-expanded="false" aria-controls="bb-mobile-menu" aria-label="<?php esc_attr_e( 'মেন্যু', 'bichitro-biggan' ); ?>">☰</button>
+				<div class="bb-nav__mobile-actions">
+					<button type="button" class="bb-nav-action-btn bb-nav-action-btn--bookmarks" data-bb-toggle="bookmarks" title="<?php esc_attr_e( 'সংরক্ষিত লেখাগুলো দেখুন', 'bichitro-biggan' ); ?>" aria-label="<?php esc_attr_e( 'সংরক্ষিত লেখাগুলো দেখুন', 'bichitro-biggan' ); ?>">
+						<span aria-hidden="true">🔖</span>
+						<span class="bb-nav-badge" data-bb-count="bookmarks" style="display:none;">0</span>
+					</button>
+					<button type="button" class="bb-hamburger" data-bb-toggle="menu" aria-expanded="false" aria-controls="bb-mobile-menu" aria-label="<?php esc_attr_e( 'মেন্যু', 'bichitro-biggan' ); ?>">☰</button>
+				</div>
 			</div>
 
 			<div class="bb-mobile-menu" id="bb-mobile-menu">
@@ -141,14 +176,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<?php
 	/* Ticker — latest posts */
 	if ( get_theme_mod( 'bb_show_ticker', true ) ) :
-		$bb_ticker = bb_query( 0, 3 );
+		$bb_ticker = bb_query( 0, get_theme_mod( 'bb_ticker_count', 5 ) );
 		if ( $bb_ticker->have_posts() ) :
 			?>
 			<div class="bb-ticker">
 				<div class="bb-ticker__inner">
 					<span class="bb-ticker__label"><?php esc_html_e( 'নতুন লেখা', 'bichitro-biggan' ); ?></span>
 
-					<div class="bb-ticker__track" style="flex:1 1 0%;min-width:0;">
+					<div class="bb-ticker__track">
 						<?php
 						$bb_i = 0;
 						while ( $bb_ticker->have_posts() ) :

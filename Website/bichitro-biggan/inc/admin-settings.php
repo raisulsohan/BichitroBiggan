@@ -23,6 +23,16 @@ function bb_settings_schema() {
 			'label'  => __( 'Homepage', 'bichitro-biggan' ),
 			'intro'  => __( 'Select which category to show in each homepage block. Leave empty to automatically detect categories. For block sizes & layout adjustments, go to: Appearance → Customize → Homepage Layout.', 'bichitro-biggan' ),
 			'fields' => array(
+				'bb_hero_cat_1'          => array( 'type' => 'category', 'label' => __( 'Hero Slot 1 — Filter by Category', 'bichitro-biggan' ), 'hint' => 'All' ),
+				'bb_hero_slot_1'         => array( 'type' => 'post_select', 'label' => __( 'Hero Slot 1 — Main Large Post (Left)', 'bichitro-biggan' ), 'desc' => __( 'Select specific post or leave as Auto.', 'bichitro-biggan' ) ),
+				'bb_hero_cat_2'          => array( 'type' => 'category', 'label' => __( 'Hero Slot 2 — Filter by Category', 'bichitro-biggan' ), 'hint' => 'All' ),
+				'bb_hero_slot_2'         => array( 'type' => 'post_select', 'label' => __( 'Hero Slot 2 — Top Right Post', 'bichitro-biggan' ), 'desc' => __( 'Select specific post or leave as Auto.', 'bichitro-biggan' ) ),
+				'bb_hero_cat_3'          => array( 'type' => 'category', 'label' => __( 'Hero Slot 3 — Filter by Category', 'bichitro-biggan' ), 'hint' => 'All' ),
+				'bb_hero_slot_3'         => array( 'type' => 'post_select', 'label' => __( 'Hero Slot 3 — Bottom Left/Mid Post', 'bichitro-biggan' ), 'desc' => __( 'Select specific post or leave as Auto.', 'bichitro-biggan' ) ),
+				'bb_hero_cat_4'          => array( 'type' => 'category', 'label' => __( 'Hero Slot 4 — Filter by Category', 'bichitro-biggan' ), 'hint' => 'All / Podcast' ),
+				'bb_hero_slot_4'         => array( 'type' => 'post_select', 'label' => __( 'Hero Slot 4 — Bottom Right / Podcast Post', 'bichitro-biggan' ), 'desc' => __( 'Select specific post or leave as Auto.', 'bichitro-biggan' ) ),
+				'bb_podcast_custom_time' => array( 'type' => 'text', 'label' => __( 'Custom Podcast Duration (Optional)', 'bichitro-biggan' ), 'desc' => __( 'E.g., "১৫:৪৫ মিনিট" or "45:20"', 'bichitro-biggan' ) ),
+				'bb_hero_show_author'    => array( 'type' => 'checkbox', 'label' => __( 'Show Author & Date on all Hero Cards', 'bichitro-biggan' ), 'default' => true ),
 				'bb_cat_block1_left'  => array( 'type' => 'category', 'label' => __( 'Block 1 — Left Side', 'bichitro-biggan' ), 'hint' => 'Quantum Science' ),
 				'bb_cat_block1_right' => array( 'type' => 'category', 'label' => __( 'Block 1 — Right Side', 'bichitro-biggan' ), 'hint' => 'Nobel Prizes' ),
 				'bb_cat_block2_left'  => array( 'type' => 'category', 'label' => __( 'Block 2 — Left Side', 'bichitro-biggan' ), 'hint' => 'Science of Life' ),
@@ -36,6 +46,7 @@ function bb_settings_schema() {
 				'bb_cat_block5_c'     => array( 'type' => 'category', 'label' => __( 'Block 5 — Column 3', 'bichitro-biggan' ), 'hint' => 'Science & Technology' ),
 				'bb_cat_podcast'      => array( 'type' => 'category', 'label' => __( 'Podcast Tile (Hero)', 'bichitro-biggan' ), 'hint' => 'Podcast' ),
 				'bb_show_ticker'      => array( 'type' => 'checkbox', 'label' => __( 'Show "New Posts" Ticker', 'bichitro-biggan' ), 'default' => true ),
+				'bb_ticker_count'     => array( 'type' => 'number', 'label' => __( 'Ticker Post Count', 'bichitro-biggan' ), 'default' => 5, 'min' => 1, 'max' => 10 ),
 				'bb_show_search'      => array( 'type' => 'checkbox', 'label' => __( 'Show Search Bar in Header', 'bichitro-biggan' ), 'default' => true ),
 				'bb_show_years'       => array( 'type' => 'checkbox', 'label' => __( 'Show Year-wise Archive Tabs', 'bichitro-biggan' ), 'default' => true ),
 			),
@@ -100,7 +111,12 @@ function bb_settings_schema() {
 					'max'     => 8,
 					'desc'    => __( 'Displays most viewed posts sorted by view count.', 'bichitro-biggan' ),
 				),
+				'bb_about_title'          => array( 'type' => 'text', 'label' => __( 'ABOUT US Heading', 'bichitro-biggan' ), 'default' => 'ABOUT US' ),
 				'bb_about_text'           => array( 'type' => 'textarea', 'label' => __( 'ABOUT US text', 'bichitro-biggan' ), 'default' => 'BichitroBiggan is your source for science news, discoveries, and insights. We bring you the latest updates, research breakthroughs, and engaging stories from the world of science and technology.' ),
+				'bb_contact_title'        => array( 'type' => 'text', 'label' => __( 'CONTACT US Heading', 'bichitro-biggan' ), 'default' => 'CONTACT US' ),
+				'bb_subscribe_title'      => array( 'type' => 'text', 'label' => __( 'SUBSCRIBE US Heading', 'bichitro-biggan' ), 'default' => 'SUBSCRIBE US' ),
+				'bb_footer_youtube_url'   => array( 'type' => 'url', 'label' => __( 'Footer YouTube Channel URL', 'bichitro-biggan' ), 'placeholder' => 'https://www.youtube.com/@bigganbichitro' ),
+				'bb_footer_youtube_text'  => array( 'type' => 'text', 'label' => __( 'Footer YouTube Button Label', 'bichitro-biggan' ), 'default' => 'সাবস্ক্রাইব করুন' ),
 				'bb_footer_author'        => array( 'type' => 'text', 'label' => __( 'Author and Editor — Name', 'bichitro-biggan' ), 'default' => 'Tanvir Hossain' ),
 				'bb_footer_author_url'    => array( 'type' => 'url', 'label' => __( 'Author and Editor — URL', 'bichitro-biggan' ), 'placeholder' => 'https://' ),
 				'bb_footer_copyright'     => array( 'type' => 'text', 'label' => __( 'Copyright Text', 'bichitro-biggan' ), 'default' => '©BichitroBiggan', 'desc' => __( 'Current year will be appended automatically.', 'bichitro-biggan' ) ),
@@ -207,6 +223,19 @@ function bb_settings_field( $key, $field ) {
 			if ( ! empty( $field['hint'] ) ) {
 				echo '<p class="description">' . esc_html( sprintf( /* translators: %s: category name */ __( 'Default: %s', 'bichitro-biggan' ), $field['hint'] ) ) . '</p>';
 			}
+			break;
+
+		case 'post_select':
+			echo '<select name="' . esc_attr( $key ) . '" id="' . esc_attr( $key ) . '" style="max-width:520px;width:100%;">';
+			foreach ( bb_post_choices() as $id => $label ) {
+				printf(
+					'<option value="%1$s"%2$s>%3$s</option>',
+					esc_attr( $id ),
+					selected( (int) $value, (int) $id, false ),
+					esc_html( $label )
+				);
+			}
+			echo '</select>';
 			break;
 
 		case 'posts':
@@ -343,6 +372,7 @@ function bb_settings_save( $schema ) {
 
 		switch ( $type ) {
 			case 'category':
+			case 'post_select':
 				set_theme_mod( $key, absint( $raw ) );
 				break;
 

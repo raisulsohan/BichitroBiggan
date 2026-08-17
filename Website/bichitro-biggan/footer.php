@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<!-- EDITOR PICKS -->
 				<div>
-					<h4 class="bb-footer__heading"><?php esc_html_e( 'EDITOR PICKS', 'bichitro-biggan' ); ?></h4>
+					<h4 class="bb-footer__heading" id="bb-editor-picks-title"><?php echo esc_html( get_theme_mod( 'bb_editor_picks_title', 'EDITOR PICKS' ) ); ?></h4>
 					<div class="bb-footer__list">
 						<?php
 						$bb_picks = bb_editor_picks_query();
@@ -34,10 +34,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<!-- POPULAR POSTS -->
 				<div>
-					<h4 class="bb-footer__heading"><?php esc_html_e( 'POPULAR POSTS', 'bichitro-biggan' ); ?></h4>
-					<div class="bb-footer__list">
+					<div class="bb-footer__heading-wrap">
+						<h4 class="bb-footer__heading" id="bb-popular-title"><?php echo esc_html( get_theme_mod( 'bb_popular_title', 'POPULAR POSTS' ) ); ?></h4>
+						<div class="bb-popular-filter">
+							<select class="bb-popular-select" id="bb-popular-range" aria-label="<?php esc_attr_e( 'সময় নির্বাচন করুন', 'bichitro-biggan' ); ?>" data-count="<?php echo esc_attr( get_theme_mod( 'bb_popular_count', 3 ) ); ?>">
+								<option value="week" selected><?php esc_html_e( 'এই সপ্তাহে', 'bichitro-biggan' ); ?></option>
+								<option value="month"><?php esc_html_e( 'এই মাসে', 'bichitro-biggan' ); ?></option>
+								<option value="year"><?php esc_html_e( 'এই বছরে', 'bichitro-biggan' ); ?></option>
+								<option value="all"><?php esc_html_e( 'সব সময়', 'bichitro-biggan' ); ?></option>
+							</select>
+						</div>
+					</div>
+					<div class="bb-footer__list" id="bb-popular-list">
 						<?php
-						$bb_popular = bb_popular_query( get_theme_mod( 'bb_popular_count', 3 ) );
+						$bb_popular = bb_popular_query( get_theme_mod( 'bb_popular_count', 3 ), 'week' );
 
 						while ( $bb_popular->have_posts() ) :
 							$bb_popular->the_post();
@@ -50,13 +60,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<!-- POPULAR CATEGORY -->
 				<div class="bb-span-2">
-					<h4 class="bb-footer__heading"><?php esc_html_e( 'POPULAR CATEGORY', 'bichitro-biggan' ); ?></h4>
+					<h4 class="bb-footer__heading" id="bb-popular-cat-title"><?php echo esc_html( get_theme_mod( 'bb_popular_cat_title', 'POPULAR CATEGORY' ) ); ?></h4>
 					<div class="bb-catcount">
 						<?php
+						$bb_cat_limit = max( 3, min( 10, (int) get_theme_mod( 'bb_popular_cat_count', 5 ) ) );
 						$bb_cats = get_categories( array(
 							'orderby'    => 'count',
 							'order'      => 'DESC',
-							'number'     => 5,
+							'number'     => $bb_cat_limit,
 							'hide_empty' => true,
 						) );
 
@@ -88,15 +99,35 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<div>
 					<div class="bb-footer__about-head">
-						<span class="bb-footer__about-label"><?php esc_html_e( 'ABOUT US', 'bichitro-biggan' ); ?></span>
+						<span class="bb-footer__about-label"><?php echo esc_html( get_theme_mod( 'bb_about_title', 'ABOUT US' ) ); ?></span>
 						<span class="bb-footer__about-rule"></span>
 					</div>
 					<p class="bb-footer__about-text"><?php echo wp_kses_post( get_theme_mod( 'bb_about_text', 'BichitroBiggan is your source for science news, discoveries, and insights. We bring you the latest updates, research breakthroughs, and engaging stories from the world of science and technology.' ) ); ?></p>
 				</div>
 
 				<div class="bb-footer__contact">
-					<h4 class="bb-footer__heading"><?php esc_html_e( 'Contact US', 'bichitro-biggan' ); ?></h4>
-					<button type="button" class="bb-footer__contact-mail bb-copy-email" title="<?php esc_attr_e( 'ইমেইল কপি করুন', 'bichitro-biggan' ); ?>">✉</button>
+					<div class="bb-footer__contact-item">
+						<span class="bb-footer__contact-title"><?php echo esc_html( get_theme_mod( 'bb_contact_title', 'CONTACT US' ) ); ?></span>
+						<button type="button" class="bb-footer__contact-mail bb-copy-email" title="<?php esc_attr_e( 'ইমেইল কপি করুন', 'bichitro-biggan' ); ?>">✉</button>
+					</div>
+					<?php
+					$bb_ft_yt_url  = get_theme_mod( 'bb_footer_youtube_url', get_theme_mod( 'bb_youtube_url', 'https://www.youtube.com/@bigganbichitro' ) );
+					$bb_ft_yt_text = get_theme_mod( 'bb_footer_youtube_text', 'সাবস্ক্রাইব করুন' );
+					if ( $bb_ft_yt_url ) :
+						?>
+						<div class="bb-footer__subscribe">
+							<span class="bb-footer__subscribe-title"><?php echo esc_html( get_theme_mod( 'bb_subscribe_title', 'SUBSCRIBE US' ) ); ?></span>
+							<a class="bb-footer__yt-link" href="<?php echo esc_url( $bb_ft_yt_url ); ?>" target="_blank" rel="noopener noreferrer" title="<?php echo esc_attr( $bb_ft_yt_text ); ?>">
+								<svg class="bb-footer__yt-icon" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+									<path d="M27.42 3.13A3.51 3.51 0 0 0 24.96.65C22.76 0 14 0 14 0S5.24 0 3.04.65A3.51 3.51 0 0 0 .58 3.13 36.82 36.82 0 0 0 0 10a36.82 36.82 0 0 0 .58 6.87A3.51 3.51 0 0 0 3.04 19.35C5.24 20 14 20 14 20s8.76 0 10.96-.65a3.51 3.51 0 0 0 2.46-2.48A36.82 36.82 0 0 0 28 10a36.82 36.82 0 0 0-.58-6.87Z" fill="#FF0000"/>
+									<path d="m11.2 14.29 7.33-4.29-7.33-4.29v8.58Z" fill="#fff"/>
+								</svg>
+								<?php if ( ! empty( $bb_ft_yt_text ) ) : ?>
+									<span class="bb-footer__yt-text"><?php echo esc_html( $bb_ft_yt_text ); ?></span>
+								<?php endif; ?>
+							</a>
+						</div>
+					<?php endif; ?>
 				</div>
 
 			</div>
@@ -161,7 +192,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<span class="bb-resume-bar__icon">📖</span>
 			<div class="bb-resume-bar__text">
 				<span class="bb-resume-bar__label"><?php esc_html_e( 'আপনি পড়ছিলেন:', 'bichitro-biggan' ); ?></span>
-				<strong class="bb-resume-bar__title"></strong>
+				<a href="#" class="bb-resume-bar__title" id="bb-resume-title-link"></a>
 			</div>
 			<a href="#" class="bb-resume-bar__btn" id="bb-resume-btn"><?php esc_html_e( 'পড়া চালিয়ে যান', 'bichitro-biggan' ); ?> →</a>
 			<button type="button" class="bb-resume-bar__close" id="bb-resume-close" aria-label="<?php esc_attr_e( 'বন্ধ করুন', 'bichitro-biggan' ); ?>">✕</button>

@@ -52,5 +52,55 @@
 			$field.val('');
 			$preview.empty();
 		});
+
+		/* Hero slot category live filtering */
+		var map = window.bbPostCatMap || {};
+
+		function setupAdminSlotFilter(slotNum) {
+			var $catSelect = $('#bb_hero_cat_' + slotNum);
+			var $slotSelect = $('#bb_hero_slot_' + slotNum);
+
+			if (!$catSelect.length || !$slotSelect.length) return;
+
+			var originalOptions = $slotSelect.find('option').clone();
+
+			function applyFilter(catId) {
+				catId = parseInt(catId, 10) || 0;
+				var currentVal = $slotSelect.val();
+
+				$slotSelect.empty();
+
+				originalOptions.each(function () {
+					var $opt = $(this);
+					var postId = parseInt($opt.val(), 10) || 0;
+
+					if (postId === 0 || catId === 0) {
+						$slotSelect.append($opt.clone());
+						return;
+					}
+
+					var postCats = map[postId] || [];
+					if (postCats.indexOf(catId) !== -1) {
+						$slotSelect.append($opt.clone());
+					}
+				});
+
+				if ($slotSelect.find('option[value="' + currentVal + '"]').length) {
+					$slotSelect.val(currentVal);
+				} else {
+					$slotSelect.val(0);
+				}
+			}
+
+			$catSelect.on('change', function () {
+				applyFilter($(this).val());
+			});
+
+			applyFilter($catSelect.val());
+		}
+
+		for (var s = 1; s <= 4; s++) {
+			setupAdminSlotFilter(s);
+		}
 	});
 })(jQuery);

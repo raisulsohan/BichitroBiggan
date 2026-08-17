@@ -290,6 +290,79 @@ function bb_overlay_panel( $args = array() ) {
 }
 
 /**
+ * Polymorphic Hero Card that handles BOTH regular articles AND podcast posts in any slot.
+ *
+ * @param array $args
+ */
+function bb_hero_card( $args = array() ) {
+	$args = wp_parse_args( $args, array(
+		'class'       => '',
+		'image_size'  => 'bb-hero',
+		'byline'      => true,
+		'title_clamp' => '',
+		'overlay'     => 'bb-overlay--deep',
+		'custom_time' => '',
+	) );
+
+	$post_id    = get_the_ID();
+	$is_podcast = bb_is_podcast_post( $post_id );
+	$video_url  = bb_get_post_video_url( $post_id );
+	$cat        = bb_primary_category( $post_id );
+	$duration   = ! empty( $args['custom_time'] ) ? $args['custom_time'] : bb_reading_time( $post_id );
+
+	if ( $is_podcast || ! empty( $video_url ) ) {
+		$podcast_class = trim( $args['class'] . ' bb-hero__podcast' . ( ! empty( $video_url ) ? ' bb-has-video' : '' ) );
+		$video_attr    = ! empty( $video_url ) ? ' data-bb-video="' . esc_url( $video_url ) . '"' : '';
+		$thumb_src     = bb_thumb_url( $post_id, 'full' );
+		?>
+		<a class="<?php echo esc_attr( $podcast_class ); ?>" href="<?php the_permalink(); ?>"<?php echo $video_attr; ?><?php if ( empty( $video_url ) ) { bb_article_attr( $post_id ); } ?>>
+			<img class="bb-hero__podcast-bg" src="<?php echo esc_url( $thumb_src ); ?>" alt="" loading="lazy" aria-hidden="true" />
+			<img class="bb-hero__podcast-img" src="<?php echo esc_url( $thumb_src ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" />
+			<?php if ( ! empty( $video_url ) ) : ?>
+				<span class="bb-hero__play-btn" role="button" aria-label="<?php esc_attr_e( 'ভিডিও সরাসরি দেখুন', 'bichitro-biggan' ); ?>">
+					<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+				</span>
+			<?php endif; ?>
+			<span class="bb-hero__podcast-inner">
+				<span class="bb-hero__podcast-chip">
+					<?php if ( has_custom_logo() ) :
+						$bb_custom_logo_id = get_theme_mod( 'custom_logo' );
+						$bb_logo_src       = wp_get_attachment_image_url( $bb_custom_logo_id, 'medium' );
+						?>
+						<span class="l1 l1--logo"><img src="<?php echo esc_url( $bb_logo_src ); ?>" alt="<?php bloginfo( 'name' ); ?>" class="bb-hero__podcast-logo" /></span>
+					<?php else : ?>
+						<span class="l1"><?php bloginfo( 'name' ); ?></span>
+					<?php endif; ?>
+					<span class="l2"><?php echo esc_html( $cat ? $cat->name : __( 'পডকাস্ট', 'bichitro-biggan' ) ); ?></span>
+					<span class="l3">🎙</span>
+				</span>
+				<span>
+					<?php bb_badge( $cat ); ?>
+					<span class="bb-overlay__title <?php echo esc_attr( $args['title_clamp'] ); ?>"><span class="bb-title-text"><?php the_title(); ?></span></span>
+					<span class="bb-overlay__byline">
+						<?php if ( $args['byline'] ) : ?>
+							<strong><?php the_author(); ?></strong> · <span><?php echo esc_html( bb_post_date() ); ?></span> · 
+						<?php endif; ?>
+						<span class="bb-readtime-pill bb-readtime-pill--overlay">⏱ <?php echo esc_html( $duration ); ?></span>
+					</span>
+				</span>
+			</span>
+		</a>
+		<?php
+		return;
+	}
+
+	/* Standard article */
+	bb_overlay_panel( array(
+		'class'       => $args['class'],
+		'image_size'  => $args['image_size'],
+		'byline'      => $args['byline'],
+		'title_clamp' => $args['title_clamp'],
+		'overlay'     => $args['overlay'],
+	) );
+}
+
+/**
  * Centred dark card (the three-across strip).
  */
 function bb_dark_card() {
@@ -327,15 +400,18 @@ function bb_title_only() {
  * Footer list item (EDITOR PICKS / POPULAR POSTS).
  */
 function bb_footer_item() {
+	$show_thumb = (bool) get_theme_mod( 'bb_footer_show_thumbs', false );
 	?>
-	<a class="bb-footer__item" href="<?php the_permalink(); ?>"<?php bb_article_attr(); ?>>
-		<span class="bb-footer__item-thumb">
-			<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-small' ) ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" />
-		</span>
-		<span style="flex:1 1 0%;min-width:0;">
+	<a class="bb-footer__item<?php echo $show_thumb ? ' bb-footer__item--has-thumb' : ''; ?>" href="<?php the_permalink(); ?>"<?php bb_article_attr(); ?>>
+		<?php if ( $show_thumb ) : ?>
+			<span class="bb-footer__item-thumb">
+				<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-small' ) ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" />
+			</span>
+		<?php endif; ?>
+		<span class="bb-footer__item-content">
 			<span class="bb-footer__item-title"><?php the_title(); ?></span>
-			<span class="bb-footer__item-date">
-				<span><?php echo esc_html( bb_post_date() ); ?></span> · 
+			<span class="bb-footer__item-meta">
+				<strong><?php the_author(); ?></strong> · <span><?php echo esc_html( bb_post_date() ); ?></span> · 
 				<span class="bb-readtime-pill">⏱ <?php echo esc_html( bb_reading_time() ); ?></span>
 			</span>
 		</span>
@@ -482,3 +558,260 @@ function bb_get_toc( $content ) {
 
 	return array( 'content' => $content, 'toc' => $headings );
 }
+
+/**
+ * Published post choices for Customizer and Theme Settings dropdowns.
+ *
+ * @return array Array of [ post_id => title_and_date ]
+ */
+function bb_post_choices() {
+	static $choices = null;
+
+	if ( null !== $choices ) {
+		return $choices;
+	}
+
+	$choices = array( 0 => __( '— Auto (Latest Post) —', 'bichitro-biggan' ) );
+
+	$posts = get_posts( array(
+		'post_type'        => 'post',
+		'post_status'      => 'publish',
+		'posts_per_page'   => 400,
+		'orderby'          => 'date',
+		'order'            => 'DESC',
+		'suppress_filters' => false,
+	) );
+
+	foreach ( $posts as $p ) {
+		$cats = get_the_category( $p->ID );
+		$cat_str = '';
+		if ( ! empty( $cats ) && ! is_wp_error( $cats ) ) {
+			$cat_str = '[' . $cats[0]->name . '] ';
+		}
+		$choices[ $p->ID ] = $cat_str . get_the_title( $p ) . ' (' . get_the_date( 'j M Y', $p ) . ')';
+	}
+
+	return $choices;
+}
+
+/**
+ * Return a map of post_id => array of category_ids for JS live filtering.
+ *
+ * @return array
+ */
+function bb_get_post_cat_map() {
+	static $map = null;
+
+	if ( null !== $map ) {
+		return $map;
+	}
+
+	$map = array();
+	$posts = get_posts( array(
+		'post_type'        => 'post',
+		'post_status'      => 'publish',
+		'posts_per_page'   => 400,
+		'orderby'          => 'date',
+		'order'            => 'DESC',
+		'suppress_filters' => false,
+	) );
+
+	foreach ( $posts as $p ) {
+		$cat_ids = wp_get_post_categories( $p->ID );
+		$map[ $p->ID ] = array_map( 'intval', $cat_ids );
+	}
+
+	return $map;
+}
+
+/**
+ * Detect if a post belongs to the podcast category or is a podcast.
+ *
+ * @param int|WP_Post $post Post ID or object.
+ * @return bool
+ */
+function bb_is_podcast_post( $post = null ) {
+	$post_id = $post ? ( is_object( $post ) ? $post->ID : absint( $post ) ) : get_the_ID();
+	if ( ! $post_id ) {
+		return false;
+	}
+
+	$categories = get_the_category( $post_id );
+	if ( empty( $categories ) || is_wp_error( $categories ) ) {
+		return false;
+	}
+
+	$configured_pod_id = (int) get_theme_mod( 'bb_cat_podcast', 0 );
+
+	foreach ( $categories as $cat ) {
+		if ( $configured_pod_id && (int) $cat->term_id === $configured_pod_id ) {
+			return true;
+		}
+		if ( false !== stripos( $cat->slug, 'podcast' ) || false !== mb_stripos( $cat->name, 'পডকাস্ট' ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Extract first video URL (YouTube, Vimeo, MP4) from post content or meta.
+ *
+ * @param int|WP_Post $post Post ID or object.
+ * @return string Embed URL or empty string.
+ */
+function bb_get_post_video_url( $post = null ) {
+	$post = get_post( $post );
+	if ( ! $post ) {
+		return '';
+	}
+
+	// 1. Custom field override if provided
+	$meta_url = get_post_meta( $post->ID, '_bb_video_url', true );
+	if ( empty( $meta_url ) ) {
+		$meta_url = get_post_meta( $post->ID, 'video_url', true );
+	}
+	if ( ! empty( $meta_url ) ) {
+		return bb_normalize_video_embed_url( $meta_url );
+	}
+
+	// 2. Search post content for YouTube / Vimeo embed patterns
+	$content = $post->post_content;
+	if ( empty( $content ) ) {
+		return '';
+	}
+
+	// YouTube match (watch?v=, youtu.be, embed, shorts)
+	if ( preg_match( '/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i', $content, $m ) ) {
+		return 'https://www.youtube-nocookie.com/embed/' . $m[1];
+	}
+
+	// Vimeo match
+	if ( preg_match( '/(?:vimeo\.com\/(?:video\/)?)([0-9]+)/i', $content, $m ) ) {
+		return 'https://player.vimeo.com/video/' . $m[1];
+	}
+
+	// Extract iframe src
+	if ( preg_match( '/src=["\'](https?:\/\/(?:www\.)?(?:youtube(?:-nocookie)?\.com\/embed\/[a-zA-Z0-9_-]+|player\.vimeo\.com\/video\/[0-9]+)[^"\']*)["\']/i', $content, $m ) ) {
+		return $m[1];
+	}
+
+	// Any URLs in post
+	$urls = wp_extract_urls( $content );
+	foreach ( $urls as $url ) {
+		$norm = bb_normalize_video_embed_url( $url );
+		if ( ! empty( $norm ) ) {
+			return $norm;
+		}
+	}
+
+	return '';
+}
+
+/**
+ * Normalizes a raw video URL to an iframe embed URL.
+ *
+ * @param string $url
+ * @return string
+ */
+function bb_normalize_video_embed_url( $url ) {
+	if ( empty( $url ) ) {
+		return '';
+	}
+	if ( preg_match( '/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i', $url, $m ) ) {
+		return 'https://www.youtube-nocookie.com/embed/' . $m[1];
+	}
+	if ( preg_match( '/(?:vimeo\.com\/(?:video\/)?)([0-9]+)/i', $url, $m ) ) {
+		return 'https://player.vimeo.com/video/' . $m[1];
+	}
+	return '';
+}
+
+/**
+ * Text-to-Speech audio reader widget for single articles.
+ */
+function bb_tts_player( $post_id = null ) {
+	$post_id = $post_id ? $post_id : get_the_ID();
+	if ( ! $post_id ) {
+		return;
+	}
+	?>
+	<div class="bb-tts-player" id="bb-tts-player" data-post-id="<?php echo esc_attr( $post_id ); ?>">
+		<div class="bb-tts-player__left">
+			<button type="button" class="bb-tts-play-btn" id="bb-tts-play-btn" aria-label="<?php esc_attr_e( 'লেখাটি শুনুন', 'bichitro-biggan' ); ?>">
+				<span class="bb-tts-icon bb-tts-icon--play">▶</span>
+				<span class="bb-tts-icon bb-tts-icon--pause" style="display:none;">⏸</span>
+			</button>
+			<div class="bb-tts-player__info">
+				<span class="bb-tts-label" id="bb-tts-status"><?php esc_html_e( 'লেখাটি শুনুন (অডিও)', 'bichitro-biggan' ); ?></span>
+				<div class="bb-tts-wave" id="bb-tts-wave" aria-hidden="true">
+					<span></span><span></span><span></span><span></span><span></span>
+				</div>
+			</div>
+		</div>
+		<div class="bb-tts-player__controls">
+			<button type="button" class="bb-tts-speed-btn" id="bb-tts-speed-btn" title="<?php esc_attr_e( 'পড়ার গতি পরিবর্তন করুন', 'bichitro-biggan' ); ?>">1x</button>
+			<button type="button" class="bb-tts-stop-btn" id="bb-tts-stop-btn" title="<?php esc_attr_e( 'অডিও বন্ধ করুন', 'bichitro-biggan' ); ?>" aria-label="<?php esc_attr_e( 'অডিও বন্ধ করুন', 'bichitro-biggan' ); ?>" style="display:none;">⏹</button>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * Bookmark toggle button.
+ */
+function bb_bookmark_btn( $post_id = null, $extra_class = '' ) {
+	$post_id = $post_id ? $post_id : get_the_ID();
+	if ( ! $post_id ) {
+		return;
+	}
+	$title     = get_the_title( $post_id );
+	$permalink = get_permalink( $post_id );
+	$thumb_url = bb_thumb_url( $post_id, 'bb-small' );
+	$read_time = bb_reading_time( $post_id );
+	$post_date = bb_post_date( $post_id );
+	?>
+	<button type="button" 
+		class="bb-bookmark-btn <?php echo esc_attr( $extra_class ); ?>" 
+		data-bb-bookmark="<?php echo esc_attr( $post_id ); ?>" 
+		data-title="<?php echo esc_attr( $title ); ?>" 
+		data-url="<?php echo esc_url( $permalink ); ?>" 
+		data-thumb="<?php echo esc_url( $thumb_url ); ?>" 
+		data-time="<?php echo esc_attr( $read_time ); ?>" 
+		data-date="<?php echo esc_attr( $post_date ); ?>" 
+		title="<?php esc_attr_e( 'পরে পড়ার জন্য সংরক্ষণ করুন', 'bichitro-biggan' ); ?>" 
+		aria-label="<?php esc_attr_e( 'পরে পড়ার জন্য সংরক্ষণ করুন', 'bichitro-biggan' ); ?>">
+		<span class="bb-bookmark-icon">🔖</span>
+		<span class="bb-bookmark-text"><?php esc_html_e( 'পরে পড়ুন', 'bichitro-biggan' ); ?></span>
+	</button>
+	<?php
+}
+
+/**
+ * Bookmarks drawer slide-over modal markup.
+ */
+function bb_bookmarks_drawer() {
+	?>
+	<div class="bb-drawer-overlay" id="bb-bookmarks-overlay" aria-hidden="true"></div>
+	<div class="bb-drawer" id="bb-bookmarks-drawer" role="dialog" aria-labelledby="bb-bookmarks-title" aria-modal="true" aria-hidden="true">
+		<div class="bb-drawer__header">
+			<div class="bb-drawer__title-wrap">
+				<span class="bb-drawer__icon">🔖</span>
+				<h3 class="bb-drawer__title" id="bb-bookmarks-title"><?php esc_html_e( 'সংরক্ষিত লেখাগুলো', 'bichitro-biggan' ); ?></h3>
+				<span class="bb-count-pill" id="bb-drawer-count">0</span>
+			</div>
+			<button type="button" class="bb-drawer__close" id="bb-bookmarks-close" aria-label="<?php esc_attr_e( 'বন্ধ করুন', 'bichitro-biggan' ); ?>">✕</button>
+		</div>
+		<div class="bb-drawer__body" id="bb-bookmarks-list">
+			<!-- Populated by JavaScript -->
+		</div>
+		<div class="bb-drawer__footer" id="bb-bookmarks-footer" style="display:none;">
+			<button type="button" class="bb-drawer__clear-btn" id="bb-bookmarks-clear">
+				<?php esc_html_e( 'সব মুছে ফেলুন', 'bichitro-biggan' ); ?>
+			</button>
+		</div>
+	</div>
+	<?php
+}
+

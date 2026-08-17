@@ -210,6 +210,7 @@ function bb_customize_register( $wp_customize ) {
 		'bb_layout_block23' => __( 'Blocks 2 & 3 — Cards & Wide Rows', 'bichitro-biggan' ),
 		'bb_layout_block45' => __( 'Blocks 4 & 5 — Tall & Dark Cards', 'bichitro-biggan' ),
 		'bb_layout_lists'   => __( 'All Posts & Category Pages', 'bichitro-biggan' ),
+		'bb_layout_modal'   => __( 'Article Popup Reading Modal (পপ-আপ রিডার)', 'bichitro-biggan' ),
 	);
 
 	$bb_section_priority = 10;
@@ -223,22 +224,101 @@ function bb_customize_register( $wp_customize ) {
 	}
 
 	foreach ( bb_layout_settings() as $bb_key => $bb_cfg ) {
+		$unit_label = isset( $bb_cfg['unit'] ) ? $bb_cfg['unit'] : 'px';
 		$wp_customize->add_setting( $bb_key, array(
 			'default'           => $bb_cfg['default'],
 			'sanitize_callback' => 'absint',
 			'transport'         => 'postMessage',
 		) );
 		$wp_customize->add_control( $bb_key, array(
-			'label'       => $bb_cfg['label'] . ' (px)',
+			'label'       => $bb_cfg['label'] . ' (' . $unit_label . ')',
 			'section'     => $bb_cfg['section'],
 			'type'        => 'range',
 			'input_attrs' => array(
 				'min'  => $bb_cfg['min'],
 				'max'  => $bb_cfg['max'],
-				'step' => 1,
+				'step' => isset( $bb_cfg['step'] ) ? $bb_cfg['step'] : 1,
 			),
 		) );
 	}
+
+	/* ---------------------------------------------------------------
+	 * Hero Mosaic — Category & Post selectors for Slots 1 to 4
+	 * ------------------------------------------------------------ */
+	$bb_post_list = bb_post_choices();
+	$bb_cat_list  = array( 0 => __( '— All Categories —', 'bichitro-biggan' ) ) + bb_category_choices();
+
+	$bb_hero_slot_defs = array(
+		1 => array(
+			'title' => __( 'Hero Slot 1 — Main Large Post (Left)', 'bichitro-biggan' ),
+		),
+		2 => array(
+			'title' => __( 'Hero Slot 2 — Top Right Post', 'bichitro-biggan' ),
+		),
+		3 => array(
+			'title' => __( 'Hero Slot 3 — Bottom Left/Mid Post', 'bichitro-biggan' ),
+		),
+		4 => array(
+			'title' => __( 'Hero Slot 4 — Bottom Right / Podcast Post', 'bichitro-biggan' ),
+		),
+	);
+
+	foreach ( $bb_hero_slot_defs as $slot_num => $slot_info ) {
+		$cat_key  = 'bb_hero_cat_' . $slot_num;
+		$post_key = 'bb_hero_slot_' . $slot_num;
+
+		/* Category Filter */
+		$wp_customize->add_setting( $cat_key, array(
+			'default'           => 0,
+			'sanitize_callback' => 'absint',
+			'transport'         => 'refresh',
+		) );
+		$wp_customize->add_control( $cat_key, array(
+			'label'       => sprintf( __( 'Slot %d — Filter by Category', 'bichitro-biggan' ), $slot_num ),
+			'section'     => 'bb_layout_hero',
+			'type'        => 'select',
+			'choices'     => $bb_cat_list,
+			'description' => __( 'Select category to filter posts below.', 'bichitro-biggan' ),
+		) );
+
+		/* Post Selector */
+		$wp_customize->add_setting( $post_key, array(
+			'default'           => 0,
+			'sanitize_callback' => 'absint',
+			'transport'         => 'refresh',
+		) );
+		$wp_customize->add_control( $post_key, array(
+			'label'       => sprintf( __( 'Slot %d — Post', 'bichitro-biggan' ), $slot_num ),
+			'section'     => 'bb_layout_hero',
+			'type'        => 'select',
+			'choices'     => $bb_post_list,
+			'description' => __( 'Select specific post or leave on Auto.', 'bichitro-biggan' ),
+		) );
+	}
+
+	/* Custom Podcast Duration */
+	$wp_customize->add_setting( 'bb_podcast_custom_time', array(
+		'default'           => '',
+		'sanitize_callback' => 'sanitize_text_field',
+		'transport'         => 'refresh',
+	) );
+	$wp_customize->add_control( 'bb_podcast_custom_time', array(
+		'label'       => __( 'Custom Podcast Duration (Optional)', 'bichitro-biggan' ),
+		'section'     => 'bb_layout_hero',
+		'type'        => 'text',
+		'description' => __( 'E.g., "১৫:৪৫ মিনিট" or "45:20". If empty, calculated reading time is shown.', 'bichitro-biggan' ),
+	) );
+
+	$wp_customize->add_setting( 'bb_hero_show_author', array(
+		'default'           => true,
+		'sanitize_callback' => 'bb_sanitize_checkbox',
+		'transport'         => 'refresh',
+	) );
+	$wp_customize->add_control( 'bb_hero_show_author', array(
+		'label'       => __( 'Show Author & Date on all Hero Cards', 'bichitro-biggan' ),
+		'section'     => 'bb_layout_hero',
+		'type'        => 'checkbox',
+	) );
 
 	/* Counts change the markup, so these reload the preview rather than
 	   updating a variable. */
@@ -281,15 +361,221 @@ function bb_customize_register( $wp_customize ) {
 	) );
 
 	$wp_customize->add_setting( 'bb_archive_featured_count', array(
-		'default'           => 5,
+		'default'           => 4,
 		'sanitize_callback' => 'absint',
 		'transport'         => 'refresh',
 	) );
 	$wp_customize->add_control( 'bb_archive_featured_count', array(
-		'label'       => __( 'তার মধ্যে বড় মোজাইকে কয়টি', 'bichitro-biggan' ),
+		'label'       => __( 'Featured Hero Mosaic Post Count', 'bichitro-biggan' ),
 		'section'     => 'bb_layout_lists',
 		'type'        => 'range',
-		'input_attrs' => array( 'min' => 0, 'max' => 5, 'step' => 1 ),
+		'input_attrs' => array( 'min' => 0, 'max' => 4, 'step' => 1 ),
+	) );
+
+	/* ---------------------------------------------------------------
+	 * Footer Columns (Editor Picks, Popular Posts, Popular Categories)
+	 * ------------------------------------------------------------ */
+	$wp_customize->add_section( 'bb_footer_columns_section', array(
+		'title'       => __( 'Footer 3 Columns (Editor Picks & Popular)', 'bichitro-biggan' ),
+		'priority'    => 24,
+		'description' => __( 'Customize headings, post counts, and pick specific articles for Editor Picks and Popular Posts.', 'bichitro-biggan' ),
+	) );
+
+	// Thumbnail Toggle for Footer Posts
+	$wp_customize->add_setting( 'bb_footer_show_thumbs', array(
+		'default'           => false,
+		'sanitize_callback' => 'wp_validate_boolean',
+		'transport'         => 'refresh',
+	) );
+	$wp_customize->add_control( 'bb_footer_show_thumbs', array(
+		'label'       => __( 'ফুটার পোস্টের ছবি/থাম্বনেইল দেখাবেন? (Show Thumbnails)', 'bichitro-biggan' ),
+		'section'     => 'bb_footer_columns_section',
+		'type'        => 'checkbox',
+		'description' => __( 'টিক চিহ্ন না দিলে শুধু লেখার টাইটেল, লেখক ও তারিখ দেখাবে।', 'bichitro-biggan' ),
+	) );
+
+	// 1. Editor Picks Heading
+	$wp_customize->add_setting( 'bb_editor_picks_title', array(
+		'default'           => 'EDITOR PICKS',
+		'sanitize_callback' => 'sanitize_text_field',
+		'transport'         => 'postMessage',
+	) );
+	$wp_customize->add_control( 'bb_editor_picks_title', array(
+		'label'       => __( 'Editor Picks Heading', 'bichitro-biggan' ),
+		'section'     => 'bb_footer_columns_section',
+		'type'        => 'text',
+	) );
+
+	// Editor Picks Count
+	$wp_customize->add_setting( 'bb_editor_picks_count', array(
+		'default'           => 3,
+		'sanitize_callback' => 'absint',
+		'transport'         => 'refresh',
+	) );
+	$wp_customize->add_control( 'bb_editor_picks_count', array(
+		'label'       => __( 'Editor Picks Post Count', 'bichitro-biggan' ),
+		'section'     => 'bb_footer_columns_section',
+		'type'        => 'range',
+		'input_attrs' => array( 'min' => 1, 'max' => 8, 'step' => 1 ),
+	) );
+
+	// Editor Picks Individual Slots (1 to 6)
+	for ( $bb_ep_i = 1; $bb_ep_i <= 6; $bb_ep_i++ ) {
+		$wp_customize->add_setting( "bb_editor_picks_{$bb_ep_i}", array(
+			'default'           => 0,
+			'sanitize_callback' => 'absint',
+			'transport'         => 'refresh',
+		) );
+		$wp_customize->add_control( "bb_editor_picks_{$bb_ep_i}", array(
+			'label'       => sprintf( __( 'Editor Pick #%d (লেখা নির্বাচন করুন)', 'bichitro-biggan' ), $bb_ep_i ),
+			'section'     => 'bb_footer_columns_section',
+			'type'        => 'select',
+			'choices'     => $bb_post_list,
+		) );
+	}
+
+	// 2. Popular Posts Heading
+	$wp_customize->add_setting( 'bb_popular_title', array(
+		'default'           => 'POPULAR POSTS',
+		'sanitize_callback' => 'sanitize_text_field',
+		'transport'         => 'postMessage',
+	) );
+	$wp_customize->add_control( 'bb_popular_title', array(
+		'label'       => __( 'Popular Posts Heading', 'bichitro-biggan' ),
+		'section'     => 'bb_footer_columns_section',
+		'type'        => 'text',
+	) );
+
+	// Popular Posts Count
+	$wp_customize->add_setting( 'bb_popular_count', array(
+		'default'           => 3,
+		'sanitize_callback' => 'absint',
+		'transport'         => 'refresh',
+	) );
+	$wp_customize->add_control( 'bb_popular_count', array(
+		'label'       => __( 'Popular Posts Count', 'bichitro-biggan' ),
+		'section'     => 'bb_footer_columns_section',
+		'type'        => 'range',
+		'input_attrs' => array( 'min' => 1, 'max' => 8, 'step' => 1 ),
+	) );
+
+	// 3. Popular Category Heading
+	$wp_customize->add_setting( 'bb_popular_cat_title', array(
+		'default'           => 'POPULAR CATEGORY',
+		'sanitize_callback' => 'sanitize_text_field',
+		'transport'         => 'postMessage',
+	) );
+	$wp_customize->add_control( 'bb_popular_cat_title', array(
+		'label'       => __( 'Popular Category Heading', 'bichitro-biggan' ),
+		'section'     => 'bb_footer_columns_section',
+		'type'        => 'text',
+	) );
+
+	// Popular Category Count
+	$wp_customize->add_setting( 'bb_popular_cat_count', array(
+		'default'           => 5,
+		'sanitize_callback' => 'absint',
+		'transport'         => 'refresh',
+	) );
+	$wp_customize->add_control( 'bb_popular_cat_count', array(
+		'label'       => __( 'Popular Category Count', 'bichitro-biggan' ),
+		'section'     => 'bb_footer_columns_section',
+		'type'        => 'range',
+		'input_attrs' => array( 'min' => 3, 'max' => 10, 'step' => 1 ),
+	) );
+
+	/* ---------------------------------------------------------------
+	 * Footer Settings (About, Contact, Social)
+	 * ------------------------------------------------------------ */
+	$wp_customize->add_section( 'bb_footer_section', array(
+		'title'       => __( 'Footer About & Contact Info', 'bichitro-biggan' ),
+		'priority'    => 25,
+		'description' => __( 'Customize footer About Us, Contact, and Subscribe elements with live preview.', 'bichitro-biggan' ),
+	) );
+
+	// About Us Title
+	$wp_customize->add_setting( 'bb_about_title', array(
+		'default'           => 'ABOUT US',
+		'sanitize_callback' => 'sanitize_text_field',
+		'transport'         => 'postMessage',
+	) );
+	$wp_customize->add_control( 'bb_about_title', array(
+		'label'       => __( 'About Us Heading', 'bichitro-biggan' ),
+		'section'     => 'bb_footer_section',
+		'type'        => 'text',
+	) );
+
+	// About Us Text
+	$wp_customize->add_setting( 'bb_about_text', array(
+		'default'           => 'BichitroBiggan is your source for science news, discoveries, and insights. We bring you the latest updates, research breakthroughs, and engaging stories from the world of science and technology.',
+		'sanitize_callback' => 'wp_kses_post',
+		'transport'         => 'postMessage',
+	) );
+	$wp_customize->add_control( 'bb_about_text', array(
+		'label'       => __( 'About Us Description', 'bichitro-biggan' ),
+		'section'     => 'bb_footer_section',
+		'type'        => 'textarea',
+	) );
+
+	// Contact Us Title
+	$wp_customize->add_setting( 'bb_contact_title', array(
+		'default'           => 'CONTACT US',
+		'sanitize_callback' => 'sanitize_text_field',
+		'transport'         => 'postMessage',
+	) );
+	$wp_customize->add_control( 'bb_contact_title', array(
+		'label'       => __( 'Contact Us Heading', 'bichitro-biggan' ),
+		'section'     => 'bb_footer_section',
+		'type'        => 'text',
+	) );
+
+	// Contact Email
+	$wp_customize->add_setting( 'bb_contact_email', array(
+		'default'           => 'bichitrobiggan@gmail.com',
+		'sanitize_callback' => 'sanitize_email',
+		'transport'         => 'refresh',
+	) );
+	$wp_customize->add_control( 'bb_contact_email_footer', array(
+		'label'       => __( 'Contact Email (copies on ✉ click)', 'bichitro-biggan' ),
+		'section'     => 'bb_footer_section',
+		'settings'    => 'bb_contact_email',
+		'type'        => 'email',
+	) );
+
+	// Subscribe Us Title
+	$wp_customize->add_setting( 'bb_subscribe_title', array(
+		'default'           => 'SUBSCRIBE US',
+		'sanitize_callback' => 'sanitize_text_field',
+		'transport'         => 'postMessage',
+	) );
+	$wp_customize->add_control( 'bb_subscribe_title', array(
+		'label'       => __( 'Subscribe Us Heading', 'bichitro-biggan' ),
+		'section'     => 'bb_footer_section',
+		'type'        => 'text',
+	) );
+
+	// Footer YouTube URL
+	$wp_customize->add_setting( 'bb_footer_youtube_url', array(
+		'default'           => 'https://www.youtube.com/@bigganbichitro',
+		'sanitize_callback' => 'esc_url_raw',
+		'transport'         => 'refresh',
+	) );
+	$wp_customize->add_control( 'bb_footer_youtube_url', array(
+		'label'       => __( 'Footer YouTube Channel URL', 'bichitro-biggan' ),
+		'section'     => 'bb_footer_section',
+		'type'        => 'url',
+	) );
+
+	// Footer YouTube Link Text
+	$wp_customize->add_setting( 'bb_footer_youtube_text', array(
+		'default'           => 'সাবস্ক্রাইব করুন',
+		'sanitize_callback' => 'sanitize_text_field',
+		'transport'         => 'postMessage',
+	) );
+	$wp_customize->add_control( 'bb_footer_youtube_text', array(
+		'label'       => __( 'Footer YouTube Link Text', 'bichitro-biggan' ),
+		'section'     => 'bb_footer_section',
+		'type'        => 'text',
 	) );
 
 	/* Live preview for the blogname in the logo. */

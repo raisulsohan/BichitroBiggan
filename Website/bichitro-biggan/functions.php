@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '3.0.0' );
+define( 'BB_VERSION', '3.4.5' );
 
 /**
  * Cache-busting version for an asset.
@@ -192,8 +192,9 @@ function bb_customize_preview_js() {
 	$map = array();
 	foreach ( bb_layout_settings() as $key => $cfg ) {
 		$map[ $key ] = array(
-			'var' => $cfg['var'],
-			'min' => $cfg['min'],
+			'var'  => $cfg['var'],
+			'min'  => $cfg['min'],
+			'unit' => isset( $cfg['unit'] ) ? $cfg['unit'] : 'px',
 		);
 	}
 
@@ -202,10 +203,25 @@ function bb_customize_preview_js() {
 add_action( 'customize_preview_init', 'bb_customize_preview_js' );
 
 /**
- * Media picker for the profile photo field.
+ * Customizer controls JS for dynamic category filtering.
+ */
+function bb_customize_controls_js() {
+	wp_enqueue_script(
+		'bb-customizer-controls',
+		get_template_directory_uri() . '/assets/js/customizer-controls.js',
+		array( 'jquery', 'customize-controls' ),
+		BB_VERSION,
+		true
+	);
+	wp_localize_script( 'bb-customizer-controls', 'bbPostCatMap', bb_get_post_cat_map() );
+}
+add_action( 'customize_controls_enqueue_scripts', 'bb_customize_controls_js' );
+
+/**
+ * Media picker and settings helpers for admin.
  */
 function bb_admin_assets( $hook ) {
-	if ( ! in_array( $hook, array( 'profile.php', 'user-edit.php' ), true ) ) {
+	if ( ! in_array( $hook, array( 'profile.php', 'user-edit.php', 'toplevel_page_bb-theme-settings' ), true ) ) {
 		return;
 	}
 
@@ -214,13 +230,12 @@ function bb_admin_assets( $hook ) {
 		'bb-admin',
 		get_template_directory_uri() . '/assets/js/admin.js',
 		array( 'jquery' ),
-		bb_file_version( get_template_directory() . '/assets/js/admin.js' ),
+		BB_VERSION,
 		true
 	);
+	wp_localize_script( 'bb-admin', 'bbPostCatMap', bb_get_post_cat_map() );
 }
 add_action( 'admin_enqueue_scripts', 'bb_admin_assets' );
-
-/**
 
 /**
  * Customizer-driven CSS variables (logo sizing).
@@ -250,7 +265,8 @@ function bb_dynamic_css() {
 	foreach ( bb_layout_settings() as $key => $cfg ) {
 		$value = (int) get_theme_mod( $key, $cfg['default'] );
 		$value = max( $cfg['min'], min( $cfg['max'], $value ) );
-		$css  .= $cfg['var'] . ':' . $value . 'px;';
+		$unit  = isset( $cfg['unit'] ) ? $cfg['unit'] : 'px';
+		$css  .= $cfg['var'] . ':' . $value . $unit . ';';
 	}
 
 	return ':root{' . $css . '}';
@@ -264,8 +280,11 @@ function bb_dynamic_css() {
  */
 function bb_layout_settings() {
 	return array(
-		// Hero
-		'bb_hero_height'          => array( 'var' => '--bb-hero-h', 'default' => 520, 'min' => 300, 'max' => 760, 'section' => 'bb_layout_hero', 'label' => __( 'Hero Mosaic Height', 'bichitro-biggan' ) ),
+		// Hero Mosaic
+		'bb_hero_height'          => array( 'var' => '--bb-hero-h', 'default' => 520, 'min' => 300, 'max' => 800, 'unit' => 'px', 'section' => 'bb_layout_hero', 'label' => __( 'Hero Total Height (মোট উচ্চতা)', 'bichitro-biggan' ) ),
+		'bb_hero_left_width'      => array( 'var' => '--bb-hero-left-w', 'default' => 56, 'min' => 30, 'max' => 75, 'unit' => '%', 'section' => 'bb_layout_hero', 'label' => __( 'Left Main Hero Width (১নং বড় হিরোর প্রস্থ)', 'bichitro-biggan' ) ),
+		'bb_hero_top_height'      => array( 'var' => '--bb-hero-top-h', 'default' => 50, 'min' => 25, 'max' => 75, 'unit' => '%', 'section' => 'bb_layout_hero', 'label' => __( 'Right Top Card Height (২নং ওপরের কার্ডের উচ্চতা)', 'bichitro-biggan' ) ),
+		'bb_hero_bot_left_width'  => array( 'var' => '--bb-hero-bot-left-w', 'default' => 50, 'min' => 20, 'max' => 80, 'unit' => '%', 'section' => 'bb_layout_hero', 'label' => __( 'Bottom Left Card Width (৩নং কার্ডের প্রস্থ অনুপাত)', 'bichitro-biggan' ) ),
 
 		// Block 1
 		'bb_feature_width'        => array( 'var' => '--bb-feature-w', 'default' => 240, 'min' => 140, 'max' => 480, 'section' => 'bb_layout_block1', 'label' => __( 'Featured Column Width', 'bichitro-biggan' ) ),
@@ -288,6 +307,10 @@ function bb_layout_settings() {
 		// All posts + archives
 		'bb_all_image_height'     => array( 'var' => '--bb-all-img-h', 'default' => 192, 'min' => 110, 'max' => 400, 'section' => 'bb_layout_lists', 'label' => __( 'All Posts Card Image Height', 'bichitro-biggan' ) ),
 		'bb_archive_image_height' => array( 'var' => '--bb-archive-img-h', 'default' => 176, 'min' => 100, 'max' => 380, 'section' => 'bb_layout_lists', 'label' => __( 'Category Page Card Image Height', 'bichitro-biggan' ) ),
+
+		// Article Reading Modal Popup
+		'bb_modal_max_width'      => array( 'var' => '--bb-modal-max-w', 'default' => 860, 'min' => 500, 'max' => 1400, 'unit' => 'px', 'section' => 'bb_layout_modal', 'label' => __( 'Popup Reading Window Max Width', 'bichitro-biggan' ) ),
+		'bb_modal_max_height'     => array( 'var' => '--bb-modal-max-h', 'default' => 90, 'min' => 50, 'max' => 98, 'unit' => 'vh', 'section' => 'bb_layout_modal', 'label' => __( 'Popup Reading Window Max Height', 'bichitro-biggan' ) ),
 	);
 }
 
@@ -686,13 +709,12 @@ function bb_backfill_views() {
 add_action( 'admin_init', 'bb_backfill_views' );
 
 /**
- * Most-viewed posts. Falls back to comment count while the backfill is
- * still running or if no view data exists yet.
+ * Most-viewed posts. Supports time filtering: 'all', 'week', 'month', 'year'.
+ * Falls back to comment count while the backfill is still running or if no view data exists yet.
  */
-function bb_popular_query( $count ) {
+function bb_popular_query( $count = 3, $range = 'week' ) {
 	$count = max( 1, (int) $count );
-
-	$query = new WP_Query( array(
+	$args  = array(
 		'post_type'           => 'post',
 		'post_status'         => 'publish',
 		'posts_per_page'      => $count,
@@ -700,29 +722,84 @@ function bb_popular_query( $count ) {
 		'orderby'             => array( 'meta_value_num' => 'DESC', 'date' => 'DESC' ),
 		'no_found_rows'       => true,
 		'ignore_sticky_posts' => 1,
-	) );
+	);
+
+	if ( 'week' === $range ) {
+		$args['date_query'] = array( array( 'after' => '1 week ago' ) );
+	} elseif ( 'month' === $range ) {
+		$args['date_query'] = array( array( 'after' => '1 month ago' ) );
+	} elseif ( 'year' === $range ) {
+		$args['date_query'] = array( array( 'after' => '1 year ago' ) );
+	}
+
+	$query = new WP_Query( $args );
 
 	if ( $query->have_posts() ) {
 		return $query;
 	}
 
-	return new WP_Query( array(
-		'post_type'           => 'post',
-		'post_status'         => 'publish',
-		'posts_per_page'      => $count,
-		'orderby'             => array( 'comment_count' => 'DESC', 'date' => 'DESC' ),
-		'no_found_rows'       => true,
-		'ignore_sticky_posts' => 1,
-	) );
+	// Fallback without meta_key if view tracking is empty
+	unset( $args['meta_key'] );
+	$args['orderby'] = array( 'comment_count' => 'DESC', 'date' => 'DESC' );
+	$query = new WP_Query( $args );
+
+	if ( $query->have_posts() ) {
+		return $query;
+	}
+
+	// Fallback without date restriction if no posts in that short window
+	unset( $args['date_query'] );
+	return new WP_Query( $args );
 }
 
 /**
+ * AJAX handler for popular posts time filter dropdown.
+ */
+function bb_ajax_popular_posts() {
+	$range = isset( $_GET['range'] ) ? sanitize_key( $_GET['range'] ) : 'week';
+	$count = isset( $_GET['count'] ) ? absint( $_GET['count'] ) : (int) get_theme_mod( 'bb_popular_count', 3 );
+	$query = bb_popular_query( $count, $range );
+
+	ob_start();
+	if ( $query->have_posts() ) {
+		while ( $query->have_posts() ) {
+			$query->the_post();
+			bb_footer_item();
+		}
+		wp_reset_postdata();
+	} else {
+		echo '<p class="bb-footer__empty" style="font-size:13px;color:#9ca3af;padding:12px 0;">' . esc_html__( 'এই সময়ের কোনো লেখা পাওয়া যায়নি', 'bichitro-biggan' ) . '</p>';
+	}
+	$html = ob_get_clean();
+
+	wp_send_json_success( array( 'html' => $html ) );
+}
+add_action( 'wp_ajax_bb_get_popular_posts', 'bb_ajax_popular_posts' );
+add_action( 'wp_ajax_nopriv_bb_get_popular_posts', 'bb_ajax_popular_posts' );
+
+/**
  * Hand-picked EDITOR PICKS, topped up with recent posts when fewer are set.
+ * Reads specific customizer slots bb_editor_picks_1 to bb_editor_picks_8.
  */
 function bb_editor_picks_query() {
 	$count = max( 1, min( 8, (int) get_theme_mod( 'bb_editor_picks_count', 3 ) ) );
-	$picks = (array) get_theme_mod( 'bb_editor_picks', array() );
-	$picks = array_values( array_filter( array_map( 'absint', $picks ) ) );
+	$picks = array();
+
+	// Check slots 1 to $count
+	for ( $i = 1; $i <= $count; $i++ ) {
+		$slot_post_id = (int) get_theme_mod( "bb_editor_picks_{$i}", 0 );
+		if ( $slot_post_id && 'publish' === get_post_status( $slot_post_id ) ) {
+			$picks[] = $slot_post_id;
+		}
+	}
+
+	// Legacy setting fallback if slots not configured
+	if ( empty( $picks ) ) {
+		$legacy = (array) get_theme_mod( 'bb_editor_picks', array() );
+		$picks  = array_values( array_filter( array_map( 'absint', $legacy ) ) );
+	}
+
+	$picks = array_unique( $picks );
 	$picks = array_slice( $picks, 0, $count );
 
 	if ( count( $picks ) === $count ) {
@@ -799,10 +876,72 @@ add_action( 'save_post', 'bb_flush_year_cache' );
 add_action( 'deleted_post', 'bb_flush_year_cache' );
 
 /**
- * Archive tree: year => array of months.
+ * Filter category archive query by custom year & month if supplied in URL.
  */
-function bb_get_archive_tree() {
+function bb_category_date_filter( $query ) {
+	if ( ! is_admin() && $query->is_main_query() && $query->is_category() ) {
+		$y = isset( $_GET['bb_year'] ) ? absint( $_GET['bb_year'] ) : 0;
+		$m = isset( $_GET['bb_month'] ) ? absint( $_GET['bb_month'] ) : 0;
+		if ( $y > 0 ) {
+			$date_query = array( 'year' => $y );
+			if ( $m > 0 ) {
+				$date_query['month'] = $m;
+			}
+			$query->set( 'date_query', array( $date_query ) );
+		}
+	}
+}
+add_action( 'pre_get_posts', 'bb_category_date_filter' );
+
+/**
+ * Archive tree: year => array of months.
+ * Dynamically adapts to category archives if on category page or $cat_id passed.
+ */
+function bb_get_archive_tree( $cat_id = 0 ) {
 	global $wpdb;
+
+	if ( ! $cat_id && is_category() ) {
+		$cat_id = get_queried_object_id();
+	}
+
+	if ( $cat_id > 0 ) {
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT YEAR(p.post_date) AS y, MONTH(p.post_date) AS m, COUNT(p.ID) AS c
+				 FROM {$wpdb->posts} p
+				 INNER JOIN {$wpdb->term_relationships} tr ON (p.ID = tr.object_id)
+				 INNER JOIN {$wpdb->term_taxonomy} tt ON (tr.term_taxonomy_id = tt.term_taxonomy_id)
+				 WHERE p.post_status = 'publish' 
+				   AND p.post_type = 'post'
+				   AND tt.taxonomy = 'category'
+				   AND tt.term_id = %d
+				 GROUP BY y, m
+				 ORDER BY y DESC, m DESC",
+				$cat_id
+			)
+		);
+
+		$cat_link = get_category_link( $cat_id );
+		$tree     = array();
+		foreach ( (array) $rows as $row ) {
+			$month_url = add_query_arg(
+				array(
+					'bb_year'  => (int) $row->y,
+					'bb_month' => (int) $row->m,
+				),
+				$cat_link
+			);
+
+			$tree[ $row->y ][] = array(
+				'month' => (int) $row->m,
+				'count' => (int) $row->c,
+				'label' => $GLOBALS['wp_locale']->get_month( $row->m ),
+				'url'   => $month_url,
+			);
+		}
+
+		return $tree;
+	}
 
 	$rows = $wpdb->get_results(
 		"SELECT YEAR(post_date) AS y, MONTH(post_date) AS m, COUNT(ID) AS c
@@ -1160,3 +1299,5 @@ require_once get_template_directory() . '/inc/seo-meta-box.php';
 if ( is_admin() ) {
 	require_once get_template_directory() . '/inc/admin-settings.php';
 }
+
+add_action( 'wp_footer', 'bb_bookmarks_drawer' );

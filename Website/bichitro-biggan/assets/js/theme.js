@@ -8,7 +8,33 @@
 	var SCROLL_TRIGGER = 80;
 	var D = window.BBData || {};
 
+	function showToast(msg, icon) {
+		var existing = document.getElementById('bb-toast');
+		if (existing && existing.parentNode) {
+			existing.parentNode.removeChild(existing);
+		}
+		var toast = document.createElement('div');
+		toast.id = 'bb-toast';
+		toast.className = 'bb-toast';
+		toast.innerHTML = '<span>' + (icon || '🔖') + '</span> <span>' + msg + '</span>';
+		document.body.appendChild(toast);
+		setTimeout(function () { toast.classList.add('is-visible'); }, 10);
+		setTimeout(function () {
+			toast.classList.remove('is-visible');
+			setTimeout(function () {
+				if (toast.parentNode) toast.parentNode.removeChild(toast);
+			}, 300);
+		}, 3000);
+	}
+
 	document.addEventListener('DOMContentLoaded', function () {
+		try {
+			localStorage.removeItem('bb_theme');
+			document.documentElement.removeAttribute('data-theme');
+		} catch (e) {}
+		initBookmarks();
+		initTTSPlayer();
+		initQuoteShare();
 		initStickyNav();
 		initMobileMenu();
 		initTicker();
@@ -17,11 +43,13 @@
 		initAccordion();
 		initTocScroll();
 		initArticleModal();
+		initHeroVideoPlayer();
 		initAjaxList();
 		initSliders();
 		initLiveSearch();
 		initResumeBar();
 		initDirectSingleProgress();
+		initPopularFilter();
 	});
 
 	/* ---------------------------------------------------------------
@@ -60,6 +88,13 @@
 			if (field) {
 				e.preventDefault();
 				open(field.value);
+				return;
+			}
+
+			var searchBtn = closestMatch(e.target, '[data-bb-toggle="search"]');
+			if (searchBtn) {
+				e.preventDefault();
+				open('');
 			}
 		});
 
@@ -401,27 +436,62 @@
 	 * Headline ticker
 	 * ------------------------------------------------------------ */
 	function initTicker() {
+		var ticker = document.querySelector('.bb-ticker');
 		var items = document.querySelectorAll('[data-bb-ticker-item]');
 		if (items.length < 2) {
 			return;
 		}
 
 		var index = 0;
+		var autoTimer = null;
+		var INTERVAL = 4500;
 
 		function show(i) {
 			index = (i + items.length) % items.length;
 			Array.prototype.forEach.call(items, function (el, n) {
-				el.style.display = n === index ? '' : 'none';
+				if (n === index) {
+					el.style.opacity = '0';
+					el.style.display = '';
+					window.requestAnimationFrame(function () {
+						el.style.opacity = '1';
+					});
+				} else {
+					el.style.display = 'none';
+				}
 			});
+		}
+
+		function startAuto() {
+			stopAuto();
+			autoTimer = window.setInterval(function () {
+				show(index + 1);
+			}, INTERVAL);
+		}
+
+		function stopAuto() {
+			if (autoTimer) {
+				window.clearInterval(autoTimer);
+				autoTimer = null;
+			}
 		}
 
 		var prev = document.querySelector('[data-bb-ticker="prev"]');
 		var next = document.querySelector('[data-bb-ticker="next"]');
 
-		if (prev) prev.addEventListener('click', function () { show(index - 1); });
-		if (next) next.addEventListener('click', function () { show(index + 1); });
+		if (prev) prev.addEventListener('click', function () { show(index - 1); startAuto(); });
+		if (next) next.addEventListener('click', function () { show(index + 1); startAuto(); });
+
+		if (ticker) {
+			ticker.addEventListener('mouseenter', stopAuto);
+			ticker.addEventListener('mouseleave', startAuto);
+			ticker.addEventListener('touchstart', stopAuto, { passive: true });
+			ticker.addEventListener('touchend', function () {
+				window.setTimeout(startAuto, 2000);
+			}, { passive: true });
+		}
 
 		show(0);
+		startAuto();
 	}
 
 	/* ---------------------------------------------------------------
@@ -616,6 +686,10 @@
 		var progressBar = modal.querySelector('.bb-reading-progress__bar');
 
 		document.addEventListener('click', function (e) {
+			if (e.target.closest('.bb-hero__play-btn, .bb-hero__video-wrap, .bb-hero__video-close, [data-bb-video]')) {
+				return;
+			}
+
 			var link = closestMatch(e.target, 'a[data-bb-article]');
 			if (!link || !isPlainClick(e, link)) return;
 
@@ -805,7 +879,11 @@
 			try {
 				var last = JSON.parse(localStorage.getItem('bb_last_read') || 'null');
 				if (last && last.url && last.title && (Date.now() - last.time < 7 * 86400000)) {
-					if (titleEl) titleEl.textContent = last.title;
+					if (titleEl) {
+						titleEl.textContent = last.title;
+						titleEl.href = last.url;
+						titleEl.setAttribute('data-bb-article', last.url);
+					}
 					if (btn) {
 						btn.href = last.url;
 						btn.setAttribute('data-bb-article', last.url);
@@ -956,4 +1034,709 @@
 			});
 		}
 	}
+
+
+	/* ---------------------------------------------------------------
+	 * Read Later / Bookmarks System
+	 * ------------------------------------------------------------ */
+	function initBookmarks() {
+		var STORAGE_KEY = 'bb_bookmarks';
+
+		function getList() {
+			try {
+				var data = localStorage.getItem(STORAGE_KEY);
+				return data ? JSON.parse(data) : [];
+			} catch (e) {
+				return [];
+			}
+		}
+
+		function saveList(list) {
+			try {
+				localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+			} catch (e) {}
+			updateBadges(list.length);
+		}
+
+		function updateBadges(count) {
+			Array.prototype.forEach.call(document.querySelectorAll('[data-bb-count="bookmarks"]'), function (badge) {
+				badge.textContent = count;
+				badge.style.display = count > 0 ? 'inline-flex' : 'none';
+			});
+			var drawerCount = document.getElementById('bb-drawer-count');
+			if (drawerCount) {
+				drawerCount.textContent = count;
+			}
+			var footer = document.getElementById('bb-bookmarks-footer');
+			if (footer) {
+				footer.style.display = count > 0 ? 'block' : 'none';
+			}
+		}
+
+		function syncButtons() {
+			var list = getList();
+			var ids = list.map(function (item) { return String(item.id); });
+
+			Array.prototype.forEach.call(document.querySelectorAll('[data-bb-bookmark]'), function (btn) {
+				var id = btn.getAttribute('data-bb-bookmark');
+				var textEl = btn.querySelector('.bb-bookmark-text');
+				if (ids.indexOf(id) !== -1) {
+					btn.classList.add('is-bookmarked');
+					if (textEl) textEl.textContent = 'সংরক্ষিত';
+				} else {
+					btn.classList.remove('is-bookmarked');
+					if (textEl) textEl.textContent = 'পরে পড়ুন';
+				}
+			});
+		}
+
+		function renderDrawer() {
+			var container = document.getElementById('bb-bookmarks-list');
+			if (!container) return;
+
+			var list = getList();
+			if (list.length === 0) {
+				container.innerHTML = '<div class="bb-drawer__empty">' +
+					'<span class="bb-drawer__empty-icon">🔖</span>' +
+					'<p class="bb-drawer__empty-title">কোনো লেখা সংরক্ষিত নেই</p>' +
+					'<p class="bb-drawer__empty-desc">যেকোনো লেখার "পরে পড়ুন" বাটনে ক্লিক করে এখানে জমা রাখুন।</p>' +
+					'</div>';
+				return;
+			}
+
+			var html = '<div class="bb-drawer__items">';
+			list.forEach(function (item) {
+				html += '<div class="bb-drawer__item" data-id="' + item.id + '">' +
+					(item.thumb ? '<a href="' + item.url + '" class="bb-drawer__thumb"><img src="' + item.thumb + '" alt="" loading="lazy" /></a>' : '') +
+					'<div class="bb-drawer__content">' +
+						'<a href="' + item.url + '" class="bb-drawer__item-title">' + item.title + '</a>' +
+						'<div class="bb-drawer__item-meta">' +
+							(item.date ? '<span>' + item.date + '</span> · ' : '') +
+							'<span>⏱ ' + item.time + '</span>' +
+						'</div>' +
+					'</div>' +
+					'<button type="button" class="bb-drawer__remove" data-bb-remove-bookmark="' + item.id + '" title="মুছে ফেলুন" aria-label="মুছে ফেলুন">✕</button>' +
+				'</div>';
+			});
+			html += '</div>';
+			container.innerHTML = html;
+		}
+
+		function openDrawer() {
+			renderDrawer();
+			var drawer = document.getElementById('bb-bookmarks-drawer');
+			var overlay = document.getElementById('bb-bookmarks-overlay');
+			if (drawer) {
+				drawer.classList.add('is-open');
+				drawer.setAttribute('aria-hidden', 'false');
+			}
+			if (overlay) {
+				overlay.classList.add('is-open');
+				overlay.setAttribute('aria-hidden', 'false');
+			}
+			document.body.style.overflow = 'hidden';
+		}
+
+		function closeDrawer() {
+			var drawer = document.getElementById('bb-bookmarks-drawer');
+			var overlay = document.getElementById('bb-bookmarks-overlay');
+			if (drawer) {
+				drawer.classList.remove('is-open');
+				drawer.setAttribute('aria-hidden', 'true');
+			}
+			if (overlay) {
+				overlay.classList.remove('is-open');
+				overlay.setAttribute('aria-hidden', 'true');
+			}
+			document.body.style.overflow = '';
+		}
+
+		// Initial sync
+		updateBadges(getList().length);
+		syncButtons();
+
+		// Click events
+		document.addEventListener('click', function (e) {
+			// Toggle bookmark on single/card
+			var bookBtn = closestMatch(e.target, '[data-bb-bookmark]');
+			if (bookBtn) {
+				e.preventDefault();
+				var id = bookBtn.getAttribute('data-bb-bookmark');
+				var list = getList();
+				var index = list.findIndex(function (item) { return String(item.id) === String(id); });
+
+				if (index > -1) {
+					list.splice(index, 1);
+					saveList(list);
+					syncButtons();
+					showToast('লেখাটি বুকমার্ক থেকে সরানো হয়েছে');
+				} else {
+					var item = {
+						id: id,
+						title: bookBtn.getAttribute('data-title') || document.title,
+						url: bookBtn.getAttribute('data-url') || location.href,
+						thumb: bookBtn.getAttribute('data-thumb') || '',
+						time: bookBtn.getAttribute('data-time') || '',
+						date: bookBtn.getAttribute('data-date') || ''
+					};
+					list.unshift(item);
+					saveList(list);
+					syncButtons();
+					showToast('লেখাটি পরবর্তীতে পড়ার জন্য সংরক্ষিত হয়েছে');
+				}
+				return;
+			}
+
+			// Open drawer
+			var openBtn = closestMatch(e.target, '[data-bb-toggle="bookmarks"]');
+			if (openBtn) {
+				e.preventDefault();
+				openDrawer();
+				return;
+			}
+
+			// Close drawer
+			if (closestMatch(e.target, '#bb-bookmarks-close') || e.target === document.getElementById('bb-bookmarks-overlay')) {
+				e.preventDefault();
+				closeDrawer();
+				return;
+			}
+
+			// Remove single item from drawer
+			var removeBtn = closestMatch(e.target, '[data-bb-remove-bookmark]');
+			if (removeBtn) {
+				e.preventDefault();
+				var remId = removeBtn.getAttribute('data-bb-remove-bookmark');
+				var curList = getList();
+				curList = curList.filter(function (it) { return String(it.id) !== String(remId); });
+				saveList(curList);
+				renderDrawer();
+				syncButtons();
+				return;
+			}
+
+			// Clear all from drawer
+			if (closestMatch(e.target, '#bb-bookmarks-clear')) {
+				e.preventDefault();
+				saveList([]);
+				renderDrawer();
+				syncButtons();
+				showToast('সকল সংরক্ষিত লেখা মুছে ফেলা হয়েছে');
+			}
+		});
+
+		document.addEventListener('keydown', function (e) {
+			if ((e.key === 'Escape' || e.key === 'Esc') && document.getElementById('bb-bookmarks-drawer') && document.getElementById('bb-bookmarks-drawer').classList.contains('is-open')) {
+				closeDrawer();
+			}
+		});
+	}
+
+	/* ---------------------------------------------------------------
+	 * Text-to-Speech (Listen to Article) Engine
+	 * ------------------------------------------------------------ */
+	function initTTSPlayer() {
+		var player = document.getElementById('bb-tts-player');
+		if (!player || !('speechSynthesis' in window)) {
+			if (player && !('speechSynthesis' in window)) {
+				player.style.display = 'none';
+			}
+			return;
+		}
+
+		var playBtn = document.getElementById('bb-tts-play-btn');
+		var stopBtn = document.getElementById('bb-tts-stop-btn');
+		var speedBtn = document.getElementById('bb-tts-speed-btn');
+		var statusLabel = document.getElementById('bb-tts-status');
+		var wave = document.getElementById('bb-tts-wave');
+
+		var playIcon = playBtn ? playBtn.querySelector('.bb-tts-icon--play') : null;
+		var pauseIcon = playBtn ? playBtn.querySelector('.bb-tts-icon--pause') : null;
+
+		var synth = window.speechSynthesis;
+		var isPlaying = false;
+		var isPaused = false;
+		var currentRate = 1.0;
+		var sentences = [];
+		var currentSentenceIndex = 0;
+		var speeds = [1.0, 1.25, 1.5, 0.85];
+		var keepAliveTimer = null;
+
+		function getArticleText() {
+			var paragraphs = document.querySelectorAll('.bb-content > p, .bb-content > h2, .bb-content > h3, .bb-content > blockquote');
+			if (paragraphs && paragraphs.length > 0) {
+				var textArr = [];
+				Array.prototype.forEach.call(paragraphs, function (p) {
+					var t = (p.textContent || '').trim();
+					if (t.length > 0) textArr.push(t);
+				});
+				if (textArr.length > 0) {
+					return textArr.join('\n');
+				}
+			}
+
+			var content = document.querySelector('.bb-single__content') || document.querySelector('.bb-content');
+			if (!content) return '';
+
+			var clone = content.cloneNode(true);
+			var unwanted = clone.querySelectorAll('figure, script, style, .bb-toc-container, .bb-share-wrap, .bb-tts-player, .bb-authorrow');
+			Array.prototype.forEach.call(unwanted, function (el) {
+				if (el.parentNode) el.parentNode.removeChild(el);
+			});
+
+			return (clone.textContent || '').trim();
+		}
+
+		function prepareSentences(text) {
+			if (!text) return [];
+			var raw = text.split(/([।?!;\n]+)/);
+			var res = [];
+			for (var i = 0; i < raw.length; i += 2) {
+				var chunk = (raw[i] || '').trim();
+				var punct = raw[i + 1] || '';
+				var full = chunk + punct;
+				if (full.trim().length > 0) {
+					res.push(full.trim());
+				}
+			}
+			return res;
+		}
+
+		function getBanglaVoice() {
+			var voices = synth.getVoices() || [];
+			var voice = null;
+			for (var i = 0; i < voices.length; i++) {
+				var v = voices[i];
+				var lang = (v.lang || '').toLowerCase();
+				var name = (v.name || '').toLowerCase();
+				if (lang === 'bn-bd' || lang === 'bn-in' || lang.indexOf('bn') === 0 || name.indexOf('bangla') !== -1 || name.indexOf('bengali') !== -1) {
+					voice = v;
+					break;
+				}
+			}
+			return voice;
+		}
+
+		function startKeepAlive() {
+			stopKeepAlive();
+			keepAliveTimer = setInterval(function () {
+				if (isPlaying && !isPaused && synth.speaking) {
+					synth.pause();
+					synth.resume();
+				}
+			}, 10000);
+		}
+
+		function stopKeepAlive() {
+			if (keepAliveTimer) {
+				clearInterval(keepAliveTimer);
+				keepAliveTimer = null;
+			}
+		}
+
+		function speakSentence(index) {
+			if (!isPlaying || isPaused) return;
+
+			if (index >= sentences.length) {
+				stop();
+				if (statusLabel) statusLabel.textContent = 'পড়া সম্পন্ন হয়েছে';
+				return;
+			}
+
+			currentSentenceIndex = index;
+			var text = sentences[index];
+			if (!text || text.trim().length === 0) {
+				speakSentence(index + 1);
+				return;
+			}
+
+			var utterance = new SpeechSynthesisUtterance(text);
+			utterance.rate = currentRate;
+			utterance.lang = 'bn-BD';
+
+			var bnVoice = getBanglaVoice();
+			if (bnVoice) {
+				utterance.voice = bnVoice;
+			}
+
+			utterance.onend = function () {
+				if (isPlaying && !isPaused) {
+					speakSentence(currentSentenceIndex + 1);
+				}
+			};
+
+			utterance.onerror = function (e) {
+				if (isPlaying && !isPaused) {
+					speakSentence(currentSentenceIndex + 1);
+				}
+			};
+
+			if (synth.paused) {
+				synth.resume();
+			}
+
+			synth.speak(utterance);
+		}
+
+		function play() {
+			if (isPaused) {
+				synth.resume();
+				isPaused = false;
+				isPlaying = true;
+				updateUI('playing');
+				startKeepAlive();
+				return;
+			}
+
+			synth.cancel();
+			var text = getArticleText();
+			if (!text) {
+				if (statusLabel) statusLabel.textContent = 'পড়ার মতো কোনো লেখা পাওয়া যায়নি';
+				return;
+			}
+
+			sentences = prepareSentences(text);
+			if (sentences.length === 0) {
+				if (statusLabel) statusLabel.textContent = 'পড়ার মতো কোনো লেখা পাওয়া যায়নি';
+				return;
+			}
+
+			isPlaying = true;
+			isPaused = false;
+			currentSentenceIndex = 0;
+			updateUI('playing');
+			startKeepAlive();
+
+			setTimeout(function () {
+				speakSentence(0);
+			}, 60);
+		}
+
+		function pause() {
+			synth.pause();
+			isPaused = true;
+			isPlaying = false;
+			stopKeepAlive();
+			updateUI('paused');
+		}
+
+		function stop() {
+			stopKeepAlive();
+			synth.cancel();
+			isPlaying = false;
+			isPaused = false;
+			currentSentenceIndex = 0;
+			updateUI('idle');
+		}
+
+		function updateUI(state) {
+			if (state === 'playing') {
+				if (playIcon) playIcon.style.display = 'none';
+				if (pauseIcon) pauseIcon.style.display = 'inline-block';
+				if (stopBtn) stopBtn.style.display = 'inline-flex';
+				if (statusLabel) statusLabel.textContent = 'পড়া হচ্ছে...';
+				if (wave) wave.classList.add('is-active');
+				if (player) player.classList.add('is-playing');
+			} else if (state === 'paused') {
+				if (playIcon) playIcon.style.display = 'inline-block';
+				if (pauseIcon) pauseIcon.style.display = 'none';
+				if (stopBtn) stopBtn.style.display = 'inline-flex';
+				if (statusLabel) statusLabel.textContent = 'পজ করা আছে';
+				if (wave) wave.classList.remove('is-active');
+				if (player) player.classList.remove('is-playing');
+			} else {
+				if (playIcon) playIcon.style.display = 'inline-block';
+				if (pauseIcon) pauseIcon.style.display = 'none';
+				if (stopBtn) stopBtn.style.display = 'none';
+				if (statusLabel) statusLabel.textContent = 'লেখাটি শুনুন (অডিও)';
+				if (wave) wave.classList.remove('is-active');
+				if (player) player.classList.remove('is-playing');
+			}
+		}
+
+		if (playBtn) {
+			playBtn.addEventListener('click', function () {
+				if (isPlaying) {
+					pause();
+				} else {
+					play();
+				}
+			});
+		}
+
+		if (stopBtn) {
+			stopBtn.addEventListener('click', function () {
+				stop();
+			});
+		}
+
+		if (speedBtn) {
+			speedBtn.addEventListener('click', function () {
+				var nextIdx = (speeds.indexOf(currentRate) + 1) % speeds.length;
+				currentRate = speeds[nextIdx];
+				speedBtn.textContent = currentRate + 'x';
+				if (isPlaying && !isPaused) {
+					synth.cancel();
+					speakSentence(currentSentenceIndex);
+				}
+			});
+		}
+
+		// Ensure voices are loaded
+		if (synth.onvoiceschanged !== undefined) {
+			synth.onvoiceschanged = function () {
+				getBanglaVoice();
+			};
+		}
+
+		// Stop when leaving page
+		window.addEventListener('beforeunload', function () {
+			stopKeepAlive();
+			synth.cancel();
+		});
+	}
+
+	/* ---------------------------------------------------------------
+	 * Quote Highlight, Copy Attribution & Facebook Share
+	 * ------------------------------------------------------------ */
+	function initQuoteShare() {
+		var tooltip = document.createElement('div');
+		tooltip.id = 'bb-quote-tooltip';
+		tooltip.className = 'bb-quote-tooltip';
+		tooltip.style.display = 'none';
+		tooltip.innerHTML = '<button type="button" class="bb-quote-btn bb-quote-btn--copy" id="bb-quote-copy-btn">📋 কপি</button>' +
+			'<button type="button" class="bb-quote-btn bb-quote-btn--fb" id="bb-quote-fb-btn">💬 ফেসবুকে শেয়ার</button>';
+		document.body.appendChild(tooltip);
+
+		var copyBtn = tooltip.querySelector('#bb-quote-copy-btn');
+		var fbBtn = tooltip.querySelector('#bb-quote-fb-btn');
+		var currentSelectedText = '';
+
+		function getArticleDetails() {
+			var single = document.querySelector('.bb-single') || document.querySelector('.bb-content') || document.querySelector('.bb-modal__dialog');
+			var titleEl = (single ? single.querySelector('.bb-single__title') : null) || document.querySelector('.bb-single__title');
+			var title = titleEl ? titleEl.textContent.trim() : document.title;
+			var url = window.location.href;
+			return { title: title, url: url };
+		}
+
+		function getAttributionText(text) {
+			var details = getArticleDetails();
+			return '“' + text + '”\n\n— ' + details.title + '\nসূত্র: বিচিত্র বিজ্ঞান (' + details.url + ')';
+		}
+
+		function showTooltip(x, y) {
+			tooltip.style.top = y + 'px';
+			tooltip.style.left = x + 'px';
+			tooltip.style.display = 'inline-flex';
+		}
+
+		function hideTooltip() {
+			tooltip.style.display = 'none';
+			currentSelectedText = '';
+		}
+
+		function handleSelection() {
+			var sel = window.getSelection();
+			if (!sel || sel.isCollapsed || sel.rangeCount === 0) {
+				hideTooltip();
+				return;
+			}
+
+			var text = sel.toString().trim();
+			if (text.length < 5) {
+				hideTooltip();
+				return;
+			}
+
+			// Ensure selection is inside article content
+			var anchor = sel.anchorNode;
+			if (!anchor) return;
+			var parentEl = anchor.nodeType === 1 ? anchor : anchor.parentElement;
+			var contentContainer = closestMatch(parentEl, '.bb-content, .bb-single__content, .bb-single, .bb-modal__dialog');
+			if (!contentContainer) {
+				hideTooltip();
+				return;
+			}
+
+			currentSelectedText = text;
+			var range = sel.getRangeAt(0);
+			var rect = range.getBoundingClientRect();
+			if (!rect || (rect.width === 0 && rect.height === 0)) {
+				hideTooltip();
+				return;
+			}
+
+			var tooltipWidth = 190;
+			var tooltipX = rect.left + (rect.width / 2) - (tooltipWidth / 2) + window.pageXOffset;
+			var tooltipY = rect.top + window.pageYOffset - 44;
+
+			// Keep within viewport boundary
+			if (tooltipX < 10) tooltipX = 10;
+
+			showTooltip(tooltipX, tooltipY);
+		}
+
+		document.addEventListener('mouseup', function (e) {
+			if (tooltip.contains(e.target)) return;
+			setTimeout(handleSelection, 60);
+		});
+
+		document.addEventListener('touchend', function (e) {
+			if (tooltip.contains(e.target)) return;
+			setTimeout(handleSelection, 120);
+		});
+
+		document.addEventListener('mousedown', function (e) {
+			if (!tooltip.contains(e.target)) {
+				hideTooltip();
+			}
+		});
+
+		if (copyBtn) {
+			copyBtn.addEventListener('click', function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+				if (!currentSelectedText) return;
+
+				var fullText = getAttributionText(currentSelectedText);
+				if (navigator.clipboard && navigator.clipboard.writeText) {
+					navigator.clipboard.writeText(fullText).then(function () {
+						showToast('উক্তি ও বিচিত্র বিজ্ঞানের লিঙ্ক কপি হয়েছে!', '📋');
+					});
+				} else {
+					var ta = document.createElement('textarea');
+					ta.value = fullText;
+					ta.style.position = 'fixed';
+					ta.style.opacity = '0';
+					document.body.appendChild(ta);
+					ta.select();
+					try {
+						document.execCommand('copy');
+						showToast('উক্তি ও বিচিত্র বিজ্ঞানের লিঙ্ক কপি হয়েছে!', '📋');
+					} catch(err) {}
+					document.body.removeChild(ta);
+				}
+
+				hideTooltip();
+			});
+		}
+
+		if (fbBtn) {
+			fbBtn.addEventListener('click', function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+				if (!currentSelectedText) return;
+
+				var details = getArticleDetails();
+				var quoteText = '“' + currentSelectedText + '” — ' + details.title + ' (বিচিত্র বিজ্ঞান)';
+				var fbUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(details.url) + '&quote=' + encodeURIComponent(quoteText);
+				window.open(fbUrl, 'bb_fb_share', 'width=640,height=520,menubar=no,toolbar=no,resizable=yes,scrollbars=yes');
+				hideTooltip();
+			});
+		}
+
+		// Handle standard keyboard copy (Ctrl + C / Cmd + C) inside article content
+		document.addEventListener('copy', function (e) {
+			var sel = window.getSelection();
+			if (!sel || sel.isCollapsed) return;
+			var selectedText = sel.toString().trim();
+			if (selectedText.length < 15) return;
+
+			var anchor = sel.anchorNode;
+			if (!anchor) return;
+			var parentEl = anchor.nodeType === 1 ? anchor : anchor.parentElement;
+			var contentContainer = closestMatch(parentEl, '.bb-content, .bb-single__content, .bb-single');
+			if (contentContainer) {
+				var fullText = getAttributionText(selectedText);
+				if (e.clipboardData) {
+					e.clipboardData.setData('text/plain', fullText);
+					e.preventDefault();
+					showToast('কপি করা লেখার সাথে বিচিত্র বিজ্ঞানের লিঙ্ক যুক্ত হয়েছে', '📋');
+				}
+			}
+		});
+	}
+
+	/* ---------------------------------------------------------------
+	 * Direct Video Player on Hero Cards
+	 *
+	 * When clicking a video/podcast card with data-bb-video, embeds
+	 * the video directly into the card with autoplay and close button.
+	 * ------------------------------------------------------------ */
+	function initHeroVideoPlayer() {
+		document.addEventListener('click', function (e) {
+			var playBtn = e.target.closest('.bb-hero__play-btn');
+			var card = e.target.closest('[data-bb-video]');
+
+			if (!card && !playBtn) return;
+			if (!card && playBtn) card = playBtn.closest('[data-bb-video]');
+			if (!card) return;
+
+			// If click is on a close button
+			if (e.target.closest('.bb-hero__video-close')) {
+				e.preventDefault();
+				e.stopPropagation();
+				var wrap = card.querySelector('.bb-hero__video-wrap');
+				if (wrap) wrap.remove();
+				return;
+			}
+
+			// If click is on the play button OR the card with video
+			if (playBtn || card.classList.contains('bb-has-video')) {
+				var videoUrl = card.getAttribute('data-bb-video');
+				if (!videoUrl) return;
+
+				e.preventDefault();
+				e.stopPropagation();
+
+				// If already playing, do nothing
+				if (card.querySelector('.bb-hero__video-wrap')) return;
+
+				// Append autoplay param
+				var sep = videoUrl.indexOf('?') === -1 ? '?' : '&';
+				var embedSrc = videoUrl + sep + 'autoplay=1&rel=0&enablejsapi=1';
+
+				var wrap = document.createElement('div');
+				wrap.className = 'bb-hero__video-wrap';
+				wrap.innerHTML = '<iframe class="bb-hero__video-iframe" src="' + embedSrc + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' +
+					'<button type="button" class="bb-hero__video-close" aria-label="ভিডিও বন্ধ করুন" title="ভিডিও বন্ধ করুন">✕</button>';
+
+				card.appendChild(wrap);
+			}
+		});
+	}
+
+	/* ---------------------------------------------------------------
+	 * Popular Posts Time Range Filter
+	 * ------------------------------------------------------------ */
+	function initPopularFilter() {
+		var select = document.getElementById('bb-popular-range');
+		var list = document.getElementById('bb-popular-list');
+		if (!select || !list) return;
+
+		select.addEventListener('change', function () {
+			var range = select.value || 'all';
+			var count = select.getAttribute('data-count') || 3;
+			list.classList.add('is-loading');
+
+			var ajaxUrl = (window.bbLiveSearch && window.bbLiveSearch.ajaxUrl) || (window.bb_ajax && window.bb_ajax.url) || '/wp-admin/admin-ajax.php';
+			var url = ajaxUrl + '?action=bb_get_popular_posts&range=' + encodeURIComponent(range) + '&count=' + encodeURIComponent(count);
+
+			fetch(url)
+				.then(function (res) { return res.json(); })
+				.then(function (res) {
+					if (res && res.success && res.data && res.data.html) {
+						list.innerHTML = res.data.html;
+					}
+				})
+				.catch(function (err) {
+					console.error('Popular filter error:', err);
+				})
+				.finally(function () {
+					list.classList.remove('is-loading');
+				});
+		});
+	}
 })();
+

@@ -55,25 +55,30 @@ while ( have_posts() ) :
 
 		<?php bb_share_buttons(); ?>
 
-		<?php if ( ! empty( $bb_parsed['toc'] ) ) : ?>
-			<div class="bb-toc-container">
-				<button type="button" class="bb-toc-toggle" aria-label="<?php esc_attr_e( 'Toggle Table of Contents', 'bichitro-biggan' ); ?>" aria-expanded="false">
-					<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-					<span><?php esc_html_e( 'সূচিপত্র', 'bichitro-biggan' ); ?></span>
-					<span class="bb-toc-caret">▼</span>
-				</button>
-				<nav class="bb-toc" aria-label="<?php esc_attr_e( 'Table of contents', 'bichitro-biggan' ); ?>">
-					<p class="bb-toc__title"><?php esc_html_e( 'Table of contents', 'bichitro-biggan' ); ?></p>
-					<ul class="bb-toc__list">
-						<?php foreach ( $bb_parsed['toc'] as $bb_item ) : ?>
-							<li class="<?php echo ( 2 === $bb_item['level'] ) ? 'bb-toc__sub' : ''; ?>">
-								<a href="#<?php echo esc_attr( $bb_item['id'] ); ?>" data-bb-toc><?php echo esc_html( $bb_item['text'] ); ?></a>
-							</li>
-						<?php endforeach; ?>
-					</ul>
-				</nav>
-			</div>
-		<?php endif; ?>
+		<!-- Sticky Floating Actions Bar (TOC + Read Later Bookmark) -->
+		<div class="bb-floating-bar">
+			<?php if ( ! empty( $bb_parsed['toc'] ) ) : ?>
+				<div class="bb-toc-container">
+					<button type="button" class="bb-toc-toggle" aria-label="<?php esc_attr_e( 'Toggle Table of Contents', 'bichitro-biggan' ); ?>" aria-expanded="false">
+						<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+						<span><?php esc_html_e( 'সূচিপত্র', 'bichitro-biggan' ); ?></span>
+						<span class="bb-toc-caret">▼</span>
+					</button>
+					<nav class="bb-toc" aria-label="<?php esc_attr_e( 'Table of contents', 'bichitro-biggan' ); ?>">
+						<p class="bb-toc__title"><?php esc_html_e( 'Table of contents', 'bichitro-biggan' ); ?></p>
+						<ul class="bb-toc__list">
+							<?php foreach ( $bb_parsed['toc'] as $bb_item ) : ?>
+								<li class="<?php echo ( 2 === $bb_item['level'] ) ? 'bb-toc__sub' : ''; ?>">
+									<a href="#<?php echo esc_attr( $bb_item['id'] ); ?>" data-bb-toc><?php echo esc_html( $bb_item['text'] ); ?></a>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+					</nav>
+				</div>
+			<?php endif; ?>
+
+			<?php bb_bookmark_btn( get_the_ID(), 'bb-floating-bookmark-btn' ); ?>
+		</div>
 
 		<div class="bb-content">
 			<?php if ( has_post_thumbnail() ) : ?>

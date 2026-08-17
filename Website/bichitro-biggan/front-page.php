@@ -22,94 +22,136 @@ $bb_used = array();
 /* =====================================================================
  * HERO MOSAIC
  * ================================================================== */
-$bb_podcast_cat = bb_block_cat( 'bb_cat_podcast', '%e0%a6%aa%e0%a6%a1%e0%a6%95%e0%a6%be%e0%a6%b8%e0%a7%8d%e0%a6%9f' );
+$bb_hero_s1     = absint( get_theme_mod( 'bb_hero_slot_1', 0 ) );
+$bb_hero_s2     = absint( get_theme_mod( 'bb_hero_slot_2', 0 ) );
+$bb_hero_s3     = absint( get_theme_mod( 'bb_hero_slot_3', 0 ) );
+$bb_hero_s4     = absint( get_theme_mod( 'bb_hero_slot_4', 0 ) );
+$bb_hero_c1     = absint( get_theme_mod( 'bb_hero_cat_1', 0 ) );
+$bb_hero_c2     = absint( get_theme_mod( 'bb_hero_cat_2', 0 ) );
+$bb_hero_c3     = absint( get_theme_mod( 'bb_hero_cat_3', 0 ) );
+$bb_hero_c4     = absint( get_theme_mod( 'bb_hero_cat_4', 0 ) );
+$bb_hero_byline = (bool) get_theme_mod( 'bb_hero_show_author', true );
+$bb_pod_time    = trim( (string) get_theme_mod( 'bb_podcast_custom_time', '' ) );
 
-$bb_podcast_post = null;
-if ( $bb_podcast_cat ) {
-	$bb_pod_q = bb_query( $bb_podcast_cat, 1 );
-	if ( $bb_pod_q->have_posts() ) {
-		$bb_podcast_post = $bb_pod_q->posts[0];
-		$bb_used[]       = $bb_podcast_post->ID;
+/* Helper closure to fetch post object for a slot */
+$bb_get_slot_post = function( $custom_id, $cat_id, &$used, $is_slot4 = false ) {
+	if ( $custom_id > 0 ) {
+		$p = get_post( $custom_id );
+		if ( $p && 'publish' === $p->post_status ) {
+			$used[] = $p->ID;
+			return $p;
+		}
+	}
+
+	if ( $cat_id > 0 ) {
+		$q = bb_query( $cat_id, 1, $used );
+		if ( $q->have_posts() ) {
+			$p = $q->posts[0];
+			$used[] = $p->ID;
+			wp_reset_postdata();
+			return $p;
+		}
+		wp_reset_postdata();
+	}
+
+	if ( $is_slot4 ) {
+		$pod_cat = bb_block_cat( 'bb_cat_podcast', '%e0%a6%aa%e0%a6%a1%e0%a6%95%e0%a6%be%e0%a6%b8%e0%a7%8d%e0%a6%9f' );
+		if ( $pod_cat ) {
+			$q = bb_query( $pod_cat, 1, $used );
+			if ( $q->have_posts() ) {
+				$p = $q->posts[0];
+				$used[] = $p->ID;
+				wp_reset_postdata();
+				return $p;
+			}
+			wp_reset_postdata();
+		}
+	}
+
+	$q = bb_query( 0, 1, $used );
+	if ( $q->have_posts() ) {
+		$p = $q->posts[0];
+		$used[] = $p->ID;
+		wp_reset_postdata();
+		return $p;
 	}
 	wp_reset_postdata();
-}
+	return null;
+};
 
-$bb_hero = bb_query( 0, $bb_podcast_post ? 3 : 4, $bb_used );
+$bb_p1 = $bb_get_slot_post( $bb_hero_s1, $bb_hero_c1, $bb_used );
+$bb_p2 = $bb_get_slot_post( $bb_hero_s2, $bb_hero_c2, $bb_used );
+$bb_p3 = $bb_get_slot_post( $bb_hero_s3, $bb_hero_c3, $bb_used );
+$bb_p4 = $bb_get_slot_post( $bb_hero_s4, $bb_hero_c4, $bb_used, true );
 
-if ( $bb_hero->have_posts() ) :
-	$bb_hero_posts = $bb_hero->posts;
-	foreach ( $bb_hero_posts as $bb_p ) {
-		$bb_used[] = $bb_p->ID;
-	}
+if ( $bb_p1 ) :
 	?>
 	<section class="bb-hero">
 		<div class="bb-hero__grid">
 
-			<div class="bb-hero__col">
+			<!-- Main Large Card (Left) - Slot 1 -->
+			<div class="bb-hero__col bb-hero__col--left">
 				<?php
-				$bb_hero->the_post();
-				bb_overlay_panel( array(
-					'class'   => 'bb-hero__main',
-					'byline'  => true,
-					'overlay' => 'bb-overlay--deep',
+				global $post;
+				$post = $bb_p1;
+				setup_postdata( $post );
+				bb_hero_card( array(
+					'class'       => 'bb-hero__main',
+					'image_size'  => 'bb-hero',
+					'byline'      => true,
+					'overlay'     => 'bb-overlay--deep',
+					'custom_time' => $bb_pod_time,
 				) );
 				?>
 			</div>
 
-			<div class="bb-hero__col">
+			<div class="bb-hero__col bb-hero__col--right">
+				<!-- Top Right Card - Slot 2 -->
 				<?php
-				if ( $bb_hero->have_posts() ) :
-					$bb_hero->the_post();
-					bb_overlay_panel( array(
-						'class'      => 'bb-hero__top',
-						'image_size' => 'bb-card',
+				if ( $bb_p2 ) :
+					$post = $bb_p2;
+					setup_postdata( $post );
+					bb_hero_card( array(
+						'class'       => 'bb-hero__top',
+						'image_size'  => 'bb-card',
+						'byline'      => $bb_hero_byline,
+						'custom_time' => $bb_pod_time,
 					) );
 				endif;
 				?>
 
 				<div class="bb-hero__row">
+					<!-- Bottom Left/Mid Card - Slot 3 -->
 					<?php
-					if ( $bb_hero->have_posts() ) :
-						$bb_hero->the_post();
-						bb_overlay_panel( array(
-							'class'       => 'bb-hero__tile',
+					if ( $bb_p3 ) :
+						$post = $bb_p3;
+						setup_postdata( $post );
+						bb_hero_card( array(
+							'class'       => 'bb-hero__tile bb-hero__tile--left',
 							'image_size'  => 'bb-thumb',
 							'overlay'     => 'bb-overlay--deep',
 							'title_clamp' => 'bb-clamp-1',
+							'byline'      => $bb_hero_byline,
+							'custom_time' => $bb_pod_time,
 						) );
 					endif;
 					?>
 
-					<?php if ( $bb_podcast_post ) : ?>
-						<?php
-						$bb_pod_id  = $bb_podcast_post->ID;
-						$bb_pod_cat = bb_primary_category( $bb_pod_id );
-						?>
-						<a class="bb-hero__tile bb-hero__podcast" href="<?php echo esc_url( get_permalink( $bb_pod_id ) ); ?>"<?php bb_article_attr( $bb_pod_id ); ?>>
-							<img src="<?php echo esc_url( bb_thumb_url( $bb_pod_id, 'bb-thumb' ) ); ?>" alt="<?php echo esc_attr( get_the_title( $bb_pod_id ) ); ?>" loading="lazy" />
-							<span class="bb-hero__podcast-inner">
-								<span class="bb-hero__podcast-chip">
-									<span class="l1"><?php bloginfo( 'name' ); ?></span>
-									<span class="l2"><?php echo esc_html( $bb_pod_cat ? $bb_pod_cat->name : __( 'পডকাস্ট', 'bichitro-biggan' ) ); ?></span>
-									<span class="l3">🎙</span>
-								</span>
-								<span>
-									<?php bb_badge( $bb_pod_cat ); ?>
-									<span class="bb-overlay__title" style="font-size:12px;"><span class="bb-title-text"><?php echo esc_html( get_the_title( $bb_pod_id ) ); ?></span></span>
-								</span>
-							</span>
-						</a>
-					<?php elseif ( $bb_hero->have_posts() ) : ?>
-						<?php
-						$bb_hero->the_post();
-						bb_overlay_panel( array(
-							'class'       => 'bb-hero__tile',
+					<!-- Bottom Right Card - Slot 4 -->
+					<?php
+					if ( $bb_p4 ) :
+						$post = $bb_p4;
+						setup_postdata( $post );
+						bb_hero_card( array(
+							'class'       => 'bb-hero__tile bb-hero__tile--right',
 							'image_size'  => 'bb-thumb',
 							'overlay'     => 'bb-overlay--deep',
 							'title_clamp' => 'bb-clamp-1',
+							'byline'      => $bb_hero_byline,
+							'custom_time' => $bb_pod_time,
 						) );
-						?>
-					<?php endif; ?>
+					endif;
+					?>
 				</div>
 			</div>
 
@@ -498,20 +540,53 @@ endif;
 
 <?php
 /* =====================================================================
- * DARK CARD STRIP
+ * DARK CARD STRIP — Diverse & Random Distinct Categories on Every Load
  * ================================================================== */
-$bb_dark = bb_query( 0, 3 );
-if ( $bb_dark->have_posts() ) :
+$bb_dark_posts = array();
+$bb_all_cats   = get_categories( array( 'hide_empty' => true ) );
+
+if ( ! empty( $bb_all_cats ) && count( $bb_all_cats ) >= 3 ) {
+	shuffle( $bb_all_cats );
+	$bb_picked_cats = array_slice( $bb_all_cats, 0, 3 );
+	foreach ( $bb_picked_cats as $bb_c ) {
+		$bb_single_q = new WP_Query( array(
+			'cat'                 => $bb_c->term_id,
+			'posts_per_page'      => 1,
+			'orderby'             => 'rand',
+			'ignore_sticky_posts' => 1,
+			'no_found_rows'       => true,
+			'post_status'         => 'publish',
+		) );
+		if ( ! empty( $bb_single_q->posts ) ) {
+			$bb_dark_posts[] = $bb_single_q->posts[0];
+		}
+	}
+}
+
+// Fallback if needed
+if ( count( $bb_dark_posts ) < 3 ) {
+	$bb_fallback = new WP_Query( array(
+		'post_type'           => 'post',
+		'posts_per_page'      => 3,
+		'orderby'             => 'rand',
+		'ignore_sticky_posts' => 1,
+		'no_found_rows'       => true,
+		'post_status'         => 'publish',
+	) );
+	$bb_dark_posts = $bb_fallback->posts;
+}
+
+if ( ! empty( $bb_dark_posts ) ) :
 	?>
 	<section class="bb-container" style="padding-bottom:40px;">
 		<!-- Same gap as the two blocks above so all three-column rows share
 		     one grid and their edges line up. -->
 		<div class="bb-grid bb-grid--3 bb-grid--gap-lg">
 			<?php
-			while ( $bb_dark->have_posts() ) :
-				$bb_dark->the_post();
+			foreach ( $bb_dark_posts as $bb_p ) :
+				bb_setup_post( $bb_p );
 				bb_dark_card();
-			endwhile;
+			endforeach;
 			wp_reset_postdata();
 			?>
 		</div>
