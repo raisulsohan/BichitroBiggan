@@ -38,12 +38,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<!-- Masthead -->
 	<header class="bb-masthead">
 		<div class="bb-masthead__inner">
-			<div style="flex-shrink:0;">
+			<div class="bb-masthead__logo">
 				<?php if ( has_custom_logo() ) : ?>
 					<?php the_custom_logo(); ?>
 				<?php else : ?>
 					<a class="bb-logo" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
-						<span class="bb-logo__text"><?php bloginfo( 'name' ); ?></span>
+						<span class="bb-logo__text"><?php echo get_bloginfo( 'name' ); ?></span>
 					</a>
 				<?php endif; ?>
 			</div>
@@ -52,6 +52,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 			if ( $bb_tagline ) :
 				?>
 				<p class="bb-masthead__tagline"><?php echo wp_kses_post( $bb_tagline ); ?></p>
+			<?php endif; ?>
+			<?php
+			$bb_show_yt        = get_theme_mod( 'bb_show_youtube', true );
+			$bb_show_yt_mobile = get_theme_mod( 'bb_show_youtube_mobile', false );
+			if ( $bb_show_yt || $bb_show_yt_mobile ) :
+				$bb_yt_url   = get_theme_mod( 'bb_youtube_url', 'https://www.youtube.com/@bigganbichitro' );
+				$bb_yt_text  = get_theme_mod( 'bb_youtube_text', 'সাবস্ক্রাইব করুন' );
+				$bb_soc_cls  = 'bb-masthead__social';
+				if ( ! $bb_show_yt ) {
+					$bb_soc_cls .= ' bb-hide-desktop';
+				}
+				if ( ! $bb_show_yt_mobile ) {
+					$bb_soc_cls .= ' bb-hide-mobile';
+				}
+				?>
+				<div class="<?php echo esc_attr( $bb_soc_cls ); ?>">
+					<a class="bb-masthead__yt" href="<?php echo esc_url( $bb_yt_url ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php echo esc_attr( $bb_yt_text ? $bb_yt_text : __( 'ইউটিউব চ্যানেল', 'bichitro-biggan' ) ); ?>">
+						<svg class="bb-masthead__yt-icon" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+							<path d="M27.42 3.13A3.51 3.51 0 0 0 24.96.65C22.76 0 14 0 14 0S5.24 0 3.04.65A3.51 3.51 0 0 0 .58 3.13 36.82 36.82 0 0 0 0 10a36.82 36.82 0 0 0 .58 6.87A3.51 3.51 0 0 0 3.04 19.35C5.24 20 14 20 14 20s8.76 0 10.96-.65a3.51 3.51 0 0 0 2.46-2.48A36.82 36.82 0 0 0 28 10a36.82 36.82 0 0 0-.58-6.87Z" fill="#FF0000"/>
+							<path d="m11.2 14.29 7.33-4.29-7.33-4.29v8.58Z" fill="#fff"/>
+						</svg>
+						<?php if ( ! empty( $bb_yt_text ) ) : ?>
+							<span class="bb-masthead__yt-text"><?php echo esc_html( $bb_yt_text ); ?></span>
+						<?php endif; ?>
+					</a>
+				</div>
 			<?php endif; ?>
 		</div>
 	</header>

@@ -68,24 +68,21 @@ function bb_customize_register( $wp_customize ) {
 	) ) );
 
 	/* ---------------------------------------------------------------
-	 * Logo sizing — live preview, so it stays in the Customizer
+	 * Header & Masthead controls — live sliders & toggles
 	 * ------------------------------------------------------------ */
-	$wp_customize->add_section( 'bb_logo', array(
-		'title'       => __( 'Logo Sizing', 'bichitro-biggan' ),
+	$wp_customize->add_section( 'bb_header_masthead', array(
+		'title'       => __( 'Header & Masthead Layout', 'bichitro-biggan' ),
 		'priority'    => 21,
-		'description' => sprintf(
-			/* translators: %s: link to the theme settings page */
-			__( 'Upload image logo in: Site Identity → Logo. Adjust logo heights here. For other theme settings, visit: %s', 'bichitro-biggan' ),
-			'<a href="' . esc_url( admin_url( 'admin.php?page=bb-theme-settings' ) ) . '" target="_blank">' . esc_html__( 'Theme Settings', 'bichitro-biggan' ) . '</a>'
-		),
+		'description' => __( 'Drag sliders to customize logo height, tagline font size, tagline max width, and YouTube button with live preview.', 'bichitro-biggan' ),
 	) );
 
-	$bb_logo_sizes = array(
+	/* 1. Logo sizes */
+	$bb_header_sliders = array(
 		'bb_logo_height' => array(
 			'label'   => __( 'Header Logo Height (px)', 'bichitro-biggan' ),
-			'default' => 56,
-			'min'     => 20,
-			'max'     => 160,
+			'default' => 70,
+			'min'     => 30,
+			'max'     => 200,
 		),
 		'bb_logo_height_sticky' => array(
 			'label'   => __( 'Sticky Navigation Logo Height (px)', 'bichitro-biggan' ),
@@ -99,9 +96,33 @@ function bb_customize_register( $wp_customize ) {
 			'min'     => 16,
 			'max'     => 140,
 		),
+		'bb_tagline_font_size' => array(
+			'label'   => __( 'Tagline / Bio Font Size (px)', 'bichitro-biggan' ),
+			'default' => 12,
+			'min'     => 9,
+			'max'     => 20,
+		),
+		'bb_tagline_max_width' => array(
+			'label'   => __( 'Tagline Max Width (px)', 'bichitro-biggan' ),
+			'default' => 520,
+			'min'     => 200,
+			'max'     => 900,
+		),
+		'bb_yt_icon_size' => array(
+			'label'   => __( 'YouTube Icon Size (px)', 'bichitro-biggan' ),
+			'default' => 24,
+			'min'     => 16,
+			'max'     => 48,
+		),
+		'bb_yt_font_size' => array(
+			'label'   => __( 'YouTube Button Text Size (px)', 'bichitro-biggan' ),
+			'default' => 12,
+			'min'     => 9,
+			'max'     => 18,
+		),
 	);
 
-	foreach ( $bb_logo_sizes as $key => $cfg ) {
+	foreach ( $bb_header_sliders as $key => $cfg ) {
 		$wp_customize->add_setting( $key, array(
 			'default'           => $cfg['default'],
 			'sanitize_callback' => 'absint',
@@ -109,22 +130,69 @@ function bb_customize_register( $wp_customize ) {
 		) );
 		$wp_customize->add_control( $key, array(
 			'label'       => $cfg['label'],
-			'section'     => 'bb_logo',
+			'section'     => 'bb_header_masthead',
 			'type'        => 'range',
 			'input_attrs' => array( 'min' => $cfg['min'], 'max' => $cfg['max'], 'step' => 1 ),
 		) );
 	}
 
+	/* 2. Text logo size (fallback) */
 	$wp_customize->add_setting( 'bb_logo_text_size', array(
 		'default'           => 38,
 		'sanitize_callback' => 'absint',
 		'transport'         => 'postMessage',
 	) );
 	$wp_customize->add_control( 'bb_logo_text_size', array(
-		'label'       => __( 'Text Logo Size (px) — when no image logo is uploaded', 'bichitro-biggan' ),
-		'section'     => 'bb_logo',
+		'label'       => __( 'Text Logo Size (px) — when no image is uploaded', 'bichitro-biggan' ),
+		'section'     => 'bb_header_masthead',
 		'type'        => 'range',
 		'input_attrs' => array( 'min' => 14, 'max' => 64, 'step' => 1 ),
+	) );
+
+	$wp_customize->add_setting( 'bb_show_youtube', array(
+		'default'           => true,
+		'sanitize_callback' => 'bb_sanitize_checkbox',
+		'transport'         => 'refresh',
+	) );
+	$wp_customize->add_control( 'bb_show_youtube', array(
+		'label'       => __( 'Show YouTube Button in Header (Desktop)', 'bichitro-biggan' ),
+		'section'     => 'bb_header_masthead',
+		'type'        => 'checkbox',
+	) );
+
+	$wp_customize->add_setting( 'bb_show_youtube_mobile', array(
+		'default'           => false,
+		'sanitize_callback' => 'bb_sanitize_checkbox',
+		'transport'         => 'refresh',
+	) );
+	$wp_customize->add_control( 'bb_show_youtube_mobile', array(
+		'label'       => __( 'Show YouTube Button on Mobile (< 640px)', 'bichitro-biggan' ),
+		'section'     => 'bb_header_masthead',
+		'type'        => 'checkbox',
+		'description' => __( 'Uncheck to hide the YouTube button on mobile screens so the logo stays clean and centered.', 'bichitro-biggan' ),
+	) );
+
+	$wp_customize->add_setting( 'bb_youtube_text', array(
+		'default'           => 'সাবস্ক্রাইব করুন',
+		'sanitize_callback' => 'sanitize_text_field',
+		'transport'         => 'postMessage',
+	) );
+	$wp_customize->add_control( 'bb_youtube_text', array(
+		'label'       => __( 'YouTube Button Text', 'bichitro-biggan' ),
+		'section'     => 'bb_header_masthead',
+		'type'        => 'text',
+		'description' => __( 'e.g. সাবস্ক্রাইব করুন, YouTube Channel, or leave blank for icon only.', 'bichitro-biggan' ),
+	) );
+
+	$wp_customize->add_setting( 'bb_youtube_url', array(
+		'default'           => 'https://www.youtube.com/@bigganbichitro',
+		'sanitize_callback' => 'esc_url_raw',
+		'transport'         => 'refresh',
+	) );
+	$wp_customize->add_control( 'bb_youtube_url', array(
+		'label'       => __( 'YouTube Channel URL', 'bichitro-biggan' ),
+		'section'     => 'bb_header_masthead',
+		'type'        => 'url',
 	) );
 
 	/* ---------------------------------------------------------------

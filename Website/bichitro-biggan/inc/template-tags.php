@@ -93,9 +93,10 @@ function bb_badge( $term = null, $extra_class = '', $link = false ) {
 		return;
 	}
 
-	$color = bb_term_color( $term );
-	$class = trim( 'bb-badge ' . $extra_class );
-	$style = 'background:' . esc_attr( $color ) . ';';
+	$color      = bb_term_color( $term );
+	$text_color = bb_contrast_color( $color );
+	$class      = trim( 'bb-badge ' . $extra_class );
+	$style      = 'background:' . esc_attr( $color ) . ';color:' . esc_attr( $text_color ) . ';';
 
 	if ( $link ) {
 		printf(

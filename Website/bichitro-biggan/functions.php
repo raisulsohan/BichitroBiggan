@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '1.9.6' );
+define( 'BB_VERSION', '3.0.0' );
 
 /**
  * Cache-busting version for an asset.
@@ -25,6 +25,67 @@ function bb_file_version( $abs_path ) {
 
 	return $time ? BB_VERSION . '.' . $time : BB_VERSION;
 }
+
+/* -------------------------------------------------------------------------
+ * Performance & Bloat Cleanup
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Clean up WordPress head bloat and disable unused features.
+ */
+function bb_cleanup_head() {
+	// Remove emoji scripts & styles (reduces HTTP requests & CSS bloat).
+	remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
+	remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+	remove_action( 'wp_print_styles', 'print_emoji_styles' );
+	remove_action( 'admin_print_styles', 'print_emoji_styles' );
+	remove_filter( 'the_content_feed', 'wp_staticize_emoji' );
+	remove_filter( 'comment_text_rss', 'wp_staticize_emoji' );
+	remove_filter( 'wp_mail', 'wp_staticize_emoji_for_email' );
+
+	// Remove generator, RSD & manifest link tags.
+	remove_action( 'wp_head', 'wp_generator' );
+	remove_action( 'wp_head', 'rsd_link' );
+	remove_action( 'wp_head', 'wlwmanifest_link' );
+	remove_action( 'wp_head', 'wp_shortlink_wp_head' );
+	remove_action( 'wp_head', 'adjacent_posts_rel_link_wp_head' );
+	remove_action( 'wp_head', 'feed_links_extra', 3 );
+}
+add_action( 'init', 'bb_cleanup_head' );
+
+/**
+ * Remove dashicons on frontend for non-logged-in visitors (saves ~30KB CSS).
+ */
+function bb_clean_frontend_styles() {
+	if ( ! is_user_logged_in() ) {
+		wp_deregister_style( 'dashicons' );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'bb_clean_frontend_styles', 100 );
+
+/**
+ * Defer non-critical theme scripts for faster First Contentful Paint.
+ */
+function bb_defer_scripts( $tag, $handle, $src ) {
+	if ( in_array( $handle, array( 'bb-script' ), true ) ) {
+		if ( false === strpos( $tag, 'defer' ) ) {
+			$tag = str_replace( ' src', ' defer="defer" src', $tag );
+		}
+	}
+	return $tag;
+}
+add_filter( 'script_loader_tag', 'bb_defer_scripts', 10, 3 );
+
+/**
+ * Ensure async image decoding for smoother rendering.
+ */
+function bb_async_images( $attr ) {
+	if ( ! isset( $attr['decoding'] ) ) {
+		$attr['decoding'] = 'async';
+	}
+	return $attr;
+}
+add_filter( 'wp_get_attachment_image_attributes', 'bb_async_images' );
 
 /* -------------------------------------------------------------------------
  * 1. Theme setup
@@ -160,20 +221,30 @@ function bb_admin_assets( $hook ) {
 add_action( 'admin_enqueue_scripts', 'bb_admin_assets' );
 
 /**
+
+/**
  * Customizer-driven CSS variables (logo sizing).
  */
 function bb_dynamic_css() {
-	$header  = (int) get_theme_mod( 'bb_logo_height', 56 );
-	$sticky  = (int) get_theme_mod( 'bb_logo_height_sticky', 34 );
-	$footer  = (int) get_theme_mod( 'bb_logo_height_footer', 44 );
-	$text    = (int) get_theme_mod( 'bb_logo_text_size', 38 );
+	$header        = (int) get_theme_mod( 'bb_logo_height', 70 );
+	$sticky        = (int) get_theme_mod( 'bb_logo_height_sticky', 34 );
+	$footer        = (int) get_theme_mod( 'bb_logo_height_footer', 44 );
+	$text          = (int) get_theme_mod( 'bb_logo_text_size', 38 );
+	$tagline_font  = (int) get_theme_mod( 'bb_tagline_font_size', 12 );
+	$tagline_width = (int) get_theme_mod( 'bb_tagline_max_width', 520 );
+	$yt_icon_size  = (int) get_theme_mod( 'bb_yt_icon_size', 24 );
+	$yt_font_size  = (int) get_theme_mod( 'bb_yt_font_size', 12 );
 
 	$css = sprintf(
-		'--bb-logo-h:%dpx;--bb-logo-h-sticky:%dpx;--bb-logo-h-footer:%dpx;--bb-logo-text:%dpx;',
+		'--bb-logo-h:%dpx;--bb-logo-h-sticky:%dpx;--bb-logo-h-footer:%dpx;--bb-logo-text:%dpx;--bb-tagline-font:%dpx;--bb-tagline-max-w:%dpx;--bb-yt-icon-sz:%dpx;--bb-yt-font-sz:%dpx;',
 		max( 12, $header ),
 		max( 12, $sticky ),
 		max( 12, $footer ),
-		max( 10, $text )
+		max( 10, $text ),
+		max( 9, $tagline_font ),
+		max( 150, $tagline_width ),
+		max( 14, $yt_icon_size ),
+		max( 9, $yt_font_size )
 	);
 
 	foreach ( bb_layout_settings() as $key => $cfg ) {

@@ -144,15 +144,17 @@ while ( have_posts() ) :
 		</div>
 
 		<?php
-		/* Related articles from the same category. */
+		/* Related articles from the same category (indexed date order for fast TTFB). */
 		$bb_related_args = array(
-			'post_type'           => 'post',
-			'post_status'         => 'publish',
-			'posts_per_page'      => 3,
-			'post__not_in'        => array( get_the_ID() ),
-			'no_found_rows'       => true,
-			'ignore_sticky_posts' => 1,
-			'orderby'             => 'rand',
+			'post_type'              => 'post',
+			'post_status'            => 'publish',
+			'posts_per_page'         => 3,
+			'post__not_in'           => array( get_the_ID() ),
+			'no_found_rows'          => true,
+			'ignore_sticky_posts'    => 1,
+			'orderby'                => 'date',
+			'order'                  => 'DESC',
+			'update_post_meta_cache' => false,
 		);
 		if ( $bb_cat ) {
 			$bb_related_args['cat'] = $bb_cat->term_id;
@@ -167,7 +169,7 @@ while ( have_posts() ) :
 		if ( $bb_related->have_posts() ) :
 			?>
 			<section class="bb-related">
-				<h3 class="bb-related__heading"><?php esc_html_e( 'RELATED ARTICLES', 'bichitro-biggan' ); ?></h3>
+				<h3 class="bb-related__heading"><?php esc_html_e( 'এই বিভাগের আরও লেখা', 'bichitro-biggan' ); ?></h3>
 				<div class="bb-related__grid">
 					<?php
 					while ( $bb_related->have_posts() ) :

@@ -639,35 +639,49 @@
 			}
 		});
 
+		var scrollTicking = false;
+		var saveReadTimer = null;
+
 		dialog.addEventListener('scroll', function () {
 			if (topBtn) topBtn.hidden = dialog.scrollTop <= 300;
 
-			var maxScroll = dialog.scrollHeight - dialog.clientHeight;
-			var progress = maxScroll > 0 ? (dialog.scrollTop / maxScroll) * 100 : 0;
-			if (progressBar) {
-				progressBar.style.width = Math.min(100, Math.max(0, progress)) + '%';
+			if (!scrollTicking) {
+				scrollTicking = true;
+				window.requestAnimationFrame(function () {
+					var maxScroll = dialog.scrollHeight - dialog.clientHeight;
+					var progress = maxScroll > 0 ? (dialog.scrollTop / maxScroll) * 100 : 0;
+					if (progressBar) {
+						progressBar.style.width = Math.min(100, Math.max(0, progress)) + '%';
+					}
+					scrollTicking = false;
+				});
 			}
 
-			if (currentArticleUrl && maxScroll > 0) {
-				var percent = (dialog.scrollTop / maxScroll) * 100;
-				if (percent > 3 && percent < 95) {
-					try {
-						var postTitle = (body.querySelector('.bb-single__title') || {}).textContent || document.title;
-						var data = { url: currentArticleUrl, title: postTitle, top: dialog.scrollTop, percent: Math.round(percent), time: Date.now() };
-						localStorage.setItem('bb_read_' + currentArticleUrl, JSON.stringify(data));
-						localStorage.setItem('bb_last_read', JSON.stringify(data));
-						window.dispatchEvent(new Event('bb_resume_update'));
-					} catch(e) {}
-				} else if (percent >= 95) {
-					try {
-						localStorage.removeItem('bb_read_' + currentArticleUrl);
-						var last = JSON.parse(localStorage.getItem('bb_last_read') || 'null');
-						if (last && last.url === currentArticleUrl) {
-							localStorage.removeItem('bb_last_read');
+			if (currentArticleUrl) {
+				clearTimeout(saveReadTimer);
+				saveReadTimer = setTimeout(function () {
+					var maxScroll = dialog.scrollHeight - dialog.clientHeight;
+					if (maxScroll <= 0) return;
+					var percent = (dialog.scrollTop / maxScroll) * 100;
+					if (percent > 3 && percent < 95) {
+						try {
+							var postTitle = (body.querySelector('.bb-single__title') || {}).textContent || document.title;
+							var data = { url: currentArticleUrl, title: postTitle, top: dialog.scrollTop, percent: Math.round(percent), time: Date.now() };
+							localStorage.setItem('bb_read_' + currentArticleUrl, JSON.stringify(data));
+							localStorage.setItem('bb_last_read', JSON.stringify(data));
 							window.dispatchEvent(new Event('bb_resume_update'));
-						}
-					} catch(e) {}
-				}
+						} catch(e) {}
+					} else if (percent >= 95) {
+						try {
+							localStorage.removeItem('bb_read_' + currentArticleUrl);
+							var last = JSON.parse(localStorage.getItem('bb_last_read') || 'null');
+							if (last && last.url === currentArticleUrl) {
+								localStorage.removeItem('bb_last_read');
+								window.dispatchEvent(new Event('bb_resume_update'));
+							}
+						} catch(e) {}
+					}
+				}, 250);
 			}
 		}, { passive: true });
 
@@ -784,6 +798,7 @@
 			var modal = document.getElementById('bb-modal');
 			if (modal && !modal.hidden) {
 				bar.hidden = true;
+				document.body.classList.remove('bb-has-resume-bar');
 				return;
 			}
 
@@ -796,11 +811,14 @@
 						btn.setAttribute('data-bb-article', last.url);
 					}
 					bar.hidden = false;
+					document.body.classList.add('bb-has-resume-bar');
 				} else {
 					bar.hidden = true;
+					document.body.classList.remove('bb-has-resume-bar');
 				}
 			} catch(e) {
 				bar.hidden = true;
+				document.body.classList.remove('bb-has-resume-bar');
 			}
 		}
 
@@ -808,6 +826,7 @@
 			closeBtn.addEventListener('click', function (e) {
 				e.preventDefault();
 				bar.hidden = true;
+				document.body.classList.remove('bb-has-resume-bar');
 				try {
 					localStorage.removeItem('bb_last_read');
 				} catch(e) {}
@@ -837,24 +856,29 @@
 			}
 		} catch(e) {}
 
+		var singleSaveTimer = null;
+		var cachedSingleTitle = (document.querySelector('.bb-single__title') || {}).textContent || document.title;
+
 		window.addEventListener('scroll', function () {
-			var max = document.documentElement.scrollHeight - window.innerHeight;
-			if (max <= 0) return;
-			var percent = (window.pageYOffset / max) * 100;
-			if (percent > 3 && percent < 95) {
-				try {
-					var postTitle = (document.querySelector('.bb-single__title') || {}).textContent || document.title;
-					var data = { url: url, title: postTitle, top: window.pageYOffset, percent: Math.round(percent), time: Date.now() };
-					localStorage.setItem('bb_read_' + url, JSON.stringify(data));
-					localStorage.setItem('bb_last_read', JSON.stringify(data));
-				} catch(e) {}
-			} else if (percent >= 95) {
-				try {
-					localStorage.removeItem('bb_read_' + url);
-					var last = JSON.parse(localStorage.getItem('bb_last_read') || 'null');
-					if (last && last.url === url) localStorage.removeItem('bb_last_read');
-				} catch(e) {}
-			}
+			clearTimeout(singleSaveTimer);
+			singleSaveTimer = setTimeout(function () {
+				var max = document.documentElement.scrollHeight - window.innerHeight;
+				if (max <= 0) return;
+				var percent = (window.pageYOffset / max) * 100;
+				if (percent > 3 && percent < 95) {
+					try {
+						var data = { url: url, title: cachedSingleTitle, top: window.pageYOffset, percent: Math.round(percent), time: Date.now() };
+						localStorage.setItem('bb_read_' + url, JSON.stringify(data));
+						localStorage.setItem('bb_last_read', JSON.stringify(data));
+					} catch(e) {}
+				} else if (percent >= 95) {
+					try {
+						localStorage.removeItem('bb_read_' + url);
+						var last = JSON.parse(localStorage.getItem('bb_last_read') || 'null');
+						if (last && last.url === url) localStorage.removeItem('bb_last_read');
+					} catch(e) {}
+				}
+			}, 250);
 		}, { passive: true });
 	}
 
