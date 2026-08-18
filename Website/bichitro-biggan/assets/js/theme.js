@@ -692,6 +692,12 @@
 			var link = closestMatch(e.target, 'a[data-bb-article]');
 			if (!link || !isPlainClick(e, link)) return;
 
+			// Prevent rapid multi-clicks from firing multiple requests
+			if (body.querySelector('.bb-spinner')) {
+				e.preventDefault();
+				return;
+			}
+
 			e.preventDefault();
 			lastFocus = link;
 			load(link.href);
@@ -988,6 +994,11 @@
 
 			var container = closestMatch(link, '[data-bb-list]');
 			if (!container) return;
+
+			if (container.classList.contains('is-loading')) {
+				e.preventDefault();
+				return;
+			}
 
 			e.preventDefault();
 			swap(container, link.href, true);
