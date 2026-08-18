@@ -162,4 +162,4 @@ BichitroBiggan/
 
 এই প্রজেক্টটি **GPL-2.0-or-later** লাইসেন্সের অধীনে প্রকাশিত। মুক্তভাবে ব্যবহার, পরিবর্তন ও উন্নয়ন করা যাবে।
 
-**নির্মাতা ও ডেভেলপার:** [Raisul Islam](https://github.com/raisulsohan) | [বিচিত্র বিজ্ঞান (BichitroBiggan)](https://bichitrobiggan.com)
+**নির্মাতা ও ডেভেলপার:** [Raisul Islam](https://raisulsohan.com) | [বিচিত্র বিজ্ঞান (BichitroBiggan)](https://bichitrobiggan.com)
