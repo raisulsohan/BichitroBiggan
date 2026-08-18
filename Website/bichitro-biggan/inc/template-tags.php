@@ -363,25 +363,6 @@ function bb_hero_card( $args = array() ) {
 }
 
 /**
- * Centred dark card (the three-across strip).
- */
-function bb_dark_card() {
-	?>
-	<a class="bb-darkcard" href="<?php the_permalink(); ?>"<?php bb_article_attr(); ?>>
-		<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-card' ) ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" />
-		<span class="bb-darkcard__inner">
-			<?php bb_badge(); ?>
-			<span class="bb-darkcard__title"><?php the_title(); ?></span>
-			<span class="bb-darkcard__meta">
-				<strong><?php the_author(); ?></strong> · <span><?php echo esc_html( bb_post_date() ); ?></span> · 
-				<span class="bb-readtime-pill bb-readtime-pill--dark">⏱ <?php echo esc_html( bb_reading_time() ); ?></span>
-			</span>
-		</span>
-	</a>
-	<?php
-}
-
-/**
  * Title-only centred row (আরও পড়ুন).
  */
 function bb_title_only() {
@@ -729,35 +710,6 @@ function bb_normalize_video_embed_url( $url ) {
 	return '';
 }
 
-/**
- * Text-to-Speech audio reader widget for single articles.
- */
-function bb_tts_player( $post_id = null ) {
-	$post_id = $post_id ? $post_id : get_the_ID();
-	if ( ! $post_id ) {
-		return;
-	}
-	?>
-	<div class="bb-tts-player" id="bb-tts-player" data-post-id="<?php echo esc_attr( $post_id ); ?>">
-		<div class="bb-tts-player__left">
-			<button type="button" class="bb-tts-play-btn" id="bb-tts-play-btn" aria-label="<?php esc_attr_e( 'লেখাটি শুনুন', 'bichitro-biggan' ); ?>">
-				<span class="bb-tts-icon bb-tts-icon--play">▶</span>
-				<span class="bb-tts-icon bb-tts-icon--pause" style="display:none;">⏸</span>
-			</button>
-			<div class="bb-tts-player__info">
-				<span class="bb-tts-label" id="bb-tts-status"><?php esc_html_e( 'লেখাটি শুনুন (অডিও)', 'bichitro-biggan' ); ?></span>
-				<div class="bb-tts-wave" id="bb-tts-wave" aria-hidden="true">
-					<span></span><span></span><span></span><span></span><span></span>
-				</div>
-			</div>
-		</div>
-		<div class="bb-tts-player__controls">
-			<button type="button" class="bb-tts-speed-btn" id="bb-tts-speed-btn" title="<?php esc_attr_e( 'পড়ার গতি পরিবর্তন করুন', 'bichitro-biggan' ); ?>">1x</button>
-			<button type="button" class="bb-tts-stop-btn" id="bb-tts-stop-btn" title="<?php esc_attr_e( 'অডিও বন্ধ করুন', 'bichitro-biggan' ); ?>" aria-label="<?php esc_attr_e( 'অডিও বন্ধ করুন', 'bichitro-biggan' ); ?>" style="display:none;">⏹</button>
-		</div>
-	</div>
-	<?php
-}
 
 /**
  * Bookmark toggle button.

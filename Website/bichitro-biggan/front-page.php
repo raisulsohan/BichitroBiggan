@@ -540,63 +540,6 @@ endif;
 
 <?php
 /* =====================================================================
- * DARK CARD STRIP — Diverse & Random Distinct Categories on Every Load
- * ================================================================== */
-$bb_dark_posts = array();
-$bb_all_cats   = get_categories( array( 'hide_empty' => true ) );
-
-if ( ! empty( $bb_all_cats ) && count( $bb_all_cats ) >= 3 ) {
-	shuffle( $bb_all_cats );
-	$bb_picked_cats = array_slice( $bb_all_cats, 0, 3 );
-	foreach ( $bb_picked_cats as $bb_c ) {
-		$bb_single_q = new WP_Query( array(
-			'cat'                 => $bb_c->term_id,
-			'posts_per_page'      => 1,
-			'orderby'             => 'rand',
-			'ignore_sticky_posts' => 1,
-			'no_found_rows'       => true,
-			'post_status'         => 'publish',
-		) );
-		if ( ! empty( $bb_single_q->posts ) ) {
-			$bb_dark_posts[] = $bb_single_q->posts[0];
-		}
-	}
-}
-
-// Fallback if needed
-if ( count( $bb_dark_posts ) < 3 ) {
-	$bb_fallback = new WP_Query( array(
-		'post_type'           => 'post',
-		'posts_per_page'      => 3,
-		'orderby'             => 'rand',
-		'ignore_sticky_posts' => 1,
-		'no_found_rows'       => true,
-		'post_status'         => 'publish',
-	) );
-	$bb_dark_posts = $bb_fallback->posts;
-}
-
-if ( ! empty( $bb_dark_posts ) ) :
-	?>
-	<section class="bb-container" style="padding-bottom:40px;">
-		<!-- Same gap as the two blocks above so all three-column rows share
-		     one grid and their edges line up. -->
-		<div class="bb-grid bb-grid--3 bb-grid--gap-lg">
-			<?php
-			foreach ( $bb_dark_posts as $bb_p ) :
-				bb_setup_post( $bb_p );
-				bb_dark_card();
-			endforeach;
-			wp_reset_postdata();
-			?>
-		</div>
-	</section>
-	<?php
-endif;
-?>
-
-<?php
-/* =====================================================================
  * সকল লেখা + SIDEBAR
  * ================================================================== */
 /* Use the main query here. A second query with its own page size would report

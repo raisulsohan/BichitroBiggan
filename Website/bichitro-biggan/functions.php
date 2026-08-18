@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '3.4.6' );
+define( 'BB_VERSION', '3.4.7' );
 
 /**
  * Cache-busting version for an asset.
@@ -301,7 +301,6 @@ function bb_layout_settings() {
 
 		// Blocks 4, 5 and the dark strip
 		'bb_tall_height'          => array( 'var' => '--bb-tall-h', 'default' => 224, 'min' => 140, 'max' => 460, 'section' => 'bb_layout_block45', 'label' => __( 'Tall Card Height', 'bichitro-biggan' ) ),
-		'bb_dark_height'          => array( 'var' => '--bb-dark-h', 'default' => 272, 'min' => 160, 'max' => 480, 'section' => 'bb_layout_block45', 'label' => __( 'Dark Card Height', 'bichitro-biggan' ) ),
 		'bb_grid_gap'             => array( 'var' => '--bb-grid-gap', 'default' => 24, 'min' => 0, 'max' => 48, 'section' => 'bb_layout_block45', 'label' => __( 'Three Column Grid Gap', 'bichitro-biggan' ) ),
 
 		// All posts + archives
