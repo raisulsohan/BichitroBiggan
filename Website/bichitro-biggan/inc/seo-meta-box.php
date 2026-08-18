@@ -247,7 +247,7 @@ function bb_seo_render_meta_box( $post ) {
 									/>
 								<?php else : ?>
 									<span class="bb-seo-preview-favicon bb-seo-preview-favicon--placeholder">
-										<?php echo esc_html( mb_substr( $site_name, 0, 1 ) ); ?>
+										<?php echo esc_html( bb_str_sub( $site_name, 0, 1 ) ); ?>
 									</span>
 								<?php endif; ?>
 								<div class="bb-seo-preview-site-info">
@@ -489,97 +489,110 @@ function bb_seo_resolve_variables( $template, $post = null ) {
 /**
  * Output SEO meta tags on the frontend.
  *
- * Skips output if Yoast SEO or Rank Math is active to avoid duplicates.
+ * সিঙ্গুলার পোস্ট/পেজ, হোমপেজ ও সব আর্কাইভ — সবখানেই কাজ করে।
+ * টাইটেল/বর্ণনা/ক্যানোনিকাল রেজলভ করার আসল কাজটা inc/seo-frontend.php-এর
+ * bb_seo_get_context() করে; এই ফাংশন শুধু সেটা ছাপায়।
+ *
+ * এসইও প্লাগইন সক্রিয় থাকলে, ফিডে, সার্চ রেজাল্টে বা 404-এ কিছুই ছাপে না।
  */
 function bb_seo_head_meta() {
-	// Don't output if a dedicated SEO plugin is active.
-	if ( defined( 'WPSEO_VERSION' ) || defined( 'RANK_MATH_VERSION' ) || defined( 'FLAVOR_SEO_VERSION' ) ) {
+	if ( ! bb_seo_should_output() ) {
 		return;
 	}
 
-	// Only on singular posts/pages.
-	if ( ! is_singular() ) {
+	$ctx = bb_seo_get_context();
+
+	if ( ! $ctx['title'] && ! $ctx['description'] && ! $ctx['canonical'] ) {
 		return;
 	}
 
-	$post = get_post();
-	if ( ! $post ) {
-		return;
-	}
-
-	$seo_title       = bb_seo_get_field( $post->ID, 'bb_seo_title' );
-	$seo_description = bb_seo_get_field( $post->ID, 'bb_seo_description' );
-	$focus_keyphrase = bb_seo_get_field( $post->ID, 'bb_focus_keyphrase' );
-
-	// Resolve title variables.
-	if ( $seo_title ) {
-		$seo_title = bb_seo_resolve_variables( $seo_title, $post );
-	} else {
-		$seo_title = $post->post_title . ' — ' . get_bloginfo( 'name' );
-	}
-
-	// Fallback description: first 160 chars of content.
-	if ( ! $seo_description ) {
-		$seo_description = wp_trim_words( wp_strip_all_tags( $post->post_content ), 30, '...' );
-	}
-
-	$seo_description = mb_substr( $seo_description, 0, 160 );
-
-	$canonical = get_permalink( $post );
 	$site_name = get_bloginfo( 'name' );
-	$post_url  = get_permalink( $post );
-
-	// Featured image for OG/Twitter.
-	$og_image = '';
-	if ( has_post_thumbnail( $post ) ) {
-		$img      = wp_get_attachment_image_src( get_post_thumbnail_id( $post ), 'large' );
-		$og_image = $img ? $img[0] : '';
-	}
 
 	echo "\n<!-- বিচিত্র বিজ্ঞান SEO -->\n";
 
 	// Meta description.
-	if ( $seo_description ) {
+	if ( $ctx['description'] ) {
 		printf(
 			'<meta name="description" content="%s" />' . "\n",
-			esc_attr( $seo_description )
+			esc_attr( $ctx['description'] )
 		);
 	}
 
-	// Meta keywords from focus keyphrase.
-	if ( $focus_keyphrase ) {
-		$synonyms = bb_seo_get_field( $post->ID, 'bb_keyphrase_synonyms' );
-		$keywords = $focus_keyphrase;
-		if ( $synonyms ) {
-			$keywords .= ', ' . $synonyms;
+	// Meta keywords from focus keyphrase (সিঙ্গুলার পোস্টেই প্রযোজ্য).
+	if ( $ctx['post'] instanceof WP_Post ) {
+		$focus_keyphrase = bb_seo_get_field( $ctx['post']->ID, 'bb_focus_keyphrase' );
+
+		if ( $focus_keyphrase ) {
+			$synonyms = bb_seo_get_field( $ctx['post']->ID, 'bb_keyphrase_synonyms' );
+			$keywords = $synonyms ? $focus_keyphrase . ', ' . $synonyms : $focus_keyphrase;
+
+			printf(
+				'<meta name="keywords" content="%s" />' . "\n",
+				esc_attr( $keywords )
+			);
 		}
-		printf(
-			'<meta name="keywords" content="%s" />' . "\n",
-			esc_attr( $keywords )
-		);
 	}
 
-	// Canonical URL.
-	printf( '<link rel="canonical" href="%s" />' . "\n", esc_url( $canonical ) );
+	// Canonical URL — কোরের rel_canonical() সরিয়ে দেওয়া হয়েছে, তাই এটিই একমাত্র।
+	if ( $ctx['canonical'] ) {
+		printf( '<link rel="canonical" href="%s" />' . "\n", esc_url( $ctx['canonical'] ) );
+	}
 
 	// Open Graph tags.
-	printf( '<meta property="og:type" content="article" />' . "\n" );
-	printf( '<meta property="og:title" content="%s" />' . "\n", esc_attr( $seo_title ) );
-	printf( '<meta property="og:description" content="%s" />' . "\n", esc_attr( $seo_description ) );
-	printf( '<meta property="og:url" content="%s" />' . "\n", esc_url( $post_url ) );
+	printf( '<meta property="og:type" content="%s" />' . "\n", esc_attr( $ctx['og_type'] ) );
+	printf( '<meta property="og:locale" content="%s" />' . "\n", esc_attr( get_locale() ) );
 	printf( '<meta property="og:site_name" content="%s" />' . "\n", esc_attr( $site_name ) );
 
-	if ( $og_image ) {
-		printf( '<meta property="og:image" content="%s" />' . "\n", esc_url( $og_image ) );
+	if ( $ctx['title'] ) {
+		printf( '<meta property="og:title" content="%s" />' . "\n", esc_attr( $ctx['title'] ) );
+	}
+
+	if ( $ctx['description'] ) {
+		printf( '<meta property="og:description" content="%s" />' . "\n", esc_attr( $ctx['description'] ) );
+	}
+
+	if ( $ctx['canonical'] ) {
+		printf( '<meta property="og:url" content="%s" />' . "\n", esc_url( $ctx['canonical'] ) );
+	}
+
+	if ( $ctx['image'] ) {
+		printf( '<meta property="og:image" content="%s" />' . "\n", esc_url( $ctx['image'] ) );
+	}
+
+	// Article-নির্দিষ্ট OG ট্যাগ।
+	if ( 'article' === $ctx['og_type'] && $ctx['post'] instanceof WP_Post ) {
+		printf(
+			'<meta property="article:published_time" content="%s" />' . "\n",
+			esc_attr( get_the_date( DATE_W3C, $ctx['post'] ) )
+		);
+		printf(
+			'<meta property="article:modified_time" content="%s" />' . "\n",
+			esc_attr( get_the_modified_date( DATE_W3C, $ctx['post'] ) )
+		);
+
+		$categories = get_the_category( $ctx['post']->ID );
+
+		if ( $categories && ! is_wp_error( $categories ) ) {
+			printf(
+				'<meta property="article:section" content="%s" />' . "\n",
+				esc_attr( $categories[0]->name )
+			);
+		}
 	}
 
 	// Twitter Card tags.
 	printf( '<meta name="twitter:card" content="summary_large_image" />' . "\n" );
-	printf( '<meta name="twitter:title" content="%s" />' . "\n", esc_attr( $seo_title ) );
-	printf( '<meta name="twitter:description" content="%s" />' . "\n", esc_attr( $seo_description ) );
 
-	if ( $og_image ) {
-		printf( '<meta name="twitter:image" content="%s" />' . "\n", esc_url( $og_image ) );
+	if ( $ctx['title'] ) {
+		printf( '<meta name="twitter:title" content="%s" />' . "\n", esc_attr( $ctx['title'] ) );
+	}
+
+	if ( $ctx['description'] ) {
+		printf( '<meta name="twitter:description" content="%s" />' . "\n", esc_attr( $ctx['description'] ) );
+	}
+
+	if ( $ctx['image'] ) {
+		printf( '<meta name="twitter:image" content="%s" />' . "\n", esc_url( $ctx['image'] ) );
 	}
 
 	echo "<!-- / বিচিত্র বিজ্ঞান SEO -->\n\n";

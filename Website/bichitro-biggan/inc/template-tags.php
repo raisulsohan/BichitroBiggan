@@ -647,7 +647,8 @@ function bb_is_podcast_post( $post = null ) {
 		if ( $configured_pod_id && (int) $cat->term_id === $configured_pod_id ) {
 			return true;
 		}
-		if ( false !== stripos( $cat->slug, 'podcast' ) || false !== mb_stripos( $cat->name, 'পডকাস্ট' ) ) {
+		// bb_str_pos(): mbstring না থাকলেও ফলব্যাক করে, তাই সরাসরি mb_stripos() নয়।
+		if ( false !== stripos( $cat->slug, 'podcast' ) || false !== bb_str_pos( $cat->name, 'পডকাস্ট' ) ) {
 			return true;
 		}
 	}
