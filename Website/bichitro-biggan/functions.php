@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '3.4.8' );
+define( 'BB_VERSION', '3.4.9' );
 
 /**
  * Cache-busting version for an asset.
@@ -1301,3 +1301,28 @@ if ( is_admin() ) {
 }
 
 add_action( 'wp_footer', 'bb_bookmarks_drawer' );
+
+
+/* =====================================================================
+ * Google Site Verification Route
+ * ================================================================== */
+add_action( 'init', 'bb_google_site_verification_route' );
+function bb_google_site_verification_route() {
+	add_rewrite_rule( '^google1c72e007995ed549\.html$', 'index.php?bb_google_verify=1', 'top' );
+}
+
+add_filter( 'query_vars', 'bb_google_site_verification_query_vars' );
+function bb_google_site_verification_query_vars( $query_vars ) {
+	$query_vars[] = 'bb_google_verify';
+	return $query_vars;
+}
+
+add_action( 'template_redirect', 'bb_google_site_verification_render' );
+function bb_google_site_verification_render() {
+	if ( get_query_var( 'bb_google_verify' ) ) {
+		header( 'Content-Type: text/html' );
+		echo 'google-site-verification: google1c72e007995ed549.html';
+		exit;
+	}
+}
+
