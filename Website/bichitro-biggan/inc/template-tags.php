@@ -1,6 +1,6 @@
 <?php
 /**
- * Reusable markup pieces — every card style used in the design.
+ * Reusable markup pieces â€” every card style used in the design.
  *
  * All of these assume they run inside a loop (the_post() already called).
  *
@@ -38,7 +38,7 @@ function bb_slider_slides() {
 }
 
 /**
- * The ‹ › control under a category section. Only rendered when there is
+ * The â€¹ â€º control under a category section. Only rendered when there is
  * somewhere to slide to.
  */
 function bb_slider_arrows( $count ) {
@@ -47,11 +47,11 @@ function bb_slider_arrows( $count ) {
 	}
 	?>
 	<div class="bb-arrow-group">
-		<button type="button" class="bb-arrow-btn bb-arrow-btn--lg" data-bb-slide="prev" aria-label="<?php esc_attr_e( 'আগের লেখাগুলো', 'bichitro-biggan' ); ?>">‹</button>
-		<button type="button" class="bb-arrow-btn bb-arrow-btn--lg" data-bb-slide="next" aria-label="<?php esc_attr_e( 'পরের লেখাগুলো', 'bichitro-biggan' ); ?>">›</button>
+		<button type="button" class="bb-arrow-btn bb-arrow-btn--lg" data-bb-slide="prev" aria-label="<?php esc_attr_e( 'à¦†à¦—à§‡à¦° à¦²à§‡à¦–à¦¾à¦—à§à¦²à§‹', 'bichitro-biggan' ); ?>">â€¹</button>
+		<button type="button" class="bb-arrow-btn bb-arrow-btn--lg" data-bb-slide="next" aria-label="<?php esc_attr_e( 'à¦ªà¦°à§‡à¦° à¦²à§‡à¦–à¦¾à¦—à§à¦²à§‹', 'bichitro-biggan' ); ?>">â€º</button>
 		<button type="button" class="bb-arrow-btn bb-arrow-btn--reset" data-bb-slide="reset" disabled
-			title="<?php esc_attr_e( 'প্রথম স্লাইডে ফিরে যান', 'bichitro-biggan' ); ?>"
-			aria-label="<?php esc_attr_e( 'প্রথম স্লাইডে ফিরে যান', 'bichitro-biggan' ); ?>">↺</button>
+			title="<?php esc_attr_e( 'à¦ªà§à¦°à¦¥à¦® à¦¸à§à¦²à¦¾à¦‡à¦¡à§‡ à¦«à¦¿à¦°à§‡ à¦¯à¦¾à¦¨', 'bichitro-biggan' ); ?>"
+			aria-label="<?php esc_attr_e( 'à¦ªà§à¦°à¦¥à¦® à¦¸à§à¦²à¦¾à¦‡à¦¡à§‡ à¦«à¦¿à¦°à§‡ à¦¯à¦¾à¦¨', 'bichitro-biggan' ); ?>">â†º</button>
 	</div>
 	<?php
 }
@@ -147,17 +147,17 @@ function bb_section_heading( $label, $color = '#1a1a1a', $upper = false, $url = 
 }
 
 /**
- * Byline: author · date.
+ * Byline: author Â· date.
  */
 function bb_byline( $show_readtime = true ) {
 	?>
 	<p class="bb-card__byline">
 		<strong><?php the_author(); ?></strong>
-		<span> · </span>
+		<span> Â· </span>
 		<span><?php echo esc_html( bb_post_date() ); ?></span>
 		<?php if ( $show_readtime ) : ?>
-			<span> · </span>
-			<span class="bb-readtime-pill">⏱ <?php echo esc_html( bb_reading_time() ); ?></span>
+			<span> Â· </span>
+			<span class="bb-readtime-pill">â± <?php echo esc_html( bb_reading_time() ); ?></span>
 		<?php endif; ?>
 	</p>
 	<?php
@@ -222,8 +222,8 @@ function bb_list_item( $size = 'bb-small' ) {
 			<span class="bb-listitem__title"><?php the_title(); ?></span>
 			<span class="bb-listitem__date">
 				<span><?php echo esc_html( bb_post_date() ); ?></span>
-				<span> · </span>
-				<span class="bb-readtime-pill">⏱ <?php echo esc_html( bb_reading_time() ); ?></span>
+				<span> Â· </span>
+				<span class="bb-readtime-pill">â± <?php echo esc_html( bb_reading_time() ); ?></span>
 			</span>
 		</span>
 	</a>
@@ -243,7 +243,7 @@ function bb_wide_row() {
 			<span class="bb-wide-row__title"><?php the_title(); ?></span>
 			<span class="bb-card__meta">
 				<span class="bb-card__byline">
-					<strong><?php the_author(); ?></strong> · <span><?php echo esc_html( bb_post_date() ); ?></span> · <span class="bb-readtime-pill">⏱ <?php echo esc_html( bb_reading_time() ); ?></span>
+					<strong><?php the_author(); ?></strong> Â· <span><?php echo esc_html( bb_post_date() ); ?></span> Â· <span class="bb-readtime-pill">â± <?php echo esc_html( bb_reading_time() ); ?></span>
 				</span>
 				<span class="bb-count"><?php echo esc_html( bb_bangla_number( bb_comment_count() ) ); ?></span>
 			</span>
@@ -280,9 +280,9 @@ function bb_overlay_panel( $args = array() ) {
 			<span class="bb-overlay__title <?php echo esc_attr( $args['title_clamp'] ); ?>"><?php the_title(); ?></span>
 			<span class="bb-overlay__byline">
 				<?php if ( $args['byline'] ) : ?>
-					<strong><?php the_author(); ?></strong> · <span><?php echo esc_html( bb_post_date() ); ?></span> · 
+					<strong><?php the_author(); ?></strong> Â· <span><?php echo esc_html( bb_post_date() ); ?></span> Â· 
 				<?php endif; ?>
-				<span class="bb-readtime-pill bb-readtime-pill--overlay">⏱ <?php echo esc_html( bb_reading_time() ); ?></span>
+				<span class="bb-readtime-pill bb-readtime-pill--overlay">â± <?php echo esc_html( bb_reading_time() ); ?></span>
 			</span>
 		</span>
 	</a>
@@ -315,7 +315,8 @@ function bb_hero_card( $args = array() ) {
 
 	if ( $is_podcast || ! empty( $video_url ) ) {
 		$podcast_class = trim( $args['class'] . ' bb-hero__podcast' . ( ! empty( $video_url ) ? ' bb-has-video' : '' ) );
-		$video_attr    = ! empty( $video_url ) ? ' data-bb-video="' . esc_url( $video_url ) . '"' : '';
+		$ratio         = bb_get_video_ratio( $post_id, $video_url );
+		$video_attr    = ! empty( $video_url ) ? ' data-bb-video-popup="' . esc_url( $video_url ) . '" data-bb-video-ratio="' . esc_attr( $ratio ) . '"' : '';
 		$thumb_src     = bb_thumb_url( $post_id, 'full' );
 		?>
 		<a class="<?php echo esc_attr( $podcast_class ); ?>" href="<?php the_permalink(); ?>"<?php echo $video_attr; ?><?php if ( empty( $video_url ) ) { bb_article_attr( $post_id ); } ?>>
@@ -336,17 +337,17 @@ function bb_hero_card( $args = array() ) {
 					<?php else : ?>
 						<span class="l1"><?php bloginfo( 'name' ); ?></span>
 					<?php endif; ?>
-					<span class="l2"><?php echo esc_html( $cat ? $cat->name : __( 'পডকাস্ট', 'bichitro-biggan' ) ); ?></span>
-					<span class="l3">🎙</span>
+					<span class="l2"><?php echo esc_html( $cat ? $cat->name : __( 'à¦ªà¦¡à¦•à¦¾à¦¸à§à¦Ÿ', 'bichitro-biggan' ) ); ?></span>
+					<span class="l3">ðŸŽ™</span>
 				</span>
 				<span>
 					<?php bb_badge( $cat ); ?>
 					<span class="bb-overlay__title <?php echo esc_attr( $args['title_clamp'] ); ?>"><span class="bb-title-text"><?php the_title(); ?></span></span>
 					<span class="bb-overlay__byline">
 						<?php if ( $args['byline'] ) : ?>
-							<strong><?php the_author(); ?></strong> · <span><?php echo esc_html( bb_post_date() ); ?></span> · 
+							<strong><?php the_author(); ?></strong> Â· <span><?php echo esc_html( bb_post_date() ); ?></span> Â· 
 						<?php endif; ?>
-						<span class="bb-readtime-pill bb-readtime-pill--overlay">⏱ <?php echo esc_html( $duration ); ?></span>
+						<span class="bb-readtime-pill bb-readtime-pill--overlay">â± <?php echo esc_html( $duration ); ?></span>
 					</span>
 				</span>
 			</span>
@@ -366,15 +367,15 @@ function bb_hero_card( $args = array() ) {
 }
 
 /**
- * Title-only centred row (আরও পড়ুন).
+ * Title-only centred row (à¦†à¦°à¦“ à¦ªà¦¡à¦¼à§à¦¨).
  */
 function bb_title_only() {
 	?>
 	<a class="bb-titleonly" href="<?php the_permalink(); ?>"<?php bb_article_attr(); ?>>
 		<span class="bb-titleonly__title"><?php the_title(); ?></span>
 		<span class="bb-titleonly__meta">
-			<strong><?php the_author(); ?></strong> · <span><?php echo esc_html( bb_post_date() ); ?></span> · 
-			<span class="bb-readtime-pill">⏱ <?php echo esc_html( bb_reading_time() ); ?></span>
+			<strong><?php the_author(); ?></strong> Â· <span><?php echo esc_html( bb_post_date() ); ?></span> Â· 
+			<span class="bb-readtime-pill">â± <?php echo esc_html( bb_reading_time() ); ?></span>
 		</span>
 	</a>
 	<?php
@@ -395,8 +396,8 @@ function bb_footer_item() {
 		<span class="bb-footer__item-content">
 			<span class="bb-footer__item-title"><?php the_title(); ?></span>
 			<span class="bb-footer__item-meta">
-				<strong><?php the_author(); ?></strong> · <span><?php echo esc_html( bb_post_date() ); ?></span> · 
-				<span class="bb-readtime-pill">⏱ <?php echo esc_html( bb_reading_time() ); ?></span>
+				<strong><?php the_author(); ?></strong> Â· <span><?php echo esc_html( bb_post_date() ); ?></span> Â· 
+				<span class="bb-readtime-pill">â± <?php echo esc_html( bb_reading_time() ); ?></span>
 			</span>
 		</span>
 	</a>
@@ -407,7 +408,7 @@ function bb_footer_item() {
  * Breadcrumb line.
  */
 function bb_breadcrumb() {
-	$home = '<a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html__( 'প্রথম পাতা', 'bichitro-biggan' ) . '</a>';
+	$home = '<a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html__( 'à¦ªà§à¦°à¦¥à¦® à¦ªà¦¾à¦¤à¦¾', 'bichitro-biggan' ) . '</a>';
 
 	echo '<p class="bb-breadcrumb">' . $home; // phpcs:ignore WordPress.Security.EscapeOutput
 
@@ -416,7 +417,7 @@ function bb_breadcrumb() {
 		if ( $cat ) {
 			echo ' &rsaquo; <a href="' . esc_url( get_category_link( $cat ) ) . '">' . esc_html( $cat->name ) . '</a>';
 		}
-		echo ' &rsaquo; <span class="current">' . esc_html( wp_trim_words( get_the_title(), 6, '…' ) ) . '</span>';
+		echo ' &rsaquo; <span class="current">' . esc_html( wp_trim_words( get_the_title(), 6, 'â€¦' ) ) . '</span>';
 	} elseif ( is_category() || is_tag() || is_tax() ) {
 		echo ' &rsaquo; <span class="current">' . esc_html( single_term_title( '', false ) ) . '</span>';
 	} elseif ( is_search() ) {
@@ -433,7 +434,7 @@ function bb_breadcrumb() {
 }
 
 /**
- * Share buttons — same four as the design.
+ * Share buttons â€” same four as the design.
  */
 function bb_share_buttons() {
 	$url   = rawurlencode( get_permalink() );
@@ -448,19 +449,19 @@ function bb_share_buttons() {
 			'name'  => 'Facebook',
 		),
 		array(
-			'label' => '𝕏',
+			'label' => 'ð•',
 			'bg'    => '#000000',
 			'url'   => 'https://twitter.com/intent/tweet?url=' . $url . '&text=' . $title,
 			'name'  => 'X',
 		),
 		array(
-			'label' => '𝐩',
+			'label' => 'ð©',
 			'bg'    => '#e60023',
 			'url'   => 'https://pinterest.com/pin/create/button/?url=' . $url . '&media=' . $image . '&description=' . $title,
 			'name'  => 'Pinterest',
 		),
 		array(
-			'label' => '●',
+			'label' => 'â—',
 			'bg'    => '#25d366',
 			'url'   => 'https://api.whatsapp.com/send?text=' . $title . '%20' . $url,
 			'name'  => 'WhatsApp',
@@ -555,7 +556,7 @@ function bb_post_choices() {
 		return $choices;
 	}
 
-	$choices = array( 0 => __( '— Auto (Latest Post) —', 'bichitro-biggan' ) );
+	$choices = array( 0 => __( 'â€” Auto (Latest Post) â€”', 'bichitro-biggan' ) );
 
 	$posts = get_posts( array(
 		'post_type'        => 'post',
@@ -631,8 +632,8 @@ function bb_is_podcast_post( $post = null ) {
 		if ( $configured_pod_id && (int) $cat->term_id === $configured_pod_id ) {
 			return true;
 		}
-		// bb_str_pos(): mbstring না থাকলেও ফলব্যাক করে, তাই সরাসরি mb_stripos() নয়।
-		if ( false !== stripos( $cat->slug, 'podcast' ) || false !== bb_str_pos( $cat->name, 'পডকাস্ট' ) ) {
+		// bb_str_pos(): mbstring à¦¨à¦¾ à¦¥à¦¾à¦•à¦²à§‡à¦“ à¦«à¦²à¦¬à§à¦¯à¦¾à¦• à¦•à¦°à§‡, à¦¤à¦¾à¦‡ à¦¸à¦°à¦¾à¦¸à¦°à¦¿ mb_stripos() à¦¨à¦¯à¦¼à¥¤
+		if ( false !== stripos( $cat->slug, 'podcast' ) || false !== bb_str_pos( $cat->name, 'à¦ªà¦¡à¦•à¦¾à¦¸à§à¦Ÿ' ) ) {
 			return true;
 		}
 	}
@@ -661,7 +662,12 @@ function bb_get_post_video_url( $post = null ) {
 		return bb_normalize_video_embed_url( $meta_url );
 	}
 
-	// 2. Search post content for YouTube / Vimeo embed patterns
+	// 2. Search post content ONLY IF it's in a video/podcast category.
+	// This prevents standard blog posts with reference videos from acting as video posts.
+	if ( ! bb_is_podcast_post( $post->ID ) ) {
+		return '';
+	}
+
 	$content = $post->post_content;
 	if ( empty( $content ) ) {
 		return '';
@@ -692,6 +698,17 @@ function bb_get_post_video_url( $post = null ) {
 	}
 
 	return '';
+}
+
+function bb_get_video_ratio( $post_id, $video_url ) {
+	$ratio = get_post_meta( $post_id, 'video_ratio', true );
+	if ( empty( $ratio ) ) {
+		if ( stripos( $video_url, 'shorts' ) !== false || stripos( $video_url, 'reel' ) !== false ) {
+			return '9/16';
+		}
+		return '16/9';
+	}
+	return $ratio;
 }
 
 /**
@@ -736,10 +753,10 @@ function bb_bookmark_btn( $post_id = null, $extra_class = '' ) {
 		data-thumb="<?php echo esc_url( $thumb_url ); ?>" 
 		data-time="<?php echo esc_attr( $read_time ); ?>" 
 		data-date="<?php echo esc_attr( $post_date ); ?>" 
-		title="<?php esc_attr_e( 'পরে পড়ার জন্য সংরক্ষণ করুন', 'bichitro-biggan' ); ?>" 
-		aria-label="<?php esc_attr_e( 'পরে পড়ার জন্য সংরক্ষণ করুন', 'bichitro-biggan' ); ?>">
-		<span class="bb-bookmark-icon">🔖</span>
-		<span class="bb-bookmark-text"><?php esc_html_e( 'পরে পড়ুন', 'bichitro-biggan' ); ?></span>
+		title="<?php esc_attr_e( 'à¦ªà¦°à§‡ à¦ªà§œà¦¾à¦° à¦œà¦¨à§à¦¯ à¦¸à¦‚à¦°à¦•à§à¦·à¦£ à¦•à¦°à§à¦¨', 'bichitro-biggan' ); ?>" 
+		aria-label="<?php esc_attr_e( 'à¦ªà¦°à§‡ à¦ªà§œà¦¾à¦° à¦œà¦¨à§à¦¯ à¦¸à¦‚à¦°à¦•à§à¦·à¦£ à¦•à¦°à§à¦¨', 'bichitro-biggan' ); ?>">
+		<span class="bb-bookmark-icon">ðŸ”–</span>
+		<span class="bb-bookmark-text"><?php esc_html_e( 'à¦ªà¦°à§‡ à¦ªà§œà§à¦¨', 'bichitro-biggan' ); ?></span>
 	</button>
 	<?php
 }
@@ -753,21 +770,22 @@ function bb_bookmarks_drawer() {
 	<div class="bb-drawer" id="bb-bookmarks-drawer" role="dialog" aria-labelledby="bb-bookmarks-title" aria-modal="true" aria-hidden="true">
 		<div class="bb-drawer__header">
 			<div class="bb-drawer__title-wrap">
-				<span class="bb-drawer__icon">🔖</span>
-				<h3 class="bb-drawer__title" id="bb-bookmarks-title"><?php esc_html_e( 'সংরক্ষিত লেখাগুলো', 'bichitro-biggan' ); ?></h3>
+				<span class="bb-drawer__icon">ðŸ”–</span>
+				<h3 class="bb-drawer__title" id="bb-bookmarks-title"><?php esc_html_e( 'à¦¸à¦‚à¦°à¦•à§à¦·à¦¿à¦¤ à¦²à§‡à¦–à¦¾à¦—à§à¦²à§‹', 'bichitro-biggan' ); ?></h3>
 				<span class="bb-count-pill" id="bb-drawer-count">0</span>
 			</div>
-			<button type="button" class="bb-drawer__close" id="bb-bookmarks-close" aria-label="<?php esc_attr_e( 'বন্ধ করুন', 'bichitro-biggan' ); ?>">✕</button>
+			<button type="button" class="bb-drawer__close" id="bb-bookmarks-close" aria-label="<?php esc_attr_e( 'à¦¬à¦¨à§à¦§ à¦•à¦°à§à¦¨', 'bichitro-biggan' ); ?>">âœ•</button>
 		</div>
 		<div class="bb-drawer__body" id="bb-bookmarks-list">
 			<!-- Populated by JavaScript -->
 		</div>
 		<div class="bb-drawer__footer" id="bb-bookmarks-footer" style="display:none;">
 			<button type="button" class="bb-drawer__clear-btn" id="bb-bookmarks-clear">
-				<?php esc_html_e( 'সব মুছে ফেলুন', 'bichitro-biggan' ); ?>
+				<?php esc_html_e( 'à¦¸à¦¬ à¦®à§à¦›à§‡ à¦«à§‡à¦²à§à¦¨', 'bichitro-biggan' ); ?>
 			</button>
 		</div>
 	</div>
 	<?php
 }
+
 
