@@ -40,8 +40,18 @@ $bb_archive_title = single_term_title( '', false );
 						$duration  = bb_reading_time( get_the_ID() );
 					}
 					
+					$ratio = get_post_meta( get_the_ID(), 'video_ratio', true );
+					if ( empty( $ratio ) ) {
+						// Auto-detect from URL
+						if ( stripos( $video_url, 'shorts' ) !== false || stripos( $video_url, 'reel' ) !== false ) {
+							$ratio = '9/16';
+						} else {
+							$ratio = '16/9';
+						}
+					}
+					
 					$link_href  = $video_url ? $video_url : get_permalink();
-					$popup_attr = $video_url ? 'data-bb-video-popup="' . esc_attr( $video_url ) . '"' : '';
+					$popup_attr = $video_url ? 'data-bb-video-popup="' . esc_attr( $video_url ) . '" data-bb-video-ratio="' . esc_attr( $ratio ) . '"' : '';
 				?>
 					<article class="bb-pod-item">
 						<a href="<?php echo esc_url( $link_href ); ?>" 
