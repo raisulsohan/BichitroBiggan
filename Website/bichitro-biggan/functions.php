@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '3.5.6' );
+define( 'BB_VERSION', '3.5.7' );
 
 /**
  * Cache-busting version for an asset.
@@ -1326,3 +1326,34 @@ function bb_google_site_verification_render() {
 	}
 }
 
+
+/**
+ * Force the custom grid/popup template for Podcast/Video categories
+ * regardless of the exact slug they use.
+ */
+add_filter( 'category_template', 'bb_force_podcast_category_template', 99 );
+function bb_force_podcast_category_template( $template ) {
+	$cat = get_queried_object();
+	if ( $cat && $cat instanceof WP_Term && $cat->taxonomy === 'category' ) {
+		$configured_pod_id = (int) get_theme_mod( 'bb_cat_podcast', 0 );
+		$is_pod = false;
+
+		if ( $configured_pod_id && (int) $cat->term_id === $configured_pod_id ) {
+			$is_pod = true;
+		} elseif ( false !== stripos( $cat->slug, 'podcast' ) || false !== stripos( $cat->slug, 'video' ) ) {
+			$is_pod = true;
+		} elseif ( function_exists('bb_str_pos') ) {
+            if ( false !== bb_str_pos( $cat->name, 'পডকাস্ট' ) || false !== bb_str_pos( $cat->name, 'ভিডিও' ) ) {
+                $is_pod = true;
+            }
+        }
+
+		if ( $is_pod ) {
+			$custom_template = locate_template( 'category-videos.php' );
+			if ( $custom_template ) {
+				return $custom_template;
+			}
+		}
+	}
+	return $template;
+}
