@@ -34,7 +34,7 @@ $bb_archive_title = single_term_title( '', false );
 		<?php if ( have_posts() ) : ?>
 			<div class="bb-podcast-grid" style="margin-bottom:32px;">
 				<?php while ( have_posts() ) : the_post(); 
-					$video_url = get_post_meta( get_the_ID(), 'bb_video_url', true );
+					$video_url = bb_get_post_video_url( get_the_ID() );
 					$duration  = bb_reading_time( get_the_ID() );
 					
 					$link_href  = $video_url ? $video_url : get_permalink();
