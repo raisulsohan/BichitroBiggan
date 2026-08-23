@@ -49,6 +49,7 @@
 		initResumeBar();
 		initDirectSingleProgress();
 		initPopularFilter();
+		initVideoModal();
 	});
 
 	/* ---------------------------------------------------------------
@@ -1484,5 +1485,55 @@
 				});
 		});
 	}
+
+	/* ---------------------------------------------------------------
+	 * Global Video Modal (For Podcast/Grid Play buttons)
+	 * ------------------------------------------------------------ */
+	function initVideoModal() {
+		var modal = null;
+		var modalInner = null;
+
+		document.addEventListener('click', function(e) {
+			var trigger = e.target.closest('[data-bb-video-popup]');
+			if (!trigger) return;
+
+			e.preventDefault();
+			var videoUrl = trigger.getAttribute('data-bb-video-popup');
+			if (!videoUrl) return;
+
+			if (!modal) {
+				modal = document.createElement('div');
+				modal.className = 'bb-video-modal';
+				modal.innerHTML = '<div class="bb-video-modal__inner">' +
+					'<button class="bb-video-modal__close" aria-label="Close">×</button>' +
+					'<div id="bb-video-modal-frame"></div>' +
+				'</div>';
+				document.body.appendChild(modal);
+
+				modal.addEventListener('click', function(ev) {
+					if (ev.target === modal || ev.target.closest('.bb-video-modal__close')) {
+						closeModal();
+					}
+				});
+			}
+
+			// Append autoplay param
+			var sep = videoUrl.indexOf('?') === -1 ? '?' : '&';
+			var embedSrc = videoUrl + sep + 'autoplay=1&rel=0';
+
+			document.getElementById('bb-video-modal-frame').innerHTML = '<iframe src="' + embedSrc + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+			
+			modal.classList.add('is-active');
+			document.body.classList.add('bb-noscroll');
+		});
+
+		function closeModal() {
+			if (!modal) return;
+			modal.classList.remove('is-active');
+			document.body.classList.remove('bb-noscroll');
+			document.getElementById('bb-video-modal-frame').innerHTML = '';
+		}
+	}
+
 })();
 
