@@ -35,7 +35,10 @@ $bb_archive_title = single_term_title( '', false );
 			<div class="bb-podcast-grid" style="margin-bottom:32px;">
 				<?php while ( have_posts() ) : the_post(); 
 					$video_url = bb_get_post_video_url( get_the_ID() );
-					$duration  = bb_reading_time( get_the_ID() );
+					$duration = get_post_meta( get_the_ID(), 'video_duration', true );
+					if ( empty( $duration ) ) {
+						$duration  = bb_reading_time( get_the_ID() );
+					}
 					
 					$link_href  = $video_url ? $video_url : get_permalink();
 					$popup_attr = $video_url ? 'data-bb-video-popup="' . esc_attr( $video_url ) . '"' : '';

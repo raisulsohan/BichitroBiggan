@@ -308,7 +308,10 @@ function bb_hero_card( $args = array() ) {
 	$is_podcast = bb_is_podcast_post( $post_id );
 	$video_url  = bb_get_post_video_url( $post_id );
 	$cat        = bb_primary_category( $post_id );
-	$duration   = ! empty( $args['custom_time'] ) ? $args['custom_time'] : bb_reading_time( $post_id );
+	
+	// Check for specific custom duration field first, then arg, then reading time
+	$video_duration = get_post_meta( $post_id, 'video_duration', true );
+	$duration = ! empty( $video_duration ) ? $video_duration : ( ! empty( $args['custom_time'] ) ? $args['custom_time'] : bb_reading_time( $post_id ) );
 
 	if ( $is_podcast || ! empty( $video_url ) ) {
 		$podcast_class = trim( $args['class'] . ' bb-hero__podcast' . ( ! empty( $video_url ) ? ' bb-has-video' : '' ) );
