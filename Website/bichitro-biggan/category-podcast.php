@@ -1,1 +1,72 @@
-<?php`n/**`n * Category Template: Podcast`n * `n * Renders a music-app style grid (square 1:1 thumbnails) with a `n * popup video player.`n *`n * @package BichitroBiggan`n */`n`nif ( ! defined( 'ABSPATH' ) ) {`n`texit;`n}`n`nget_header();`n`n$bb_archive_title = single_term_title( '', false );`n?>`n`n<div class="bb-archive bb-archive--podcast">`n`t<div class="bb-archive__inner">`n`n`t`t<?php bb_breadcrumb(); ?>`n`t`t<h1 class="bb-archive__title"><?php echo esc_html( $bb_archive_title ); ?></h1>`n`n`t`t<?php`n`t`t$bb_desc = term_description();`n`t`tif ( $bb_desc ) :`n`t`t`t?>`n`t`t`t<div class="bb-archive__desc"><?php echo wp_kses_post( $bb_desc ); ?></div>`n`t`t<?php endif; ?>`n`n`t`t<div data-bb-list="archive">`n`t`t<?php if ( have_posts() ) : ?>`n`t`t`t<div class="bb-podcast-grid" style="margin-bottom:32px;">`n`t`t`t`t<?php while ( have_posts() ) : the_post(); `n`t`t`t`t`t$video_url = get_post_meta( get_the_ID(), 'bb_video_url', true );`n`t`t`t`t`t$duration  = bb_reading_time( get_the_ID() );`n`t`t`t`t?>`n`t`t`t`t`t<article class="bb-pod-item">`n`t`t`t`t`t`t<a href="<?php echo esc_url( $video_url ? $video_url : get_permalink() ); ?>" `n`t`t`t`t`t`t   class="bb-pod-thumb" `n`t`t`t`t`t`t   <?php if ( $video_url ) { echo 'data-bb-video-popup="' . esc_attr( $video_url ) . '"'; } else { bb_article_attr(); } ?>>`n`t`t`t`t`t`t`t<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-card' ) ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" />`n`t`t`t`t`t`t`t<span class="bb-pod-play">`n`t`t`t`t`t`t`t`t<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`n`t`t`t`t`t`t`t</span>`n`t`t`t`t`t`t</a>`n`t`t`t`t`t`t<h3 class="bb-pod-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>`n`t`t`t`t`t`t<div class="bb-pod-meta">`n`t`t`t`t`t`t`t<?php echo esc_html( get_the_date( 'Y' ) ); ?> &bull; <?php echo esc_html( $duration ); ?>`n`t`t`t`t`t`t</div>`n`t`t`t`t`t</article>`n`t`t`t`t<?php endwhile; ?>`n`t`t`t</div>`n`n`t`t`t<div style="margin-bottom:40px;">`n`t`t`t`t<?php bb_pagination(); ?>`n`t`t`t</div>`n`t`t<?php else : ?>`n`t`t`t<div class="bb-empty">`n`t`t`t`t<p class="bb-empty__title"><?php esc_html_e( '???? ??????? ????? ?????', 'bichitro-biggan' ); ?></p>`n`t`t`t`t<?php get_search_form(); ?>`n`t`t`t</div>`n`t`t<?php endif; ?>`n`t`t</div>`n`n`t</div>`n</div>`n`n<?php`nget_footer();`n
+﻿<?php
+/**
+ * Category Template: Podcast
+ * 
+ * Renders a music-app style grid (square 1:1 thumbnails) with a 
+ * popup video player.
+ *
+ * @package BichitroBiggan
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+get_header();
+
+\ = single_term_title( '', false );
+?>
+
+<div class="bb-archive bb-archive--podcast">
+	<div class="bb-archive__inner">
+
+		<?php bb_breadcrumb(); ?>
+		<h1 class="bb-archive__title"><?php echo esc_html( \ ); ?></h1>
+
+		<?php
+		\ = term_description();
+		if ( \ ) :
+			?>
+			<div class="bb-archive__desc"><?php echo wp_kses_post( \ ); ?></div>
+		<?php endif; ?>
+
+		<div data-bb-list="archive">
+		<?php if ( have_posts() ) : ?>
+			<div class="bb-podcast-grid" style="margin-bottom:32px;">
+				<?php while ( have_posts() ) : the_post(); 
+					\ = get_post_meta( get_the_ID(), 'bb_video_url', true );
+					\  = bb_reading_time( get_the_ID() );
+				?>
+					<article class="bb-pod-item">
+						<a href="<?php echo esc_url( \ ? \ : get_permalink() ); ?>" 
+						   class="bb-pod-thumb" 
+						   <?php if ( \ ) { echo 'data-bb-video-popup="' . esc_attr( \ ) . '"'; } else { bb_article_attr(); } ?>>
+							<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-card' ) ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" />
+							<span class="bb-pod-play">
+								<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+							</span>
+						</a>
+						<h3 class="bb-pod-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+						<div class="bb-pod-meta">
+							<?php echo esc_html( get_the_date( 'Y' ) ); ?> &bull; <?php echo esc_html( \ ); ?>
+						</div>
+					</article>
+				<?php endwhile; ?>
+			</div>
+
+			<div style="margin-bottom:40px;">
+				<?php bb_pagination(); ?>
+			</div>
+		<?php else : ?>
+			<div class="bb-empty">
+				<p class="bb-empty__title"><?php esc_html_e( 'কোনো পডকাস্ট পাওয়া যায়নি', 'bichitro-biggan' ); ?></p>
+				<?php get_search_form(); ?>
+			</div>
+		<?php endif; ?>
+		</div>
+
+	</div>
+</div>
+
+<?php
+get_footer();
