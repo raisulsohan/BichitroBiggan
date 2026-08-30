@@ -90,7 +90,7 @@ BichitroBiggan/
 │   └── test-seo.php                # এসইও লেয়ারের ৪৭টি অ্যাসার্শন (CLI only)
 └── Website/
     └── bichitro-biggan/            # ⬅️ এই ফোল্ডারটিই wp-content/themes/ এ যাবে
-        ├── style.css               # প্রধান সিএসএস ও থিম মেটাডাটা (v3.4.5)
+        ├── style.css               # প্রধান সিএসএস ও থিম মেটাডাটা (v4.0.0)
         ├── functions.php           # থিম কোর, হুক্স ও AJAX হ্যান্ডলার
         ├── screenshot.png          # থিম থাম্বনেইল
         │
