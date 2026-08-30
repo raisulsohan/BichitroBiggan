@@ -1,165 +1,79 @@
-# 🔬 বিচিত্র বিজ্ঞান (BichitroBiggan) — WordPress Theme
+﻿# Bichitro Biggan (WordPress Theme)
 
 [![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b.svg?logo=wordpress&logoColor=white)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg?logo=php&logoColor=white)](https://php.net)
-[![Version](https://img.shields.io/badge/Version-3.4.5-0080ff.svg)](style.css)
-[![Zero-Plugin Architecture](https://img.shields.io/badge/Plugins-0%20(Built--in)-success.svg)](#-zero-plugin-philosophy)
-[![Responsive](https://img.shields.io/badge/Responsive-Mobile%20%26%20Desktop-brightgreen.svg)](#-responsive-design)
+[![Version](https://img.shields.io/badge/Version-4.0.0-0080ff.svg)](style.css)
+[![Zero-Plugin Architecture](https://img.shields.io/badge/Plugins-0%20(Built--in)-success.svg)](#-key-features)
+[![Responsive](https://img.shields.io/badge/Responsive-Mobile%20%26%20Desktop-brightgreen.svg)](#-key-features)
 
-> **বিচিত্র বিজ্ঞান** হলো বাংলা বিজ্ঞান সাময়িকী ও ডিজিটাল প্রকাশনার জন্য তৈরি একটি আধুনিক, সুপার-ফাস্ট ও সম্পূর্ণ প্লাগইন-মুক্ত (Zero-Plugin) ক্লাসিক ওয়ার্ডপ্রেস থিম। বিশ্বমানের রিডার এক্সপেরিয়েন্স, বিল্ট-ইন এসইও (SEO), লাইভ সার্চ এবং কাস্টমাইজার কন্ট্রোল সহ এটি ডিজাইন করা হয়েছে।
-
----
-
-## 📑 সূচিপত্র (Table of Contents)
-
-1. [মূল বৈশিষ্ট্যসমূহ (Key Features)](#-মূল-বৈশিষ্ট্যসমূহ-key-features)
-2. [পাঠকদের জন্য আধুনিক সুবিধাসমূহ (Reader Experience)](#-পাঠকদের-জন্য-আধুনিক-সুবিধাসমূহ-reader-experience)
-3. [বিল্ট-ইন এসইও সিস্টেম (Built-in SEO Engine)](#-বিল্ট-ইন-এসইও-সিস্টেম-built-in-seo-engine)
-4. [ওয়ার্ডপ্রেস কাস্টমাইজার কন্ট্রোল (Customizer Controls)](#-ওয়ার্ডপ্রেস-কাস্টমাইজার-কন্ট্রোল-customizer-controls)
-5. [ডিরেক্টরি ও কোডবেস স্ট্রাকচার (Codebase Structure)](#-ডিরেক্টরি-ও-কোডবেস-স্ট্রাকচার-codebase-structure)
-6. [ইনস্টলেশন ও সেটআপ (Installation & Setup)](#-ইনস্টলেশন-ও-সেটআপ-installation--setup)
-7. [পারফরম্যান্স ও টেকনোলজি স্ট্যাক (Tech Stack)](#-পারফরম্যান্স-ও-টেকনোলজি-স্ট্যাক-tech-stack)
+Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic WordPress theme built for a Bengali science magazine and digital publication. It is designed with a world-class reading experience, built-in SEO, live search, and comprehensive customizer controls.
 
 ---
 
-## 🌟 মূল বৈশিষ্ট্যসমূহ (Key Features)
-
-- ⚡ **জিরো প্লাগইন আর্কিটেকচার (Zero-Plugin Architecture):** কোনো ভারী থার্ড-পার্টি প্লাগইন ছাড়াই এসইও, রিডিং মোডাল, লাইভ সার্চ এবং বুকমার্কস সম্পূর্ণ নেটিভ পিএইচপি ও ভ্যানিলা জাভাস্ক্রিপ্টে তৈরি।
-- 🎨 **ফিগমা মেক ও ম্যাগাজিন লেআউট:** দৃষ্টিনন্দন ৪-কার্ড হিরো মোজাইক, ক্যাটাগরি ট্যাব গ্রিড এবং মাল্টি-কলাম সেকশন।
-- 📱 **ফুল রেসপন্সিভ (Mobile First):** মোবাইল, ট্যাবলেট ও বড় ডেস্কটপে স্বয়ংক্রিয় অ্যাডাপ্টিভ গ্রিড ও টাচ-ফ্রেন্ডলি নেভিগেশন।
-- 🚀 **সুপার ফাস্ট পারফরম্যান্স:** নো-জেকোয়েরি (No jQuery) ফ্রন্টএন্ড, অপ্টিমাইজড ওয়েব ভিউস কাউন্টার এবং লাইটওয়েট সিএসএস ভ্যারিয়েবল আর্কিটেকচার।
-
----
-
-## 📖 পাঠকদের জন্য আধুনিক সুবিধাসমূহ (Reader Experience)
-
-| ফিচার | বিবরণ |
-| :--- | :--- |
-| **⚡ ইনস্ট্যান্ট পপ-আপ রিডার** | পেজ লোড ছাড়া যেকোনো আর্টিকেল এক ক্লিকে দৃষ্টিনন্দন রিডিং মোডালে ওপেন হয়। ভেতরে রিয়েল-টাইম স্ক্রল প্রোগ্রেস বার রয়েছে। |
-| **🔖 অফলাইন বুকমার্ক ড্রয়ার** | লগইন ছাড়াই পাঠকরা পছন্দের লেখা বুকমার্ক (🔖) করে রাখতে পারেন এবং হেডার ড্রয়ার থেকে পরবর্তীতে পড়তে পারেন। |
-| **📍 স্মার্ট রিডিং রেজ্যুম বার** | পাঠক কোনো লেখার অর্ধেক পড়ে চলে গেলে পরবর্তীতে নিচে স্বয়ংক্রিয় রেজ্যুম বার প্রম্পট আসে (যেমন: *৬৫% থেকে পড়া শুরু করুন*)। |
-| **💬 কোট সিলেক্ট ও সোশ্যাল শেয়ার** | আর্টিকেলের যেকোনো বাক্য হাইলাইট করলেই ফেসবুক ও কপি লিংক বাটন ভেসে ওঠে। |
-| **🎬 ডিরেক্ট হিরো ভিডিও প্লেয়ার** | হোমপেজের হিরো সেকশনে থাকা পডকাস্ট বা ভিডিওর প্লে বাটনে চাপ দিলে সরাসরি থাম্বনেইলের ভেতরেই ইউটিউব প্লেয়ার চালু হয়। ১০০% আনকাট ফুল থাম্বনেইল ডিসপ্লে। |
-| **⏱️ পপুলার পোস্ট টাইম ফিল্টার** | ফুটারের জনপ্রিয় লেখায় **এই সপ্তাহে**, **এই মাসে**, **এই বছরে**, **সব সময়** ড্রপডাউন থেকে এক ক্লিকে ইনস্ট্যান্ট AJAX ফিল্টারিং। |
-| **🔍 লাইভ ইনস্ট্যান্ট সার্চ** | কি-বোর্ড অ্যারো নেভিগেশন সহ রিয়েল-টাইম টাইপিং লাইভ সার্চ ড্রপডাউন। |
+## 📑 Table of Contents
+1. [Key Features](#-key-features)
+2. [Reader Experience](#-reader-experience)
+3. [Built-in SEO Engine](#-built-in-seo-engine)
+4. [Customizer Controls](#-customizer-controls)
+5. [Installation & Setup](#-installation--setup)
+6. [Tech Stack](#-tech-stack)
+7. [License](#-license)
 
 ---
 
-## 🔍 বিল্ট-ইন এসইও সিস্টেম (Built-in SEO Engine)
-
-বাইরের কোনো এসইও প্লাগইন (যেমন Yoast বা RankMath) ছাড়াই থিমে যুক্ত রয়েছে পূর্ণাঙ্গ সার্চ ইঞ্জিন অপ্টিমাইজেশন:
-
-- 📝 **পোস্ট এডিটরে লাইভ গুগল প্রিভিউ মেটা বক্স:** টাইটেল ও মেটা ডেসক্রিপশন রিয়েল-টাইম ক্যারেক্টার কাউন্টার ও প্রোগ্রেস বার সহ প্রিভিউ। `%title%`, `%sep%`, `%sitename%` ভ্যারিয়েবল সাপোর্ট করে।
-- 🏷️ **আসল `<title>` ট্যাগ কন্ট্রোল:** মেটা বক্সে লেখা SEO টাইটেল `pre_get_document_title` ফিল্টারের মাধ্যমে সরাসরি পেজের `<title>` ট্যাগে বসে — অর্থাৎ গুগল সার্চ রেজাল্টে ঠিক সেটিই দেখায়। কাস্টম টাইটেল না দিলে ওয়ার্ডপ্রেসের ডিফল্ট টাইটেল অপরিবর্তিত থাকে।
-- 🌐 **সোশ্যাল মেটা ট্যাগস:** স্বয়ংক্রিয় OpenGraph (`og:type`, `og:locale`, `og:title`, `og:description`, `og:url`, `og:image`), পোস্টে `article:published_time` / `article:modified_time` / `article:section`, এবং Twitter Card (`summary_large_image`)।
-- 📊 **স্কিমা স্ট্রাকচার্ড ডাটা (JSON-LD):** একটিমাত্র `@graph`-এ `Organization`, `WebSite`, পোস্টে `NewsArticle`, আর্কাইভে `CollectionPage` এবং `BreadcrumbList` (হোম ➔ ক্যাটাগরি ➔ লেখা)। `wordCount` বাংলা ইউনিকোড ঠিকভাবে গোনে।
-- 🔗 **একটিমাত্র ক্যানোনিকাল:** কোরের `rel_canonical()` সরিয়ে থিম নিজেই সব পেজে একটি ক্যানোনিকাল দেয় (আগে সিঙ্গুলার পোস্টে দুটি যাচ্ছিল)। পেজিনেটেড আর্কাইভে ক্যানোনিকাল পেজ ১-এ ফেরত পাঠায় না — `/page/2/`-এর ক্যানোনিকাল `/page/2/`-ই থাকে।
-- 🏠 **হোমপেজ ও আর্কাইভ কভারেজ:** শুধু সিঙ্গুলার পোস্ট নয় — হোমপেজ, ব্লগ ইনডেক্স, ক্যাটাগরি, ট্যাগ, ট্যাক্সোনমি, লেখক ও তারিখ আর্কাইভেও মেটা ডেসক্রিপশন, OG ও ক্যানোনিকাল যায়। ছবি না থাকলে কাস্টম লোগো বা সাইট আইকন ফলব্যাক হিসেবে ব্যবহৃত হয়।
-- 🤖 **রোবটস ডিরেক্টিভ:** `wp_robots` ফিল্টারের মাধ্যমে (আলাদা ট্যাগ নয়, তাই ডুপ্লিকেট হয় না) `max-snippet:-1`, `max-image-preview:large`, `max-video-preview:-1`। পোস্টে `bb_seo_noindex` মেটা `1` করলে সেই পোস্ট `noindex, follow` হয় — Yoast-এর পুরনো `_yoast_wpseo_meta-robots-noindex` সেটিংও পড়া হয়।
-- 🔌 **প্লাগইন কনফ্লিক্ট গার্ড:** Yoast, Rank Math, AIOSEO বা SEOPress সক্রিয় থাকলে থিমের পুরো এসইও লেয়ার নিজে থেকে চুপ হয়ে যায় — দুটো টাইটেল, দুটো ক্যানোনিকাল বা দুটো স্কিমা গ্রাফ কখনো তৈরি হয় না।
-- 🗺️ **এক্সএমএল সাইটম্যাপ:** ওয়ার্ডপ্রেস ৫.৫+ কোরের বিল্ট-ইন সাইটম্যাপ ব্যবহার করা হয় — `/wp-sitemap.xml`। থিম আলাদা সাইটম্যাপ জেনারেটর রাখে না, কারণ কোরেরটাই যথেষ্ট ও দ্রুত। Google Search Console-এ এই URL-টিই সাবমিট করবেন।
+## 🌟 Key Features
+- ⚡ **Zero-Plugin Architecture:** No heavy third-party plugins. SEO, reading modal, live search, and bookmarks are completely native, built with PHP and Vanilla JavaScript.
+- 🎨 **Figma Mac & Magazine Layout:** Visually stunning 8-card hero mosaic, category tab grid, and multi-column sections.
+- 📱 **Mobile First Fully Responsive:** Automatic adaptive grid and touch-friendly navigation for mobile, tablet, and large desktops.
+- 🚀 **Super Fast Performance:** No jQuery on the frontend, optimized web views counter, and a lightweight CSS variable architecture.
 
 ---
 
-## 🎛️ ওয়ার্ডপ্রেস কাস্টমাইজার কন্ট্রোল (Customizer Controls)
-
-**Appearance ➔ Customize** থেকে লাইভ প্রিভিউ সহ সাইটের সবকিছু নিয়ন্ত্রণ করা যায়:
-
-1. **Header & Masthead:** লোগো সাইজ, ট্যাগলাইন সাইজ, স্টিকি হেডার ও ইউটিউব চ্যানেল বাটন।
-2. **Hero Mosaic Sliders:** ৪টি হিরো কার্ডের উচ্চতা, বাম হিরোর প্রস্থ %, ডান উপরের উচ্চতা % এবং নিচের টাইলের প্রস্থ % রিয়েল-টাইম স্লাইডার।
-3. **Modal Popup Sliders:** পপ-আপ রিডিং উইন্ডোর সর্বোচ্চ প্রস্থ (`px`) এবং উচ্চতা (`vh`) স্লাইডার।
-4. **Footer 3 Columns Settings:**
-   - *Editor Picks:* কাস্টম টাইটেল, পোস্ট সংখ্যা স্লাইডার, নির্দিষ্ট পোস্ট নির্বাচন ড্রপডাউন।
-   - *Popular Posts:* কাস্টম টাইটেল, পোস্ট সংখ্যা স্লাইডার এবং টাইম ফিল্টার।
-   - *Popular Category:* কাস্টম টাইটেল ও ক্যাটাগরি কাউন্ট স্লাইডার।
-   - *Thumbnail Toggle:* ফুটার পোস্টে থাম্বনেইল ছবি দেখানো বা বন্ধ রাখার চেকবক্স।
-   - *About & Contact:* ফুটার বিবরণী, ইমেইল ও সোশ্যাল লিংক।
+## 📖 Reader Experience
+- **Distraction-Free Modal:** Clicking an article opens an instant cinematic reading modal using native AJAX (zero page reloads).
+- **Cinematic Video Popups:** Site-wide support for immersive video popups from YouTube, including dynamic aspect ratios (16:9, 9:16, 4:5, 1:1) and custom settings.
+- **Interactive Bookmarks:** Built-in read-it-later functionality via localStorage with a dedicated slide-out drawer.
+- **Smart Typography:** Systematically scaled Bengali typography optimized for long-form reading on all screen sizes.
 
 ---
 
-## 📁 ডিরেক্টরি ও কোডবেস স্ট্রাকচার (Codebase Structure)
-
-```text
-BichitroBiggan/
-├── README.md                       # এই ডকুমেন্টেশন (একমাত্র ক্যানোনিকাল কপি)
-├── Plugins/
-│   └── bichitro-biggan-setup/
-│       └── bichitro-biggan-setup.php   # এক-ক্লিক থিম সেটআপ প্লাগইন (v1.8.5)
-├── tools/                          # ডেভ টুল — থিমের অংশ নয়, জিপে যায় না
-│   ├── test-fatal.php              # functions.php লোড হয় কি না (CLI only)
-│   └── test-seo.php                # এসইও লেয়ারের ৪৭টি অ্যাসার্শন (CLI only)
-└── Website/
-    └── bichitro-biggan/            # ⬅️ এই ফোল্ডারটিই wp-content/themes/ এ যাবে
-        ├── style.css               # প্রধান সিএসএস ও থিম মেটাডাটা (v4.0.0)
-        ├── functions.php           # থিম কোর, হুক্স ও AJAX হ্যান্ডলার
-        ├── screenshot.png          # থিম থাম্বনেইল
-        │
-        ├── front-page.php          # পূর্ণাঙ্গ হোমপেজ লেআউট
-        ├── home.php                # ব্লগ পোস্ট ইনডেক্স
-        ├── index.php               # ফলব্যাক টেমপ্লেট (ওয়ার্ডপ্রেসে আবশ্যক)
-        ├── single.php              # একক পোস্ট ভিউ ও রিলেটেড আর্টিকেল
-        ├── page.php                # স্ট্যাটিক পেজ
-        ├── archive.php             # ক্যাটাগরি, ট্যাগ ও আর্কাইভ পেজ
-        ├── search.php              # সার্চ রেজাল্ট পেজ
-        ├── 404.php                 # ৪০৪ নট-ফাউন্ড টেমপ্লেট
-        ├── template-posts.php      # কাস্টম পেজ টেমপ্লেট
-        │
-        ├── header.php              # হেড মেটা, ন্যাভবার ও লাইভ সার্চ
-        ├── footer.php              # ৩-কলাম ফুটার ও কপিরাইট
-        ├── sidebar.php             # উইজেট সাইডবার
-        ├── searchform.php          # সার্চ ফর্ম পার্শিয়াল
-        ├── comments.php            # কমেন্ট সেকশন টেমপ্লেট
-        │
-        ├── inc/                    # functions.php এর শেষে লোড হয় (line 1293+)
-        │   ├── customizer.php      # ওয়ার্ডপ্রেস লাইভ কাস্টমাইজার কন্ট্রোলস
-        │   ├── template-tags.php   # রিইউজেবল ইউআই কার্ড ও হেল্পার ফাংশন
-        │   ├── seo-meta-box.php    # এডিটরের এসইও বক্স ও <head> মেটা ট্যাগ
-        │   ├── seo-frontend.php    # টাইটেল, robots, ক্যানোনিকাল ও JSON-LD স্কিমা
-        │   ├── live-search.php     # রিয়েল-টাইম লাইভ সার্চ AJAX হ্যান্ডলার
-        │   ├── editor.php          # পোস্ট এডিটর ইন্টিগ্রেশন
-        │   └── admin-settings.php  # ব্যাকএন্ড সেটিংস প্যানেল (is_admin only)
-        └── assets/
-            ├── css/
-            │   ├── seo-meta-box.css      # এসইও মেটা বক্স স্টাইলিং
-            │   └── editor.css            # এডিটর স্টাইল
-            ├── img/
-            │   └── placeholder.svg       # থাম্বনেইল ফলব্যাক
-            └── js/
-                ├── theme.js              # ফ্রন্টএন্ড ইন্টারেকশন ও রিডার ইউএক্স
-                ├── seo-meta-box.js       # রিয়েল-টাইম গুগল প্রিভিউ লজিক
-                ├── customizer-preview.js  # লাইভ সিএসএস ভেরিয়েবল সিঙ্ক
-                ├── customizer-controls.js # কাস্টমাইজার প্যানেল কন্ট্রোল
-                └── admin.js              # অ্যাডমিন প্যানেল স্ক্রিপ্ট
-```
-
-> ⚠️ **নোট:** থিম ফোল্ডারে আলাদা `README.md` রাখা হয় না — ডকুমেন্টেশনের একমাত্র কপি রিপোর রুটে (root)। এতে দুই জায়গায় আপডেট করতে গিয়ে একটি পুরনো হয়ে যাওয়ার ঝুঁকি থাকে না।
+## 🔎 Built-in SEO Engine
+- **Yoast-like Meta Box:** Custom meta box in the classic editor to define SEO titles and descriptions.
+- **Dynamic Google Preview:** Real-time desktop and mobile search snippet preview with dynamic tags (%title%, %sitename%).
+- **Automated Open Graph:** Automatically generates Facebook/Twitter meta cards with optimized fallback images.
+- **JSON-LD Schema:** Outputs proper Article and Organization structured data for Google Rich Results.
 
 ---
 
-## 🚀 ইনস্টলেশন ও সেটআপ (Installation & Setup)
-
-1. রিপোজিটরি ক্লোন করুন বা জিপ ডাউনলোড করুন:
-   ```bash
-   git clone https://github.com/raisulsohan/BichitroBiggan.git
-   ```
-2. থিম ফোল্ডারটি আপনার ওয়ার্ডপ্রেস ডিরেক্টরিতে রাখুন:
-   `wp-content/themes/bichitro-biggan/`
-3. ওয়ার্ডপ্রেস ড্যাশবোর্ড থেকে **Appearance ➔ Themes** এ গিয়ে **Bichitro Biggan** থিমটি সক্রিয় (Activate) করুন।
-4. **Appearance ➔ Customize** এ গিয়ে আপনার সাইটের লোগো, ক্যাটাগরি ও ফুটার অপশনগুলো পছন্দমতো সাজিয়ে নিন।
+## ⚙️ Customizer Controls
+Fully integrated with the WordPress Customizer for live previews:
+- Toggle core features like AJAX Reading Modal and Live Search.
+- Reorder Homepage categories dynamically using dropdowns.
+- Choose custom accent colors and adjust container dimensions (Hero mosaic height, sidebar sizes).
 
 ---
 
-## 💻 পারফরম্যান্স ও টেকনোলজি স্ট্যাক (Tech Stack)
+## 🚀 Installation & Setup
+This theme is highly optimized for deployment via **WP Pusher** directly from GitHub.
+1. Install and activate the **WP Pusher** plugin on your WordPress site.
+2. Go to **WP Pusher > Install Theme** in the WordPress dashboard.
+3. **Theme repository:** aisulsohan/BichitroBiggan
+4. **Repository branch:** main
+5. **Repository subdirectory:** Website/bichitro-biggan *(Important)*
+6. Leave "Link installed theme" unchecked and click **Install theme**.
+7. Activate the theme via **Appearance > Themes**. Enable Push-to-Deploy for future automated updates.
 
+---
+
+## 💻 Tech Stack
 - **Frontend:** Semantic HTML5, Vanilla Modern CSS3, Vanilla JavaScript (ES6+).
-- **Typography:** Google Fonts (`Hind Siliguri`, `Noto Sans Bengali`) with `display=swap`.
+- **Typography:** Google Fonts (Hind Siliguri, Noto Sans Bengali) with display=swap.
 - **Backend:** WordPress Native PHP APIs, Custom Transients Caching, Secure AJAX Nonce validation.
 - **Standards:** WordPress Theme Review Guidelines, WCAG 2.1 Accessibility & Core Web Vitals optimized.
 
 ---
 
-## 📄 লাইসেন্স (License)
+## 📝 License
+This project is licensed under the **GPL-2.0-or-later** license.
 
-এই প্রজেক্টটি **GPL-2.0-or-later** লাইসেন্সের অধীনে প্রকাশিত। মুক্তভাবে ব্যবহার, পরিবর্তন ও উন্নয়ন করা যাবে।
-
-**নির্মাতা ও ডেভেলপার:** [Raisul Islam](https://raisulsohan.com) | [বিচিত্র বিজ্ঞান (BichitroBiggan)](https://bichitrobiggan.com)
+**Developed & Designed by:** [Raisul Islam](https://raisulsohan.com) | [Bichitro Biggan](https://bichitrobiggan.com)
