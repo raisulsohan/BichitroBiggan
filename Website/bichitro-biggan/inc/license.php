@@ -8,7 +8,7 @@
 define( 'BB_LICENSE_SERVER_URL', 'https://bichitrobiggan.com' );
 
 // আপনার SLM প্লাগিন থেকে পাওয়া Secret Key টি এখানে বসান
-define( 'BB_SLM_SECRET_KEY', 'YOUR_SECRET_KEY_HERE' ); 
+define( 'BB_SLM_SECRET_KEY', '6a95107cf3e680.04124284' ); 
 
 define( 'BB_ITEM_REFERENCE', 'BichitroBiggan Theme' );
 
