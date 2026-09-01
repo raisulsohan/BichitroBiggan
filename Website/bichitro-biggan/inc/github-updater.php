@@ -29,6 +29,10 @@ define( 'BB_GITHUB_THEME_PATH', 'Website/bichitro-biggan' );
  * @return string|false Version string or false on failure.
  */
 function bb_github_get_remote_version() {
+	if ( isset( $_GET['force-check'] ) ) {
+		delete_transient( 'bb_github_remote_version' );
+	}
+	
 	$cached = get_transient( 'bb_github_remote_version' );
 	if ( false !== $cached ) {
 		return $cached;
