@@ -1410,3 +1410,66 @@ function bb_image_quality( $quality ) {
 }
 add_filter( 'wp_editor_set_quality', 'bb_image_quality' );
 
+/* -------------------------------------------------------------------------
+ * Domain Lock — Theme only runs on whitelisted domains.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Allowed domains where this theme is permitted to operate.
+ * Add any new domains to this array.
+ */
+function bb_allowed_domains() {
+	return array(
+		'bichitrobiggan.com',
+		'www.bichitrobiggan.com',
+		'localhost',
+		'127.0.0.1',
+	);
+}
+
+/**
+ * Check if the current domain is whitelisted.
+ */
+function bb_is_domain_allowed() {
+	$host = isset( $_SERVER['SERVER_NAME'] ) ? strtolower( $_SERVER['SERVER_NAME'] ) : '';
+
+	// Allow any localhost port (e.g. localhost:8080).
+	if ( strpos( $host, 'localhost' ) === 0 || $host === '127.0.0.1' ) {
+		return true;
+	}
+
+	return in_array( $host, bb_allowed_domains(), true );
+}
+
+/**
+ * Block the frontend for unauthorised domains.
+ */
+function bb_domain_lock_frontend() {
+	if ( bb_is_domain_allowed() ) {
+		return;
+	}
+
+	wp_die(
+		'<div style="font-family:system-ui,sans-serif;max-width:520px;margin:80px auto;text-align:center;">'
+		. '<h1 style="font-size:28px;margin-bottom:12px;">Bichitro Biggan Theme</h1>'
+		. '<p style="font-size:16px;color:#555;">This theme is not licensed for this domain.</p>'
+		. '<p style="font-size:13px;color:#999;margin-top:24px;">Authorised domain: bichitrobiggan.com</p>'
+		. '</div>',
+		'Domain Not Licensed',
+		array( 'response' => 403 )
+	);
+}
+add_action( 'template_redirect', 'bb_domain_lock_frontend' );
+
+/**
+ * Show a persistent admin notice on unauthorised domains.
+ */
+function bb_domain_lock_admin_notice() {
+	if ( bb_is_domain_allowed() ) {
+		return;
+	}
+
+	echo '<div class="notice notice-error"><p><strong>Bichitro Biggan Theme:</strong> '
+		. 'This theme is not licensed for this domain. It will only work on <code>bichitrobiggan.com</code>.</p></div>';
+}
+add_action( 'admin_notices', 'bb_domain_lock_admin_notice' );
