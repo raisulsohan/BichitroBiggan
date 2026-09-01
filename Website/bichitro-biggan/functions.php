@@ -1411,41 +1411,94 @@ function bb_image_quality( $quality ) {
 add_filter( 'wp_editor_set_quality', 'bb_image_quality' );
 
 /* -------------------------------------------------------------------------
- * Domain Lock — Theme only runs on whitelisted domains.
+ * License System — Google Sheets powered license key verification.
  * ---------------------------------------------------------------------- */
 
 /**
- * Allowed domains where this theme is permitted to operate.
- * Add any new domains to this array.
+ * Google Apps Script Web App URL.
+ * Replace this with your deployed Apps Script URL after setup.
  */
-function bb_allowed_domains() {
-	return array(
-		'bichitrobiggan.com',
-		'www.bichitrobiggan.com',
-		'localhost',
-		'127.0.0.1',
-	);
-}
+define( 'BB_LICENSE_API_URL', 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' );
 
 /**
- * Check if the current domain is whitelisted.
+ * Add License page under Appearance menu.
  */
-function bb_is_domain_allowed() {
-	$host = isset( $_SERVER['SERVER_NAME'] ) ? strtolower( $_SERVER['SERVER_NAME'] ) : '';
+function bb_license_menu() {
+	add_theme_page(
+		'Theme License',
+		'Theme License',
+		'manage_options',
+		'bb-license',
+		'bb_license_page_html'
+	);
+}
+add_action( 'admin_menu', 'bb_license_menu' );
 
-	// Allow any localhost port (e.g. localhost:8080).
+/**
+ * Handle license activation form submission.
+ */
+function bb_handle_license_activation() {
+	if ( ! isset( $_POST['bb_license_activate'] ) || ! check_admin_referer( 'bb_license_nonce' ) ) {
+		return;
+	}
+
+	$license_key = sanitize_text_field( trim( $_POST['bb_license_key'] ) );
+	if ( empty( $license_key ) ) {
+		add_settings_error( 'bb_license', 'empty', 'লাইসেন্স কী খালি রাখা যাবে না।', 'error' );
+		return;
+	}
+
+	$domain = sanitize_text_field( $_SERVER['SERVER_NAME'] );
+
+	$response = wp_remote_get(
+		add_query_arg(
+			array(
+				'action'  => 'activate',
+				'key'     => $license_key,
+				'domain'  => $domain,
+			),
+			BB_LICENSE_API_URL
+		),
+		array( 'timeout' => 15, 'sslverify' => true )
+	);
+
+	if ( is_wp_error( $response ) ) {
+		add_settings_error( 'bb_license', 'conn', 'সার্ভারের সাথে কানেক্ট করা যাচ্ছে না: ' . $response->get_error_message(), 'error' );
+		return;
+	}
+
+	$body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+	if ( ! empty( $body['success'] ) ) {
+		update_option( 'bb_license_key', $license_key );
+		update_option( 'bb_license_status', 'valid' );
+		update_option( 'bb_license_domain', $domain );
+		add_settings_error( 'bb_license', 'ok', 'লাইসেন্স সফলভাবে অ্যাক্টিভেট হয়েছে! ✅', 'updated' );
+	} else {
+		$msg = ! empty( $body['message'] ) ? $body['message'] : 'ভুল লাইসেন্স কী!';
+		add_settings_error( 'bb_license', 'fail', 'অ্যাক্টিভেশন ব্যর্থ: ' . $msg, 'error' );
+	}
+}
+add_action( 'admin_init', 'bb_handle_license_activation' );
+
+/**
+ * Check if the theme is licensed.
+ */
+function bb_is_licensed() {
+	// Always allow localhost development.
+	$host = isset( $_SERVER['SERVER_NAME'] ) ? strtolower( $_SERVER['SERVER_NAME'] ) : '';
 	if ( strpos( $host, 'localhost' ) === 0 || $host === '127.0.0.1' ) {
 		return true;
 	}
 
-	return in_array( $host, bb_allowed_domains(), true );
+	return get_option( 'bb_license_status' ) === 'valid';
 }
 
 /**
- * Block the frontend for unauthorised domains.
+ * Block frontend if not licensed.
  */
-function bb_domain_lock_frontend() {
-	if ( bb_is_domain_allowed() ) {
+function bb_license_block_frontend() {
+	if ( bb_is_licensed() ) {
 		return;
 	}
 
@@ -1453,23 +1506,66 @@ function bb_domain_lock_frontend() {
 		'<div style="font-family:system-ui,sans-serif;max-width:520px;margin:80px auto;text-align:center;">'
 		. '<h1 style="font-size:28px;margin-bottom:12px;">Bichitro Biggan Theme</h1>'
 		. '<p style="font-size:16px;color:#555;">This theme is not licensed for this domain.</p>'
-		. '<p style="font-size:13px;color:#999;margin-top:24px;">Authorised domain: bichitrobiggan.com</p>'
+		. '<p style="font-size:13px;color:#999;margin-top:24px;">Please activate your license key from the WordPress dashboard.</p>'
 		. '</div>',
-		'Domain Not Licensed',
+		'License Required',
 		array( 'response' => 403 )
 	);
 }
-add_action( 'template_redirect', 'bb_domain_lock_frontend' );
+add_action( 'template_redirect', 'bb_license_block_frontend' );
 
 /**
- * Show a persistent admin notice on unauthorised domains.
+ * Admin notice when not licensed.
  */
-function bb_domain_lock_admin_notice() {
-	if ( bb_is_domain_allowed() ) {
+function bb_license_admin_notice() {
+	if ( bb_is_licensed() ) {
+		return;
+	}
+	if ( isset( $_GET['page'] ) && $_GET['page'] === 'bb-license' ) {
 		return;
 	}
 
-	echo '<div class="notice notice-error"><p><strong>Bichitro Biggan Theme:</strong> '
-		. 'This theme is not licensed for this domain. It will only work on <code>bichitrobiggan.com</code>.</p></div>';
+	$url = admin_url( 'themes.php?page=bb-license' );
+	echo '<div class="notice notice-error"><p><strong>বিচিত্র বিজ্ঞান থিম:</strong> '
+		. 'থিমটি ব্যবহার করতে দয়া করে <a href="' . esc_url( $url ) . '">লাইসেন্স অ্যাক্টিভেট করুন</a>।</p></div>';
 }
-add_action( 'admin_notices', 'bb_domain_lock_admin_notice' );
+add_action( 'admin_notices', 'bb_license_admin_notice' );
+
+/**
+ * Render the license activation page.
+ */
+function bb_license_page_html() {
+	$status = get_option( 'bb_license_status' );
+	$key    = get_option( 'bb_license_key' );
+	$domain = get_option( 'bb_license_domain' );
+	?>
+	<div class="wrap">
+		<h1>বিচিত্র বিজ্ঞান — লাইসেন্স অ্যাক্টিভেশন</h1>
+		<?php settings_errors( 'bb_license' ); ?>
+
+		<div class="card" style="max-width: 520px; padding: 24px; margin-top: 20px;">
+			<?php if ( $status === 'valid' ) : ?>
+				<p style="color: #00a32a; font-weight: bold; font-size: 15px;">✅ লাইসেন্স অ্যাক্টিভ আছে!</p>
+				<table class="form-table">
+					<tr><th>লাইসেন্স কী:</th><td><code><?php echo esc_html( $key ); ?></code></td></tr>
+					<tr><th>ডোমেইন:</th><td><code><?php echo esc_html( $domain ); ?></code></td></tr>
+				</table>
+			<?php else : ?>
+				<p>থিমের সম্পূর্ণ ফিচার উপভোগ করতে আপনার লাইসেন্স কী (License Key) দিন।</p>
+				<form method="post" action="">
+					<?php wp_nonce_field( 'bb_license_nonce' ); ?>
+					<table class="form-table">
+						<tr>
+							<th><label for="bb_license_key">লাইসেন্স কী:</label></th>
+							<td><input type="text" id="bb_license_key" name="bb_license_key" value="" style="width:100%;padding:8px;" placeholder="BB-XXXX-XXXX-XXXX" /></td>
+						</tr>
+					</table>
+					<p class="submit">
+						<input type="submit" name="bb_license_activate" class="button-primary" value="অ্যাক্টিভেট করুন" />
+					</p>
+				</form>
+			<?php endif; ?>
+		</div>
+	</div>
+	<?php
+}
