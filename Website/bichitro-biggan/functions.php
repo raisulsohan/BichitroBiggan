@@ -1418,7 +1418,7 @@ add_filter( 'wp_editor_set_quality', 'bb_image_quality' );
  * Google Apps Script Web App URL.
  * Replace this with your deployed Apps Script URL after setup.
  */
-define( 'BB_LICENSE_API_URL', 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' );
+define( 'BB_LICENSE_API_URL', 'https://script.google.com/macros/s/AKfycbxV0k_ydJr9SJttf_7fgRXuG3KqCKStgg7cEUS80uCAqZzzNqz51RyI07o7mzrZzHjRDQ/exec' );
 
 /**
  * Add License page under Appearance menu.
