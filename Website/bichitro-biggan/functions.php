@@ -1410,6 +1410,9 @@ function bb_image_quality( $quality ) {
 }
 add_filter( 'wp_editor_set_quality', 'bb_image_quality' );
 
+// Load GitHub Auto-Updater — native WordPress theme updates from GitHub.
+require get_template_directory() . '/inc/github-updater.php';
+
 /* -------------------------------------------------------------------------
  * License System — Google Sheets powered license key verification.
  * ---------------------------------------------------------------------- */
