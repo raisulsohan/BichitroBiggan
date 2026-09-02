@@ -69,20 +69,34 @@ add_filter( 'mce_buttons', 'bb_mce_add_justify' );
  */
 function bb_tinymce_settings( $settings ) {
 	$settings['toolbar1'] = isset( $settings['toolbar1'] ) ? $settings['toolbar1'] : '';
-	
-	// Automatically justify pasted text in the editor
-	$settings['paste_postprocess'] = "function(plugin, args) {
-		if ( args.node ) {
-			var elements = args.node.querySelectorAll('p');
-			for ( var i = 0; i < elements.length; i++ ) {
-				elements[i].style.textAlign = 'justify';
-			}
-		}
-	}";
-
 	return $settings;
 }
 add_filter( 'tiny_mce_before_init', 'bb_tinymce_settings' );
+
+/**
+ * Force justify alignment on pasted text via robust JS hook.
+ */
+function bb_tinymce_paste_justify_script() {
+	$screen = get_current_screen();
+	if ( ! $screen || ! in_array( $screen->base, array( 'post' ), true ) ) {
+		return;
+	}
+	?>
+	<script>
+	jQuery(document).on('tinymce-editor-init', function( event, editor ) {
+		editor.on('PastePostProcess', function( e ) {
+			if ( e.node ) {
+				var elements = e.node.querySelectorAll('p, h1, h2, h3, h4, h5, h6');
+				for ( var i = 0; i < elements.length; i++ ) {
+					elements[i].style.textAlign = 'justify';
+				}
+			}
+		});
+	});
+	</script>
+	<?php
+}
+add_action( 'admin_print_footer_scripts', 'bb_tinymce_paste_justify_script', 99 );
 
 /* -------------------------------------------------------------------------
  * Local profile photo
