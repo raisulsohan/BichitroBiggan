@@ -84,13 +84,17 @@ function bb_tinymce_paste_justify_script() {
 	?>
 	<script>
 	jQuery(document).on('tinymce-editor-init', function( event, editor ) {
-		editor.on('PastePostProcess', function( e ) {
-			if ( e.node ) {
-				var elements = e.node.querySelectorAll('p, h1, h2, h3, h4, h5, h6');
+		editor.on('paste', function( e ) {
+			setTimeout(function() {
+				if ( ! editor || ! editor.getBody ) return;
+				var body = editor.getBody();
+				var elements = body.querySelectorAll('p, h1, h2, h3, h4, h5, h6, ul, ol');
 				for ( var i = 0; i < elements.length; i++ ) {
 					elements[i].style.textAlign = 'justify';
 				}
-			}
+				editor.save();
+				editor.fire('change');
+			}, 100);
 		});
 	});
 	</script>
