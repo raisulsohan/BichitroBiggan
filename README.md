@@ -1,12 +1,12 @@
-﻿# Bichitro Biggan (WordPress Theme)
+# Bichitro Biggan (WordPress Theme)
 
 [![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b.svg?logo=wordpress&logoColor=white)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg?logo=php&logoColor=white)](https://php.net)
-[![Version](https://img.shields.io/badge/Version-4.0.0-0080ff.svg)](style.css)
+[![Version](https://img.shields.io/badge/Version-5.0-0080ff.svg)](style.css)
 [![Zero-Plugin Architecture](https://img.shields.io/badge/Plugins-0%20(Built--in)-success.svg)](#-key-features)
 [![Responsive](https://img.shields.io/badge/Responsive-Mobile%20%26%20Desktop-brightgreen.svg)](#-key-features)
 
-Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic WordPress theme built for a Bengali science magazine and digital publication. It is designed with a world-class reading experience, built-in SEO, live search, and comprehensive customizer controls.
+Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic WordPress theme built for a Bengali science magazine and digital publication. Custom-made and developed from scratch by Raisul Sohan, it is designed with a world-class reading experience, built-in SEO, live search, and comprehensive customizer controls.
 
 ---
 
@@ -57,7 +57,7 @@ Fully integrated with the WordPress Customizer for live previews:
 This theme is highly optimized for deployment via **WP Pusher** directly from GitHub.
 1. Install and activate the **WP Pusher** plugin on your WordPress site.
 2. Go to **WP Pusher > Install Theme** in the WordPress dashboard.
-3. **Theme repository:** aisulsohan/BichitroBiggan
+3. **Theme repository:** aisulsohan/BichitroBiggan
 4. **Repository branch:** main
 5. **Repository subdirectory:** Website/bichitro-biggan *(Important)*
 6. Leave "Link installed theme" unchecked and click **Install theme**.
@@ -76,4 +76,4 @@ This theme is highly optimized for deployment via **WP Pusher** directly from Gi
 ## 📝 License
 This project is licensed under the **GPL-2.0-or-later** license.
 
-**Developed & Designed by:** [Raisul Islam](https://raisulsohan.com) | [Bichitro Biggan](https://bichitrobiggan.com)
+**Developed & Designed by:** [Raisul Sohan](https://raisulsohan.com) | [Bichitro Biggan](https://bichitrobiggan.com)
