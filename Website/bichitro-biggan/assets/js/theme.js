@@ -5,17 +5,6 @@
 (function () {
 	'use strict';
 
-	/* ---------------------------------------------------------------
-	 * Remove tracking parameters (like ?fbclid) from URL instantly
-	 * ------------------------------------------------------------ */
-	if (window.history && window.history.replaceState) {
-		var currentUrl = new URL(window.location.href);
-		if (currentUrl.searchParams.has('fbclid')) {
-			currentUrl.searchParams.delete('fbclid');
-			window.history.replaceState({}, document.title, currentUrl.toString());
-		}
-	}
-
 	var SCROLL_TRIGGER = 80;
 	var D = window.BBData || {};
 

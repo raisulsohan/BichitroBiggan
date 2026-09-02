@@ -17,6 +17,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<link rel="profile" href="https://gmpg.org/xfn/11" />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<script>
+		// Remove tracking parameters instantly before page renders
+		if (window.history && window.history.replaceState) {
+			var url = new URL(window.location.href);
+			var params = ['fbclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+			var modified = false;
+			params.forEach(function(param) {
+				if (url.searchParams.has(param)) {
+					url.searchParams.delete(param);
+					modified = true;
+				}
+			});
+			if (modified) {
+				window.history.replaceState({}, document.title, url.toString());
+			}
+		}
+	</script>
 	<?php wp_head(); ?>
 </head>
 
