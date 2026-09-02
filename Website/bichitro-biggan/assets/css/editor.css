@@ -7,6 +7,15 @@
   background: #fff;
 }
 
+/* Match frontend reading width (760px) in Classic Editor */
+body#tinymce.wp-editor,
+body.mce-content-body {
+  max-width: 760px !important;
+  margin: 24px auto !important;
+  padding: 0 24px !important;
+  display: block;
+}
+
 .editor-styles-wrapper p,
 body.mce-content-body p,
 p { font-size: 14px; line-height: 1.75; text-align: justify !important; }
