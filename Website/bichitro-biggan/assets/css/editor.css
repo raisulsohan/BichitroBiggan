@@ -8,7 +8,8 @@
 }
 
 .editor-styles-wrapper p,
-body#tinymce.wp-editor p { font-size: 14px; line-height: 1.75; text-align: justify; }
+body.mce-content-body p,
+p { font-size: 14px; line-height: 1.75; text-align: justify !important; }
 
 .editor-styles-wrapper h1,
 .editor-styles-wrapper h2,
