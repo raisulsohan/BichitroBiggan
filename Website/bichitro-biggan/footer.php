@@ -146,7 +146,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</span>
 				<span>
 					<?php esc_html_e( 'Developed by', 'bichitro-biggan' ); ?>
-					<?php bb_footer_credit( 'bb_footer_developer', 'Raisul Islam', 'bb_footer_developer_url' ); ?>
+					<?php bb_footer_credit( 'bb_footer_developer', 'Raisul Sohan', 'bb_footer_developer_url' ); ?>
 				</span>
 			</div>
 		</div>
