@@ -527,12 +527,8 @@
 
 		var email = D.email || '';
 
-		function showToast() {
-			if (!toast) return;
-			toast.classList.add('is-visible');
-			window.setTimeout(function () {
-				toast.classList.remove('is-visible');
-			}, 2500);
+		function triggerToast() {
+			showToast(D.copiedText || 'ইমেইল কপি হয়েছে', '✓');
 		}
 
 		function fallbackCopy(text) {
@@ -555,14 +551,16 @@
 			btn.addEventListener('click', function () {
 				if (!email) return;
 
-				if (navigator.clipboard && navigator.clipboard.writeText) {
-					navigator.clipboard.writeText(email).then(showToast, function () {
+				if (navigator.clipboard && window.isSecureContext) {
+					navigator.clipboard.writeText(email).then(function () {
+						triggerToast();
+					}).catch(function () {
 						fallbackCopy(email);
-						showToast();
+						triggerToast();
 					});
 				} else {
 					fallbackCopy(email);
-					showToast();
+					triggerToast();
 				}
 			});
 		});

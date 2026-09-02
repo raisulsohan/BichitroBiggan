@@ -3,7 +3,7 @@ Theme Name: Bichitro Biggan
 Theme URI: https://bichitrobiggan.com
 Author: Raisul Sohan
 Description: Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic WordPress theme built for a Bengali science magazine and digital publication. Custom-made and developed from scratch by Raisul Sohan, it is designed with a world-class reading experience, built-in SEO, live search, and comprehensive customizer controls.
-Version: 5.0
+Version: 5.0.1
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
@@ -3159,32 +3159,7 @@ body.bb-has-resume-bar .bb-backtop {
   }
 }
 
-.bb-toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 300;
-  background: #111827;
-  color: #fff;
-  font-size: 14px;
-  padding: 10px 16px;
-  border-radius: 9999px;
-  box-shadow: 0 20px 25px -5px rgba(0,0,0,.2);
-  display: none;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-}
-.bb-toast.is-visible {
-  display: flex;
-  animation: bb-fade-in .2s ease-out;
-}
 
-@keyframes bb-fade-in {
-  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
-}
 
 /* =========================================================
    21. INLINE-ELEMENT FIXES
@@ -3486,12 +3461,12 @@ body.admin-bar .bb-nav.is-stuck { top: 32px; }
 .bb-toast {
   position: fixed;
   bottom: 24px;
-  right: 24px;
+  left: 50%;
   background: #1e293b;
   color: #fff;
-  padding: 12px 18px;
-  border-radius: 8px;
-  font-size: 13.5px;
+  padding: 10px 20px;
+  border-radius: 9999px;
+  font-size: 14px;
   font-weight: 500;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
   display: inline-flex;
@@ -3499,13 +3474,14 @@ body.admin-bar .bb-nav.is-stuck { top: 32px; }
   gap: 8px;
   z-index: 1050;
   opacity: 0;
-  transform: translateY(20px);
+  transform: translate(-50%, 20px);
   transition: all .3s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
+  white-space: nowrap;
 }
 .bb-toast.is-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate(-50%, 0);
 }
 
 /* Text-to-Speech (Listen to Article) Player Widget */

@@ -201,10 +201,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<button type="button" class="bb-backtop" id="bb-backtop" title="<?php esc_attr_e( 'উপরে যান', 'bichitro-biggan' ); ?>">↑</button>
 
-	<div class="bb-toast" id="bb-toast" role="status" aria-live="polite">
-		<span>✓</span> <span class="bb-toast__text"><?php esc_html_e( 'ইমেইল কপি হয়েছে', 'bichitro-biggan' ); ?></span>
-	</div>
-
 </div><!-- #bb-page -->
 
 <?php wp_footer(); ?>
