@@ -120,7 +120,7 @@ function bb_settings_schema() {
 				'bb_footer_author'        => array( 'type' => 'text', 'label' => __( 'Author and Editor — Name', 'bichitro-biggan' ), 'default' => 'Tanvir Hossain' ),
 				'bb_footer_author_url'    => array( 'type' => 'url', 'label' => __( 'Author and Editor — URL', 'bichitro-biggan' ), 'placeholder' => 'https://' ),
 				'bb_footer_copyright'     => array( 'type' => 'text', 'label' => __( 'Copyright Text', 'bichitro-biggan' ), 'default' => '©BichitroBiggan', 'desc' => __( 'Current year will be appended automatically.', 'bichitro-biggan' ) ),
-				'bb_footer_developer'     => array( 'type' => 'text', 'label' => __( 'Developed by — Name', 'bichitro-biggan' ), 'default' => 'Raisul Islam' ),
+				'bb_footer_developer'     => array( 'type' => 'text', 'label' => __( 'Developed by — Name', 'bichitro-biggan' ), 'default' => 'Raisul Sohan' ),
 				'bb_footer_developer_url' => array( 'type' => 'url', 'label' => __( 'Developed by — URL', 'bichitro-biggan' ), 'placeholder' => 'https://' ),
 				'bb_author_bio_site'      => array( 'type' => 'text', 'label' => __( 'Site name displayed in author bio', 'bichitro-biggan' ), 'default' => 'bichitrobiggan.com' ),
 			),
