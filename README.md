@@ -54,14 +54,18 @@ Fully integrated with the WordPress Customizer for live previews:
 ---
 
 ## 🚀 Installation & Setup
-This theme is highly optimized for deployment via **WP Pusher** directly from GitHub.
-1. Install and activate the **WP Pusher** plugin on your WordPress site.
-2. Go to **WP Pusher > Install Theme** in the WordPress dashboard.
-3. **Theme repository:** aisulsohan/BichitroBiggan
-4. **Repository branch:** main
-5. **Repository subdirectory:** Website/bichitro-biggan *(Important)*
-6. Leave "Link installed theme" unchecked and click **Install theme**.
-7. Activate the theme via **Appearance > Themes**. Enable Push-to-Deploy for future automated updates.
+This theme features a **Native GitHub Auto-Updater**, meaning you only need to install it manually once. All future updates will be delivered directly to your WordPress dashboard without needing any third-party plugins.
+
+### Initial Installation:
+1. Click the green **Code** button on this GitHub repository and select **Download ZIP**.
+2. Extract the downloaded ZIP file on your computer.
+3. Navigate into the extracted folder and go to the `Website/` directory.
+4. Compress the `bichitro-biggan` folder into a new ZIP file (e.g., `bichitro-biggan.zip`).
+5. Go to your WordPress Dashboard: **Appearance > Themes > Add New > Upload Theme**.
+6. Upload the `bichitro-biggan.zip` file and click **Install Now**, then **Activate**.
+
+### 🔄 Future Updates (Auto-Updater):
+You are all set! Whenever a new version is released on GitHub, you will see a standard "Update Available" notification in your WordPress dashboard. Just click **Update Now** and the theme will automatically pull the latest code.
 
 ---
 
