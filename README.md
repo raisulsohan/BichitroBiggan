@@ -69,6 +69,21 @@ You are all set! Whenever a new version is released on GitHub, you will see a st
 
 ---
 
+## 🔑 Licensing & Purchase
+This is a premium, custom-made theme. While you can test it freely on your local machine (`localhost`), running it on a live domain requires a valid **License Key**.
+
+**How to get a License Key:**
+To purchase the theme and receive your unique license key, please contact me directly:
+- **Portfolio & Contact:** [raisulsohan.com](https://raisulsohan.com)
+- **Email:** You can reach out through the contact form on my portfolio.
+
+**How to Activate:**
+1. Once the theme is installed and activated, go to **Appearance > Theme License** in your WordPress dashboard.
+2. Enter the License Key provided to you upon purchase.
+3. Click **Activate License**. Your theme will now be fully functional and eligible for automatic updates!
+
+---
+
 ## 💻 Tech Stack
 - **Frontend:** Semantic HTML5, Vanilla Modern CSS3, Vanilla JavaScript (ES6+).
 - **Typography:** Google Fonts (Hind Siliguri, Noto Sans Bengali) with display=swap.
