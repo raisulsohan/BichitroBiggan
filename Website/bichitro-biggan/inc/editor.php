@@ -69,6 +69,17 @@ add_filter( 'mce_buttons', 'bb_mce_add_justify' );
  */
 function bb_tinymce_settings( $settings ) {
 	$settings['toolbar1'] = isset( $settings['toolbar1'] ) ? $settings['toolbar1'] : '';
+	
+	// Automatically justify pasted text in the editor
+	$settings['paste_postprocess'] = "function(plugin, args) {
+		if ( args.node ) {
+			var elements = args.node.querySelectorAll('p');
+			for ( var i = 0; i < elements.length; i++ ) {
+				elements[i].style.textAlign = 'justify';
+			}
+		}
+	}";
+
 	return $settings;
 }
 add_filter( 'tiny_mce_before_init', 'bb_tinymce_settings' );
