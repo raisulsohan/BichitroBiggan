@@ -436,10 +436,15 @@ final class Theme_GitHub_Updater {
 			}
 		}
 
+		/* Fetch the current HEAD commit first. Fastly CDN caches the branch path for 5 minutes;
+		   querying by commit SHA completely bypasses this delay with 0-second freshness. */
+		$sha = $this->head_sha();
+		$ref = $sha ? $sha : $this->branch;
+
 		$style = sprintf(
 			'https://raw.githubusercontent.com/%s/%s/%sstyle.css',
 			$this->repo,
-			rawurlencode( $this->branch ),
+			rawurlencode( $ref ),
 			$this->path ? trailingslashit( $this->path ) : ''
 		);
 
@@ -460,7 +465,7 @@ final class Theme_GitHub_Updater {
 
 		$data = array(
 			'version' => trim( $m[1] ),
-			'sha'     => $this->head_sha(),
+			'sha'     => $sha,
 		);
 
 		set_transient( $this->key, $data, 2 * HOUR_IN_SECONDS );
