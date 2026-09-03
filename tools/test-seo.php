@@ -20,7 +20,7 @@ if ( PHP_SAPI !== 'cli' ) {
 error_reporting( E_ALL );
 ini_set( 'display_errors', 1 );
 
-define( 'BB_THEME_DIR', dirname( __DIR__ ) . '/Website/bichitro-biggan' );
+define( 'BB_THEME_DIR', dirname( __DIR__ ) );
 define( 'ABSPATH', BB_THEME_DIR . '/' );
 define( 'DATE_W3C_FALLBACK', 'Y-m-d\TH:i:sP' );
 

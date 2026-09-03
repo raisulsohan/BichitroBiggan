@@ -14,7 +14,7 @@ if ( PHP_SAPI !== 'cli' ) {
 	exit( 'CLI only.' );
 }
 
-define( 'BB_THEME_DIR', dirname( __DIR__ ) . '/Website/bichitro-biggan' );
+define( 'BB_THEME_DIR', dirname( __DIR__ ) );
 
 define( 'ABSPATH', BB_THEME_DIR . '/' );
 

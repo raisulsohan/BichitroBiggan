@@ -2,7 +2,7 @@
 
 [![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b.svg?logo=wordpress&logoColor=white)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg?logo=php&logoColor=white)](https://php.net)
-[![Version](https://img.shields.io/badge/Version-7.1.1-0080ff.svg)](Website/bichitro-biggan/style.css)
+[![Version](https://img.shields.io/badge/Version-7.1.1-0080ff.svg)](style.css)
 [![Zero-Plugin Architecture](https://img.shields.io/badge/Plugins-0%20(Built--in)-success.svg)](#-key-features)
 [![Responsive](https://img.shields.io/badge/Responsive-Mobile%20%26%20Desktop-brightgreen.svg)](#-key-features)
 
@@ -57,12 +57,10 @@ Fully integrated with the WordPress Customizer for live previews:
 This theme features a **Native GitHub Auto-Updater**, meaning you only need to install it manually once. All future updates will be delivered directly to your WordPress dashboard without needing any third-party plugins.
 
 ### Initial Installation:
-1. Click the green **Code** button on this GitHub repository and select **Download ZIP**.
-2. Extract the downloaded ZIP file on your computer.
-3. Navigate into the extracted folder and go to the `Website/` directory.
-4. Compress the `bichitro-biggan` folder into a new ZIP file (e.g., `bichitro-biggan.zip`).
-5. Go to your WordPress Dashboard: **Appearance > Themes > Add New > Upload Theme**.
-6. Upload the `bichitro-biggan.zip` file and click **Install Now**, then **Activate**.
+1. Click the green **Code** button on this GitHub repository and select **Download ZIP** (or download the latest release).
+2. Go to your WordPress Dashboard: **Appearance > Themes > Add New > Upload Theme**.
+3. Upload the downloaded ZIP file directly and click **Install Now**, then **Activate**.
+*(Alternatively, compress the repository folder directly as `bichitro-biggan.zip` and upload it).*
 
 ### 🔄 Future Updates (Auto-Updater):
 You are all set! Whenever a new version is released on GitHub, you will see a standard "Update Available" notification in your WordPress dashboard. Just click **Update Now** and the theme will automatically pull the latest code.
