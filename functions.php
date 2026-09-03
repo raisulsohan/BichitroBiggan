@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.1.5' );
+define( 'BB_VERSION', '7.2' );
 
 /**
  * Cache-busting version for an asset.
@@ -141,7 +141,7 @@ function bb_enqueue_assets() {
 	wp_enqueue_style(
 		'bb-style',
 		get_stylesheet_uri(),
-		array( 'bb-fonts' ),
+		array(),
 		bb_file_version( get_stylesheet_directory() . '/style.css' )
 	);
 
@@ -152,6 +152,7 @@ function bb_enqueue_assets() {
 		bb_file_version( get_template_directory() . '/assets/js/theme.js' ),
 		true
 	);
+	wp_script_add_data( 'bb-script', 'strategy', 'defer' );
 
 	wp_localize_script( 'bb-script', 'BBData', array(
 		'email'      => bb_get_contact_email(),
@@ -176,6 +177,91 @@ function bb_enqueue_assets() {
 	}
 }
 add_action( 'wp_enqueue_scripts', 'bb_enqueue_assets' );
+
+/**
+ * Asynchronously load Google Fonts without blocking initial render.
+ */
+function bb_async_font_styles( $html, $handle, $href, $media ) {
+	if ( 'bb-fonts' === $handle ) {
+		return sprintf(
+			'<link rel="preload" as="style" href="%s" onload="this.onload=null;this.rel=\'stylesheet\'">' . "\n" .
+			'<noscript><link rel="stylesheet" href="%s"></noscript>' . "\n",
+			esc_url( $href ),
+			esc_url( $href )
+		);
+	}
+	return $html;
+}
+add_filter( 'style_loader_tag', 'bb_async_font_styles', 10, 4 );
+
+/**
+ * Preload the Largest Contentful Paint (LCP) image in <head> for fast mobile rendering.
+ */
+function bb_preload_lcp_image() {
+	$thumb_id = 0;
+	$size     = 'bb-hero';
+
+	if ( is_front_page() || is_home() ) {
+		$slot1_id = absint( get_theme_mod( 'bb_hero_slot_1', 0 ) );
+		$cat1_id  = absint( get_theme_mod( 'bb_hero_cat_1', 0 ) );
+
+		if ( $slot1_id > 0 ) {
+			$thumb_id = get_post_thumbnail_id( $slot1_id );
+		} elseif ( $cat1_id > 0 ) {
+			$q = new WP_Query( array(
+				'cat'                 => $cat1_id,
+				'posts_per_page'      => 1,
+				'post_status'         => 'publish',
+				'ignore_sticky_posts' => true,
+				'no_found_rows'       => true,
+			) );
+			if ( $q->have_posts() ) {
+				$thumb_id = get_post_thumbnail_id( $q->posts[0]->ID );
+			}
+		} else {
+			$q = new WP_Query( array(
+				'posts_per_page'      => 1,
+				'post_status'         => 'publish',
+				'ignore_sticky_posts' => true,
+				'no_found_rows'       => true,
+			) );
+			if ( $q->have_posts() ) {
+				$thumb_id = get_post_thumbnail_id( $q->posts[0]->ID );
+			}
+		}
+	} elseif ( is_singular( 'post' ) ) {
+		$post_id  = get_the_ID();
+		$thumb_id = get_post_thumbnail_id( $post_id );
+		$size     = 'full';
+	}
+
+	if ( ! $thumb_id ) {
+		return;
+	}
+
+	$src = wp_get_attachment_image_url( $thumb_id, $size );
+	if ( ! $src ) {
+		return;
+	}
+
+	$srcset = wp_get_attachment_image_srcset( $thumb_id, $size );
+	$sizes  = wp_get_attachment_image_sizes( $thumb_id, $size );
+
+	if ( $srcset && $sizes ) {
+		printf(
+			'<link rel="preload" as="image" href="%s" imagesrcset="%s" imagesizes="%s" fetchpriority="high">' . "\n",
+			esc_url( $src ),
+			esc_attr( $srcset ),
+			esc_attr( $sizes )
+		);
+	} else {
+		printf(
+			'<link rel="preload" as="image" href="%s" fetchpriority="high">' . "\n",
+			esc_url( $src )
+		);
+	}
+}
+add_action( 'wp_head', 'bb_preload_lcp_image', 1 );
 
 /**
  * Live preview for the postMessage settings (the logo sliders).
@@ -1597,6 +1683,10 @@ add_action( 'admin_menu', 'bb_license_menu' );
  */
 function bb_handle_license_activation() {
 	if ( ! isset( $_POST['bb_license_activate'] ) || ! check_admin_referer( 'bb_license_nonce' ) ) {
+		return;
+	}
+
+	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
 
