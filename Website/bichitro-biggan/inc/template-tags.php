@@ -188,7 +188,7 @@ function bb_card( $args = array() ) {
 	?>
 	<article class="bb-card">
 		<a class="bb-thumb <?php echo esc_attr( $args['height_class'] ); ?>" href="<?php the_permalink(); ?>"<?php bb_article_attr(); ?> aria-hidden="true" tabindex="-1">
-			<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), $args['image_size'] ) ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" />
+			<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), $args['image_size'] ) ); ?> alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), $args['image_size'] ); ?> />
 			<span class="bb-thumb__badge"><?php bb_badge(); ?></span>
 		</a>
 		<h3 class="bb-card__title <?php echo esc_attr( $args['title_class'] ); ?>">
@@ -216,7 +216,7 @@ function bb_list_item( $size = 'bb-small' ) {
 	?>
 	<a class="bb-listitem" href="<?php the_permalink(); ?>"<?php bb_article_attr(); ?>>
 		<span class="bb-listitem__thumb">
-			<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), $size ) ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" />
+			<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), $size ) ); ?> alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), $size ); ?> />
 		</span>
 		<span class="bb-listitem__body">
 			<span class="bb-listitem__title"><?php the_title(); ?></span>
@@ -237,7 +237,7 @@ function bb_wide_row() {
 	?>
 	<a class="bb-wide-row" href="<?php the_permalink(); ?>"<?php bb_article_attr(); ?>>
 		<span class="bb-wide-row__thumb">
-			<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-thumb' ) ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" />
+			<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-thumb' ) ); ?> alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), 'bb-thumb' ); ?> />
 		</span>
 		<span class="bb-wide-row__body">
 			<span class="bb-wide-row__title"><?php the_title(); ?></span>
@@ -271,10 +271,11 @@ function bb_overlay_panel( $args = array() ) {
 		'byline'      => false,
 		'title_clamp' => 'bb-clamp-1',
 		'overlay'     => '',
+		'priority'    => false,
 	) );
 	?>
 	<a class="<?php echo esc_attr( $args['class'] ); ?>" href="<?php the_permalink(); ?>"<?php bb_article_attr(); ?>>
-		<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), $args['image_size'] ) ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" />
+		<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), $args['image_size'] ) ); ?>" alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), $args['image_size'], $args['priority'] ); ?> />
 		<span class="bb-overlay <?php echo esc_attr( $args['overlay'] ); ?>">
 			<?php bb_badge(); ?>
 			<span class="bb-overlay__title <?php echo esc_attr( $args['title_clamp'] ); ?>"><?php the_title(); ?></span>
@@ -302,6 +303,7 @@ function bb_hero_card( $args = array() ) {
 		'title_clamp' => '',
 		'overlay'     => 'bb-overlay--deep',
 		'custom_time' => '',
+		'priority'    => false,
 	) );
 
 	$post_id    = get_the_ID();
@@ -319,8 +321,8 @@ function bb_hero_card( $args = array() ) {
 		$thumb_src     = bb_thumb_url( $post_id, 'full' );
 		?>
 		<a class="<?php echo esc_attr( $podcast_class ); ?>" href="<?php the_permalink(); ?>"<?php echo $video_attr; ?><?php if ( empty( $video_url ) ) { bb_article_attr( $post_id ); } ?>>
-			<img class="bb-hero__podcast-bg" src="<?php echo esc_url( $thumb_src ); ?>" alt="" loading="lazy" aria-hidden="true" />
-			<img class="bb-hero__podcast-img" src="<?php echo esc_url( $thumb_src ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" />
+			<img class="bb-hero__podcast-bg" src="<?php echo esc_url( $thumb_src ); ?>" alt=""<?php bb_img_attrs( $post_id, $args['image_size'], $args['priority'] ); ?> aria-hidden="true" />
+			<img class="bb-hero__podcast-img" src="<?php echo esc_url( $thumb_src ); ?>" alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( $post_id, $args['image_size'], $args['priority'] ); ?> />
 			<?php if ( ! empty( $video_url ) ) : ?>
 				<span class="bb-hero__play-btn" role="button" aria-label="<?php esc_attr_e( 'ভিডিও সরাসরি দেখুন', 'bichitro-biggan' ); ?>">
 					<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
@@ -362,6 +364,7 @@ function bb_hero_card( $args = array() ) {
 		'byline'      => $args['byline'],
 		'title_clamp' => $args['title_clamp'],
 		'overlay'     => $args['overlay'],
+		'priority'    => $args['priority'],
 	) );
 }
 
@@ -389,7 +392,7 @@ function bb_footer_item() {
 	<a class="bb-footer__item<?php echo $show_thumb ? ' bb-footer__item--has-thumb' : ''; ?>" href="<?php the_permalink(); ?>"<?php bb_article_attr(); ?>>
 		<?php if ( $show_thumb ) : ?>
 			<span class="bb-footer__item-thumb">
-				<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-small' ) ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" />
+				<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-small' ) ); ?> alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), 'bb-small' ); ?> />
 			</span>
 		<?php endif; ?>
 		<span class="bb-footer__item-content">

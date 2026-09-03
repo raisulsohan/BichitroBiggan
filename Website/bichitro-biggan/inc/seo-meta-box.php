@@ -540,7 +540,9 @@ function bb_seo_head_meta() {
 
 	// Open Graph tags.
 	printf( '<meta property="og:type" content="%s" />' . "\n", esc_attr( $ctx['og_type'] ) );
-	printf( '<meta property="og:locale" content="%s" />' . "\n", esc_attr( get_locale() ) );
+	/* The site runs in an English WordPress locale but publishes in Bengali,
+	   so get_locale() would advertise the wrong content language. */
+	printf( '<meta property="og:locale" content="%s" />' . "\n", esc_attr( apply_filters( 'bb_seo_og_locale', 'bn_BD' ) ) );
 	printf( '<meta property="og:site_name" content="%s" />' . "\n", esc_attr( $site_name ) );
 
 	if ( $ctx['title'] ) {

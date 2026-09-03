@@ -47,7 +47,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<!-- Top bar -->
 	<div class="bb-topbar">
 		<div class="bb-topbar__inner">
-			<span class="bb-topbar__date"><?php echo esc_html( wp_date( 'l, F j, Y' ) ); ?></span>
+			<span class="bb-topbar__date"><?php echo esc_html( bb_bangla_today() ); ?></span>
 			<div class="bb-topbar__actions">
 				<button type="button" class="bb-topbar__btn bb-topbar__btn--bookmarks" data-bb-toggle="bookmarks" title="<?php esc_attr_e( 'সংরক্ষিত লেখাগুলো দেখুন', 'bichitro-biggan' ); ?>" aria-label="<?php esc_attr_e( 'সংরক্ষিত লেখাগুলো দেখুন', 'bichitro-biggan' ); ?>">
 					<span aria-hidden="true">🔖</span>

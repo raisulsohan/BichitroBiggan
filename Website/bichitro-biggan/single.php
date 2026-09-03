@@ -182,7 +182,7 @@ while ( have_posts() ) :
 						?>
 						<a class="bb-related__item" href="<?php the_permalink(); ?>"<?php bb_article_attr(); ?>>
 							<span class="bb-related__thumb">
-								<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-thumb' ) ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" />
+								<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-thumb' ) ); ?> alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), 'bb-thumb' ); ?> />
 								<span class="bb-related__badge"><?php bb_badge(); ?></span>
 							</span>
 							<span class="bb-related__title"><?php the_title(); ?></span>

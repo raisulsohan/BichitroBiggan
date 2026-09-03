@@ -101,6 +101,7 @@ if ( $bb_p1 ) :
 					'byline'      => true,
 					'overlay'     => 'bb-overlay--deep',
 					'custom_time' => $bb_pod_time,
+					'priority'    => true, // LCP image — must not be lazy-loaded.
 				) );
 				?>
 			</div>
@@ -239,7 +240,7 @@ if ( $bb_b1l->have_posts() || $bb_b1r->have_posts() ) :
 										<?php bb_setup_post( $bb_p ); ?>
 										<article class="bb-card">
 											<a class="bb-thumb bb-ratio-24" href="<?php the_permalink(); ?>"<?php bb_article_attr(); ?>>
-												<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-thumb' ) ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" />
+												<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-thumb' ) ); ?> alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), 'bb-thumb' ); ?> />
 												<span class="bb-thumb__badge bb-thumb__badge--tight"><?php bb_badge(); ?></span>
 											</a>
 											<h3 class="bb-card__title" style="font-size:12px;margin-top:6px;">

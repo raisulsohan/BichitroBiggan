@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '6.5' );
+define( 'BB_VERSION', '6.6' );
 
 /**
  * Cache-busting version for an asset.
@@ -580,6 +580,161 @@ function bb_thumb_url( $post_id = null, $size = 'bb-card' ) {
 }
 
 /**
+ * Intrinsic dimensions + loading hints for a card image.
+ *
+ * The CSS already reserves the box, but Lighthouse still wants width/height,
+ * and it protects the layout if the stylesheet is slow. Pass $priority = true
+ * for the LCP image (the first hero panel) so it is fetched eagerly instead of
+ * being lazy-loaded like everything else.
+ *
+ * @param int|null $post_id  Post whose thumbnail is being printed.
+ * @param string   $size     Registered image size.
+ * @param bool     $priority True for the LCP image.
+ */
+function bb_img_attrs( $post_id = null, $size = 'bb-card', $priority = false ) {
+	$post_id = $post_id ? $post_id : get_the_ID();
+	$width   = 0;
+	$height  = 0;
+
+	$thumb_id = $post_id ? get_post_thumbnail_id( $post_id ) : 0;
+
+	if ( $thumb_id ) {
+		$src = wp_get_attachment_image_src( $thumb_id, $size );
+		if ( $src && ! empty( $src[1] ) && ! empty( $src[2] ) ) {
+			$width  = (int) $src[1];
+			$height = (int) $src[2];
+		}
+	}
+
+	if ( ! $width ) {
+		list( $width, $height ) = bb_image_size_dimensions( $size );
+	}
+
+	printf(
+		' width="%1$d" height="%2$d" decoding="async"%3$s',
+		$width,
+		$height,
+		$priority ? ' loading="eager" fetchpriority="high"' : ' loading="lazy"'
+	);
+}
+
+/**
+ * Declared size of the theme's own image sizes — used when a post has no
+ * thumbnail and the placeholder is shown instead.
+ */
+function bb_image_size_dimensions( $size ) {
+	$sizes = array(
+		'bb-hero'  => array( 900, 720 ),
+		'bb-card'  => array( 600, 380 ),
+		'bb-thumb' => array( 360, 240 ),
+		'bb-small' => array( 160, 120 ),
+	);
+
+	return isset( $sizes[ $size ] ) ? $sizes[ $size ] : array( 600, 380 );
+}
+
+/**
+ * Send a real 404 for paginated URLs past the last page.
+ *
+ * front-page.php renders the hero and every category block regardless of the
+ * page number, so /page/999/ used to answer 200 with an empty "All posts"
+ * list — an unlimited supply of crawlable near-duplicate URLs.
+ */
+function bb_paged_404() {
+	global $wp_query;
+
+	if ( is_admin() || is_404() || is_singular() || is_robots() || is_feed() ) {
+		return;
+	}
+
+	$paged = (int) get_query_var( 'paged' );
+
+	if ( $paged < 2 ) {
+		return;
+	}
+
+	$max = (int) $wp_query->max_num_pages;
+
+	if ( $max && $paged <= $max ) {
+		return;
+	}
+
+	$wp_query->set_404();
+	status_header( 404 );
+	nocache_headers();
+}
+add_action( 'template_redirect', 'bb_paged_404' );
+
+/**
+ * Point crawlers at the sitemap from robots.txt.
+ */
+function bb_robots_txt( $output ) {
+	if ( ! get_option( 'blog_public' ) ) {
+		return $output;
+	}
+
+	$sitemap = function_exists( 'wp_sitemaps_get_server' ) ? home_url( '/wp-sitemap.xml' ) : '';
+
+	if ( $sitemap && false === strpos( $output, 'Sitemap:' ) ) {
+		$output .= "\nSitemap: " . esc_url_raw( $sitemap ) . "\n";
+	}
+
+	return $output;
+}
+add_filter( 'robots_txt', 'bb_robots_txt' );
+
+/**
+ * Month names in Bengali, for the archive list and anywhere else the site
+ * shows a month without a full date.
+ */
+function bb_bangla_month( $month_number ) {
+	$months = array(
+		1  => 'জানুয়ারি',
+		2  => 'ফেব্রুয়ারি',
+		3  => 'মার্চ',
+		4  => 'এপ্রিল',
+		5  => 'মে',
+		6  => 'জুন',
+		7  => 'জুলাই',
+		8  => 'আগস্ট',
+		9  => 'সেপ্টেম্বর',
+		10 => 'অক্টোবর',
+		11 => 'নভেম্বর',
+		12 => 'ডিসেম্বর',
+	);
+
+	$month_number = (int) $month_number;
+
+	return isset( $months[ $month_number ] ) ? $months[ $month_number ] : $GLOBALS['wp_locale']->get_month( $month_number );
+}
+
+/**
+ * Today's date for the top bar, in Bengali to match the rest of the site.
+ */
+function bb_bangla_today() {
+	$days = array(
+		'Sunday'    => 'রবিবার',
+		'Monday'    => 'সোমবার',
+		'Tuesday'   => 'মঙ্গলবার',
+		'Wednesday' => 'বুধবার',
+		'Thursday'  => 'বৃহস্পতিবার',
+		'Friday'    => 'শুক্রবার',
+		'Saturday'  => 'শনিবার',
+	);
+
+	$day_en = wp_date( 'l' );
+	$day    = isset( $days[ $day_en ] ) ? $days[ $day_en ] : $day_en;
+
+	return sprintf(
+		'%s, %s %s %s',
+		$day,
+		bb_bangla_number( wp_date( 'j' ) ),
+		bb_bangla_month( wp_date( 'n' ) ),
+		bb_bangla_number( wp_date( 'Y' ) )
+	);
+}
+
+/**
  * Convert English digits to Bengali digits.
  */
 function bb_bangla_number( $number ) {
@@ -934,7 +1089,7 @@ function bb_get_archive_tree( $cat_id = 0 ) {
 			$tree[ $row->y ][] = array(
 				'month' => (int) $row->m,
 				'count' => (int) $row->c,
-				'label' => $GLOBALS['wp_locale']->get_month( $row->m ),
+				'label' => bb_bangla_month( $row->m ),
 				'url'   => $month_url,
 			);
 		}
@@ -955,7 +1110,7 @@ function bb_get_archive_tree( $cat_id = 0 ) {
 		$tree[ $row->y ][] = array(
 			'month' => (int) $row->m,
 			'count' => (int) $row->c,
-			'label' => $GLOBALS['wp_locale']->get_month( $row->m ),
+			'label' => bb_bangla_month( $row->m ),
 			'url'   => get_month_link( $row->y, $row->m ),
 		);
 	}
