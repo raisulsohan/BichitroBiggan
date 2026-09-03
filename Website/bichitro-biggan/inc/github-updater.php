@@ -31,14 +31,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( class_exists( 'Theme_GitHub_Updater' ) ) {
-	return;
-}
+if ( ! class_exists( 'Theme_GitHub_Updater' ) ) :
 
 /**
  * Class Theme_GitHub_Updater
  */
 final class Theme_GitHub_Updater {
+
+	/** @var bool Whether an instance was already booted. */
+	private static $booted = false;
 
 	/** @var string owner/repo, read from the Theme URI header. */
 	private $repo = '';
@@ -73,6 +74,11 @@ final class Theme_GitHub_Updater {
 	 * Read the theme's own headers and hook in.
 	 */
 	public function __construct() {
+		if ( self::$booted ) {
+			return;
+		}
+		self::$booted = true;
+
 		$theme = wp_get_theme( get_template() );
 
 		$this->slug    = $theme->get_stylesheet();
@@ -122,6 +128,10 @@ final class Theme_GitHub_Updater {
 	 */
 	private function header( $theme, $name, $default ) {
 		$value = $theme->get( $name );
+
+		if ( ! $value && 'Update URI' === $name ) {
+			$value = $theme->get( 'UpdateURI' );
+		}
 
 		if ( ! $value ) {
 			/* WP_Theme only exposes headers it knows, so read the file for ours. */
@@ -524,7 +534,12 @@ final class Theme_GitHub_Updater {
 		);
 	}
 }
+endif;
 
-add_action( 'after_setup_theme', function () {
+if ( did_action( 'after_setup_theme' ) ) {
 	new Theme_GitHub_Updater();
-} );
+} else {
+	add_action( 'after_setup_theme', function () {
+		new Theme_GitHub_Updater();
+	} );
+}
