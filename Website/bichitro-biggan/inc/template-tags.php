@@ -188,7 +188,7 @@ function bb_card( $args = array() ) {
 	?>
 	<article class="bb-card">
 		<a class="bb-thumb <?php echo esc_attr( $args['height_class'] ); ?>" href="<?php the_permalink(); ?>"<?php bb_article_attr(); ?> aria-hidden="true" tabindex="-1">
-			<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), $args['image_size'] ) ); ?> alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), $args['image_size'] ); ?> />
+			<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), $args['image_size'] ) ); ?>" alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), $args['image_size'] ); ?> />
 			<span class="bb-thumb__badge"><?php bb_badge(); ?></span>
 		</a>
 		<h3 class="bb-card__title <?php echo esc_attr( $args['title_class'] ); ?>">
@@ -216,7 +216,7 @@ function bb_list_item( $size = 'bb-small' ) {
 	?>
 	<a class="bb-listitem" href="<?php the_permalink(); ?>"<?php bb_article_attr(); ?>>
 		<span class="bb-listitem__thumb">
-			<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), $size ) ); ?> alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), $size ); ?> />
+			<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), $size ) ); ?>" alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), $size ); ?> />
 		</span>
 		<span class="bb-listitem__body">
 			<span class="bb-listitem__title"><?php the_title(); ?></span>
@@ -237,7 +237,7 @@ function bb_wide_row() {
 	?>
 	<a class="bb-wide-row" href="<?php the_permalink(); ?>"<?php bb_article_attr(); ?>>
 		<span class="bb-wide-row__thumb">
-			<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-thumb' ) ); ?> alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), 'bb-thumb' ); ?> />
+			<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-thumb' ) ); ?>" alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), 'bb-thumb' ); ?> />
 		</span>
 		<span class="bb-wide-row__body">
 			<span class="bb-wide-row__title"><?php the_title(); ?></span>
@@ -392,7 +392,7 @@ function bb_footer_item() {
 	<a class="bb-footer__item<?php echo $show_thumb ? ' bb-footer__item--has-thumb' : ''; ?>" href="<?php the_permalink(); ?>"<?php bb_article_attr(); ?>>
 		<?php if ( $show_thumb ) : ?>
 			<span class="bb-footer__item-thumb">
-				<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-small' ) ); ?> alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), 'bb-small' ); ?> />
+				<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-small' ) ); ?>" alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), 'bb-small' ); ?> />
 			</span>
 		<?php endif; ?>
 		<span class="bb-footer__item-content">

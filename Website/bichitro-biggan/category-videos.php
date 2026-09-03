@@ -57,7 +57,7 @@ $bb_archive_title = single_term_title( '', false );
 						<a href="<?php echo esc_url( $link_href ); ?>" 
 						   class="bb-pod-thumb" 
 						   <?php echo $popup_attr; ?> <?php if ( ! $video_url ) { bb_article_attr(); } ?>>
-							<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-card' ) ); ?> alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), 'bb-card' ); ?> />
+							<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-card' ) ); ?>" alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), 'bb-card' ); ?> />
 							<span class="bb-pod-play">
 								<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
 							</span>
