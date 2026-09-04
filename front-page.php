@@ -205,8 +205,8 @@ if ( $bb_b1l->have_posts() || $bb_b1r->have_posts() ) :
 											'height_class' => 'bb-ratio-44',
 											'title_class'  => 'bb-card__title--md',
 											'excerpt'      => true,
-											'excerpt_len'  => 20,
-											'clamp'        => 'bb-clamp-4',
+											'excerpt_len'  => 17,
+											'clamp'        => 'bb-clamp-3',
 										) );
 										bb_slider_arrows( count( $bb_b1l_chunks ) );
 										?>
@@ -286,7 +286,7 @@ $bb_b2l_chunks = array_chunk( $bb_b2l->posts, 6 );
 if ( $bb_b2l->have_posts() || $bb_b2r->have_posts() ) :
 	?>
 	<section class="bb-container bb-section bb-section--bordered">
-		<div class="bb-cols">
+		<div class="bb-cols bb-cols--stretch">
 
 			<div class="bb-col-main">
 				<?php if ( ! empty( $bb_b2l_chunks ) ) : ?>
@@ -336,23 +336,23 @@ if ( $bb_b2l->have_posts() || $bb_b2r->have_posts() ) :
 					echo '<div style="margin-bottom:4px;">';
 					bb_card( array(
 						'image_size'   => 'bb-card',
-						'height_class' => 'bb-ratio-52',
-						'title_class'  => 'bb-card__title--lg',
+						'height_class' => 'bb-ratio-44',
+						'title_class'  => 'bb-card__title--md',
 						'excerpt'      => true,
 						'excerpt_len'  => 18,
 					) );
 					echo '</div>';
 					?>
 
-					<?php
-					while ( $bb_b2r->have_posts() ) :
-						$bb_b2r->the_post();
-						echo '<div style="border-top:1px solid #f3f4f6;">';
-						bb_list_item();
-						echo '</div>';
-					endwhile;
-					wp_reset_postdata();
-					?>
+					<div class="bb-divide-y bb-block2-side-list">
+						<?php
+						while ( $bb_b2r->have_posts() ) :
+							$bb_b2r->the_post();
+							bb_list_item();
+						endwhile;
+						wp_reset_postdata();
+						?>
+					</div>
 				<?php endif; ?>
 			</div>
 
