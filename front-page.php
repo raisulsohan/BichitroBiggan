@@ -243,10 +243,10 @@ if ( $bb_b1l->have_posts() || $bb_b1r->have_posts() ) :
 												<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), 'bb-thumb' ) ); ?>" alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), 'bb-thumb' ); ?> />
 												<span class="bb-thumb__badge bb-thumb__badge--tight"><?php bb_badge(); ?></span>
 											</a>
-											<h3 class="bb-card__title" style="font-size:12px;margin-top:6px;">
+											<h3 class="bb-card__title" style="font-size:14.5px;margin-top:6px;">
 												<a href="<?php the_permalink(); ?>"<?php bb_article_attr(); ?>><?php the_title(); ?></a>
 											</h3>
-											<p class="bb-card__byline" style="font-size:11px;margin-top:2px;">
+											<p class="bb-card__byline" style="font-size:12.5px;margin-top:2px;">
 												<span class="bb-readtime-pill">⏱ <?php echo esc_html( bb_reading_time() ); ?></span>
 											</p>
 										</article>
