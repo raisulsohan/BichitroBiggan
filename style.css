@@ -1394,7 +1394,7 @@ a.bb-badge:hover {
 
 /* Block 1 (Quantum & Nobel) alignment */
 .bb-feature__list .bb-listitem {
-  padding: 16px 0;
+  padding: 16.5px 0;
 }
 .bb-feature__list .bb-listitem__thumb {
   width: 90px;
