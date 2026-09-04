@@ -205,8 +205,8 @@ if ( $bb_b1l->have_posts() || $bb_b1r->have_posts() ) :
 											'height_class' => 'bb-ratio-44',
 											'title_class'  => 'bb-card__title--md',
 											'excerpt'      => true,
-											'excerpt_len'  => 17,
-											'clamp'        => 'bb-clamp-3',
+											'excerpt_len'  => 20,
+											'clamp'        => 'bb-clamp-4',
 										) );
 										bb_slider_arrows( count( $bb_b1l_chunks ) );
 										?>

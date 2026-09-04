@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.2.4' );
+define( 'BB_VERSION', '7.2.5' );
 
 /**
  * Cache-busting version for an asset.
@@ -374,7 +374,7 @@ function bb_layout_settings() {
 
 		// Block 1
 		'bb_feature_width'        => array( 'var' => '--bb-feature-w', 'default' => 240, 'min' => 140, 'max' => 480, 'section' => 'bb_layout_block1', 'label' => __( 'Featured Column Width', 'bichitro-biggan' ) ),
-		'bb_feature_image_height' => array( 'var' => '--bb-feature-img-h', 'default' => 160, 'min' => 100, 'max' => 400, 'section' => 'bb_layout_block1', 'label' => __( 'Featured Card Image Height', 'bichitro-biggan' ) ),
+		'bb_feature_image_height' => array( 'var' => '--bb-feature-img-h', 'default' => 116, 'min' => 100, 'max' => 400, 'section' => 'bb_layout_block1', 'label' => __( 'Featured Card Image Height', 'bichitro-biggan' ) ),
 		'bb_list_thumb_width'     => array( 'var' => '--bb-list-thumb-w', 'default' => 90, 'min' => 56, 'max' => 180, 'section' => 'bb_layout_block1', 'label' => __( 'Side List Thumbnail Width', 'bichitro-biggan' ) ),
 		'bb_list_thumb_height'    => array( 'var' => '--bb-list-thumb-h', 'default' => 64, 'min' => 40, 'max' => 130, 'section' => 'bb_layout_block1', 'label' => __( 'Side List Thumbnail Height', 'bichitro-biggan' ) ),
 		'bb_grid_card_height'     => array( 'var' => '--bb-grid-card-h', 'default' => 116, 'min' => 70, 'max' => 240, 'section' => 'bb_layout_block1', 'label' => __( 'Right Grid Card Height', 'bichitro-biggan' ) ),

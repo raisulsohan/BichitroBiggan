@@ -3,7 +3,7 @@ Theme Name: Bichitro Biggan
 Theme URI: https://bichitrobiggan.com
 Author: Raisul Sohan
 Description: Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic WordPress theme built for a Bengali science magazine and digital publication. Custom-made and developed from scratch by Raisul Sohan, it is designed with a world-class reading experience, built-in SEO, live search, and comprehensive customizer controls.
-Version: 7.2.4
+Version: 7.2.5
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
@@ -1374,12 +1374,15 @@ a.bb-badge:hover {
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+  }
+  .bb-feature__main > .bb-arrow-group {
+    margin-top: auto;
+    padding-top: 10px;
   }
 }
 
 .bb-ratio-44 { height: var(--bb-card-img-h, 176px); }
-.bb-feature__main .bb-ratio-44 { height: var(--bb-feature-img-h, 160px); }
+.bb-feature__main .bb-ratio-44 { height: var(--bb-feature-img-h, 116px); }
 [data-bb-list="all"] .bb-ratio-44 { height: var(--bb-all-img-h, 176px); }
 .bb-ratio-40 { height: var(--bb-archive-img-h, 160px); }
 .bb-ratio-52 { height: var(--bb-side-img-h, 208px); }
@@ -1387,15 +1390,6 @@ a.bb-badge:hover {
 @media (min-width: 640px) {
   .bb-ratio-24 { height: var(--bb-grid-card-h, 116px); }
   .bb-grid--2-always .bb-ratio-24 { height: 116px; }
-}
-
-@media (min-width: 1024px) {
-  .bb-cols--stretch .bb-col-side > [data-bb-slider] {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    justify-content: space-between;
-  }
 }
 
 /* Block 2 right side list spacing to align with left slider bottom */
