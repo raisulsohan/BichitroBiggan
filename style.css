@@ -3,7 +3,7 @@ Theme Name: Bichitro Biggan
 Theme URI: https://bichitrobiggan.com
 Author: Raisul Sohan
 Description: Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic WordPress theme built for a Bengali science magazine and digital publication. Custom-made and developed from scratch by Raisul Sohan, it is designed with a world-class reading experience, built-in SEO, live search, and comprehensive customizer controls.
-Version: 7.2.2
+Version: 7.2.3
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
@@ -26,12 +26,15 @@ html { -webkit-text-size-adjust: 100%; }
 
 body.bb-body {
   margin: 0;
-  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  font-family: 'Noto Sans Bengali', sans-serif;
   background: #ffffff;
   color: #1a1a1a;
   font-size: 16px;
   line-height: 1.5;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body.bb-noscroll { overflow: hidden; }
@@ -893,10 +896,11 @@ a.bb-badge:hover {
 
 .bb-card__title {
   margin-top: 8px;
-  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  font-family: 'Noto Sans Bengali', sans-serif;
   font-weight: 600;
   color: #1f2937;
-  line-height: 1.4;
+  line-height: 1.42;
+  letter-spacing: 0.15px;
   transition: color .15s ease;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -939,7 +943,7 @@ a.bb-badge:hover {
   font-size: 15.5px;
   color: #374151;
   line-height: 1.7;
-  font-family: 'Hind Siliguri', sans-serif;
+  font-family: 'Noto Sans Bengali', sans-serif;
   letter-spacing: 0.1px;
 }
 
@@ -973,7 +977,8 @@ a.bb-badge:hover {
   font-weight: 600;
   color: #1f2937;
   line-height: 1.45;
-  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  letter-spacing: 0.15px;
+  font-family: 'Noto Sans Bengali', sans-serif;
   transition: color .15s ease;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -1020,7 +1025,8 @@ a.bb-badge:hover {
   color: #fff;
   font-weight: 600;
   line-height: 1.375;
-  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  letter-spacing: 0.15px;
+  font-family: 'Noto Sans Bengali', sans-serif;
   margin-top: 8px;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -1406,7 +1412,8 @@ a.bb-badge:hover {
   font-weight: 600;
   color: #1f2937;
   line-height: 1.4;
-  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  letter-spacing: 0.15px;
+  font-family: 'Noto Sans Bengali', sans-serif;
   transition: color .15s ease;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -1435,7 +1442,8 @@ a.bb-badge:hover {
   font-weight: 600;
   color: #1f2937;
   line-height: 1.4;
-  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  letter-spacing: 0.15px;
+  font-family: 'Noto Sans Bengali', sans-serif;
   transition: color .15s ease;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -1477,7 +1485,8 @@ a.bb-badge:hover {
   font-weight: 600;
   font-size: 18px;
   line-height: 1.4;
-  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  letter-spacing: 0.15px;
+  font-family: 'Noto Sans Bengali', sans-serif;
   display: -webkit-box;
   -webkit-line-clamp: 1;
   line-clamp: 1;
@@ -1503,7 +1512,7 @@ a.bb-badge:hover {
   border-radius: 8px;
 }
 .bb-tallcard img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; border-radius: 8px; transition: transform .5s ease; }
-.bb-tallcard .bb-overlay__title { font-size: 16.5px; font-weight: 600; font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif; line-height: 1.4; margin-top: 0; display: -webkit-box; -webkit-line-clamp: 1; line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
+.bb-tallcard .bb-overlay__title { font-size: 16.5px; font-weight: 600; font-family: 'Noto Sans Bengali', sans-serif; letter-spacing: 0.15px; line-height: 1.4; margin-top: 0; display: -webkit-box; -webkit-line-clamp: 1; line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
 
 /* =========================================================
    14. ARCHIVE / CATEGORY PAGE
@@ -1525,7 +1534,8 @@ a.bb-badge:hover {
   font-weight: 700;
   color: #1f2937;
   margin-bottom: 20px;
-  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  letter-spacing: 0.15px;
+  font-family: 'Noto Sans Bengali', sans-serif;
 }
 .bb-archive__desc {
   font-size: 14px;
@@ -1771,8 +1781,9 @@ a.bb-badge:hover {
   font-weight: 700;
   color: #111827;
   line-height: 1.35;
+  letter-spacing: 0.15px;
   margin-bottom: 16px;
-  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  font-family: 'Noto Sans Bengali', sans-serif;
 }
 
 .bb-single .bb-breadcrumb { margin-bottom: 12px; }
@@ -2016,8 +2027,9 @@ body.bb-nav-stuck .bb-floating-bar,
   font-weight: 700;
   line-height: 1.35;
   color: #111827;
+  letter-spacing: 0.15px;
   margin: 10px 0 16px;
-  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  font-family: 'Noto Sans Bengali', sans-serif;
 }
 
 .bb-single__hero {
@@ -2043,7 +2055,7 @@ body.bb-nav-stuck .bb-floating-bar,
   font-size: 18px;
   color: #1f2421;
   line-height: 1.85;
-  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  font-family: 'Noto Sans Bengali', sans-serif;
   letter-spacing: 0.1px;
 }
 .bb-content > * + * { margin-top: 18px; }
@@ -2061,7 +2073,8 @@ body.bb-nav-stuck .bb-floating-bar,
   margin: 36px 0 14px;
   padding-bottom: 6px;
   border-bottom: 1px solid #e5e7eb;
-  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  letter-spacing: 0.15px;
+  font-family: 'Noto Sans Bengali', sans-serif;
   scroll-margin-top: 80px;
   line-height: 1.4;
 }
@@ -2070,7 +2083,8 @@ body.bb-nav-stuck .bb-floating-bar,
   font-weight: 700;
   color: #1f2937;
   margin: 28px 0 10px;
-  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  letter-spacing: 0.15px;
+  font-family: 'Noto Sans Bengali', sans-serif;
   scroll-margin-top: 80px;
   line-height: 1.4;
 }
@@ -2222,7 +2236,8 @@ body.bb-nav-stuck .bb-floating-bar,
   font-weight: 600;
   color: #1f2937;
   line-height: 1.45;
-  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  letter-spacing: 0.15px;
+  font-family: 'Noto Sans Bengali', sans-serif;
   transition: color .15s ease;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -2279,7 +2294,8 @@ body.bb-nav-stuck .bb-floating-bar,
   font-weight: 700;
   color: #1f2937;
   margin-bottom: 16px;
-  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  letter-spacing: 0.15px;
+  font-family: 'Noto Sans Bengali', sans-serif;
 }
 
 /* 404 / empty */
@@ -2402,7 +2418,8 @@ body.bb-nav-stuck .bb-floating-bar,
   font-weight: 600;
   color: #1f2937;
   line-height: 1.45;
-  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  letter-spacing: 0.15px;
   transition: color 0.2s ease;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -3029,7 +3046,8 @@ body.bb-nav-stuck .bb-floating-bar,
   font-weight: 600;
   color: #111827;
   line-height: 1.4;
-  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  letter-spacing: 0.15px;
 }
 .bb-search-hit__date {
   font-size: 12px;
