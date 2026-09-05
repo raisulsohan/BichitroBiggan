@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.3' );
+define( 'BB_VERSION', '7.3.1' );
 
 /**
  * Cache-busting version for an asset.
