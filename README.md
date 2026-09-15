@@ -2,7 +2,7 @@
 
 [![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b.svg?logo=wordpress&logoColor=white)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg?logo=php&logoColor=white)](https://php.net)
-[![Version](https://img.shields.io/badge/Version-7.3.1-0080ff.svg)](style.css)
+[![Version](https://img.shields.io/badge/Version-7.4.0-0080ff.svg)](style.css)
 [![Zero-Plugin Architecture](https://img.shields.io/badge/Plugins-0%20(Built--in)-success.svg)](#-key-features)
 [![Responsive](https://img.shields.io/badge/Responsive-Mobile%20%26%20Desktop-brightgreen.svg)](#-key-features)
 
@@ -68,7 +68,7 @@ You are all set! Whenever a new version is released on GitHub, you will see a st
 ---
 
 ## 🔑 Licensing & Purchase
-This is a premium, custom-made theme. While you can test it freely on your local machine (`localhost`), running it on a live domain requires a valid **License Key**.
+This is a premium, custom-made theme. A valid **License Key** unlocks automatic updates and support. The site itself always runs, with or without a license — the key never takes a live site offline.
 
 **How to get a License Key:**
 To purchase the theme and receive your unique license key, please contact me directly:
@@ -78,7 +78,7 @@ To purchase the theme and receive your unique license key, please contact me dir
 **How to Activate:**
 1. Once the theme is installed and activated, go to **Appearance > Theme License** in your WordPress dashboard.
 2. Enter the License Key provided to you upon purchase.
-3. Click **Activate License**. Your theme will now be fully functional and eligible for automatic updates!
+3. Click **Activate License**. Automatic updates are now enabled.
 
 ---
 

@@ -125,6 +125,18 @@ function bb_settings_schema() {
 				'bb_author_bio_site'      => array( 'type' => 'text', 'label' => __( 'Site name displayed in author bio', 'bichitro-biggan' ), 'default' => 'bichitrobiggan.com' ),
 			),
 		),
+
+		'advanced' => array(
+			'label'  => __( 'Advanced', 'bichitro-biggan' ),
+			'intro'  => __( 'Site-specific settings that are not part of the design.', 'bichitro-biggan' ),
+			'fields' => array(
+				'bb_google_verify_file' => array(
+					'type'  => 'text',
+					'label' => __( 'Google Search Console verification file', 'bichitro-biggan' ),
+					'desc'  => __( 'Only for the "HTML file" verification method — enter the file name Google gives you, e.g. google1234abcd5678.html. Leave empty if you verify through Site Kit or DNS.', 'bichitro-biggan' ),
+				),
+			),
+		),
 	);
 }
 

@@ -337,6 +337,7 @@ function bb_seo_render_meta_box( $post ) {
 						value="<?php echo esc_attr( $post->post_name ); ?>"
 						placeholder="<?php esc_attr_e( 'post-url-slug', 'bichitro-biggan' ); ?>"
 					/>
+					<input type="hidden" name="bb_seo_slug_original" value="<?php echo esc_attr( $post->post_name ); ?>" />
 					<p class="bb-seo-help">
 						<?php esc_html_e( 'পোস্টের পারমালিঙ্ক বা স্লাগ পরিবর্তন করতে এখানে টাইপ করুন।', 'bichitro-biggan' ); ?>
 					</p>
@@ -413,25 +414,34 @@ function bb_seo_save_meta_box( $post_id ) {
 		return;
 	}
 
+	// save_post also fires for the revision WordPress stores alongside the post.
+	if ( wp_is_post_revision( $post_id ) ) {
+		return;
+	}
+
 	// Check permissions.
 	if ( ! current_user_can( 'edit_post', $post_id ) ) {
 		return;
 	}
 
-	// Save custom slug if edited.
+	// Save the slug only when it was changed in this box. The field is printed
+	// with the slug as it stood when the editor opened, so comparing against
+	// that — not against the saved slug — keeps a change made in WordPress's
+	// own permalink editor from being undone here.
 	if ( isset( $_POST['bb_seo_slug'] ) ) {
-		$raw_slug = sanitize_title( wp_unslash( $_POST['bb_seo_slug'] ) );
-		$current_post = get_post( $post_id );
-		if ( $raw_slug && $current_post && $current_post->post_name !== $raw_slug ) {
-			global $wpdb;
-			$wpdb->update(
-				$wpdb->posts,
-				array( 'post_name' => $raw_slug ),
-				array( 'ID' => $post_id ),
-				array( '%s' ),
-				array( '%d' )
-			);
-			clean_post_cache( $post_id );
+		$new_slug = sanitize_title( wp_unslash( $_POST['bb_seo_slug'] ) );
+		$old_slug = isset( $_POST['bb_seo_slug_original'] ) ? sanitize_title( wp_unslash( $_POST['bb_seo_slug_original'] ) ) : '';
+		$current  = get_post( $post_id );
+
+		if ( $new_slug && $current && $new_slug !== $old_slug && $new_slug !== $current->post_name ) {
+			// wp_update_post() makes the slug unique and records the old one, so
+			// links already shared keep redirecting to the post.
+			remove_action( 'save_post', 'bb_seo_save_meta_box' );
+			wp_update_post( array(
+				'ID'        => $post_id,
+				'post_name' => $new_slug,
+			) );
+			add_action( 'save_post', 'bb_seo_save_meta_box' );
 		}
 	}
 

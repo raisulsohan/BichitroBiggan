@@ -116,6 +116,14 @@ final class Theme_GitHub_Updater {
 			return;
 		}
 
+		/*
+		 * The host theme can hold updates back — until a license is activated,
+		 * say — without editing this file.
+		 */
+		if ( ! apply_filters( 'tgu_updates_enabled', true, $this->slug ) ) {
+			return;
+		}
+
 		add_filter( 'site_transient_update_themes', array( $this, 'inject' ) );
 		add_filter( 'pre_set_site_transient_update_themes', array( $this, 'inject' ) );
 		add_filter( 'themes_api', array( $this, 'details' ), 10, 3 );

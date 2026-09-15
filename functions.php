@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.3.1' );
+define( 'BB_VERSION', '7.4.0' );
 
 /**
  * Cache-busting version for an asset.
@@ -405,6 +405,27 @@ function bb_body_classes( $classes ) {
 }
 add_filter( 'body_class', 'bb_body_classes' );
 
+/**
+ * The language the site's content is written in.
+ *
+ * WordPress takes <html lang> from the admin language, and this site's admin
+ * runs in English while every article is Bengali — screen readers then read
+ * Bengali with an English voice, and search engines are told the wrong
+ * language. The content language is set here, independent of the admin one.
+ */
+function bb_content_language() {
+	return (string) apply_filters( 'bb_content_language', 'bn-BD' );
+}
+
+function bb_language_attributes( $output ) {
+	if ( is_admin() ) {
+		return $output;
+	}
+
+	return preg_replace( '/\blang="[^"]*"/', 'lang="' . esc_attr( bb_content_language() ) . '"', $output );
+}
+add_filter( 'language_attributes', 'bb_language_attributes' );
+
 /* -------------------------------------------------------------------------
  * 3. Sidebars
  * ---------------------------------------------------------------------- */
@@ -729,17 +750,36 @@ function bb_image_size_dimensions( $size ) {
 function bb_paged_404() {
 	global $wp_query;
 
-	if ( is_admin() || is_404() || is_singular() || is_robots() || is_feed() ) {
+	if ( is_admin() || is_404() || is_robots() || is_feed() ) {
 		return;
 	}
 
-	$paged = (int) get_query_var( 'paged' );
+	/*
+	 * A static front page is singular, yet its "সকল লেখা" list pages like an
+	 * archive — and /page/999/ answered 200 with a full copy of the homepage.
+	 * Its page count is the published total over the list's page size, the
+	 * same numbers front-page.php pages with.
+	 */
+	$static_front = is_front_page() && is_page();
+
+	if ( is_singular() && ! $static_front ) {
+		return;
+	}
+
+	$paged = $static_front
+		? max( (int) get_query_var( 'paged' ), (int) get_query_var( 'page' ) )
+		: (int) get_query_var( 'paged' );
 
 	if ( $paged < 2 ) {
 		return;
 	}
 
-	$max = (int) $wp_query->max_num_pages;
+	if ( $static_front ) {
+		$counts = wp_count_posts( 'post' );
+		$max    = (int) ceil( ( isset( $counts->publish ) ? (int) $counts->publish : 0 ) / bb_all_posts_count() );
+	} else {
+		$max = (int) $wp_query->max_num_pages;
+	}
 
 	if ( $max && $paged <= $max ) {
 		return;
@@ -997,7 +1037,23 @@ function bb_popular_query( $count = 3, $range = 'week' ) {
  */
 function bb_ajax_popular_posts() {
 	$range = isset( $_GET['range'] ) ? sanitize_key( $_GET['range'] ) : 'week';
+	if ( ! in_array( $range, array( 'week', 'month', 'year', 'all' ), true ) ) {
+		$range = 'week';
+	}
+
+	// Anyone can call this and admin-ajax is never page-cached, so the size is
+	// held to the footer's own range — an open count returned every post on the
+	// site in one response. The rendered list is kept for ten minutes.
 	$count = isset( $_GET['count'] ) ? absint( $_GET['count'] ) : (int) get_theme_mod( 'bb_popular_count', 3 );
+	$count = max( 1, min( 8, $count ) );
+
+	$cache_key = 'bb_popular_' . $range . '_' . $count . ( get_theme_mod( 'bb_footer_show_thumbs', false ) ? '_thumbs' : '' );
+	$html      = get_transient( $cache_key );
+
+	if ( false !== $html ) {
+		wp_send_json_success( array( 'html' => $html ) );
+	}
+
 	$query = bb_popular_query( $count, $range );
 
 	ob_start();
@@ -1011,6 +1067,8 @@ function bb_ajax_popular_posts() {
 		echo '<p class="bb-footer__empty" style="font-size:13px;color:#9ca3af;padding:12px 0;">' . esc_html__( 'এই সময়ের কোনো লেখা পাওয়া যায়নি', 'bichitro-biggan' ) . '</p>';
 	}
 	$html = ob_get_clean();
+
+	set_transient( $cache_key, $html, 10 * MINUTE_IN_SECONDS );
 
 	wp_send_json_success( array( 'html' => $html ) );
 }
@@ -1546,27 +1604,57 @@ add_action( 'wp_footer', 'bb_bookmarks_drawer' );
 
 
 /* =====================================================================
- * Google Site Verification Route
+ * Google Search Console — HTML-file verification
  * ================================================================== */
-add_action( 'init', 'bb_google_site_verification_route' );
-function bb_google_site_verification_route() {
-	add_rewrite_rule( '^google1c72e007995ed549\.html$', 'index.php?bb_google_verify=1', 'top' );
+
+/**
+ * The verification file name set in Theme Settings → Advanced, if any.
+ *
+ * It used to be hard-coded, so every site running the theme served this
+ * site's Google token — and whoever holds that token could claim those
+ * domains in Search Console.
+ */
+function bb_google_verify_file() {
+	$file = strtolower( trim( (string) get_theme_mod( 'bb_google_verify_file', '' ) ) );
+
+	return preg_match( '/^google[0-9a-f]+\.html$/', $file ) ? $file : '';
 }
 
-add_filter( 'query_vars', 'bb_google_site_verification_query_vars' );
-function bb_google_site_verification_query_vars( $query_vars ) {
-	$query_vars[] = 'bb_google_verify';
-	return $query_vars;
-}
-
-add_action( 'template_redirect', 'bb_google_site_verification_render' );
-function bb_google_site_verification_render() {
-	if ( get_query_var( 'bb_google_verify' ) ) {
-		header( 'Content-Type: text/html' );
-		echo 'google-site-verification: google1c72e007995ed549.html';
-		exit;
+/**
+ * Move the token that used to be hard-coded into the setting — on
+ * bichitrobiggan.com only — so that site keeps its verification.
+ */
+function bb_migrate_google_verify_file() {
+	if ( false !== get_theme_mod( 'bb_google_verify_file', false ) ) {
+		return;
 	}
+
+	$host = strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
+	$ours = in_array( $host, array( 'bichitrobiggan.com', 'www.bichitrobiggan.com' ), true );
+
+	set_theme_mod( 'bb_google_verify_file', $ours ? 'google1c72e007995ed549.html' : '' );
 }
+add_action( 'init', 'bb_migrate_google_verify_file' );
+
+/**
+ * Answer the file's address as soon as the request is parsed — no rewrite
+ * rule to flush, and no trailing-slash redirect in front of Google.
+ *
+ * @param WP $wp Current request.
+ */
+function bb_google_verify_render( $wp ) {
+	$file = bb_google_verify_file();
+
+	if ( ! $file || strtolower( trim( (string) $wp->request, '/' ) ) !== $file ) {
+		return;
+	}
+
+	status_header( 200 );
+	header( 'Content-Type: text/html; charset=utf-8' );
+	echo 'google-site-verification: ' . esc_html( $file );
+	exit;
+}
+add_action( 'parse_request', 'bb_google_verify_render' );
 
 
 /**
@@ -1602,46 +1690,37 @@ function bb_force_podcast_category_template( $template ) {
 
 
 /**
- * Auto-convert uploaded images to WebP and resize them to save space.
+ * Save the sizes WordPress generates from a JPEG or PNG upload as WebP.
+ *
+ * This is WordPress's own conversion: the uploaded original stays on disk and
+ * the converted files go through its usual unique-name checks. The theme used
+ * to convert by hand instead — deleting the original, and overwriting any
+ * .webp of the same name already in the folder.
  */
-function bb_optimize_image_upload( $upload ) {
-	if ( $upload['type'] === 'image/jpeg' || $upload['type'] === 'image/png' ) {
-		$file_path = $upload['file'];
-		
-		if ( ! file_exists( $file_path ) ) {
-			return $upload;
-		}
+function bb_webp_output_format( $formats ) {
+	static $supported = null;
 
-		$image_editor = wp_get_image_editor( $file_path );
-		
-		if ( ! is_wp_error( $image_editor ) && $image_editor->supports_mime_type( 'image/webp' ) ) {
-			$max_width = 1600;
-			$size = $image_editor->get_size();
-			if ( ! is_wp_error( $size ) && ( $size['width'] > $max_width || $size['height'] > $max_width ) ) {
-				$image_editor->resize( $max_width, $max_width, false );
-			}
-			
-			$image_editor->set_quality( 80 );
-			
-			$path_parts    = pathinfo( $file_path );
-			$webp_filename = $path_parts['filename'] . '.webp';
-			$webp_path     = $path_parts['dirname'] . '/' . $webp_filename;
-			
-			$saved = $image_editor->save( $webp_path, 'image/webp' );
-			
-			if ( ! is_wp_error( $saved ) && file_exists( $saved['path'] ) ) {
-				@unlink( $file_path );
-				
-				$upload['file'] = $saved['path'];
-				$url_parts      = pathinfo( $upload['url'] );
-				$upload['url']  = $url_parts['dirname'] . '/' . $webp_filename;
-				$upload['type'] = 'image/webp';
-			}
-		}
+	if ( null === $supported ) {
+		$supported = false; // Holds while the check below runs, in case it re-enters.
+		$supported = wp_image_editor_supports( array( 'mime_type' => 'image/webp' ) );
 	}
-	return $upload;
+
+	if ( $supported ) {
+		$formats['image/jpeg'] = 'image/webp';
+		$formats['image/png']  = 'image/webp';
+	}
+
+	return $formats;
 }
-add_filter( 'wp_handle_upload', 'bb_optimize_image_upload' );
+add_filter( 'image_editor_output_format', 'bb_webp_output_format' );
+
+/**
+ * Scale very large uploads down to 1600px on the long side, as before.
+ */
+function bb_big_image_threshold() {
+	return 1600;
+}
+add_filter( 'big_image_size_threshold', 'bb_big_image_threshold' );
 
 /**
  * Set standard thumbnail generation quality to 80.
@@ -1690,7 +1769,7 @@ function bb_handle_license_activation() {
 		return;
 	}
 
-	$license_key = sanitize_text_field( trim( $_POST['bb_license_key'] ) );
+	$license_key = isset( $_POST['bb_license_key'] ) ? sanitize_text_field( trim( wp_unslash( $_POST['bb_license_key'] ) ) ) : '';
 	if ( empty( $license_key ) ) {
 		add_settings_error( 'bb_license', 'empty', 'লাইসেন্স কী খালি রাখা যাবে না।', 'error' );
 		return;
@@ -1743,24 +1822,11 @@ function bb_is_licensed() {
 }
 
 /**
- * Block frontend if not licensed.
+ * Updates are what the license unlocks. The public site is never blocked: a
+ * lost option — a database restore, a migration — used to answer every
+ * visitor and every crawler with a 403 until someone noticed.
  */
-function bb_license_block_frontend() {
-	if ( bb_is_licensed() ) {
-		return;
-	}
-
-	wp_die(
-		'<div style="font-family:system-ui,sans-serif;max-width:520px;margin:80px auto;text-align:center;">'
-		. '<h1 style="font-size:28px;margin-bottom:12px;">Bichitro Biggan Theme</h1>'
-		. '<p style="font-size:16px;color:#555;">This theme is not licensed for this domain.</p>'
-		. '<p style="font-size:13px;color:#999;margin-top:24px;">Please activate your license key from the WordPress dashboard.</p>'
-		. '</div>',
-		'License Required',
-		array( 'response' => 403 )
-	);
-}
-add_action( 'template_redirect', 'bb_license_block_frontend' );
+add_filter( 'tgu_updates_enabled', 'bb_is_licensed' );
 
 /**
  * Admin notice when not licensed.
@@ -1775,7 +1841,7 @@ function bb_license_admin_notice() {
 
 	$url = admin_url( 'themes.php?page=bb-license' );
 	echo '<div class="notice notice-error"><p><strong>বিচিত্র বিজ্ঞান থিম:</strong> '
-		. 'থিমটি ব্যবহার করতে দয়া করে <a href="' . esc_url( $url ) . '">লাইসেন্স অ্যাক্টিভেট করুন</a>।</p></div>';
+		. 'থিমের স্বয়ংক্রিয় আপডেট পেতে <a href="' . esc_url( $url ) . '">লাইসেন্স অ্যাক্টিভেট করুন</a>। লাইসেন্স ছাড়াও সাইট স্বাভাবিকভাবে চলবে।</p></div>';
 }
 add_action( 'admin_notices', 'bb_license_admin_notice' );
 
@@ -1799,7 +1865,7 @@ function bb_license_page_html() {
 					<tr><th>ডোমেইন:</th><td><code><?php echo esc_html( $domain ); ?></code></td></tr>
 				</table>
 			<?php else : ?>
-				<p>থিমের সম্পূর্ণ ফিচার উপভোগ করতে আপনার লাইসেন্স কী (License Key) দিন।</p>
+				<p>থিমের স্বয়ংক্রিয় আপডেট পেতে আপনার লাইসেন্স কী (License Key) দিন। লাইসেন্স ছাড়াও সাইট সম্পূর্ণ চালু থাকে।</p>
 				<form method="post" action="">
 					<?php wp_nonce_field( 'bb_license_nonce' ); ?>
 					<table class="form-table">

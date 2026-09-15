@@ -139,7 +139,27 @@ function bb_seo_get_context() {
 		'post'        => null,
 	);
 
-	if ( is_singular() ) {
+	if ( is_front_page() ) {
+		/*
+		 * Checked before is_singular(): a static front page is singular too, and
+		 * was being described as the page behind it — "প্রথম পাতা" as the title
+		 * and no meta description at all. The page's own SEO fields still win
+		 * when they are filled in.
+		 */
+		$front_id    = 'page' === get_option( 'show_on_front' ) ? (int) get_option( 'page_on_front' ) : 0;
+		$front_title = $front_id ? bb_seo_get_field( $front_id, 'bb_seo_title' ) : '';
+		$front_desc  = $front_id ? bb_seo_get_field( $front_id, 'bb_seo_description' ) : '';
+
+		$ctx['title']       = $front_title
+			? bb_seo_resolve_variables( $front_title, get_post( $front_id ) )
+			: bb_seo_join_title( array( $site_name, $tagline ) );
+		$ctx['description'] = $front_desc ? $front_desc : bb_get_tagline();
+		$ctx['canonical']   = bb_seo_paged_url( home_url( '/' ), $paged );
+
+		if ( ! $ctx['description'] ) {
+			$ctx['description'] = $tagline;
+		}
+	} elseif ( is_singular() ) {
 		$post = get_queried_object();
 
 		if ( ! $post instanceof WP_Post ) {
@@ -166,10 +186,6 @@ function bb_seo_get_context() {
 				$ctx['image'] = $img[0];
 			}
 		}
-	} elseif ( is_front_page() ) {
-		$ctx['title']       = bb_seo_join_title( array( $site_name, $tagline ) );
-		$ctx['description'] = $tagline;
-		$ctx['canonical']   = bb_seo_paged_url( home_url( '/' ), $paged );
 	} elseif ( is_home() ) {
 		$posts_page = (int) get_option( 'page_for_posts' );
 		$base       = $posts_page ? (string) get_permalink( $posts_page ) : home_url( '/' );
@@ -357,9 +373,11 @@ function bb_seo_robots( $robots ) {
 
 	// ইনডেক্সযোগ্য পেজে গুগলকে পূর্ণ স্নিপেট ও বড় ছবি দেখানোর অনুমতি।
 	if ( empty( $robots['noindex'] ) ) {
-		$robots['max-snippet']       = -1;
+		// Strings, not integers: wp_robots() prints only string values as
+		// "directive:value" — an integer -1 came out as a bare "max-snippet".
+		$robots['max-snippet']       = '-1';
 		$robots['max-image-preview'] = 'large';
-		$robots['max-video-preview'] = -1;
+		$robots['max-video-preview'] = '-1';
 	}
 
 	return $robots;
@@ -481,7 +499,7 @@ function bb_seo_article_node( array $ctx, WP_Post $post ) {
 		'url'              => $url,
 		'datePublished'    => get_the_date( DATE_W3C, $post ),
 		'dateModified'     => get_the_modified_date( DATE_W3C, $post ),
-		'inLanguage'       => get_bloginfo( 'language' ),
+		'inLanguage'       => bb_content_language(),
 		'publisher'        => array( '@id' => home_url( '/#organization' ) ),
 	);
 
@@ -613,7 +631,7 @@ function bb_seo_output_schema() {
 		'@id'        => home_url( '/#website' ),
 		'url'        => home_url( '/' ),
 		'name'       => get_bloginfo( 'name' ),
-		'inLanguage' => get_bloginfo( 'language' ),
+		'inLanguage' => bb_content_language(),
 		'publisher'  => array( '@id' => home_url( '/#organization' ) ),
 	);
 
@@ -625,7 +643,7 @@ function bb_seo_output_schema() {
 			'@id'        => $ctx['canonical'],
 			'url'        => $ctx['canonical'],
 			'name'       => $ctx['title'],
-			'inLanguage' => get_bloginfo( 'language' ),
+			'inLanguage' => bb_content_language(),
 			'isPartOf'   => array( '@id' => home_url( '/#website' ) ),
 		);
 

@@ -18,6 +18,8 @@ get_header();
 $bb_used = array();
 ?>
 
+<h1 class="bb-screen-reader-text"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></h1>
+
 <?php
 /* =====================================================================
  * HERO MOSAIC
