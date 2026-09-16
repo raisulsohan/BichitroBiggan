@@ -1988,7 +1988,7 @@ body.bb-nav-stuck .bb-floating-bar,
 
 .bb-toc-caret {
   font-size: 10px;
-  color: #6b7280;
+  color: #5f6772;
   transition: transform 0.2s ease;
 }
 
@@ -2177,7 +2177,8 @@ body.bb-nav-stuck .bb-floating-bar,
   justify-content: space-between;
   gap: 16px;
   font-size: 12px;
-  color: var(--bb-brand-blue);
+  /* Small text, so the brand blue steps down a shade: 3.8:1 to 5.2:1. */
+  color: #0b64c9;
   border-top: 1px solid #f3f4f6;
   padding: 16px 0;
   margin-bottom: 20px;
@@ -2202,7 +2203,7 @@ body.bb-nav-stuck .bb-floating-bar,
   flex-shrink: 0;
 }
 .bb-authorbio__name { font-weight: 700; color: #111827; font-size: 14px; }
-.bb-authorbio__site { font-size: 12px; color: var(--bb-brand-blue); margin-bottom: 4px; }
+.bb-authorbio__site { font-size: 12px; color: #0b64c9; margin-bottom: 4px; }
 .bb-authorbio__text { font-size: 12px; color: #4b5563; line-height: 1.625; }
 
 .bb-related { margin-bottom: 24px; }
@@ -2511,7 +2512,8 @@ body.bb-nav-stuck .bb-floating-bar,
 .bb-catcount__num {
   font-size: 12.5px;
   font-weight: 700;
-  color: var(--bb-brand-blue, #2563eb);
+  /* The brand blue measures 3:1 on this pale chip — a shade down reads. */
+  color: #0b64c9;
   background: rgba(37, 99, 235, 0.08);
   padding: 2px 9px;
   border-radius: 9999px;
@@ -2869,7 +2871,8 @@ body.bb-nav-stuck .bb-floating-bar,
 .bb-resume-bar__label {
   display: block;
   font-size: 11px;
-  color: #6b7280;
+  /* This bar is dark in both themes, so its muted text has to be light. */
+  color: #a9b1bd;
 }
 
 .bb-resume-bar__title {
@@ -2890,7 +2893,9 @@ body.bb-nav-stuck .bb-floating-bar,
 
 .bb-resume-bar__btn {
   flex-shrink: 0;
-  background: var(--bb-brand-blue);
+  /* The brand blue is the identity, but 12px of white on it measures 3.8:1.
+     A shade down carries the same colour at 4.8:1. */
+  background: #0069d9;
   color: #ffffff;
   font-size: 12px;
   font-weight: 600;
@@ -2909,7 +2914,7 @@ body.bb-nav-stuck .bb-floating-bar,
   flex-shrink: 0;
   background: transparent;
   border: none;
-  color: #6b7280;
+  color: #a9b1bd;
   font-size: 14px;
   cursor: pointer;
   padding: 4px;
@@ -3295,7 +3300,7 @@ body.admin-bar .bb-nav.is-stuck { top: 32px; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #ef4444;
+  background: #d92d2d;
   color: #fff;
   font-size: 10px;
   font-weight: 700;
@@ -4055,6 +4060,22 @@ textarea:focus-visible,
   .bb-authorpage__name { font-size: 20px; }
 }
 
+
+
+/* The footer's own ground is grey, so #6b7280 lands at 4.2:1 there while it
+   passes everywhere else. Only the footer's muted text is darkened. */
+.bb-footer__item-meta,
+.bb-footer__item-meta strong,
+.bb-footer .bb-readtime-pill,
+.bb-footer .bb-catcount__row { color: #5f6772; }
+
+
+
+/* The credit line sits on the footer's black strip, where #6b7280 reads at
+   3.6:1. Same grey family, light enough for the ground it is on. */
+.bb-footer__bottom,
+.bb-footer__bottom-inner { color: #a9b1bd; }
+
 /* === BEGIN GENERATED DARK MODE === */
 /* =========================================================
    26. DARK MODE
@@ -4104,6 +4125,19 @@ textarea:focus-visible,
   color: #9aa3b0;
 }
 
+[data-theme="dark"] .bb-masthead__yt {
+  color: #e7e9ec;
+  border: 1px solid #313947;
+}
+
+[data-theme="dark"] .bb-masthead__yt:hover {
+  border-color: #5a2b2b;
+}
+
+[data-theme="dark"] .bb-masthead__yt-text {
+  color: #dde1e7;
+}
+
 [data-theme="dark"] .bb-nav {
   background: #1d222a;
 }
@@ -4118,8 +4152,20 @@ textarea:focus-visible,
   color: #c5ccd6;
 }
 
+[data-theme="dark"] .bb-nav-action-btn:hover {
+  color: #6bb6ff;
+}
+
 [data-theme="dark"] .bb-nav-action-btn--yt:hover {
   border-color: #5a2b2b;
+}
+
+[data-theme="dark"] .bb-nav__link {
+  color: #c5ccd6;
+}
+
+[data-theme="dark"] .bb-nav__link:hover {
+  color: #6bb6ff;
 }
 
 [data-theme="dark"] .bb-nav__current {
@@ -4155,6 +4201,10 @@ textarea:focus-visible,
   color: #dde1e7;
 }
 
+[data-theme="dark"] .bb-ticker__title:hover {
+  color: #6bb6ff;
+}
+
 [data-theme="dark"] .bb-arrow-btn {
   border: 1px solid #313947;
   color: #9aa3b0;
@@ -4187,8 +4237,20 @@ textarea:focus-visible,
   border: 1.5px solid #272d36;
 }
 
+[data-theme="dark"] .bb-years__link:hover {
+  color: #6bb6ff;
+}
+
+[data-theme="dark"] .bb-years__link.is-active {
+  color: #6bb6ff;
+}
+
 [data-theme="dark"] .bb-card__title {
   color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-card:hover .bb-card__title {
+  color: #6bb6ff;
 }
 
 [data-theme="dark"] .bb-card__byline {
@@ -4210,6 +4272,10 @@ textarea:focus-visible,
 
 [data-theme="dark"] .bb-listitem__title {
   color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-listitem:hover .bb-listitem__title {
+  color: #6bb6ff;
 }
 
 [data-theme="dark"] .bb-listitem__date {
@@ -4246,6 +4312,10 @@ textarea:focus-visible,
 
 [data-theme="dark"] .bb-breadcrumb {
   color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-breadcrumb a:hover {
+  color: #6bb6ff;
 }
 
 [data-theme="dark"] .bb-breadcrumb .current {
@@ -4299,6 +4369,7 @@ textarea:focus-visible,
 }
 
 [data-theme="dark"] .bb-accordion__head:hover {
+  color: #6bb6ff;
   background: #132234;
 }
 
@@ -4306,8 +4377,17 @@ textarea:focus-visible,
   color: #9aa3b0;
 }
 
+[data-theme="dark"] .bb-accordion__head:hover .bb-accordion__caret {
+  color: #6bb6ff;
+}
+
 [data-theme="dark"] .bb-accordion__item.is-open .bb-accordion__head {
+  color: #6bb6ff;
   background: #132234;
+}
+
+[data-theme="dark"] .bb-accordion__item.is-open .bb-accordion__caret {
+  color: #6bb6ff;
 }
 
 [data-theme="dark"] .bb-accordion__link {
@@ -4315,12 +4395,14 @@ textarea:focus-visible,
 }
 
 [data-theme="dark"] .bb-accordion__link:hover {
+  color: #6bb6ff;
   background: #1b2028;
 }
 
 [data-theme="dark"] .bb-filter-pill {
   background: #132234;
   border: 1px solid #24425a;
+  color: #6bb6ff;
 }
 
 [data-theme="dark"] .bb-filter-pill__reset {
@@ -4331,6 +4413,10 @@ textarea:focus-visible,
   border-bottom: 1px solid #242a33;
 }
 
+[data-theme="dark"] .bb-widget ul li a:hover {
+  color: #6bb6ff;
+}
+
 [data-theme="dark"] .bb-single {
   background: #171b21;
   border: 1px solid #242a33;
@@ -4338,6 +4424,10 @@ textarea:focus-visible,
 
 [data-theme="dark"] .bb-authorrow__name {
   color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-authorrow__name a {
+  color: #6bb6ff;
 }
 
 [data-theme="dark"] .bb-authorrow__date {
@@ -4353,6 +4443,7 @@ textarea:focus-visible,
 }
 
 [data-theme="dark"] .bb-floating-bookmark-btn {
+  background: rgba(29, 34, 42, 0.95);
   color: #dde1e7;
   border: 1px solid #272d36;
 }
@@ -4367,6 +4458,7 @@ textarea:focus-visible,
 }
 
 [data-theme="dark"] .bb-toc-toggle {
+  background: rgba(29, 34, 42, 0.95);
   color: #dde1e7;
   border: 1px solid #272d36;
 }
@@ -4393,6 +4485,10 @@ textarea:focus-visible,
   color: #dde1e7;
 }
 
+[data-theme="dark"] .bb-toc__list a {
+  color: #6bb6ff;
+}
+
 [data-theme="dark"] .bb-toc__list .bb-toc__sub::before {
   border: 1px solid #3d4552;
 }
@@ -4416,6 +4512,10 @@ textarea:focus-visible,
 
 [data-theme="dark"] .bb-content h3 {
   color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-content a {
+  color: #6bb6ff;
 }
 
 [data-theme="dark"] .bb-content blockquote {
@@ -4444,7 +4544,12 @@ textarea:focus-visible,
   color: #b7bfca;
 }
 
+[data-theme="dark"] .bb-tags__item:hover {
+  color: #6bb6ff;
+}
+
 [data-theme="dark"] .bb-prevnext {
+  color: #6bb6ff;
   border-top: 1px solid #242a33;
 }
 
@@ -4455,6 +4560,10 @@ textarea:focus-visible,
 
 [data-theme="dark"] .bb-authorbio__name {
   color: #eceef2;
+}
+
+[data-theme="dark"] .bb-authorbio__site {
+  color: #6bb6ff;
 }
 
 [data-theme="dark"] .bb-authorbio__text {
@@ -4468,6 +4577,10 @@ textarea:focus-visible,
 
 [data-theme="dark"] .bb-related__title {
   color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-related__item:hover .bb-related__title {
+  color: #6bb6ff;
 }
 
 [data-theme="dark"] .bb-comments {
@@ -4524,6 +4637,10 @@ textarea:focus-visible,
   color: #dde1e7;
 }
 
+[data-theme="dark"] .bb-footer__item:hover .bb-footer__item-title {
+  color: #6bb6ff;
+}
+
 [data-theme="dark"] .bb-footer__item-meta {
   color: #9aa3b0;
 }
@@ -4544,6 +4661,14 @@ textarea:focus-visible,
   color: #c5ccd6;
 }
 
+[data-theme="dark"] .bb-catcount__row:hover .bb-catcount__name {
+  color: #6bb6ff;
+}
+
+[data-theme="dark"] .bb-catcount__num {
+  color: #6bb6ff;
+}
+
 [data-theme="dark"] .bb-footer__mid {
   border-top: 1px solid #313947;
 }
@@ -4551,6 +4676,11 @@ textarea:focus-visible,
 [data-theme="dark"] .bb-footer__about-label {
   color: #dde1e7;
   background: #171b21;
+}
+
+[data-theme="dark"] .bb-footer__about-head:hover .bb-footer__about-label,
+[data-theme="dark"] .bb-footer__about-label:hover {
+  color: #6bb6ff;
 }
 
 [data-theme="dark"] .bb-footer__about-text {
@@ -4562,10 +4692,32 @@ textarea:focus-visible,
   color: #dde1e7;
 }
 
+[data-theme="dark"] .bb-footer__contact-title:hover,
+[data-theme="dark"] .bb-footer__subscribe-title:hover {
+  color: #6bb6ff;
+}
+
 [data-theme="dark"] .bb-footer__contact-mail {
   color: #b7bfca;
   background: #171b21;
   border: 1.5px solid #313947;
+}
+
+[data-theme="dark"] .bb-footer__contact-mail:hover {
+  color: #6bb6ff;
+}
+
+[data-theme="dark"] .bb-footer__yt-link {
+  background: #171b21;
+  border: 1.5px solid #313947;
+}
+
+[data-theme="dark"] .bb-footer__yt-link:hover {
+  border-color: #5a2b2b;
+}
+
+[data-theme="dark"] .bb-footer__yt-text {
+  color: #dde1e7;
 }
 
 [data-theme="dark"] .bb-footer__bottom-inner {
@@ -4580,20 +4732,16 @@ textarea:focus-visible,
   color: #9aa3b0;
 }
 
-[data-theme="dark"] .bb-resume-bar__label {
-  color: #9aa3b0;
-}
-
-[data-theme="dark"] .bb-resume-bar__close {
-  color: #9aa3b0;
-}
-
 [data-theme="dark"] .bb-modal__state {
   color: #9aa3b0;
 }
 
 [data-theme="dark"] .bb-spinner {
   border: 2px solid #272d36;
+}
+
+[data-theme="dark"] .bb-search-modal {
+  background: rgba(23, 27, 33, .82);
 }
 
 [data-theme="dark"] .bb-search-modal__panel {
@@ -4606,6 +4754,10 @@ textarea:focus-visible,
 
 [data-theme="dark"] .bb-search-modal__input {
   color: #eceef2;
+}
+
+[data-theme="dark"] .bb-search-modal__btn {
+  color: #6bb6ff;
 }
 
 [data-theme="dark"] .bb-search-modal__btn:hover {
@@ -4651,6 +4803,7 @@ textarea:focus-visible,
 }
 
 [data-theme="dark"] .bb-editlink {
+  color: #6bb6ff;
   border: 1px solid #24425a;
   background: #132234;
 }
@@ -4661,6 +4814,10 @@ textarea:focus-visible,
 
 [data-theme="dark"] .wp-caption-text {
   color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-topbar__btn:hover {
+  background: rgba(23, 27, 33, 0.15);
 }
 
 [data-theme="dark"] .bb-bookmark-btn {
@@ -4705,6 +4862,10 @@ textarea:focus-visible,
   color: #dde1e7;
 }
 
+[data-theme="dark"] .bb-drawer__item-title:hover {
+  color: #6bb6ff;
+}
+
 [data-theme="dark"] .bb-drawer__item-meta {
   color: #9aa3b0;
 }
@@ -4728,6 +4889,11 @@ textarea:focus-visible,
 [data-theme="dark"] .bb-tts-speed-btn,
 [data-theme="dark"] .bb-tts-stop-btn {
   background: #171b21;
+}
+
+[data-theme="dark"] .bb-tts-speed-btn:hover,
+[data-theme="dark"] .bb-tts-stop-btn:hover {
+  color: #6bb6ff;
 }
 
 [data-theme="dark"] .bb-pod-meta {
@@ -4757,6 +4923,14 @@ textarea:focus-visible,
 
 [data-theme="dark"] .bb-references__item {
   color: #c5ccd6;
+}
+
+[data-theme="dark"] .bb-references__item a {
+  color: #6bb6ff;
+}
+
+[data-theme="dark"] .bb-topbar__theme:hover {
+  background: rgba(23, 27, 33, 0.12);
 }
 
 [data-theme="dark"] .bb-single .bb-authorrow__date {
@@ -4789,6 +4963,17 @@ textarea:focus-visible,
 
 [data-theme="dark"] .bb-authorpage__bio {
   color: #c5ccd6;
+}
+
+[data-theme="dark"] .bb-authorpage__site a {
+  color: #6bb6ff;
+}
+
+[data-theme="dark"] .bb-footer__item-meta,
+[data-theme="dark"] .bb-footer__item-meta strong,
+[data-theme="dark"] .bb-footer .bb-readtime-pill,
+[data-theme="dark"] .bb-footer .bb-catcount__row {
+  color: #9aa3b0;
 }
 
 /* === END GENERATED DARK MODE === */

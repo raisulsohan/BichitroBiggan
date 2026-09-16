@@ -451,17 +451,17 @@ function bb_share_buttons() {
 	$buttons = array(
 		array(
 			'name' => __( 'ফেসবুক', 'bichitro-biggan' ),
-			'bg'   => '#1877f2',
+			'bg'   => '#1263d2',
 			'url'  => 'https://www.facebook.com/sharer/sharer.php?u=' . $url,
 		),
 		array(
 			'name' => __( 'হোয়াটসঅ্যাপ', 'bichitro-biggan' ),
-			'bg'   => '#25d366',
+			'bg'   => '#128c7e',
 			'url'  => 'https://api.whatsapp.com/send?text=' . $title . '%20' . $url,
 		),
 		array(
 			'name' => __( 'টেলিগ্রাম', 'bichitro-biggan' ),
-			'bg'   => '#229ed9',
+			'bg'   => '#1c7fad',
 			'url'  => 'https://t.me/share/url?url=' . $url . '&text=' . $title,
 		),
 		array(

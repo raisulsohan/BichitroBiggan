@@ -637,12 +637,24 @@ function bb_contrast_color( $hex ) {
 	if ( 6 !== strlen( $hex ) ) {
 		return '#ffffff';
 	}
-	$r = hexdec( substr( $hex, 0, 2 ) );
-	$g = hexdec( substr( $hex, 2, 2 ) );
-	$b = hexdec( substr( $hex, 4, 2 ) );
-	$luminance = ( 0.299 * $r + 0.587 * $g + 0.114 * $b ) / 255;
+	$channels = array(
+		hexdec( substr( $hex, 0, 2 ) ),
+		hexdec( substr( $hex, 2, 2 ) ),
+		hexdec( substr( $hex, 4, 2 ) ),
+	);
 
-	return $luminance > 0.6 ? '#1a1a1a' : '#ffffff';
+	// Relative luminance, the way WCAG defines it.
+	foreach ( $channels as $i => $value ) {
+		$value          = $value / 255;
+		$channels[ $i ] = ( $value <= 0.03928 ) ? $value / 12.92 : pow( ( $value + 0.055 ) / 1.055, 2.4 );
+	}
+
+	$luminance = ( 0.2126 * $channels[0] ) + ( 0.7152 * $channels[1] ) + ( 0.0722 * $channels[2] );
+
+	$against_white = 1.05 / ( $luminance + 0.05 );
+	$against_black = ( $luminance + 0.05 ) / 0.05;
+
+	return $against_black > $against_white ? '#1a1a1a' : '#ffffff';
 }
 
 /**

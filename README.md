@@ -108,6 +108,11 @@ npm run pot          # refresh languages/bichitro-biggan.pot
 npm run lint:php     # parse every PHP file and report syntax errors
 ```
 
+To check that nothing is unreadable, open any page of the site, press F12, and
+paste `tools/contrast-check.js` into the console. It measures every visible
+piece of text against what is actually behind it and lists whatever falls below
+the readable threshold, worst first. Run it once in dark mode and once in light.
+
 The theme serves `style.min.css` and `theme.min.js` only when they exist **and**
 are newer than their sources, so an un-run build never ships stale code.
 

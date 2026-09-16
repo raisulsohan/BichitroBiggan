@@ -12,7 +12,7 @@ const SURFACE = {
   '#fafafa': '#1b2028', '#f9fafb': '#1b2028', '#f8fafc': '#1b2028', '#f8f8f8': '#1b2028',
   '#f3f4f6': '#1d222a', '#f0f0f0': '#1d222a', '#f1f5f9': '#1d222a', '#eee': '#1d222a', '#eeeeee': '#1d222a',
   '#f0f9ff': '#132234', '#e0f2fe': '#132234', '#e6f2ff': '#132234', '#eff6ff': '#132234',
-  '#fef3c7': '#2e2612', '#fee2e2': '#2f1b1b', '#e0e0e0': '#2a303a', '#ccc': '#39414d', '#cccccc': '#39414d',
+  '#fef3c7': '#2e2612', '#fee2e2': '#2f1b1b', '#e0e0e0': '#2a303a', '#ccc': '#39414d', '#cccccc': '#39414d', '#cccccc': '#39414d',
 };
 const BORDER = {
   '#e5e7eb': '#272d36', '#d1d5db': '#313947', '#f3f4f6': '#242a33', '#f0f0f0': '#242a33',
@@ -22,13 +22,41 @@ const BORDER = {
 const TEXT = {
   '#1a1a1a': '#e7e9ec', '#111827': '#eceef2', '#1f2937': '#dde1e7', '#1f2421': '#dde1e7',
   '#1e293b': '#dde1e7', '#374151': '#c5ccd6', '#4b5563': '#b7bfca', '#6b7280': '#9aa3b0',
-  '#64748b': '#9aa3b0', '#9ca3af': '#8d96a4', '#50575e': '#9aa3b0', '#666': '#9aa3b0',
+  '#64748b': '#9aa3b0', '#9ca3af': '#8d96a4', '#50575e': '#9aa3b0', '#666666': '#9aa3b0',
+  '#0080ff': '#6bb6ff', '#0b64c9': '#6bb6ff', '#5f6772': '#9aa3b0', '#a9b1bd': '#a9b1bd',
+  '#333333': '#c5ccd6', '#111111': '#eceef2', '#000000': '#e7e9ec', '#222222': '#dde1e7', '#444444': '#c5ccd6',
 };
 
-const SKIP = /bb-share__btn|bb-badge|bb-toast|bb-video-modal|bb-hero__play|bb-masthead__yt|bb-footer__yt|katex/i;
+/* Only controls that carry their own brand colour on both sides. */
+const SKIP = /bb-share__btn|bb-badge|bb-toast/i;
 const SKIP_EXACT = new Set(['body.bb-body']);
 
-const mapValue = (value, table) => value.replace(/#[0-9a-fA-F]{3,8}\b/g, hex => table[hex.toLowerCase()] || hex);
+const expand = hex => {
+  const h = hex.toLowerCase();
+  return h.length === 4 ? '#' + h[1] + h[1] + h[2] + h[2] + h[3] + h[3] : h;
+};
+
+const toHex = (r, g, b) => '#' + [r, g, b].map(n => Number(n).toString(16).padStart(2, '0')).join('');
+
+/* Colours are written three ways in this stylesheet — #fff, #ffffff and
+   rgba(255, 255, 255, .82) — and the dark palette has to recognise all three.
+   A light panel written as rgba() was how the table-of-contents button ended
+   up with pale text on a pale ground. */
+function mapValue(value, table) {
+  return value
+    .replace(/#[0-9a-fA-F]{3,8}\b/g, hex => table[expand(hex)] || hex)
+    .replace(/rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)\s*(?:[,/]\s*([\d.]+)\s*)?\)/g, (whole, r, g, b, alpha) => {
+      const mapped = table[toHex(r, g, b)];
+      if (!mapped) return whole;
+
+      const hex = expand(mapped);
+      const parts = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+
+      return alpha === undefined
+        ? 'rgb(' + parts.join(', ') + ')'
+        : 'rgba(' + parts.join(', ') + ', ' + alpha + ')';
+    });
+}
 
 function parseRules(text) {
   const rules = [];
@@ -63,12 +91,17 @@ function darkDeclarations(body) {
     if (!m) return;
     const prop = m[1].toLowerCase();
     const value = m[2].trim();
-    if (!/#[0-9a-fA-F]{3,8}\b/.test(value)) return;
+    const hasColour = /#[0-9a-fA-F]{3,8}\b/.test(value) || /rgba?\(/i.test(value) || /var\(--bb-brand-blue[,)]/.test(value);
+    if (!hasColour) return;
 
     let mapped = null;
     if (prop === 'background' || prop === 'background-color') mapped = mapValue(value, SURFACE);
     else if (prop === 'color') mapped = mapValue(value, TEXT);
     else if (/^border(-(top|right|bottom|left|color))?$/.test(prop)) mapped = mapValue(value, BORDER);
+
+    /* The brand blue reads at 3.9:1 as text on the dark ground — fine as a
+       button, not as a word. Lifted only where it is the text colour. */
+    if (prop === 'color' && /var\(--bb-brand-blue[,)]/.test(value)) mapped = '#6bb6ff';
 
     if (mapped && mapped !== value) out.push(`  ${prop}: ${mapped};`);
   });
