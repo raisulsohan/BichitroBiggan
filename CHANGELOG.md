@@ -2,6 +2,17 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.7.2
+
+- The category strip actually fits now. 7.7.1 left it fitting 1,220px in
+  exactly 1,220px, which is not fitting at all once a font renders a pixel
+  wider — and the fade meant to hint at scrolling just made the last category
+  look washed out. At 14px it comes to 1,082px, leaving about 100px spare.
+- Dropped the rule that restored the larger size above 1,400px: the strip is
+  capped at 1,220px however wide the window is, so that width had exactly as
+  little room and cut the last item again.
+- Checked at 1,280, 1,377 and 1,500 pixels.
+
 ## 7.7.1
 
 - The dark mode switch is in the sticky bar too, so it stays within reach once
