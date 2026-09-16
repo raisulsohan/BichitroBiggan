@@ -94,7 +94,7 @@ function bb_badge( $term = null, $extra_class = '', $link = false ) {
 	}
 
 	$color      = bb_term_color( $term );
-	$text_color = bb_contrast_color( $color );
+	$text_color = bb_term_text_color( $term );
 	$class      = trim( 'bb-badge ' . $extra_class );
 	$style      = 'background:' . esc_attr( $color ) . ';color:' . esc_attr( $text_color ) . ';';
 
@@ -120,13 +120,14 @@ function bb_badge( $term = null, $extra_class = '', $link = false ) {
 /**
  * Coloured section heading with the trailing rule.
  *
- * @param string $label Heading text.
- * @param string $color Background colour.
- * @param bool   $upper Render as an uppercase latin label.
- * @param string $url   Optional link for the label.
+ * @param string $label      Heading text.
+ * @param string $color      Background colour.
+ * @param bool   $upper      Render as an uppercase latin label.
+ * @param string $url        Optional link for the label.
+ * @param string $text_color Text colour; measured from the background when empty.
  */
-function bb_section_heading( $label, $color = '#1a1a1a', $upper = false, $url = '' ) {
-	$text_color = bb_contrast_color( $color );
+function bb_section_heading( $label, $color = '#1a1a1a', $upper = false, $url = '', $text_color = '' ) {
+	$text_color = $text_color ? $text_color : bb_contrast_color( $color );
 	$class      = 'bb-sechead__label' . ( $upper ? ' bb-sechead__label--upper' : '' );
 	?>
 	<div class="bb-sechead">

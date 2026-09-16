@@ -2,6 +2,17 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.7.0
+
+- Theme Settings → ক্যাটাগরির রং: every category's badge colour and its text
+  colour, each shown as the badge itself. Three options per category — অটো,
+  সাদা, কালো — with the contrast of each measured beside it. Click the badge
+  that reads best.
+- Fixes the automatic choice itself: it measured against pure black while
+  printing #1a1a1a, and on the orange of বিজ্ঞান ও প্রযুক্তি that flipped the
+  answer — dark text at 3.9:1 over white at 4.4:1. White is back, and the
+  measurement is no longer the last word either way.
+
 ## 7.6.2
 
 - Author pages no longer carry the login name. The public address is built

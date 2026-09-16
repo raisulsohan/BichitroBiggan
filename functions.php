@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.6.2' );
+define( 'BB_VERSION', '7.7.0' );
 
 /**
  * The built copy of an asset, when there is one and it is not stale.
@@ -627,34 +627,90 @@ function bb_term_color( $term ) {
 }
 
 /**
- * Black or white text depending on background luminance.
+ * Relative luminance of a colour, the way WCAG defines it.
+ *
+ * @param string $hex Colour.
+ * @return float|null Null when the colour cannot be read.
  */
-function bb_contrast_color( $hex ) {
+function bb_relative_luminance( $hex ) {
 	$hex = ltrim( (string) $hex, '#' );
+
 	if ( 3 === strlen( $hex ) ) {
 		$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
 	}
-	if ( 6 !== strlen( $hex ) ) {
-		return '#ffffff';
+
+	if ( ! preg_match( '/^[0-9a-fA-F]{6}$/', $hex ) ) {
+		return null;
 	}
+
 	$channels = array(
 		hexdec( substr( $hex, 0, 2 ) ),
 		hexdec( substr( $hex, 2, 2 ) ),
 		hexdec( substr( $hex, 4, 2 ) ),
 	);
 
-	// Relative luminance, the way WCAG defines it.
 	foreach ( $channels as $i => $value ) {
 		$value          = $value / 255;
 		$channels[ $i ] = ( $value <= 0.03928 ) ? $value / 12.92 : pow( ( $value + 0.055 ) / 1.055, 2.4 );
 	}
 
-	$luminance = ( 0.2126 * $channels[0] ) + ( 0.7152 * $channels[1] ) + ( 0.0722 * $channels[2] );
+	return ( 0.2126 * $channels[0] ) + ( 0.7152 * $channels[1] ) + ( 0.0722 * $channels[2] );
+}
 
-	$against_white = 1.05 / ( $luminance + 0.05 );
-	$against_black = ( $luminance + 0.05 ) / 0.05;
+/**
+ * Whichever of the theme's two text colours reads better on this background.
+ *
+ * Measured against the colours actually used. An earlier version measured
+ * against pure black while printing #1a1a1a, and on the orange of
+ * বিজ্ঞান ও প্রযুক্তি that difference flipped the answer: it chose dark text at
+ * 3.9:1 over the white at 4.4:1.
+ *
+ * @param string $hex Background colour.
+ * @return string '#1a1a1a' or '#ffffff'.
+ */
+function bb_contrast_color( $hex ) {
+	$background = bb_relative_luminance( $hex );
 
-	return $against_black > $against_white ? '#1a1a1a' : '#ffffff';
+	if ( null === $background ) {
+		return '#ffffff';
+	}
+
+	$light = bb_relative_luminance( '#ffffff' );
+	$dark  = bb_relative_luminance( '#1a1a1a' );
+
+	$with_light = ( $light + 0.05 ) / ( $background + 0.05 );
+	$with_dark  = ( $background + 0.05 ) / ( $dark + 0.05 );
+
+	return $with_dark > $with_light ? '#1a1a1a' : '#ffffff';
+}
+
+/**
+ * The text colour for a category's badge.
+ *
+ * Measuring which of black or white is more legible gets it right more often
+ * than not, but not always: white on the orange of বিজ্ঞান ও প্রযুক্তি measures
+ * slightly worse and reads better. So the measurement is the default, and a
+ * choice made in Theme Settings → ক্যাটাগরির রং overrides it.
+ *
+ * @param WP_Term|int $term Category.
+ * @return string Hex colour.
+ */
+function bb_term_text_color( $term ) {
+	if ( is_numeric( $term ) ) {
+		$term = get_term( (int) $term );
+	}
+
+	if ( ! $term || is_wp_error( $term ) ) {
+		return '#ffffff';
+	}
+
+	$choice = get_term_meta( $term->term_id, 'bb_text_color', true );
+
+	if ( in_array( $choice, array( '#ffffff', '#1a1a1a' ), true ) ) {
+		return $choice;
+	}
+
+	return bb_contrast_color( bb_term_color( $term ) );
 }
 
 /**
@@ -691,6 +747,7 @@ function bb_category_color_add_field() {
 		<label for="bb_color"><?php esc_html_e( 'ক্যাটাগরির রঙ', 'bichitro-biggan' ); ?></label>
 		<input type="text" name="bb_color" id="bb_color" value="" placeholder="#1a8cca" />
 		<p><?php esc_html_e( 'ব্যাজ ও সেকশন হেডিং-এ এই রঙ ব্যবহার হবে। খালি রাখলে ডিফল্ট রঙ বসবে।', 'bichitro-biggan' ); ?></p>
+		<p><?php esc_html_e( 'লেখার রং ও প্রিভিউ: Theme Settings → ক্যাটাগরির রং।', 'bichitro-biggan' ); ?></p>
 	</div>
 	<?php
 }
@@ -703,6 +760,9 @@ function bb_category_color_edit_field( $term ) {
 		<th scope="row"><label for="bb_color"><?php esc_html_e( 'ক্যাটাগরির রঙ', 'bichitro-biggan' ); ?></label></th>
 		<td>
 			<input type="text" name="bb_color" id="bb_color" value="<?php echo esc_attr( $value ); ?>" placeholder="<?php echo esc_attr( bb_term_color( $term ) ); ?>" />
+			<p class="description">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=bb-category-colors' ) ); ?>"><?php esc_html_e( 'লেখার রং ও প্রিভিউ দেখুন', 'bichitro-biggan' ); ?></a>
+			</p>
 			<p class="description"><?php esc_html_e( 'ব্যাজ ও সেকশন হেডিং-এ এই রঙ ব্যবহার হবে।', 'bichitro-biggan' ); ?></p>
 		</td>
 	</tr>
@@ -943,22 +1003,22 @@ function bb_paged_404() {
 }
 add_action( 'template_redirect', 'bb_paged_404' );
 
-/**
- * Point crawlers at the sitemap from robots.txt.
- */
-function bb_robots_txt( $output ) {
-	if ( ! get_option( 'blog_public' ) ) {
-		return $output;
-	}
-
-	$sitemap = function_exists( 'wp_sitemaps_get_server' ) ? home_url( '/wp-sitemap.xml' ) : '';
-
-	if ( $sitemap && false === strpos( $output, 'Sitemap:' ) ) {
-		$output .= "\nSitemap: " . esc_url_raw( $sitemap ) . "\n";
-	}
-
-	return $output;
-}
+/**
+ * Point crawlers at the sitemap from robots.txt.
+ */
+function bb_robots_txt( $output ) {
+	if ( ! get_option( 'blog_public' ) ) {
+		return $output;
+	}
+
+	$sitemap = function_exists( 'wp_sitemaps_get_server' ) ? home_url( '/wp-sitemap.xml' ) : '';
+
+	if ( $sitemap && false === strpos( $output, 'Sitemap:' ) ) {
+		$output .= "\nSitemap: " . esc_url_raw( $sitemap ) . "\n";
+	}
+
+	return $output;
+}
 add_filter( 'robots_txt', 'bb_robots_txt' );
 
 function bb_popular_query( $count = 3, $range = 'week' ) {
@@ -1625,6 +1685,7 @@ require_once get_template_directory() . '/inc/seo-frontend.php';
 if ( is_admin() ) {
 	require_once get_template_directory() . '/inc/admin-settings.php';
 	require_once get_template_directory() . '/inc/admin-post-search.php';
+	require_once get_template_directory() . '/inc/category-colors-admin.php';
 }
 
 add_action( 'wp_footer', 'bb_bookmarks_drawer' );

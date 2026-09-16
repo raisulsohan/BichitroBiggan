@@ -193,7 +193,7 @@ if ( $bb_b1l->have_posts() || $bb_b1r->have_posts() ) :
 
 			<div class="bb-col-main">
 				<?php if ( ! empty( $bb_b1l_chunks ) ) : ?>
-					<?php bb_section_heading( $bb_b1l_name, $bb_b1l_col, false, $bb_b1l_id ? get_category_link( $bb_b1l_id ) : '' ); ?>
+					<?php bb_section_heading( $bb_b1l_name, $bb_b1l_col, false, $bb_b1l_id ? get_category_link( $bb_b1l_id ) : '', $bb_b1l_id ? bb_term_text_color( $bb_b1l_id ) : '' ); ?>
 
 					<div data-bb-slider>
 						<?php foreach ( $bb_b1l_chunks as $bb_i => $bb_chunk ) : ?>
@@ -232,7 +232,7 @@ if ( $bb_b1l->have_posts() || $bb_b1r->have_posts() ) :
 
 			<div class="bb-col-side">
 				<?php if ( ! empty( $bb_b1r_chunks ) ) : ?>
-					<?php bb_section_heading( $bb_b1r_name, $bb_b1r_col, false, $bb_b1r_id ? get_category_link( $bb_b1r_id ) : '' ); ?>
+					<?php bb_section_heading( $bb_b1r_name, $bb_b1r_col, false, $bb_b1r_id ? get_category_link( $bb_b1r_id ) : '', $bb_b1r_id ? bb_term_text_color( $bb_b1r_id ) : '' ); ?>
 
 					<div data-bb-slider>
 						<?php foreach ( $bb_b1r_chunks as $bb_i => $bb_chunk ) : ?>
@@ -292,7 +292,7 @@ if ( $bb_b2l->have_posts() || $bb_b2r->have_posts() ) :
 
 			<div class="bb-col-main">
 				<?php if ( ! empty( $bb_b2l_chunks ) ) : ?>
-					<?php bb_section_heading( $bb_b2l_name, $bb_b2l_col, false, $bb_b2l_id ? get_category_link( $bb_b2l_id ) : '' ); ?>
+					<?php bb_section_heading( $bb_b2l_name, $bb_b2l_col, false, $bb_b2l_id ? get_category_link( $bb_b2l_id ) : '', $bb_b2l_id ? bb_term_text_color( $bb_b2l_id ) : '' ); ?>
 
 					<div data-bb-slider>
 						<?php foreach ( $bb_b2l_chunks as $bb_i => $bb_chunk ) : ?>
@@ -331,7 +331,7 @@ if ( $bb_b2l->have_posts() || $bb_b2r->have_posts() ) :
 
 			<div class="bb-col-side">
 				<?php if ( $bb_b2r->have_posts() ) : ?>
-					<?php bb_section_heading( $bb_b2r_name, $bb_b2r_col, false, $bb_b2r_id ? get_category_link( $bb_b2r_id ) : '' ); ?>
+					<?php bb_section_heading( $bb_b2r_name, $bb_b2r_col, false, $bb_b2r_id ? get_category_link( $bb_b2r_id ) : '', $bb_b2r_id ? bb_term_text_color( $bb_b2r_id ) : '' ); ?>
 
 					<?php
 					$bb_b2r->the_post();
@@ -385,7 +385,7 @@ if ( $bb_b3l->have_posts() || $bb_b3r->have_posts() ) :
 
 			<div class="bb-col-main">
 				<?php if ( $bb_b3l->have_posts() ) : ?>
-					<?php bb_section_heading( $bb_b3l_name, $bb_b3l_col, false, $bb_b3l_id ? get_category_link( $bb_b3l_id ) : '' ); ?>
+					<?php bb_section_heading( $bb_b3l_name, $bb_b3l_col, false, $bb_b3l_id ? get_category_link( $bb_b3l_id ) : '', $bb_b3l_id ? bb_term_text_color( $bb_b3l_id ) : '' ); ?>
 					<div class="bb-divide-y">
 						<?php
 						while ( $bb_b3l->have_posts() ) :
@@ -400,7 +400,7 @@ if ( $bb_b3l->have_posts() || $bb_b3r->have_posts() ) :
 
 			<div class="bb-col-side">
 				<?php if ( $bb_b3r->have_posts() ) : ?>
-					<?php bb_section_heading( $bb_b3r_name, $bb_b3r_col, false, $bb_b3r_id ? get_category_link( $bb_b3r_id ) : '' ); ?>
+					<?php bb_section_heading( $bb_b3r_name, $bb_b3r_col, false, $bb_b3r_id ? get_category_link( $bb_b3r_id ) : '', $bb_b3r_id ? bb_term_text_color( $bb_b3r_id ) : '' ); ?>
 					<?php
 					$bb_first = true;
 					while ( $bb_b3r->have_posts() ) :
@@ -448,7 +448,7 @@ $bb_more = bb_query( 0, 3 );
 
 		<div>
 			<?php if ( $bb_b4a->have_posts() ) : ?>
-				<?php bb_section_heading( $bb_b4a_name, $bb_b4a_col, false, $bb_b4a_id ? get_category_link( $bb_b4a_id ) : '' ); ?>
+				<?php bb_section_heading( $bb_b4a_name, $bb_b4a_col, false, $bb_b4a_id ? get_category_link( $bb_b4a_id ) : '', $bb_b4a_id ? bb_term_text_color( $bb_b4a_id ) : '' ); ?>
 				<?php
 				$bb_b4a->the_post();
 				bb_overlay_panel( array(
@@ -462,7 +462,7 @@ $bb_more = bb_query( 0, 3 );
 
 		<div>
 			<?php if ( $bb_b4b->have_posts() ) : ?>
-				<?php bb_section_heading( $bb_b4b_name, $bb_b4b_col, false, $bb_b4b_id ? get_category_link( $bb_b4b_id ) : '' ); ?>
+				<?php bb_section_heading( $bb_b4b_name, $bb_b4b_col, false, $bb_b4b_id ? get_category_link( $bb_b4b_id ) : '', $bb_b4b_id ? bb_term_text_color( $bb_b4b_id ) : '' ); ?>
 				<?php
 				$bb_b4b->the_post();
 				bb_overlay_panel( array(
@@ -524,7 +524,7 @@ if ( ! empty( $bb_b5_cols ) ) :
 		<div class="bb-grid bb-grid--3 bb-grid--gap-lg">
 			<?php foreach ( $bb_b5_cols as $bb_col ) : ?>
 				<div>
-					<?php bb_section_heading( $bb_col['name'], $bb_col['color'], false, $bb_col['id'] ? get_category_link( $bb_col['id'] ) : '' ); ?>
+					<?php bb_section_heading( $bb_col['name'], $bb_col['color'], false, $bb_col['id'] ? get_category_link( $bb_col['id'] ) : '', $bb_col['id'] ? bb_term_text_color( $bb_col['id'] ) : '' ); ?>
 					<?php
 					$bb_col['query']->the_post();
 					bb_overlay_panel( array(

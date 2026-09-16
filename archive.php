@@ -14,12 +14,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 get_header();
 
-/* Heading colour: the category's own colour, blue for date archives. */
-$bb_archive_color = '#1a8cca';
-if ( is_category() || is_tax() ) {
-	$bb_archive_color = bb_term_color( get_queried_object() );
-}
-
 $bb_archive_title = bb_current_label();
 if ( is_category() || is_tag() || is_tax() ) {
 	$bb_archive_title = single_term_title( '', false );
