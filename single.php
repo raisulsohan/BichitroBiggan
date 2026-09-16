@@ -36,8 +36,8 @@ while ( have_posts() ) :
 
 		<div class="bb-authorrow">
 			<div>
-				<p class="bb-authorrow__date" style="font-size:14px; font-weight:600; color:#1f2937; margin:0 0 2px;"><?php echo esc_html( bb_bangla_date() ); ?></p>
-				<p class="bb-authorrow__reading-time" style="font-size:12px; color:#6b7280; margin:0;">⏱ <?php echo esc_html( bb_reading_time() ); ?> পড়ার সময়</p>
+				<p class="bb-authorrow__date"><?php echo esc_html( bb_bangla_date() ); ?></p>
+				<p class="bb-authorrow__reading-time">⏱ <?php echo esc_html( bb_reading_time() ); ?> পড়ার সময়</p>
 				<?php
 				/* Most posts here are edited after publication; readers only ever saw the original date. */
 				if ( get_the_modified_date( 'Y-m-d' ) !== get_the_date( 'Y-m-d' ) ) :
@@ -109,6 +109,8 @@ while ( have_posts() ) :
 			?>
 		</div>
 
+		<?php bb_references_list(); ?>
+
 		<?php
 		$bb_tags = get_the_tags();
 		$bb_chips = array();
@@ -150,8 +152,10 @@ while ( have_posts() ) :
 		<div class="bb-authorbio">
 			<?php echo get_avatar( get_the_author_meta( 'ID' ), 112 ); ?>
 			<div>
-				<p class="bb-authorbio__name"><?php the_author(); ?></p>
-				<p class="bb-authorbio__site"><?php echo esc_html( get_theme_mod( 'bb_author_bio_site', 'bichitrobiggan.com' ) ); ?></p>
+				<p class="bb-authorbio__name">
+					<a href="<?php echo esc_url( get_author_posts_url( (int) get_the_author_meta( 'ID' ) ) ); ?>"><?php the_author(); ?></a>
+				</p>
+				<p class="bb-authorbio__site"><?php echo esc_html( get_theme_mod( 'bb_author_bio_site', bb_default( 'author_bio_site' ) ) ); ?></p>
 				<p class="bb-authorbio__text">
 					<?php
 					echo esc_html(
@@ -165,23 +169,31 @@ while ( have_posts() ) :
 		<?php
 		/* Related articles from the same category (indexed date order for fast TTFB). */
 		$bb_related_args = array(
-			'post_type'              => 'post',
-			'post_status'            => 'publish',
-			'posts_per_page'         => 3,
-			'post__not_in'           => array( get_the_ID() ),
-			'no_found_rows'          => true,
-			'ignore_sticky_posts'    => 1,
-			'orderby'                => 'date',
-			'order'                  => 'DESC',
-			'update_post_meta_cache' => false,
+			'post_type'           => 'post',
+			'post_status'         => 'publish',
+			'posts_per_page'      => 3,
+			'post__not_in'        => array( get_the_ID() ),
+			'no_found_rows'       => true,
+			'ignore_sticky_posts' => 1,
+			'orderby'             => 'date',
+			'order'               => 'DESC',
 		);
-		if ( $bb_cat ) {
-			$bb_related_args['cat'] = $bb_cat->term_id;
-		}
-		$bb_related = new WP_Query( $bb_related_args );
 
-		if ( ! $bb_related->have_posts() ) {
-			unset( $bb_related_args['cat'] );
+		/* Tags first. Two posts sharing a tag are related in a way that two
+		   posts filed under the same broad category often are not — "মহাকাশ
+		   বিজ্ঞান" holds everything from black holes to rocket launches. */
+		$bb_tag_ids = wp_get_post_terms( get_the_ID(), 'post_tag', array( 'fields' => 'ids' ) );
+		$bb_related = null;
+
+		if ( ! is_wp_error( $bb_tag_ids ) && ! empty( $bb_tag_ids ) ) {
+			$bb_related = new WP_Query( array_merge( $bb_related_args, array( 'tag__in' => $bb_tag_ids ) ) );
+		}
+
+		if ( ( ! $bb_related || ! $bb_related->have_posts() ) && $bb_cat ) {
+			$bb_related = new WP_Query( array_merge( $bb_related_args, array( 'cat' => $bb_cat->term_id ) ) );
+		}
+
+		if ( ! $bb_related || ! $bb_related->have_posts() ) {
 			$bb_related = new WP_Query( $bb_related_args );
 		}
 

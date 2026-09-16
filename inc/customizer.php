@@ -45,7 +45,7 @@ function bb_customize_register( $wp_customize ) {
 	) );
 
 	$wp_customize->add_setting( 'bb_contact_email', array(
-		'default'           => 'bichitrobiggan@gmail.com',
+		'default'           => bb_default( 'contact_email' ),
 		'sanitize_callback' => 'sanitize_email',
 		'transport'         => 'refresh',
 	) );
@@ -173,7 +173,7 @@ function bb_customize_register( $wp_customize ) {
 	) );
 
 	$wp_customize->add_setting( 'bb_youtube_text', array(
-		'default'           => 'সাবস্ক্রাইব করুন',
+		'default'           => bb_default( 'youtube_text' ),
 		'sanitize_callback' => 'sanitize_text_field',
 		'transport'         => 'postMessage',
 	) );
@@ -185,7 +185,7 @@ function bb_customize_register( $wp_customize ) {
 	) );
 
 	$wp_customize->add_setting( 'bb_youtube_url', array(
-		'default'           => 'https://www.youtube.com/@bigganbichitro',
+		'default'           => bb_default( 'youtube_url' ),
 		'sanitize_callback' => 'esc_url_raw',
 		'transport'         => 'refresh',
 	) );
@@ -450,7 +450,7 @@ function bb_customize_register( $wp_customize ) {
 	// Contact Us Title
 	// Contact Email
 	$wp_customize->add_setting( 'bb_contact_email', array(
-		'default'           => 'bichitrobiggan@gmail.com',
+		'default'           => bb_default( 'contact_email' ),
 		'sanitize_callback' => 'sanitize_email',
 		'transport'         => 'refresh',
 	) );

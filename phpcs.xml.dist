@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<ruleset name="Bichitro Biggan">
+	<description>Coding standards for the Bichitro Biggan theme.</description>
+
+	<file>.</file>
+
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/assets/*</exclude-pattern>
+
+	<arg name="extensions" value="php"/>
+	<arg name="colors"/>
+	<arg value="ps"/>
+
+	<rule ref="WordPress">
+		<!-- The theme's own strings are written in Bengali, which this sniff
+		     reads as an untranslated literal. -->
+		<exclude name="WordPress.WP.I18n.NonSingularStringLiteralText"/>
+	</rule>
+
+	<!-- Every function, class and option in the theme starts with bb_ / BB_. -->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="bb_"/>
+				<element value="BB_"/>
+				<element value="Theme_GitHub_Updater"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="bichitro-biggan"/>
+			</property>
+		</properties>
+	</rule>
+
+	<config name="minimum_wp_version" value="6.0"/>
+	<config name="testVersion" value="7.4-"/>
+</ruleset>

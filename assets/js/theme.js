@@ -28,10 +28,7 @@
 	}
 
 	document.addEventListener('DOMContentLoaded', function () {
-		try {
-			localStorage.removeItem('bb_theme');
-			document.documentElement.removeAttribute('data-theme');
-		} catch (e) {}
+		initTheme();
 		initBookmarks();
 		initQuoteShare();
 		initStickyNav();
@@ -52,7 +49,132 @@
 		initVideoModal();
 		initShareButtons();
 		initViewCounter();
+		initMath();
 	});
+
+	/* ---------------------------------------------------------------
+	 * Light and dark
+	 *
+	 * The theme itself is chosen in the <head>, before the page is
+	 * painted. This only handles the switch, remembers the choice, and
+	 * keeps following the system until a choice is actually made.
+	 * ------------------------------------------------------------ */
+	function initTheme() {
+		var root = document.documentElement;
+		var buttons = document.querySelectorAll('[data-bb-theme-toggle]');
+		var media = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+		function current() {
+			return root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+		}
+
+		function sync() {
+			var dark = current() === 'dark';
+
+			Array.prototype.forEach.call(buttons, function (btn) {
+				btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+				btn.setAttribute('aria-label', dark ? (D.themeLight || '') : (D.themeDark || ''));
+
+				var icon = btn.querySelector('[data-bb-theme-icon]');
+				if (icon) icon.textContent = dark ? '☀' : '🌙';
+			});
+		}
+
+		function apply(theme, remember) {
+			root.setAttribute('data-theme', theme);
+
+			if (remember) {
+				try { localStorage.setItem('bb_theme', theme); } catch (e) {}
+			}
+
+			sync();
+		}
+
+		Array.prototype.forEach.call(buttons, function (btn) {
+			btn.addEventListener('click', function () {
+				apply(current() === 'dark' ? 'light' : 'dark', true);
+			});
+		});
+
+		if (media && media.addEventListener) {
+			media.addEventListener('change', function (e) {
+				var saved = null;
+				try { saved = localStorage.getItem('bb_theme'); } catch (err) {}
+				if (!saved) apply(e.matches ? 'dark' : 'light', false);
+			});
+		}
+
+		sync();
+	}
+
+	/* ---------------------------------------------------------------
+	 * Equations
+	 *
+	 * A direct visit to an article with maths has KaTeX already. The
+	 * popup can land on one from anywhere, so it fetches KaTeX then.
+	 * ------------------------------------------------------------ */
+	var MATH_PATTERN = /\$\$|\\\(|\\\[/;
+
+	function renderMath(scope) {
+		if (!window.renderMathInElement) return;
+
+		var targets = (scope || document).querySelectorAll('.bb-content');
+
+		Array.prototype.forEach.call(targets, function (el) {
+			try {
+				window.renderMathInElement(el, {
+					delimiters: [
+						{ left: '$$', right: '$$', display: true },
+						{ left: '\\[', right: '\\]', display: true },
+						{ left: '\\(', right: '\\)', display: false }
+					],
+					throwOnError: false
+				});
+			} catch (e) {}
+		});
+	}
+
+	function loadScript(src, done) {
+		var el = document.createElement('script');
+		el.src = src;
+		el.onload = done;
+		el.onerror = function () {};
+		document.head.appendChild(el);
+	}
+
+	function ensureMath(scope) {
+		var root = scope || document;
+		var text = root.textContent || '';
+
+		if (!MATH_PATTERN.test(text)) return;
+
+		if (window.renderMathInElement) {
+			renderMath(root);
+			return;
+		}
+
+		if (!D.katexJs || document.getElementById('bb-katex')) return;
+
+		var css = document.createElement('link');
+		css.id = 'bb-katex';
+		css.rel = 'stylesheet';
+		css.href = D.katexCss;
+		document.head.appendChild(css);
+
+		loadScript(D.katexJs, function () {
+			loadScript(D.katexAuto, function () {
+				renderMath(root);
+			});
+		});
+	}
+
+	function initMath() {
+		renderMath(document);
+
+		window.addEventListener('bb_article_shown', function () {
+			ensureMath(document.querySelector('#bb-modal .bb-modal__body'));
+		});
+	}
 
 	/* ---------------------------------------------------------------
 	 * Live search

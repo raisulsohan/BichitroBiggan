@@ -3,9 +3,9 @@ Theme Name: Bichitro Biggan
 Theme URI: https://bichitrobiggan.com
 Author: Raisul Sohan
 Description: Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic WordPress theme built for a Bengali science magazine and digital publication. Custom-made and developed from scratch by Raisul Sohan, it is designed with a world-class reading experience, built-in SEO, live search, and comprehensive customizer controls.
-Version: 7.5.0
+Version: 7.6.0
 Requires at least: 6.0
-Tested up to: 6.6
+Tested up to: 7.1
 Requires PHP: 7.4
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -1813,16 +1813,6 @@ a.bb-badge:hover {
   padding: 20px 16px 28px;
   position: relative;
   font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
-}
-
-.bb-single__title {
-  font-size: 22px;
-  font-weight: 700;
-  color: #111827;
-  line-height: 1.35;
-  letter-spacing: 0.15px;
-  margin-bottom: 16px;
-  font-family: 'Noto Sans Bengali', sans-serif;
 }
 
 .bb-single .bb-breadcrumb { margin-bottom: 12px; }
@@ -3942,3 +3932,863 @@ textarea:focus-visible,
 .bb-share__btn--native { background: #374151; }
 .bb-share__btn--copy:hover,
 .bb-share__btn--native:hover { background: #1f2937; }
+
+/* =========================================================
+   22. SOURCES
+   ========================================================= */
+.bb-references {
+  margin: 32px 0 8px;
+  padding: 18px 20px;
+  background: #f9fafb;
+  border-left: 3px solid var(--bb-brand-blue);
+  border-radius: 8px;
+}
+.bb-references__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 10px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+.bb-references__list {
+  list-style: decimal;
+  padding-left: 20px;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+.bb-references__item {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #374151;
+  word-break: break-word;
+}
+.bb-references__item a { color: var(--bb-brand-blue); }
+.bb-references__item a:hover { text-decoration: underline; }
+
+@media (min-width: 640px) {
+  .bb-references { padding: 22px 26px; }
+  .bb-references__item { font-size: 16px; }
+}
+
+/* =========================================================
+   23. THEME SWITCH, AND STYLES LIFTED OUT OF TEMPLATES
+   ========================================================= */
+.bb-topbar__theme {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1;
+  color: inherit;
+}
+.bb-topbar__theme:hover { background: rgba(255, 255, 255, 0.12); }
+
+.bb-single .bb-authorrow__date {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 2px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+.bb-single .bb-authorrow__reading-time {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.bb-divide-top { border-top: 1px solid #f3f4f6; }
+
+.bb-footer__empty {
+  font-size: 13px;
+  color: #6b7280;
+  padding: 12px 0;
+}
+
+/* KaTeX puts long display equations in their own scroller rather than
+   letting them widen the article. */
+.bb-content .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 0;
+}
+
+
+
+/* =========================================================
+   25. AUTHOR PAGE
+   ========================================================= */
+.bb-authorpage {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 20px 0 26px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 28px;
+}
+.bb-authorpage__avatar { flex-shrink: 0; }
+.bb-authorpage__avatar img { border-radius: 50%; width: 84px; height: 84px; object-fit: cover; }
+.bb-authorpage__name {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 4px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+.bb-authorpage__count { font-size: 13px; color: #6b7280; margin: 0 0 10px; }
+.bb-authorpage__bio {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #374151;
+  margin: 0 0 6px;
+  max-width: 70ch;
+}
+.bb-authorpage__site a { font-size: 13px; color: var(--bb-brand-blue); }
+.bb-authorbio__name a:hover { text-decoration: underline; }
+
+@media (max-width: 639px) {
+  .bb-authorpage { gap: 14px; }
+  .bb-authorpage__avatar img { width: 64px; height: 64px; }
+  .bb-authorpage__name { font-size: 20px; }
+}
+
+/* === BEGIN GENERATED DARK MODE === */
+/* =========================================================
+   26. DARK MODE
+
+   Built from the rules above: every light surface, every light
+   border and every dark text colour in this stylesheet has a
+   dark counterpart here. Regenerate rather than hand-edit.
+   ========================================================= */
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  /* Paints the area behind an over-scroll, where the body does not reach. */
+  background: #171b21;
+  --bb-brand-blue-light: #16263a;
+}
+
+/* Written here rather than generated: the body's own white background sits
+   over the root's, so this is the rule the whole page rests on. */
+[data-theme="dark"] body.bb-body {
+  background: #171b21;
+  color: #e7e9ec;
+}
+
+/* #0080ff on a near-black ground is legible but tiring over a long article,
+   so body links lift a little. */
+[data-theme="dark"] .bb-content a,
+[data-theme="dark"] .bb-references__item a,
+[data-theme="dark"] .bb-authorpage__site a { color: #6bb6ff; }
+
+[data-theme="dark"] .bb-topbar__theme:hover { background: rgba(255, 255, 255, 0.14); }
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #39414d; }
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #39414d;
+}
+
+[data-theme="dark"] .bb-section--bordered {
+  border-top: 1px solid #242a33;
+}
+
+[data-theme="dark"] .bb-masthead {
+  background: #1d222a;
+}
+
+[data-theme="dark"] .bb-masthead__tagline {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-nav {
+  background: #1d222a;
+}
+
+[data-theme="dark"] .bb-nav.is-stuck {
+  background: #1d222a;
+}
+
+[data-theme="dark"] .bb-nav-action-btn {
+  background: #171b21;
+  border: 1px solid #313947;
+  color: #c5ccd6;
+}
+
+[data-theme="dark"] .bb-nav-action-btn--yt:hover {
+  border-color: #5a2b2b;
+}
+
+[data-theme="dark"] .bb-nav__current {
+  color: #c5ccd6;
+}
+
+[data-theme="dark"] .bb-hamburger {
+  color: #c5ccd6;
+}
+
+[data-theme="dark"] .bb-mobile-menu {
+  background: #171b21;
+  border-top: 1px solid #272d36;
+}
+
+[data-theme="dark"] .bb-mobile-menu .bb-nav__link {
+  border-bottom: 1px solid #242a33;
+}
+
+[data-theme="dark"] .bb-nav__sub {
+  background: #171b21;
+}
+
+[data-theme="dark"] .bb-nav__sub .bb-nav__link {
+  border-bottom: 1px solid #242a33;
+}
+
+[data-theme="dark"] .bb-ticker {
+  background: #171b21;
+}
+
+[data-theme="dark"] .bb-ticker__title {
+  color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-arrow-btn {
+  border: 1px solid #313947;
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-arrow-btn:hover {
+  background: #1d222a;
+  color: #eceef2;
+}
+
+[data-theme="dark"] .bb-searchbar {
+  background: #171b21;
+}
+
+[data-theme="dark"] .bb-searchform {
+  border: 1.5px solid #313947;
+}
+
+[data-theme="dark"] .bb-searchform__input {
+  background: #171b21;
+}
+
+[data-theme="dark"] .bb-years {
+  background: #171b21;
+}
+
+[data-theme="dark"] .bb-years__link {
+  color: #b7bfca;
+  background: #171b21;
+  border: 1.5px solid #272d36;
+}
+
+[data-theme="dark"] .bb-card__title {
+  color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-card__byline {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-card__byline strong {
+  color: #c5ccd6;
+}
+
+[data-theme="dark"] .bb-count {
+  border: 1px solid #313947;
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-card__excerpt {
+  color: #c5ccd6;
+}
+
+[data-theme="dark"] .bb-listitem__title {
+  color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-listitem__date {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-divide-y > * + * {
+  border-top: 1px solid #242a33;
+}
+
+[data-theme="dark"] .bb-wide-row__title {
+  color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-wide-row:hover .bb-wide-row__title {
+  color: #b7bfca;
+}
+
+[data-theme="dark"] .bb-titleonly__title {
+  color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-titleonly__meta {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-titleonly__meta strong {
+  color: #b7bfca;
+}
+
+[data-theme="dark"] .bb-archive {
+  background: #171b21;
+}
+
+[data-theme="dark"] .bb-breadcrumb {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-breadcrumb .current {
+  color: #c5ccd6;
+}
+
+[data-theme="dark"] .bb-archive__title {
+  color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-archive__desc {
+  color: #b7bfca;
+}
+
+[data-theme="dark"] .bb-pagination {
+  border-top: 1px solid #272d36;
+}
+
+[data-theme="dark"] .bb-pagination .page-numbers {
+  border: 1px solid #313947;
+  color: #b7bfca;
+}
+
+[data-theme="dark"] .bb-pagination .page-numbers:hover {
+  background: #1d222a;
+}
+
+[data-theme="dark"] .bb-pagination .page-numbers.dots {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-pagination__info {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-loadmore {
+  border: 1px solid #313947;
+  color: #b7bfca;
+}
+
+[data-theme="dark"] .bb-loadmore:hover {
+  background: #1b2028;
+}
+
+[data-theme="dark"] .bb-accordion__item + .bb-accordion__item {
+  border-top: 1px solid #242a33;
+}
+
+[data-theme="dark"] .bb-accordion__head {
+  color: #c5ccd6;
+}
+
+[data-theme="dark"] .bb-accordion__head:hover {
+  background: #132234;
+}
+
+[data-theme="dark"] .bb-accordion__caret {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-accordion__item.is-open .bb-accordion__head {
+  background: #132234;
+}
+
+[data-theme="dark"] .bb-accordion__link {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-accordion__link:hover {
+  background: #1b2028;
+}
+
+[data-theme="dark"] .bb-filter-pill {
+  background: #132234;
+  border: 1px solid #24425a;
+}
+
+[data-theme="dark"] .bb-filter-pill__reset {
+  border-left: 1px solid #24425a;
+}
+
+[data-theme="dark"] .bb-widget ul li {
+  border-bottom: 1px solid #242a33;
+}
+
+[data-theme="dark"] .bb-single {
+  background: #171b21;
+  border: 1px solid #242a33;
+}
+
+[data-theme="dark"] .bb-authorrow__name {
+  color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-authorrow__date {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-authorrow__stats {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-share__label {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-floating-bookmark-btn {
+  color: #dde1e7;
+  border: 1px solid #272d36;
+}
+
+[data-theme="dark"] .bb-floating-bookmark-btn:hover {
+  background: #171b21;
+  color: #eceef2;
+}
+
+[data-theme="dark"] .bb-floating-bookmark-btn.is-bookmarked {
+  background: #2e2612;
+}
+
+[data-theme="dark"] .bb-toc-toggle {
+  color: #dde1e7;
+  border: 1px solid #272d36;
+}
+
+[data-theme="dark"] .bb-toc-toggle:hover {
+  background: #171b21;
+  color: #eceef2;
+}
+
+[data-theme="dark"] .bb-toc-toggle svg {
+  color: #b7bfca;
+}
+
+[data-theme="dark"] .bb-toc-caret {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-toc {
+  background: #171b21;
+  border: 1px solid #272d36;
+}
+
+[data-theme="dark"] .bb-toc__title {
+  color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-toc__list .bb-toc__sub::before {
+  border: 1px solid #3d4552;
+}
+
+[data-theme="dark"] .bb-toc__list .bb-toc__sub a {
+  color: #b7bfca;
+}
+
+[data-theme="dark"] .bb-single__title {
+  color: #eceef2;
+}
+
+[data-theme="dark"] .bb-content {
+  color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-content h2 {
+  color: #dde1e7;
+  border-bottom: 1px solid #272d36;
+}
+
+[data-theme="dark"] .bb-content h3 {
+  color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-content blockquote {
+  color: #c5ccd6;
+}
+
+[data-theme="dark"] .bb-content figcaption {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-content th,
+[data-theme="dark"] .bb-content td {
+  border: 1px solid #272d36;
+}
+
+[data-theme="dark"] .bb-content pre {
+  background: #1d222a;
+}
+
+[data-theme="dark"] .bb-tags {
+  border-top: 1px solid #242a33;
+}
+
+[data-theme="dark"] .bb-tags__item {
+  border: 1px solid #313947;
+  color: #b7bfca;
+}
+
+[data-theme="dark"] .bb-prevnext {
+  border-top: 1px solid #242a33;
+}
+
+[data-theme="dark"] .bb-authorbio {
+  border: 1px solid #272d36;
+  background: #1b2028;
+}
+
+[data-theme="dark"] .bb-authorbio__name {
+  color: #eceef2;
+}
+
+[data-theme="dark"] .bb-authorbio__text {
+  color: #b7bfca;
+}
+
+[data-theme="dark"] .bb-related__heading {
+  color: #eceef2;
+  border-bottom: 2px solid #242a33;
+}
+
+[data-theme="dark"] .bb-related__title {
+  color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-comments {
+  border-top: 1px solid #242a33;
+}
+
+[data-theme="dark"] .bb-comments .comment-body {
+  border-bottom: 1px solid #242a33;
+}
+
+[data-theme="dark"] .bb-comments input[type="text"],
+[data-theme="dark"] .bb-comments input[type="email"],
+[data-theme="dark"] .bb-comments input[type="url"],
+[data-theme="dark"] .bb-comments textarea {
+  border: 1px solid #313947;
+  background: #171b21;
+}
+
+[data-theme="dark"] .bb-page__title {
+  color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-empty__title {
+  color: #eceef2;
+}
+
+[data-theme="dark"] .bb-empty__text {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-footer {
+  background: #1d222a;
+}
+
+[data-theme="dark"] .bb-footer__heading {
+  color: #eceef2;
+}
+
+[data-theme="dark"] .bb-popular-select {
+  background-color: #171b21;
+  border: 1px solid #313947;
+  color: #c5ccd6;
+}
+
+[data-theme="dark"] .bb-footer__item {
+  border-bottom: 1px solid #272d36;
+}
+
+[data-theme="dark"] .bb-footer__item:hover {
+  background: #171b21;
+}
+
+[data-theme="dark"] .bb-footer__item-title {
+  color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-footer__item-meta {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-footer__item-meta strong {
+  color: #c5ccd6;
+}
+
+[data-theme="dark"] .bb-catcount__row {
+  border-bottom: 1px solid #272d36;
+}
+
+[data-theme="dark"] .bb-catcount__row:hover {
+  background: #171b21;
+}
+
+[data-theme="dark"] .bb-catcount__name {
+  color: #c5ccd6;
+}
+
+[data-theme="dark"] .bb-footer__mid {
+  border-top: 1px solid #313947;
+}
+
+[data-theme="dark"] .bb-footer__about-label {
+  color: #dde1e7;
+  background: #171b21;
+}
+
+[data-theme="dark"] .bb-footer__about-text {
+  color: #b7bfca;
+}
+
+[data-theme="dark"] .bb-footer__contact-title,
+[data-theme="dark"] .bb-footer__subscribe-title {
+  color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-footer__contact-mail {
+  color: #b7bfca;
+  background: #171b21;
+  border: 1.5px solid #313947;
+}
+
+[data-theme="dark"] .bb-footer__bottom-inner {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-modal__dialog {
+  background: #171b21;
+}
+
+[data-theme="dark"] .bb-readtime-pill {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-resume-bar__label {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-resume-bar__close {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-modal__state {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-spinner {
+  border: 2px solid #272d36;
+}
+
+[data-theme="dark"] .bb-search-modal__panel {
+  background: #171b21;
+}
+
+[data-theme="dark"] .bb-search-modal__icon {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-search-modal__input {
+  color: #eceef2;
+}
+
+[data-theme="dark"] .bb-search-modal__btn:hover {
+  background: #1d222a;
+}
+
+[data-theme="dark"] .bb-search-modal__btn--close {
+  color: #b7bfca;
+}
+
+[data-theme="dark"] .bb-search-modal__results {
+  border-top: 1px solid #242a33;
+}
+
+[data-theme="dark"] .bb-search-modal__state {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-search-hit {
+  border-bottom: 1px solid #242a33;
+}
+
+[data-theme="dark"] .bb-search-hit:hover {
+  background: #1b2028;
+}
+
+[data-theme="dark"] .bb-search-hit__title {
+  color: #eceef2;
+}
+
+[data-theme="dark"] .bb-search-hit__date {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-search-hit__excerpt {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-search-modal__foot {
+  border-top: 1px solid #242a33;
+  color: #9aa3b0;
+  background: #1b2028;
+}
+
+[data-theme="dark"] .bb-editlink {
+  border: 1px solid #24425a;
+  background: #132234;
+}
+
+[data-theme="dark"] .bb-editlink:hover {
+  background: #132234;
+}
+
+[data-theme="dark"] .wp-caption-text {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-bookmark-btn {
+  background: #1d222a;
+  color: #b7bfca;
+  border: 1px solid #272d36;
+}
+
+[data-theme="dark"] .bb-bookmark-btn:hover {
+  background: #132234;
+}
+
+[data-theme="dark"] .bb-bookmark-btn.is-bookmarked {
+  background: #2e2612;
+}
+
+[data-theme="dark"] .bb-drawer {
+  background: #171b21;
+}
+
+[data-theme="dark"] .bb-drawer__title {
+  color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-drawer__close {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-drawer__empty-desc {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-drawer__item {
+  background: #1b2028;
+}
+
+[data-theme="dark"] .bb-drawer__item:hover {
+  background: #1d222a;
+}
+
+[data-theme="dark"] .bb-drawer__item-title {
+  color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-drawer__item-meta {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-drawer__footer {
+  background: #1b2028;
+}
+
+[data-theme="dark"] .bb-drawer__clear-btn {
+  background: #171b21;
+}
+
+[data-theme="dark"] .bb-tts-player {
+  background: linear-gradient(135deg, #132234 0%, #132234 100%);
+}
+
+[data-theme="dark"] .bb-tts-player.is-playing {
+  background: linear-gradient(135deg, #132234 0%, #dbeafe 100%);
+}
+
+[data-theme="dark"] .bb-tts-speed-btn,
+[data-theme="dark"] .bb-tts-stop-btn {
+  background: #171b21;
+}
+
+[data-theme="dark"] .bb-pod-meta {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-ticker__toggle {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-ticker__toggle:hover {
+  background: #1d222a;
+  color: #e7e9ec;
+}
+
+[data-theme="dark"] .bb-authorrow__updated {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-references {
+  background: #1b2028;
+}
+
+[data-theme="dark"] .bb-references__title {
+  color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-references__item {
+  color: #c5ccd6;
+}
+
+[data-theme="dark"] .bb-single .bb-authorrow__date {
+  color: #dde1e7;
+}
+
+[data-theme="dark"] .bb-single .bb-authorrow__reading-time {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-divide-top {
+  border-top: 1px solid #242a33;
+}
+
+[data-theme="dark"] .bb-footer__empty {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-authorpage {
+  border-bottom: 1px solid #272d36;
+}
+
+[data-theme="dark"] .bb-authorpage__name {
+  color: #eceef2;
+}
+
+[data-theme="dark"] .bb-authorpage__count {
+  color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-authorpage__bio {
+  color: #c5ccd6;
+}
+
+/* === END GENERATED DARK MODE === */

@@ -1,0 +1,18 @@
+# Dependencies — the theme ships without them; the build step installs them.
+/node_modules/
+/vendor/
+
+# Editor and OS noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Local environment and logs
+.env
+*.log
+debug.log
+
+# Packaged copies of the theme
+*.zip

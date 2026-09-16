@@ -314,7 +314,7 @@ if ( $bb_b2l->have_posts() || $bb_b2r->have_posts() ) :
 									<?php
 									foreach ( array_slice( $bb_chunk, 2 ) as $bb_p ) {
 										bb_setup_post( $bb_p );
-										echo '<div style="border-top:1px solid #f3f4f6;">';
+										echo '<div class="bb-divide-top">';
 										bb_list_item();
 										echo '</div>';
 									}

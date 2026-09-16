@@ -111,8 +111,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<button type="button" class="bb-footer__contact-mail bb-copy-email" aria-label="<?php esc_attr_e( 'ইমেইল কপি করুন', 'bichitro-biggan' ); ?>" title="<?php esc_attr_e( 'ইমেইল কপি করুন', 'bichitro-biggan' ); ?>">✉</button>
 					</div>
 					<?php
-					$bb_ft_yt_url  = get_theme_mod( 'bb_footer_youtube_url', get_theme_mod( 'bb_youtube_url', 'https://www.youtube.com/@bigganbichitro' ) );
-					$bb_ft_yt_text = get_theme_mod( 'bb_footer_youtube_text', 'সাবস্ক্রাইব করুন' );
+					$bb_ft_yt_url  = get_theme_mod( 'bb_footer_youtube_url', get_theme_mod( 'bb_youtube_url', bb_default( 'youtube_url' ) ) );
+					$bb_ft_yt_text = get_theme_mod( 'bb_footer_youtube_text', bb_default( 'youtube_text' ) );
 					if ( $bb_ft_yt_url ) :
 						?>
 						<div class="bb-footer__subscribe">
@@ -137,16 +137,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<div class="bb-footer__bottom-inner">
 				<span>
 					<?php esc_html_e( 'লেখক ও সম্পাদক', 'bichitro-biggan' ); ?>
-					<?php bb_footer_credit( 'bb_footer_author', 'Tanvir Hossain', 'bb_footer_author_url' ); ?>
+					<?php bb_footer_credit( 'bb_footer_author', bb_default( 'footer_author' ), 'bb_footer_author_url' ); ?>
 				</span>
 				<span>
 					<?php
-					echo esc_html( get_theme_mod( 'bb_footer_copyright', '©BichitroBiggan' ) . ' ' . wp_date( 'Y' ) );
+					echo esc_html( get_theme_mod( 'bb_footer_copyright', bb_default( 'copyright' ) ) . ' ' . wp_date( 'Y' ) );
 					?>
 				</span>
 				<span>
 					<?php esc_html_e( 'ডেভেলপার', 'bichitro-biggan' ); ?>
-					<?php bb_footer_credit( 'bb_footer_developer', 'Raisul Sohan', 'bb_footer_developer_url' ); ?>
+					<?php bb_footer_credit( 'bb_footer_developer', bb_default( 'footer_developer' ), 'bb_footer_developer_url' ); ?>
 				</span>
 			</div>
 		</div>

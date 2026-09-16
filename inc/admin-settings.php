@@ -238,7 +238,7 @@ function bb_settings_field( $key, $field ) {
 			break;
 
 		case 'post_select':
-			echo '<select name="' . esc_attr( $key ) . '" id="' . esc_attr( $key ) . '" style="max-width:520px;width:100%;">';
+			echo '<select class="bb-post-select" name="' . esc_attr( $key ) . '" id="' . esc_attr( $key ) . '" style="max-width:520px;width:100%;">';
 			foreach ( bb_post_choices() as $id => $label ) {
 				printf(
 					'<option value="%1$s"%2$s>%3$s</option>',
@@ -260,7 +260,7 @@ function bb_settings_field( $key, $field ) {
 
 				echo '<p style="margin:0 0 6px;"><label style="display:inline-block;width:2.5em;color:#666;">'
 					. esc_html( ( $i + 1 ) ) . '.</label> ';
-				echo '<select name="' . esc_attr( $key ) . '[]" style="max-width:520px;width:100%;">';
+				echo '<select class="bb-post-select" name="' . esc_attr( $key ) . '[]" style="max-width:520px;width:100%;">';
 				echo '<option value="0">' . esc_html__( '— None —', 'bichitro-biggan' ) . '</option>';
 
 				foreach ( $options as $post_id => $label ) {

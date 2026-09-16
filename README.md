@@ -2,7 +2,7 @@
 
 [![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b.svg?logo=wordpress&logoColor=white)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg?logo=php&logoColor=white)](https://php.net)
-[![Version](https://img.shields.io/badge/Version-7.5.0-0080ff.svg)](style.css)
+[![Version](https://img.shields.io/badge/Version-7.6.0-0080ff.svg)](style.css)
 [![Zero-Plugin Architecture](https://img.shields.io/badge/Plugins-0%20(Built--in)-success.svg)](#-key-features)
 [![Responsive](https://img.shields.io/badge/Responsive-Mobile%20%26%20Desktop-brightgreen.svg)](#-key-features)
 
@@ -25,7 +25,8 @@ Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic Word
 - ⚡ **Zero-Plugin Architecture:** No heavy third-party plugins. SEO, reading modal, live search, and bookmarks are completely native, built with PHP and Vanilla JavaScript.
 - 🎨 **Figma Mac & Magazine Layout:** Visually stunning 8-card hero mosaic, category tab grid, and multi-column sections.
 - 📱 **Mobile First Fully Responsive:** Automatic adaptive grid and touch-friendly navigation for mobile, tablet, and large desktops.
-- 🚀 **Super Fast Performance:** No jQuery on the frontend, optimized web views counter, and a lightweight CSS variable architecture.
+- 🚀 **Super Fast Performance:** No jQuery on the frontend, self-hosted fonts, minified assets, and a lightweight CSS variable architecture.
+- 🌙 **Dark Mode:** Follows the reader's own system setting, with a switch in the top bar that is remembered. Chosen before the page paints, so there is no flash.
 
 ---
 
@@ -34,6 +35,9 @@ Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic Word
 - **Cinematic Video Popups:** Site-wide support for immersive video popups from YouTube, including dynamic aspect ratios (16:9, 9:16, 4:5, 1:1) and custom settings.
 - **Interactive Bookmarks:** Built-in read-it-later functionality via localStorage with a dedicated slide-out drawer.
 - **Smart Typography:** Systematically scaled Bengali typography optimized for long-form reading on all screen sizes.
+- **তথ্যসূত্র (Sources):** A box in the editor prints a numbered source list under the article — and puts the same sources into its structured data.
+- **Equations:** KaTeX renders maths, loaded only on the posts that contain any.
+- **Author Pages:** A page per writer, with their biography and everything they have written.
 
 ---
 
@@ -84,11 +88,31 @@ To purchase the theme and receive your unique license key, please contact me dir
 
 ## 💻 Tech Stack
 - **Frontend:** Semantic HTML5, Vanilla Modern CSS3, Vanilla JavaScript (ES6+).
-- **Typography:** Google Fonts (Hind Siliguri, Noto Sans Bengali) with display=swap.
+- **Typography:** Hind Siliguri and Noto Sans Bengali, served from the site itself (SIL Open Font License) — no third-party connection before the first Bengali glyph.
 - **Backend:** WordPress Native PHP APIs, Custom Transients Caching, Secure AJAX Nonce validation.
 - **Standards:** WordPress Theme Review Guidelines, WCAG 2.1 Accessibility & Core Web Vitals optimized.
 
 ---
+
+## 🛠 Development
+
+The theme runs as it is — none of this is needed to use it. These scripts
+regenerate the parts that are built rather than written by hand:
+
+```bash
+npm install          # one time
+npm run build        # style.min.css and theme.min.js
+npm run dark         # rebuild the dark palette from the light rules
+npm run fonts        # re-download the font files and their @font-face sheet
+npm run pot          # refresh languages/bichitro-biggan.pot
+npm run lint:php     # parse every PHP file and report syntax errors
+```
+
+The theme serves `style.min.css` and `theme.min.js` only when they exist **and**
+are newer than their sources, so an un-run build never ships stale code.
+
+Change any light-mode colour and run `npm run dark` — the dark palette is
+generated from the stylesheet, not maintained separately.
 
 ## 📝 License
 This project is licensed under the **GPL-2.0-or-later** license.

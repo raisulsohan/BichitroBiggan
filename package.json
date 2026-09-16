@@ -1,0 +1,21 @@
+{
+  "name": "bichitro-biggan",
+  "version": "7.6.0",
+  "private": true,
+  "description": "Build tooling for the Bichitro Biggan WordPress theme. The theme itself needs none of this to run — these scripts only produce the minified assets, the dark palette, the font files and the translation template.",
+  "license": "GPL-2.0-or-later",
+  "scripts": {
+    "build": "npm run build:css && npm run build:js",
+    "build:css": "cleancss -O2 --format breakWith=lf -o style.min.css style.css",
+    "build:js": "terser assets/js/theme.js -c -m -o assets/js/theme.min.js",
+    "dark": "node tools/dark-mode.mjs",
+    "fonts": "node tools/fonts.mjs",
+    "pot": "node tools/make-pot.mjs",
+    "lint:php": "node tools/lint-php.mjs"
+  },
+  "devDependencies": {
+    "clean-css-cli": "^5.6.3",
+    "php-parser": "^3.7.0",
+    "terser": "^5.36.0"
+  }
+}

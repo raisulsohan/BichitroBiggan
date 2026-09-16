@@ -14,9 +14,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 <head>
 	<meta charset="<?php bloginfo( 'charset' ); ?>" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="color-scheme" content="light dark" />
+	<script>
+		/* Runs before anything is painted: a reader who chose dark never sees
+		   a white page flash first. */
+		(function () {
+			try {
+				var saved = localStorage.getItem('bb_theme');
+				var dark = saved
+					? saved === 'dark'
+					: (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+				document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+			} catch (e) {}
+		})();
+	</script>
 	<link rel="profile" href="https://gmpg.org/xfn/11" />
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<?php wp_head(); ?>
 </head>
 
@@ -37,6 +49,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<span class="bb-topbar__btn-text"><?php esc_html_e( 'পরে পড়ুন', 'bichitro-biggan' ); ?></span>
 					<span class="bb-count-pill" data-bb-count="bookmarks" style="display:none;">0</span>
 				</button>
+				<button type="button" class="bb-topbar__theme" data-bb-theme-toggle aria-pressed="false"
+					aria-label="<?php esc_attr_e( 'ডার্ক মোড চালু করুন', 'bichitro-biggan' ); ?>"
+					title="<?php esc_attr_e( 'ডার্ক মোড', 'bichitro-biggan' ); ?>"><span aria-hidden="true" data-bb-theme-icon>🌙</span></button>
 				<button type="button" class="bb-topbar__mail bb-copy-email" aria-label="<?php esc_attr_e( 'ইমেইল কপি করুন', 'bichitro-biggan' ); ?>" title="<?php esc_attr_e( 'ইমেইল কপি করুন', 'bichitro-biggan' ); ?>">✉</button>
 			</div>
 		</div>
@@ -64,8 +79,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 			$bb_show_yt        = get_theme_mod( 'bb_show_youtube', true );
 			$bb_show_yt_mobile = get_theme_mod( 'bb_show_youtube_mobile', false );
 			if ( $bb_show_yt || $bb_show_yt_mobile ) :
-				$bb_yt_url   = get_theme_mod( 'bb_youtube_url', 'https://www.youtube.com/@bigganbichitro' );
-				$bb_yt_text  = get_theme_mod( 'bb_youtube_text', 'সাবস্ক্রাইব করুন' );
+				$bb_yt_url   = get_theme_mod( 'bb_youtube_url', bb_default( 'youtube_url' ) );
+				$bb_yt_text  = get_theme_mod( 'bb_youtube_text', bb_default( 'youtube_text' ) );
 				$bb_soc_cls  = 'bb-masthead__social';
 				if ( ! $bb_show_yt ) {
 					$bb_soc_cls .= ' bb-hide-desktop';
@@ -106,7 +121,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<span class="bb-nav-badge" data-bb-count="bookmarks" style="display:none;">0</span>
 				</button>
 				<?php
-				$bb_sticky_yt_url = get_theme_mod( 'bb_youtube_url', 'https://www.youtube.com/@bigganbichitro' );
+				$bb_sticky_yt_url = get_theme_mod( 'bb_youtube_url', bb_default( 'youtube_url' ) );
 				if ( $bb_sticky_yt_url ) :
 					?>
 					<a class="bb-nav-action-btn bb-nav-action-btn--yt" href="<?php echo esc_url( $bb_sticky_yt_url ); ?>" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e( 'ইউটিউব চ্যানেল', 'bichitro-biggan' ); ?>" aria-label="<?php esc_attr_e( 'ইউটিউব চ্যানেল', 'bichitro-biggan' ); ?>">

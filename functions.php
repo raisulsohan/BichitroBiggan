@@ -9,7 +9,31 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.5.0' );
+define( 'BB_VERSION', '7.6.0' );
+
+/**
+ * The built copy of an asset, when there is one and it is not stale.
+ *
+ * npm run build writes style.min.css and theme.min.js. If a build has never
+ * been run, or a source file has been edited since, the source is served
+ * instead — a stale minified file is worse than an unminified one.
+ *
+ * @param string $relative Path from the theme root, e.g. '/style.css'.
+ * @return string
+ */
+function bb_asset_path( $relative ) {
+	$dir   = get_template_directory();
+	$built = preg_replace( '/\.(css|js)$/', '.min.$1', $relative );
+
+	if ( $built !== $relative
+		&& file_exists( $dir . $built )
+		&& file_exists( $dir . $relative )
+		&& filemtime( $dir . $built ) >= filemtime( $dir . $relative ) ) {
+		return $built;
+	}
+
+	return $relative;
+}
 
 /**
  * Cache-busting version for an asset.
@@ -134,23 +158,27 @@ add_action( 'after_setup_theme', 'bb_content_width', 0 );
 function bb_enqueue_assets() {
 	wp_enqueue_style(
 		'bb-fonts',
-		'https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap',
+		get_template_directory_uri() . '/assets/css/fonts.css',
 		array(),
-		null
+		bb_file_version( get_template_directory() . '/assets/css/fonts.css' )
 	);
+
+	$bb_stylesheet = bb_asset_path( '/style.css' );
 
 	wp_enqueue_style(
 		'bb-style',
-		get_stylesheet_uri(),
+		get_template_directory_uri() . $bb_stylesheet,
 		array(),
-		bb_file_version( get_stylesheet_directory() . '/style.css' )
+		bb_file_version( get_template_directory() . $bb_stylesheet )
 	);
+
+	$bb_theme_js = bb_asset_path( '/assets/js/theme.js' );
 
 	wp_enqueue_script(
 		'bb-script',
-		get_template_directory_uri() . '/assets/js/theme.js',
+		get_template_directory_uri() . $bb_theme_js,
 		array(),
-		bb_file_version( get_template_directory() . '/assets/js/theme.js' ),
+		bb_file_version( get_template_directory() . $bb_theme_js ),
 		true
 	);
 	wp_script_add_data( 'bb-script', 'strategy', 'defer' );
@@ -175,6 +203,11 @@ function bb_enqueue_assets() {
 		'shareText'  => __( 'শেয়ার করুন', 'bichitro-biggan' ),
 		'tickerStop' => __( 'খবরের স্ক্রল থামান', 'bichitro-biggan' ),
 		'tickerPlay' => __( 'খবরের স্ক্রল চালু করুন', 'bichitro-biggan' ),
+		'themeDark'  => __( 'ডার্ক মোড চালু করুন', 'bichitro-biggan' ),
+		'themeLight' => __( 'লাইট মোড চালু করুন', 'bichitro-biggan' ),
+		'katexCss'   => BB_KATEX_CSS,
+		'katexJs'    => BB_KATEX_JS,
+		'katexAuto'  => BB_KATEX_AUTO,
 	) );
 
 	wp_add_inline_style( 'bb-style', bb_dynamic_css() );
@@ -185,21 +218,53 @@ function bb_enqueue_assets() {
 }
 add_action( 'wp_enqueue_scripts', 'bb_enqueue_assets' );
 
+/* KaTeX renders the equations in physics and quantum pieces. Pinned, and
+   asked for only on posts that actually contain maths. */
+define( 'BB_KATEX_VERSION', '0.16.11' );
+define( 'BB_KATEX_CSS', 'https://cdn.jsdelivr.net/npm/katex@' . BB_KATEX_VERSION . '/dist/katex.min.css' );
+define( 'BB_KATEX_JS', 'https://cdn.jsdelivr.net/npm/katex@' . BB_KATEX_VERSION . '/dist/katex.min.js' );
+define( 'BB_KATEX_AUTO', 'https://cdn.jsdelivr.net/npm/katex@' . BB_KATEX_VERSION . '/dist/contrib/auto-render.min.js' );
+
 /**
- * Asynchronously load Google Fonts without blocking initial render.
+ * Does this post contain anything KaTeX would need to render?
+ *
+ * @param int $post_id Post to check.
+ * @return bool
  */
-function bb_async_font_styles( $html, $handle, $href, $media ) {
-	if ( 'bb-fonts' === $handle ) {
-		return sprintf(
-			'<link rel="preload" as="style" href="%s" onload="this.onload=null;this.rel=\'stylesheet\'">' . "\n" .
-			'<noscript><link rel="stylesheet" href="%s"></noscript>' . "\n",
-			esc_url( $href ),
-			esc_url( $href )
-		);
-	}
-	return $html;
+function bb_post_has_math( $post_id ) {
+	$content = (string) get_post_field( 'post_content', $post_id );
+
+	return (bool) preg_match( '/\$\$|\\\(|\\\[/', $content );
 }
-add_filter( 'style_loader_tag', 'bb_async_font_styles', 10, 4 );
+
+/**
+ * Load KaTeX on an article that has equations. Ordinary prose never pays
+ * for it; the popup loads it on demand instead (see theme.js).
+ */
+function bb_enqueue_katex() {
+	if ( ! is_singular( 'post' ) || ! bb_post_has_math( get_queried_object_id() ) ) {
+		return;
+	}
+
+	wp_enqueue_style( 'katex', BB_KATEX_CSS, array(), BB_KATEX_VERSION );
+	wp_enqueue_script( 'katex', BB_KATEX_JS, array(), BB_KATEX_VERSION, true );
+	wp_enqueue_script( 'katex-auto-render', BB_KATEX_AUTO, array( 'katex' ), BB_KATEX_VERSION, true );
+}
+add_action( 'wp_enqueue_scripts', 'bb_enqueue_katex' );
+
+/**
+ * Preload the one face a Bengali page cannot draw a word without.
+ *
+ * The stylesheet is local now, so the old preload-and-swap dance around
+ * Google's is gone; the font file itself is what is worth fetching early.
+ */
+function bb_preload_fonts() {
+	printf(
+		'<link rel="preload" as="font" type="font/woff2" href="%s" crossorigin>' . "\n",
+		esc_url( get_template_directory_uri() . '/assets/fonts/noto-sans-bengali-400-bengali.woff2' )
+	);
+}
+add_action( 'wp_head', 'bb_preload_fonts', 2 );
 
 /**
  * Preload the Largest Contentful Paint (LCP) image in <head> for fast mobile rendering.
@@ -307,6 +372,8 @@ function bb_customize_controls_js() {
 		true
 	);
 	wp_localize_script( 'bb-customizer-controls', 'bbPostCatMap', bb_get_post_cat_map() );
+
+	bb_enqueue_post_select();
 }
 add_action( 'customize_controls_enqueue_scripts', 'bb_customize_controls_js' );
 
@@ -327,6 +394,28 @@ function bb_admin_assets( $hook ) {
 		true
 	);
 	wp_localize_script( 'bb-admin', 'bbPostCatMap', bb_get_post_cat_map() );
+
+	bb_enqueue_post_select();
+}
+
+/**
+ * The search box over the post pickers, used by the settings page and the
+ * Customizer alike.
+ */
+function bb_enqueue_post_select() {
+	if ( ! function_exists( 'bb_post_search_data' ) ) {
+		return;
+	}
+
+	wp_enqueue_script(
+		'bb-post-select',
+		get_template_directory_uri() . '/assets/js/post-select.js',
+		array(),
+		bb_file_version( get_template_directory() . '/assets/js/post-select.js' ),
+		true
+	);
+
+	wp_localize_script( 'bb-post-select', 'bbPostSearch', bb_post_search_data() );
 }
 add_action( 'admin_enqueue_scripts', 'bb_admin_assets' );
 
@@ -632,6 +721,39 @@ add_action( 'edited_category', 'bb_save_category_color' );
  * ---------------------------------------------------------------------- */
 
 /**
+ * The values that belong to this particular publication rather than to the
+ * theme: who runs it, where to write to it, where its videos live.
+ *
+ * Every one of them is also a setting — these are only what a fresh install
+ * starts with. Anyone running the theme on another site can change them here,
+ * in Theme Settings, or through the bb_default_value filter.
+ *
+ * @param string $key Which default.
+ * @return string
+ */
+function bb_default( $key ) {
+	$defaults = array(
+		'contact_email'    => 'bichitrobiggan@gmail.com',
+		'youtube_url'      => 'https://www.youtube.com/@bigganbichitro',
+		'youtube_text'     => 'সাবস্ক্রাইব করুন',
+		'footer_author'    => 'Tanvir Hossain',
+		'footer_developer' => 'Raisul Sohan',
+		'author_bio_site'  => 'bichitrobiggan.com',
+		'copyright'        => '©BichitroBiggan',
+	);
+
+	$value = isset( $defaults[ $key ] ) ? $defaults[ $key ] : '';
+
+	/**
+	 * Filter a site default.
+	 *
+	 * @param string $value Default value.
+	 * @param string $key   Which default.
+	 */
+	return (string) apply_filters( 'bb_default_value', $value, $key );
+}
+
+/**
  * The italic line beside the logo. Kept in one place so the Customizer default
  * and the header render the same string.
  */
@@ -673,7 +795,7 @@ function bb_feature_list_count() {
 }
 
 function bb_get_contact_email() {
-	$email = get_theme_mod( 'bb_contact_email', 'bichitrobiggan@gmail.com' );
+	$email = get_theme_mod( 'bb_contact_email', bb_default( 'contact_email' ) );
 	return sanitize_email( $email );
 }
 
@@ -809,335 +931,24 @@ function bb_paged_404() {
 }
 add_action( 'template_redirect', 'bb_paged_404' );
 
-/**
- * Point crawlers at the sitemap from robots.txt.
- */
-function bb_robots_txt( $output ) {
-	if ( ! get_option( 'blog_public' ) ) {
-		return $output;
-	}
-
-	$sitemap = function_exists( 'wp_sitemaps_get_server' ) ? home_url( '/wp-sitemap.xml' ) : '';
-
-	if ( $sitemap && false === strpos( $output, 'Sitemap:' ) ) {
-		$output .= "\nSitemap: " . esc_url_raw( $sitemap ) . "\n";
-	}
-
-	return $output;
-}
+/**
+ * Point crawlers at the sitemap from robots.txt.
+ */
+function bb_robots_txt( $output ) {
+	if ( ! get_option( 'blog_public' ) ) {
+		return $output;
+	}
+
+	$sitemap = function_exists( 'wp_sitemaps_get_server' ) ? home_url( '/wp-sitemap.xml' ) : '';
+
+	if ( $sitemap && false === strpos( $output, 'Sitemap:' ) ) {
+		$output .= "\nSitemap: " . esc_url_raw( $sitemap ) . "\n";
+	}
+
+	return $output;
+}
 add_filter( 'robots_txt', 'bb_robots_txt' );
 
-/**
- * Month names in Bengali, for the archive list and anywhere else the site
- * shows a month without a full date.
- */
-function bb_bangla_month( $month_number ) {
-	$months = array(
-		1  => 'জানুয়ারি',
-		2  => 'ফেব্রুয়ারি',
-		3  => 'মার্চ',
-		4  => 'এপ্রিল',
-		5  => 'মে',
-		6  => 'জুন',
-		7  => 'জুলাই',
-		8  => 'আগস্ট',
-		9  => 'সেপ্টেম্বর',
-		10 => 'অক্টোবর',
-		11 => 'নভেম্বর',
-		12 => 'ডিসেম্বর',
-	);
-
-	$month_number = (int) $month_number;
-
-	return isset( $months[ $month_number ] ) ? $months[ $month_number ] : $GLOBALS['wp_locale']->get_month( $month_number );
-}
-
-/**
- * Today's date for the top bar, in Bengali to match the rest of the site.
- */
-function bb_bangla_today() {
-	$days = array(
-		'Sunday'    => 'রবিবার',
-		'Monday'    => 'সোমবার',
-		'Tuesday'   => 'মঙ্গলবার',
-		'Wednesday' => 'বুধবার',
-		'Thursday'  => 'বৃহস্পতিবার',
-		'Friday'    => 'শুক্রবার',
-		'Saturday'  => 'শনিবার',
-	);
-
-	$day_en = wp_date( 'l' );
-	$day    = isset( $days[ $day_en ] ) ? $days[ $day_en ] : $day_en;
-
-	return sprintf(
-		'%s, %s %s %s',
-		$day,
-		bb_bangla_number( wp_date( 'j' ) ),
-		bb_bangla_month( wp_date( 'n' ) ),
-		bb_bangla_number( wp_date( 'Y' ) )
-	);
-}
-
-/**
- * Convert English digits to Bengali digits.
- */
-function bb_bangla_number( $number ) {
-	$en = array( '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' );
-	$bn = array( '০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯' );
-	return str_replace( $en, $bn, (string) $number );
-}
-
-/**
- * Post date in full Bengali format.
- */
-function bb_bangla_date( $post_id = null ) {
-	$post_id  = $post_id ? $post_id : get_the_ID();
-	$day      = get_the_date( 'j', $post_id );
-	$month_en = get_the_date( 'F', $post_id );
-	$year     = get_the_date( 'Y', $post_id );
-
-	$months = array(
-		'January'   => 'জানুয়ারি',
-		'February'  => 'ফেব্রুয়ারি',
-		'March'     => 'মার্চ',
-		'April'     => 'এপ্রিল',
-		'May'       => 'মে',
-		'June'      => 'জুন',
-		'July'      => 'জুলাই',
-		'August'    => 'আগস্ট',
-		'September' => 'সেপ্টেম্বর',
-		'October'   => 'অক্টোবর',
-		'November'  => 'নভেম্বর',
-		'December'  => 'ডিসেম্বর',
-	);
-
-	$month_bn = isset( $months[ $month_en ] ) ? $months[ $month_en ] : $month_en;
-	$day_bn   = bb_bangla_number( $day );
-	$year_bn  = bb_bangla_number( $year );
-
-	return $day_bn . ' ' . $month_bn . ', ' . $year_bn;
-}
-
-/**
- * Post date in the site's format (Bengali).
- */
-function bb_post_date( $post_id = null ) {
-	return bb_bangla_date( $post_id );
-}
-
-/**
- * Calculate post reading time in Bengali.
- */
-function bb_reading_time( $post_id = null ) {
-	$post_id = $post_id ? $post_id : get_the_ID();
-	$minutes = (int) get_post_meta( $post_id, 'bb_read_minutes', true );
-
-	if ( ! $minutes ) {
-		$minutes = bb_calculate_reading_minutes( $post_id );
-		update_post_meta( $post_id, 'bb_read_minutes', $minutes );
-	}
-
-	return bb_bangla_number( $minutes ) . ' মিনিট';
-}
-
-/**
- * Count the words once. A homepage card used to re-read the whole post to
- * print "৬ মিনিট", dozens of times per page load.
- */
-function bb_calculate_reading_minutes( $post_id ) {
-	$content = get_post_field( 'post_content', $post_id );
-	$clean   = wp_strip_all_tags( strip_shortcodes( $content ) );
-	$words   = preg_split( '/\s+/u', trim( $clean ) );
-	$count   = is_array( $words ) ? count( array_filter( $words ) ) : 0;
-
-	return max( 1, (int) ceil( $count / 180 ) );
-}
-
-function bb_flush_reading_time( $post_id ) {
-	delete_post_meta( $post_id, 'bb_read_minutes' );
-}
-add_action( 'save_post', 'bb_flush_reading_time' );
-
-/**
- * A timestamp as a Bengali date — used for the "last updated" line.
- */
-function bb_bangla_timestamp( $timestamp ) {
-	return bb_bangla_number( wp_date( 'j', $timestamp ) )
-		. ' ' . bb_bangla_month( wp_date( 'n', $timestamp ) )
-		. ', ' . bb_bangla_number( wp_date( 'Y', $timestamp ) );
-}
-
-/**
- * Very small view counter — powers the 👁 figure on single posts.
- * Note: a full-page cache will suppress these increments.
- */
-function bb_get_views( $post_id = null ) {
-	$post_id = $post_id ? $post_id : get_the_ID();
-
-	$views = get_post_meta( $post_id, 'bb_views', true );
-	if ( '' !== $views ) {
-		return (int) $views;
-	}
-
-	// Seed from the previous theme's counter so imported posts keep their totals.
-	return (int) get_post_meta( $post_id, 'post_views_count', true );
-}
-
-/**
- * Count a read from the browser.
- *
- * Counting in wp_head meant a page served from the cache — which is nearly
- * every page — was never counted at all, while every crawler that asked for
- * an uncached one was. A beacon fires only where JavaScript runs.
- */
-function bb_register_view_route() {
-	register_rest_route(
-		'bb/v1',
-		'/view',
-		array(
-			'methods'             => 'POST',
-			'callback'            => 'bb_rest_count_view',
-			'permission_callback' => '__return_true',
-			'args'                => array(
-				'id' => array(
-					'required'          => true,
-					'sanitize_callback' => 'absint',
-				),
-			),
-		)
-	);
-}
-add_action( 'rest_api_init', 'bb_register_view_route' );
-
-/**
- * One reader, one post, once every six hours. The address is hashed with the
- * site's own salt and never stored.
- */
-function bb_visitor_key() {
-	$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-	$ua = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
-
-	return wp_hash( $ip . '|' . $ua );
-}
-
-function bb_rest_count_view( WP_REST_Request $request ) {
-	$post_id = absint( $request->get_param( 'id' ) );
-
-	if ( ! $post_id || 'post' !== get_post_type( $post_id ) || 'publish' !== get_post_status( $post_id ) ) {
-		return rest_ensure_response( array( 'counted' => false ) );
-	}
-
-	$once = 'bb_seen_' . md5( $post_id . '|' . bb_visitor_key() );
-
-	if ( get_transient( $once ) ) {
-		return rest_ensure_response( array( 'counted' => false ) );
-	}
-
-	set_transient( $once, 1, 6 * HOUR_IN_SECONDS );
-
-	update_post_meta( $post_id, 'bb_views', bb_get_views( $post_id ) + 1 );
-	bb_record_daily_view( $post_id );
-
-	return rest_ensure_response( array( 'counted' => true ) );
-}
-
-/**
- * Per-day counts, so "এই সপ্তাহে" can mean posts read this week rather than
- * posts published this week. Five weeks are kept; older days are dropped.
- */
-function bb_record_daily_view( $post_id ) {
-	$days = get_option( 'bb_views_daily', array() );
-
-	if ( ! is_array( $days ) ) {
-		$days = array();
-	}
-
-	$today = wp_date( 'Y-m-d' );
-
-	if ( ! isset( $days[ $today ] ) || ! is_array( $days[ $today ] ) ) {
-		$days[ $today ] = array();
-	}
-
-	$days[ $today ][ $post_id ] = ( isset( $days[ $today ][ $post_id ] ) ? (int) $days[ $today ][ $post_id ] : 0 ) + 1;
-
-	if ( count( $days ) > 35 ) {
-		krsort( $days );
-		$days = array_slice( $days, 0, 35, true );
-	}
-
-	update_option( 'bb_views_daily', $days, false );
-}
-
-/**
- * Views per post over the last N days, most read first.
- */
-function bb_recent_view_counts( $days_back ) {
-	$days   = get_option( 'bb_views_daily', array() );
-	$totals = array();
-
-	if ( ! is_array( $days ) ) {
-		return $totals;
-	}
-
-	$cutoff = wp_date( 'Y-m-d', time() - ( (int) $days_back * DAY_IN_SECONDS ) );
-
-	foreach ( $days as $date => $posts ) {
-		if ( (string) $date < $cutoff ) {
-			continue;
-		}
-
-		foreach ( (array) $posts as $pid => $hits ) {
-			$pid            = (int) $pid;
-			$totals[ $pid ] = ( isset( $totals[ $pid ] ) ? $totals[ $pid ] : 0 ) + (int) $hits;
-		}
-	}
-
-	arsort( $totals );
-
-	return $totals;
-}
-
-/**
- * Give every published post a bb_views row so ordering by it is meaningful.
- * Imported posts start from the old theme's post_views_count. Runs in
- * batches on admin page loads and stops for good once finished.
- */
-function bb_backfill_views() {
-	if ( get_option( 'bb_views_backfilled' ) ) {
-		return;
-	}
-	if ( ! current_user_can( 'edit_posts' ) ) {
-		return;
-	}
-
-	$ids = get_posts( array(
-		'post_type'      => 'post',
-		'post_status'    => 'any',
-		'posts_per_page' => 100,
-		'fields'         => 'ids',
-		'meta_query'     => array(
-			array(
-				'key'     => 'bb_views',
-				'compare' => 'NOT EXISTS',
-			),
-		),
-	) );
-
-	if ( empty( $ids ) ) {
-		update_option( 'bb_views_backfilled', 1, false );
-		return;
-	}
-
-	foreach ( $ids as $id ) {
-		add_post_meta( $id, 'bb_views', (int) get_post_meta( $id, 'post_views_count', true ), true );
-	}
-}
-add_action( 'admin_init', 'bb_backfill_views' );
-
-/**
- * Most-viewed posts. Supports time filtering: 'all', 'week', 'month', 'year'.
- * Falls back to comment count while the backfill is still running or if no view data exists yet.
- */
 function bb_popular_query( $count = 3, $range = 'week' ) {
 	$count = max( 1, (int) $count );
 
@@ -1233,7 +1044,7 @@ function bb_ajax_popular_posts() {
 		}
 		wp_reset_postdata();
 	} else {
-		echo '<p class="bb-footer__empty" style="font-size:13px;color:#9ca3af;padding:12px 0;">' . esc_html__( 'এই সময়ের কোনো লেখা পাওয়া যায়নি', 'bichitro-biggan' ) . '</p>';
+		echo '<p class="bb-footer__empty">' . esc_html__( 'এই সময়ের কোনো লেখা পাওয়া যায়নি', 'bichitro-biggan' ) . '</p>';
 	}
 	$html = ob_get_clean();
 
@@ -1784,73 +1595,25 @@ function bb_comment_callback( $comment, $args, $depth ) {
  * 9. Includes
  * ---------------------------------------------------------------------- */
 
+require_once get_template_directory() . '/inc/formatting.php';
+require_once get_template_directory() . '/inc/images.php';
+require_once get_template_directory() . '/inc/views.php';
+require_once get_template_directory() . '/inc/google-verification.php';
 require_once get_template_directory() . '/inc/customizer.php';
 require_once get_template_directory() . '/inc/template-tags.php';
 require_once get_template_directory() . '/inc/live-search.php';
 require_once get_template_directory() . '/inc/editor.php';
 require_once get_template_directory() . '/inc/seo-meta-box.php';
 require_once get_template_directory() . '/inc/video-meta-box.php';
+require_once get_template_directory() . '/inc/references-meta-box.php';
 require_once get_template_directory() . '/inc/seo-frontend.php';
 
 if ( is_admin() ) {
 	require_once get_template_directory() . '/inc/admin-settings.php';
+	require_once get_template_directory() . '/inc/admin-post-search.php';
 }
 
 add_action( 'wp_footer', 'bb_bookmarks_drawer' );
-
-
-/* =====================================================================
- * Google Search Console — HTML-file verification
- * ================================================================== */
-
-/**
- * The verification file name set in Theme Settings → Advanced, if any.
- *
- * It used to be hard-coded, so every site running the theme served this
- * site's Google token — and whoever holds that token could claim those
- * domains in Search Console.
- */
-function bb_google_verify_file() {
-	$file = strtolower( trim( (string) get_theme_mod( 'bb_google_verify_file', '' ) ) );
-
-	return preg_match( '/^google[0-9a-f]+\.html$/', $file ) ? $file : '';
-}
-
-/**
- * Move the token that used to be hard-coded into the setting — on
- * bichitrobiggan.com only — so that site keeps its verification.
- */
-function bb_migrate_google_verify_file() {
-	if ( false !== get_theme_mod( 'bb_google_verify_file', false ) ) {
-		return;
-	}
-
-	$host = strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
-	$ours = in_array( $host, array( 'bichitrobiggan.com', 'www.bichitrobiggan.com' ), true );
-
-	set_theme_mod( 'bb_google_verify_file', $ours ? 'google1c72e007995ed549.html' : '' );
-}
-add_action( 'init', 'bb_migrate_google_verify_file' );
-
-/**
- * Answer the file's address as soon as the request is parsed — no rewrite
- * rule to flush, and no trailing-slash redirect in front of Google.
- *
- * @param WP $wp Current request.
- */
-function bb_google_verify_render( $wp ) {
-	$file = bb_google_verify_file();
-
-	if ( ! $file || strtolower( trim( (string) $wp->request, '/' ) ) !== $file ) {
-		return;
-	}
-
-	status_header( 200 );
-	header( 'Content-Type: text/html; charset=utf-8' );
-	echo 'google-site-verification: ' . esc_html( $file );
-	exit;
-}
-add_action( 'parse_request', 'bb_google_verify_render' );
 
 
 /**
@@ -1885,197 +1648,6 @@ function bb_force_podcast_category_template( $template ) {
 }
 
 
-/**
- * Save the sizes WordPress generates from a JPEG or PNG upload as WebP.
- *
- * This is WordPress's own conversion: the uploaded original stays on disk and
- * the converted files go through its usual unique-name checks. The theme used
- * to convert by hand instead — deleting the original, and overwriting any
- * .webp of the same name already in the folder.
- */
-function bb_webp_output_format( $formats ) {
-	static $supported = null;
-
-	if ( null === $supported ) {
-		$supported = false; // Holds while the check below runs, in case it re-enters.
-		$supported = wp_image_editor_supports( array( 'mime_type' => 'image/webp' ) );
-	}
-
-	if ( $supported ) {
-		$formats['image/jpeg'] = 'image/webp';
-		$formats['image/png']  = 'image/webp';
-	}
-
-	return $formats;
-}
-add_filter( 'image_editor_output_format', 'bb_webp_output_format' );
-
-/**
- * Scale very large uploads down to 1600px on the long side, as before.
- */
-function bb_big_image_threshold() {
-	return 1600;
-}
-add_filter( 'big_image_size_threshold', 'bb_big_image_threshold' );
-
-/**
- * Set standard thumbnail generation quality to 80.
- */
-function bb_image_quality( $quality ) {
-	return 80;
-}
-add_filter( 'wp_editor_set_quality', 'bb_image_quality' );
-
 // Load GitHub Auto-Updater — native WordPress theme updates from GitHub.
 require get_template_directory() . '/inc/github-updater.php';
-
-/* -------------------------------------------------------------------------
- * License System — Google Sheets powered license key verification.
- * ---------------------------------------------------------------------- */
-
-/**
- * Google Apps Script Web App URL.
- * Replace this with your deployed Apps Script URL after setup.
- */
-define( 'BB_LICENSE_API_URL', 'https://script.google.com/macros/s/AKfycbxV0k_ydJr9SJttf_7fgRXuG3KqCKStgg7cEUS80uCAqZzzNqz51RyI07o7mzrZzHjRDQ/exec' );
-
-/**
- * Add License page under Appearance menu.
- */
-function bb_license_menu() {
-	add_theme_page(
-		'Theme License',
-		'Theme License',
-		'manage_options',
-		'bb-license',
-		'bb_license_page_html'
-	);
-}
-add_action( 'admin_menu', 'bb_license_menu' );
-
-/**
- * Handle license activation form submission.
- */
-function bb_handle_license_activation() {
-	if ( ! isset( $_POST['bb_license_activate'] ) || ! check_admin_referer( 'bb_license_nonce' ) ) {
-		return;
-	}
-
-	if ( ! current_user_can( 'manage_options' ) ) {
-		return;
-	}
-
-	$license_key = isset( $_POST['bb_license_key'] ) ? sanitize_text_field( trim( wp_unslash( $_POST['bb_license_key'] ) ) ) : '';
-	if ( empty( $license_key ) ) {
-		add_settings_error( 'bb_license', 'empty', 'লাইসেন্স কী খালি রাখা যাবে না।', 'error' );
-		return;
-	}
-
-	$domain = sanitize_text_field( $_SERVER['SERVER_NAME'] );
-
-	$response = wp_remote_get(
-		add_query_arg(
-			array(
-				'action'  => 'activate',
-				'key'     => $license_key,
-				'domain'  => $domain,
-			),
-			BB_LICENSE_API_URL
-		),
-		array( 'timeout' => 15, 'sslverify' => true )
-	);
-
-	if ( is_wp_error( $response ) ) {
-		add_settings_error( 'bb_license', 'conn', 'সার্ভারের সাথে কানেক্ট করা যাচ্ছে না: ' . $response->get_error_message(), 'error' );
-		return;
-	}
-
-	$body = json_decode( wp_remote_retrieve_body( $response ), true );
-
-	if ( ! empty( $body['success'] ) ) {
-		update_option( 'bb_license_key', $license_key );
-		update_option( 'bb_license_status', 'valid' );
-		update_option( 'bb_license_domain', $domain );
-		add_settings_error( 'bb_license', 'ok', 'লাইসেন্স সফলভাবে অ্যাক্টিভেট হয়েছে! ✅', 'updated' );
-	} else {
-		$msg = ! empty( $body['message'] ) ? $body['message'] : 'ভুল লাইসেন্স কী!';
-		add_settings_error( 'bb_license', 'fail', 'অ্যাক্টিভেশন ব্যর্থ: ' . $msg, 'error' );
-	}
-}
-add_action( 'admin_init', 'bb_handle_license_activation' );
-
-/**
- * Check if the theme is licensed.
- */
-function bb_is_licensed() {
-	// Always allow localhost development.
-	$host = isset( $_SERVER['SERVER_NAME'] ) ? strtolower( $_SERVER['SERVER_NAME'] ) : '';
-	if ( strpos( $host, 'localhost' ) === 0 || $host === '127.0.0.1' ) {
-		return true;
-	}
-
-	return get_option( 'bb_license_status' ) === 'valid';
-}
-
-/**
- * Updates are what the license unlocks. The public site is never blocked: a
- * lost option — a database restore, a migration — used to answer every
- * visitor and every crawler with a 403 until someone noticed.
- */
-add_filter( 'tgu_updates_enabled', 'bb_is_licensed' );
-
-/**
- * Admin notice when not licensed.
- */
-function bb_license_admin_notice() {
-	if ( bb_is_licensed() ) {
-		return;
-	}
-	if ( isset( $_GET['page'] ) && $_GET['page'] === 'bb-license' ) {
-		return;
-	}
-
-	$url = admin_url( 'themes.php?page=bb-license' );
-	echo '<div class="notice notice-error"><p><strong>বিচিত্র বিজ্ঞান থিম:</strong> '
-		. 'থিমের স্বয়ংক্রিয় আপডেট পেতে <a href="' . esc_url( $url ) . '">লাইসেন্স অ্যাক্টিভেট করুন</a>। লাইসেন্স ছাড়াও সাইট স্বাভাবিকভাবে চলবে।</p></div>';
-}
-add_action( 'admin_notices', 'bb_license_admin_notice' );
-
-/**
- * Render the license activation page.
- */
-function bb_license_page_html() {
-	$status = get_option( 'bb_license_status' );
-	$key    = get_option( 'bb_license_key' );
-	$domain = get_option( 'bb_license_domain' );
-	?>
-	<div class="wrap">
-		<h1>বিচিত্র বিজ্ঞান — লাইসেন্স অ্যাক্টিভেশন</h1>
-		<?php settings_errors( 'bb_license' ); ?>
-
-		<div class="card" style="max-width: 520px; padding: 24px; margin-top: 20px;">
-			<?php if ( $status === 'valid' ) : ?>
-				<p style="color: #00a32a; font-weight: bold; font-size: 15px;">✅ লাইসেন্স অ্যাক্টিভ আছে!</p>
-				<table class="form-table">
-					<tr><th>লাইসেন্স কী:</th><td><code><?php echo esc_html( $key ); ?></code></td></tr>
-					<tr><th>ডোমেইন:</th><td><code><?php echo esc_html( $domain ); ?></code></td></tr>
-				</table>
-			<?php else : ?>
-				<p>থিমের স্বয়ংক্রিয় আপডেট পেতে আপনার লাইসেন্স কী (License Key) দিন। লাইসেন্স ছাড়াও সাইট সম্পূর্ণ চালু থাকে।</p>
-				<form method="post" action="">
-					<?php wp_nonce_field( 'bb_license_nonce' ); ?>
-					<table class="form-table">
-						<tr>
-							<th><label for="bb_license_key">লাইসেন্স কী:</label></th>
-							<td><input type="text" id="bb_license_key" name="bb_license_key" value="" style="width:100%;padding:8px;" placeholder="BB-XXXX-XXXX-XXXX" /></td>
-						</tr>
-					</table>
-					<p class="submit">
-						<input type="submit" name="bb_license_activate" class="button-primary" value="অ্যাক্টিভেট করুন" />
-					</p>
-				</form>
-			<?php endif; ?>
-		</div>
-	</div>
-	<?php
-}
+require_once get_template_directory() . '/inc/license.php';

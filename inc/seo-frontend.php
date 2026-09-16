@@ -547,7 +547,14 @@ function bb_seo_article_node( array $ctx, WP_Post $post ) {
 		}
 	}
 
-	return $node;
+	/**
+	 * Filter the article's schema node.
+	 *
+	 * @param array   $node Article node.
+	 * @param array   $ctx  SEO context.
+	 * @param WP_Post $post Post being described.
+	 */
+	return apply_filters( 'bb_seo_article_node', $node, $ctx, $post );
 }
 
 /**
