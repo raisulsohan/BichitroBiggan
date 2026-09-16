@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.6.1' );
+define( 'BB_VERSION', '7.6.2' );
 
 /**
  * The built copy of an asset, when there is one and it is not stale.
@@ -1612,6 +1612,7 @@ require_once get_template_directory() . '/inc/images.php';
 require_once get_template_directory() . '/inc/views.php';
 require_once get_template_directory() . '/inc/google-verification.php';
 require_once get_template_directory() . '/inc/user-privacy.php';
+require_once get_template_directory() . '/inc/author-slug.php';
 require_once get_template_directory() . '/inc/customizer.php';
 require_once get_template_directory() . '/inc/template-tags.php';
 require_once get_template_directory() . '/inc/live-search.php';

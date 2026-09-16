@@ -47,6 +47,11 @@ function bb_block_author_enumeration() {
 		return;
 	}
 
+	// With plain permalinks this is how an author page is addressed at all.
+	if ( ! get_option( 'permalink_structure' ) ) {
+		return;
+	}
+
 	if ( ! isset( $_GET['author'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		return;
 	}

@@ -2,6 +2,13 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.6.2
+
+- Author pages no longer carry the login name. The public address is built
+  from the display name — /author/raisul-sohan/ rather than /author/sohan/ —
+  and the old address redirects to it. Nothing in the database changes; the
+  address can be set per author on the profile screen.
+
 ## 7.6.1
 
 - Dark mode reaches the places the generator could not see: three-digit hex
