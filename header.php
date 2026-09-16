@@ -116,6 +116,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</a>
 			<?php endif; ?>
 			<div class="bb-nav__sticky-actions">
+				<button type="button" class="bb-nav-action-btn bb-nav-action-btn--theme" data-bb-theme-toggle aria-pressed="false"
+					aria-label="<?php esc_attr_e( 'ডার্ক মোড চালু করুন', 'bichitro-biggan' ); ?>"
+					title="<?php esc_attr_e( 'ডার্ক মোড', 'bichitro-biggan' ); ?>"><span aria-hidden="true" data-bb-theme-icon>🌙</span></button>
 				<button type="button" class="bb-nav-action-btn bb-nav-action-btn--bookmarks" data-bb-toggle="bookmarks" title="<?php esc_attr_e( 'সংরক্ষিত লেখাগুলো দেখুন', 'bichitro-biggan' ); ?>" aria-label="<?php esc_attr_e( 'সংরক্ষিত লেখাগুলো দেখুন', 'bichitro-biggan' ); ?>">
 					<span aria-hidden="true">🔖</span>
 					<span class="bb-nav-badge" data-bb-count="bookmarks" style="display:none;">0</span>

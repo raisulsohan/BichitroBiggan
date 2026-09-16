@@ -32,6 +32,7 @@
 		initBookmarks();
 		initQuoteShare();
 		initStickyNav();
+		initNavScroll();
 		initMobileMenu();
 		initTicker();
 		initBackToTop();
@@ -515,6 +516,33 @@
 	/* ---------------------------------------------------------------
 	 * Sticky navigation
 	 * ------------------------------------------------------------ */
+	/* ---------------------------------------------------------------
+	 * The category strip
+	 *
+	 * It scrolls sideways with its scrollbar hidden, so a category that
+	 * does not fit was simply cut in half. The fade is the only thing
+	 * saying there is more to the right.
+	 * ------------------------------------------------------------ */
+	function initNavScroll() {
+		var lists = document.querySelectorAll('.bb-nav__list');
+
+		if (!lists.length) return;
+
+		function update(list) {
+			var remaining = list.scrollWidth - list.clientWidth - list.scrollLeft;
+			list.classList.toggle('is-scrollable', remaining > 4);
+		}
+
+		Array.prototype.forEach.call(lists, function (list) {
+			update(list);
+			list.addEventListener('scroll', function () { update(list); }, { passive: true });
+		});
+
+		window.addEventListener('resize', function () {
+			Array.prototype.forEach.call(lists, update);
+		});
+	}
+
 	function initStickyNav() {
 		var nav = document.getElementById('bb-nav');
 		if (!nav) {

@@ -3,7 +3,7 @@ Theme Name: Bichitro Biggan
 Theme URI: https://bichitrobiggan.com
 Author: Raisul Sohan
 Description: Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic WordPress theme built for a Bengali science magazine and digital publication. Custom-made and developed from scratch by Raisul Sohan, it is designed with a world-class reading experience, built-in SEO, live search, and comprehensive customizer controls.
-Version: 7.7.0
+Version: 7.7.1
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
@@ -479,7 +479,7 @@ ol, ul { padding: 0; list-style: none; }
 .bb-nav__item { display: block; }
 .bb-nav__link {
   display: block;
-  padding: 10px 14px;
+  padding: 10px 11px;
   margin: 3px 0;
   font-size: 15px;
   font-weight: 600;
@@ -4075,6 +4075,19 @@ textarea:focus-visible,
    3.6:1. Same grey family, light enough for the ground it is on. */
 .bb-footer__bottom,
 .bb-footer__bottom-inner { color: #a9b1bd; }
+
+
+
+/* The category strip scrolls sideways when it has to, and says so. */
+.bb-nav__list.is-scrollable {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 34px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 34px), transparent);
+}
+
+/* Room to breathe again once the screen is wide enough for it. */
+@media (min-width: 1400px) {
+  .bb-nav__link { padding: 10px 14px; }
+}
 
 /* === BEGIN GENERATED DARK MODE === */
 /* =========================================================

@@ -2,6 +2,15 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.7.1
+
+- The dark mode switch is in the sticky bar too, so it stays within reach once
+  the top bar has scrolled away.
+- The category strip needed 1,255px inside 1,220px at a 1,280px window, and its
+  scrollbar is hidden — so "ভিডিও" was cut in half with nothing to say why.
+  Tighter link padding fits the ten categories there are; when there are more
+  than fit, the strip now fades at its right edge to show it scrolls.
+
 ## 7.7.0
 
 - Theme Settings → ক্যাটাগরির রং: every category's badge colour and its text
