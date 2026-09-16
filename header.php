@@ -37,7 +37,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<span class="bb-topbar__btn-text"><?php esc_html_e( 'পরে পড়ুন', 'bichitro-biggan' ); ?></span>
 					<span class="bb-count-pill" data-bb-count="bookmarks" style="display:none;">0</span>
 				</button>
-				<button type="button" class="bb-topbar__mail bb-copy-email" title="<?php esc_attr_e( 'ইমেইল কপি করুন', 'bichitro-biggan' ); ?>">✉</button>
+				<button type="button" class="bb-topbar__mail bb-copy-email" aria-label="<?php esc_attr_e( 'ইমেইল কপি করুন', 'bichitro-biggan' ); ?>" title="<?php esc_attr_e( 'ইমেইল কপি করুন', 'bichitro-biggan' ); ?>">✉</button>
 			</div>
 		</div>
 	</div>
@@ -175,7 +175,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<?php
 	/* Ticker — latest posts */
-	if ( get_theme_mod( 'bb_show_ticker', true ) ) :
+	if ( get_theme_mod( 'bb_show_ticker', true ) && ! is_singular() ) :
 		$bb_ticker = bb_query( 0, get_theme_mod( 'bb_ticker_count', 5 ) );
 		if ( $bb_ticker->have_posts() ) :
 			?>
@@ -202,6 +202,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="bb-ticker__nav">
 							<button type="button" class="bb-arrow-btn" data-bb-ticker="prev" aria-label="<?php esc_attr_e( 'আগের লেখা', 'bichitro-biggan' ); ?>">‹</button>
 							<button type="button" class="bb-arrow-btn" data-bb-ticker="next" aria-label="<?php esc_attr_e( 'পরের লেখা', 'bichitro-biggan' ); ?>">›</button>
+							<button type="button" class="bb-ticker__toggle" data-bb-ticker="toggle" aria-pressed="false" aria-label="<?php esc_attr_e( 'খবরের স্ক্রল থামান', 'bichitro-biggan' ); ?>">❚❚</button>
 						</div>
 					<?php endif; ?>
 				</div>
@@ -222,7 +223,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<?php
 	/* Year tabs */
-	if ( get_theme_mod( 'bb_show_years', true ) ) :
+	if ( get_theme_mod( 'bb_show_years', true ) && ! is_singular() ) :
 		$bb_years = bb_get_post_years();
 		if ( ! empty( $bb_years ) ) :
 			$bb_active_year = is_year() || is_month() || is_day() ? get_the_date( 'Y' ) : '';

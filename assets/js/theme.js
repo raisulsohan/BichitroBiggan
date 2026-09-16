@@ -50,6 +50,8 @@
 		initDirectSingleProgress();
 		initPopularFilter();
 		initVideoModal();
+		initShareButtons();
+		initViewCounter();
 	});
 
 	/* ---------------------------------------------------------------
@@ -74,6 +76,8 @@
 		var timer = null;
 		var controller = null;
 		var lastQuery = '';
+		var releaseTrap = null;
+		var lastFocus = null;
 
 		// Any search field on the page becomes a trigger.
 		document.addEventListener('focusin', function (e) {
@@ -140,8 +144,10 @@
 		});
 
 		function open(prefill) {
+			lastFocus = document.activeElement;
 			modal.hidden = false;
 			document.body.classList.add('bb-noscroll');
+			releaseTrap = trapFocus(modal);
 
 			if (prefill && !input.value) {
 				input.value = prefill;
@@ -163,6 +169,15 @@
 			document.body.classList.remove('bb-noscroll');
 			// Reopening with the same term should search again, not sit blank.
 			lastQuery = '';
+
+			if (releaseTrap) {
+				releaseTrap();
+				releaseTrap = null;
+			}
+
+			if (lastFocus && document.contains(lastFocus)) {
+				lastFocus.focus({ preventScroll: true });
+			}
 		}
 
 		function state(text) {
@@ -327,6 +342,39 @@
 		return null;
 	}
 
+	// Keeps Tab inside an open dialog. Without it, tabbing out of a popup lands
+	// on the page behind it, which is still there and still scrollable.
+	function trapFocus(container) {
+		var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+		function onKeydown(e) {
+			if (e.key !== 'Tab' || !container) return;
+
+			var items = Array.prototype.filter.call(container.querySelectorAll(FOCUSABLE), function (el) {
+				return el.offsetWidth > 0 || el.offsetHeight > 0;
+			});
+
+			if (!items.length) return;
+
+			var first = items[0];
+			var last = items[items.length - 1];
+
+			if (e.shiftKey && (document.activeElement === first || !container.contains(document.activeElement))) {
+				e.preventDefault();
+				last.focus();
+			} else if (!e.shiftKey && document.activeElement === last) {
+				e.preventDefault();
+				first.focus();
+			}
+		}
+
+		document.addEventListener('keydown', onKeydown);
+
+		return function release() {
+			document.removeEventListener('keydown', onKeydown);
+		};
+	}
+
 	function fetchDoc(url) {
 		return fetch(url, { credentials: 'same-origin', headers: { 'X-Requested-With': 'fetch' } })
 			.then(function (r) {
@@ -445,6 +493,11 @@
 		var index = 0;
 		var autoTimer = null;
 		var INTERVAL = 4500;
+		/* Text that moves on its own with no way to stop it fails WCAG 2.2.2,
+		   and a reader who asked the system for less motion has already said
+		   no to this. */
+		var paused = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+		var toggle = document.querySelector('[data-bb-ticker="toggle"]');
 
 		function show(i) {
 			index = (i + items.length) % items.length;
@@ -463,9 +516,28 @@
 
 		function startAuto() {
 			stopAuto();
+
+			if (paused) return;
+
 			autoTimer = window.setInterval(function () {
 				show(index + 1);
 			}, INTERVAL);
+		}
+
+		function setPaused(state) {
+			paused = state;
+
+			if (paused) {
+				stopAuto();
+			} else {
+				startAuto();
+			}
+
+			if (!toggle) return;
+
+			toggle.setAttribute('aria-pressed', paused ? 'true' : 'false');
+			toggle.textContent = paused ? '▶' : '❚❚';
+			toggle.setAttribute('aria-label', paused ? (D.tickerPlay || 'চালু করুন') : (D.tickerStop || 'থামান'));
 		}
 
 		function stopAuto() {
@@ -480,6 +552,7 @@
 
 		if (prev) prev.addEventListener('click', function () { show(index - 1); startAuto(); });
 		if (next) next.addEventListener('click', function () { show(index + 1); startAuto(); });
+		if (toggle) toggle.addEventListener('click', function () { setPaused(!paused); });
 
 		if (ticker) {
 			ticker.addEventListener('mouseenter', stopAuto);
@@ -491,7 +564,7 @@
 		}
 
 		show(0);
-		startAuto();
+		setPaused(paused);
 	}
 
 	/* ---------------------------------------------------------------
@@ -679,6 +752,7 @@
 		var baseTitle = document.title;
 		var lastFocus = null;
 		var cache = {};
+		var releaseTrap = null;
 
 		var currentArticleUrl = '';
 		var progressBar = modal.querySelector('.bb-reading-progress__bar');
@@ -778,6 +852,7 @@
 			modal.hidden = false;
 			document.body.classList.add('bb-noscroll');
 			open = true;
+			releaseTrap = trapFocus(dialog);
 			window.dispatchEvent(new Event('bb_resume_update'));
 		}
 
@@ -786,6 +861,11 @@
 			document.body.classList.remove('bb-noscroll');
 			document.title = baseTitle;
 			open = false;
+
+			if (releaseTrap) {
+				releaseTrap();
+				releaseTrap = null;
+			}
 			if (topBtn) topBtn.hidden = true;
 			if (progressBar) progressBar.style.width = '0%';
 			if (lastFocus && document.contains(lastFocus)) {
@@ -825,6 +905,8 @@
 					}, 150);
 				}
 			} catch(e) {}
+
+			window.dispatchEvent(new Event('bb_article_shown'));
 
 			var heading = body.querySelector('.bb-single__title');
 			if (heading) {
@@ -1099,45 +1181,110 @@
 			});
 		}
 
+		// Titles and addresses come back out of localStorage, so each one is
+		// written as a text node instead of being pasted into innerHTML.
+		function safeUrl(url) {
+			return /^https?:\/\//i.test(url || '') ? url : '#';
+		}
+
 		function renderDrawer() {
 			var container = document.getElementById('bb-bookmarks-list');
 			if (!container) return;
 
+			container.textContent = '';
+
 			var list = getList();
+
 			if (list.length === 0) {
-				container.innerHTML = '<div class="bb-drawer__empty">' +
-					'<span class="bb-drawer__empty-icon">🔖</span>' +
-					'<p class="bb-drawer__empty-title">কোনো লেখা সংরক্ষিত নেই</p>' +
-					'<p class="bb-drawer__empty-desc">যেকোনো লেখার "পরে পড়ুন" বাটনে ক্লিক করে এখানে জমা রাখুন।</p>' +
-					'</div>';
+				var empty = document.createElement('div');
+				empty.className = 'bb-drawer__empty';
+
+				var icon = document.createElement('span');
+				icon.className = 'bb-drawer__empty-icon';
+				icon.textContent = '🔖';
+
+				var emptyTitle = document.createElement('p');
+				emptyTitle.className = 'bb-drawer__empty-title';
+				emptyTitle.textContent = "কোনো লেখা সংরক্ষিত নেই";
+
+				var emptyDesc = document.createElement('p');
+				emptyDesc.className = 'bb-drawer__empty-desc';
+				emptyDesc.textContent = "যেকোনো লেখার \"পরে পড়ুন\" বাটনে ক্লিক করে এখানে জমা রাখুন।";
+
+				empty.appendChild(icon);
+				empty.appendChild(emptyTitle);
+				empty.appendChild(emptyDesc);
+				container.appendChild(empty);
 				return;
 			}
 
-			var html = '<div class="bb-drawer__items">';
+			var items = document.createElement('div');
+			items.className = 'bb-drawer__items';
+
 			list.forEach(function (item) {
-				html += '<div class="bb-drawer__item" data-id="' + item.id + '">' +
-					(item.thumb ? '<a href="' + item.url + '" class="bb-drawer__thumb"><img src="' + item.thumb + '" alt="" loading="lazy" /></a>' : '') +
-					'<div class="bb-drawer__content">' +
-						'<a href="' + item.url + '" class="bb-drawer__item-title">' + item.title + '</a>' +
-						'<div class="bb-drawer__item-meta">' +
-							(item.date ? '<span>' + item.date + '</span> · ' : '') +
-							'<span>⏱ ' + item.time + '</span>' +
-						'</div>' +
-					'</div>' +
-					'<button type="button" class="bb-drawer__remove" data-bb-remove-bookmark="' + item.id + '" title="মুছে ফেলুন" aria-label="মুছে ফেলুন">✕</button>' +
-				'</div>';
+				var row = document.createElement('div');
+				row.className = 'bb-drawer__item';
+				row.setAttribute('data-id', item.id);
+
+				if (item.thumb) {
+					var thumbLink = document.createElement('a');
+					thumbLink.className = 'bb-drawer__thumb';
+					thumbLink.href = safeUrl(item.url);
+
+					var img = document.createElement('img');
+					img.src = safeUrl(item.thumb);
+					img.alt = '';
+					img.loading = 'lazy';
+
+					thumbLink.appendChild(img);
+					row.appendChild(thumbLink);
+				}
+
+				var content = document.createElement('div');
+				content.className = 'bb-drawer__content';
+
+				var title = document.createElement('a');
+				title.className = 'bb-drawer__item-title';
+				title.href = safeUrl(item.url);
+				title.textContent = item.title || '';
+
+				var meta = document.createElement('div');
+				meta.className = 'bb-drawer__item-meta';
+				meta.textContent = (item.date ? item.date + ' · ' : '') + (item.time ? '⏱ ' + item.time : '');
+
+				content.appendChild(title);
+				content.appendChild(meta);
+				row.appendChild(content);
+
+				var remove = document.createElement('button');
+				remove.type = 'button';
+				remove.className = 'bb-drawer__remove';
+				remove.setAttribute('data-bb-remove-bookmark', item.id);
+				remove.setAttribute('aria-label', "মুছে ফেলুন");
+				remove.title = "মুছে ফেলুন";
+				remove.textContent = '✕';
+
+				row.appendChild(remove);
+				items.appendChild(row);
 			});
-			html += '</div>';
-			container.innerHTML = html;
+
+			container.appendChild(items);
 		}
+
+		var drawerTrap = null;
+		var drawerOpener = null;
 
 		function openDrawer() {
 			renderDrawer();
+			drawerOpener = document.activeElement;
 			var drawer = document.getElementById('bb-bookmarks-drawer');
 			var overlay = document.getElementById('bb-bookmarks-overlay');
 			if (drawer) {
 				drawer.classList.add('is-open');
 				drawer.setAttribute('aria-hidden', 'false');
+				drawerTrap = trapFocus(drawer);
+				var closeBtn = drawer.querySelector('#bb-bookmarks-close');
+				if (closeBtn) closeBtn.focus({ preventScroll: true });
 			}
 			if (overlay) {
 				overlay.classList.add('is-open');
@@ -1149,6 +1296,16 @@
 		function closeDrawer() {
 			var drawer = document.getElementById('bb-bookmarks-drawer');
 			var overlay = document.getElementById('bb-bookmarks-overlay');
+
+			if (drawerTrap) {
+				drawerTrap();
+				drawerTrap = null;
+			}
+
+			if (drawerOpener && document.contains(drawerOpener)) {
+				drawerOpener.focus({ preventScroll: true });
+			}
+
 			if (drawer) {
 				drawer.classList.remove('is-open');
 				drawer.setAttribute('aria-hidden', 'true');
@@ -1465,18 +1622,23 @@
 			var count = select.getAttribute('data-count') || 3;
 			list.classList.add('is-loading');
 
-			var ajaxUrl = (window.bbLiveSearch && window.bbLiveSearch.ajaxUrl) || (window.bb_ajax && window.bb_ajax.url) || '/wp-admin/admin-ajax.php';
+			// bbLiveSearch and bb_ajax were never defined, so this always fell
+			// through to a path that breaks on a subdirectory install.
+			var ajaxUrl = D.ajaxUrl || '/wp-admin/admin-ajax.php';
 			var url = ajaxUrl + '?action=bb_get_popular_posts&range=' + encodeURIComponent(range) + '&count=' + encodeURIComponent(count);
 
 			fetch(url)
-				.then(function (res) { return res.json(); })
+				.then(function (res) {
+					if (!res.ok) throw new Error('HTTP ' + res.status);
+					return res.json();
+				})
 				.then(function (res) {
 					if (res && res.success && res.data && res.data.html) {
 						list.innerHTML = res.data.html;
 					}
 				})
-				.catch(function (err) {
-					console.error('Popular filter error:', err);
+				.catch(function () {
+					// Leave the list as it stands; the reader still has one.
 				})
 				.finally(function () {
 					list.classList.remove('is-loading');
@@ -1490,6 +1652,8 @@
 	function initVideoModal() {
 		var modal = null;
 		var modalInner = null;
+		var releaseTrap = null;
+		var lastFocus = null;
 
 		document.addEventListener('click', function(e) {
 			var trigger = e.target.closest('[data-bb-video-popup]');
@@ -1500,12 +1664,16 @@
 			if (!videoUrl) return;
 			
 			var ratio = trigger.getAttribute('data-bb-video-ratio') || '16/9';
+			lastFocus = trigger;
 
 			if (!modal) {
 				modal = document.createElement('div');
 				modal.className = 'bb-video-modal';
+				modal.setAttribute('role', 'dialog');
+				modal.setAttribute('aria-modal', 'true');
+				modal.setAttribute('aria-label', 'ভিডিও');
 				modal.innerHTML = '<div class="bb-video-modal__inner">' +
-					'<button class="bb-video-modal__close" aria-label="Close">×</button>' +
+					'<button type="button" class="bb-video-modal__close" aria-label="ভিডিও বন্ধ করুন">×</button>' +
 					'<div id="bb-video-modal-frame"></div>' +
 				'</div>';
 				document.body.appendChild(modal);
@@ -1533,6 +1701,16 @@
 			
 			modal.classList.add('is-active');
 			document.body.classList.add('bb-noscroll');
+			releaseTrap = trapFocus(modal);
+
+			var closeBtn = modal.querySelector('.bb-video-modal__close');
+			if (closeBtn) closeBtn.focus({ preventScroll: true });
+		});
+
+		document.addEventListener('keydown', function (e) {
+			if ((e.key === 'Escape' || e.key === 'Esc') && modal && modal.classList.contains('is-active')) {
+				closeModal();
+			}
 		});
 
 		function closeModal() {
@@ -1540,7 +1718,145 @@
 			modal.classList.remove('is-active');
 			document.body.classList.remove('bb-noscroll');
 			document.getElementById('bb-video-modal-frame').innerHTML = '';
+
+			if (releaseTrap) {
+				releaseTrap();
+				releaseTrap = null;
+			}
+
+			if (lastFocus && document.contains(lastFocus)) {
+				lastFocus.focus({ preventScroll: true });
+			}
 		}
+	}
+
+	/* ---------------------------------------------------------------
+	 * Share row
+	 *
+	 * Copies the link, or hands the article to the phone's own share
+	 * sheet — which is where Messenger and the rest already live.
+	 * ------------------------------------------------------------ */
+	function initShareButtons() {
+		if (navigator.share) {
+			Array.prototype.forEach.call(document.querySelectorAll('[data-bb-native-share]'), function (btn) {
+				btn.hidden = false;
+			});
+		}
+
+		document.addEventListener('click', function (e) {
+			var copyBtn = closestMatch(e.target, '[data-bb-copy-link]');
+
+			if (copyBtn) {
+				e.preventDefault();
+				copyLink(copyBtn.getAttribute('data-bb-copy-link') || window.location.href);
+				return;
+			}
+
+			var shareBtn = closestMatch(e.target, '[data-bb-native-share]');
+
+			if (shareBtn && navigator.share) {
+				e.preventDefault();
+				navigator.share({
+					title: document.title,
+					url: shareBtn.getAttribute('data-bb-native-share') || window.location.href
+				}).catch(function () {});
+			}
+		});
+
+		function copyLink(url) {
+			if (navigator.clipboard && window.isSecureContext) {
+				navigator.clipboard.writeText(url).then(function () {
+					showToast(D.copiedLink || 'লিংক কপি হয়েছে', '🔗');
+				}).catch(function () {
+					legacyCopy(url);
+				});
+				return;
+			}
+
+			legacyCopy(url);
+		}
+
+		function legacyCopy(url) {
+			var area = document.createElement('textarea');
+			area.value = url;
+			area.setAttribute('readonly', '');
+			area.style.position = 'fixed';
+			area.style.opacity = '0';
+			document.body.appendChild(area);
+			area.select();
+
+			try {
+				document.execCommand('copy');
+				showToast(D.copiedLink || 'লিংক কপি হয়েছে', '🔗');
+			} catch (err) {
+				/* nothing else to try */
+			}
+
+			document.body.removeChild(area);
+		}
+	}
+
+	/* ---------------------------------------------------------------
+	 * Reading counter
+	 *
+	 * Pages are served from a cache, so the server never sees most reads
+	 * and counting them in PHP counted crawlers instead. This reports one
+	 * read, from the browser, once the article has been on screen a while.
+	 * ------------------------------------------------------------ */
+	function initViewCounter() {
+		if (!D.viewUrl) {
+			return;
+		}
+
+		var sent = {};
+
+		function send(id) {
+			if (!id || sent[id]) return;
+			sent[id] = true;
+
+			// One read per article per visit, whatever the reader does next.
+			try {
+				if (sessionStorage.getItem('bb_seen_' + id)) return;
+				sessionStorage.setItem('bb_seen_' + id, '1');
+			} catch (e) {}
+
+			var payload = new FormData();
+			payload.append('id', id);
+
+			if (navigator.sendBeacon) {
+				navigator.sendBeacon(D.viewUrl, payload);
+			} else {
+				fetch(D.viewUrl, {
+					method: 'POST',
+					body: payload,
+					credentials: 'same-origin',
+					keepalive: true
+				}).catch(function () {});
+			}
+		}
+
+		function count(scope) {
+			var article = (scope || document).querySelector('.bb-single');
+			if (!article) return;
+
+			var match = /post-(\d+)/.exec(article.id || '');
+			if (!match) return;
+
+			var id = match[1];
+
+			window.setTimeout(function () {
+				if (document.visibilityState === 'hidden') return;
+				send(id);
+			}, 4000);
+		}
+
+		count(document);
+
+		// The popup swaps in a different article without a page load.
+		window.addEventListener('bb_article_shown', function () {
+			var modalBody = document.querySelector('#bb-modal .bb-modal__body');
+			count(modalBody || document);
+		});
 	}
 
 })();

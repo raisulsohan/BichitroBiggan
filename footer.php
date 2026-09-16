@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<!-- EDITOR PICKS -->
 				<div>
-					<h4 class="bb-footer__heading" id="bb-editor-picks-title"><?php echo esc_html( get_theme_mod( 'bb_editor_picks_title', 'EDITOR PICKS' ) ); ?></h4>
+					<h4 class="bb-footer__heading" id="bb-editor-picks-title"><?php echo esc_html( get_theme_mod( 'bb_editor_picks_title', 'সম্পাদকের পছন্দ' ) ); ?></h4>
 					<div class="bb-footer__list">
 						<?php
 						$bb_picks = bb_editor_picks_query();
@@ -35,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<!-- POPULAR POSTS -->
 				<div>
 					<div class="bb-footer__heading-wrap">
-						<h4 class="bb-footer__heading" id="bb-popular-title"><?php echo esc_html( get_theme_mod( 'bb_popular_title', 'POPULAR POSTS' ) ); ?></h4>
+						<h4 class="bb-footer__heading" id="bb-popular-title"><?php echo esc_html( get_theme_mod( 'bb_popular_title', 'জনপ্রিয় লেখা' ) ); ?></h4>
 						<div class="bb-popular-filter">
 							<select class="bb-popular-select" id="bb-popular-range" aria-label="<?php esc_attr_e( 'সময় নির্বাচন করুন', 'bichitro-biggan' ); ?>" data-count="<?php echo esc_attr( get_theme_mod( 'bb_popular_count', 3 ) ); ?>">
 								<option value="week" selected><?php esc_html_e( 'এই সপ্তাহে', 'bichitro-biggan' ); ?></option>
@@ -60,7 +60,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<!-- POPULAR CATEGORY -->
 				<div class="bb-span-2">
-					<h4 class="bb-footer__heading" id="bb-popular-cat-title"><?php echo esc_html( get_theme_mod( 'bb_popular_cat_title', 'POPULAR CATEGORY' ) ); ?></h4>
+					<h4 class="bb-footer__heading" id="bb-popular-cat-title"><?php echo esc_html( get_theme_mod( 'bb_popular_cat_title', 'জনপ্রিয় বিভাগ' ) ); ?></h4>
 					<div class="bb-catcount">
 						<?php
 						$bb_cat_limit = max( 3, min( 10, (int) get_theme_mod( 'bb_popular_cat_count', 5 ) ) );
@@ -99,7 +99,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<div>
 					<div class="bb-footer__about-head">
-						<span class="bb-footer__about-label"><?php echo esc_html( get_theme_mod( 'bb_about_title', 'ABOUT US' ) ); ?></span>
+						<span class="bb-footer__about-label"><?php echo esc_html( get_theme_mod( 'bb_about_title', 'আমাদের কথা' ) ); ?></span>
 						<span class="bb-footer__about-rule"></span>
 					</div>
 					<p class="bb-footer__about-text"><?php echo wp_kses_post( get_theme_mod( 'bb_about_text', 'BichitroBiggan is your source for science news, discoveries, and insights. We bring you the latest updates, research breakthroughs, and engaging stories from the world of science and technology.' ) ); ?></p>
@@ -107,8 +107,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<div class="bb-footer__contact">
 					<div class="bb-footer__contact-item">
-						<span class="bb-footer__contact-title"><?php echo esc_html( get_theme_mod( 'bb_contact_title', 'CONTACT US' ) ); ?></span>
-						<button type="button" class="bb-footer__contact-mail bb-copy-email" title="<?php esc_attr_e( 'ইমেইল কপি করুন', 'bichitro-biggan' ); ?>">✉</button>
+						<span class="bb-footer__contact-title"><?php echo esc_html( get_theme_mod( 'bb_contact_title', 'যোগাযোগ' ) ); ?></span>
+						<button type="button" class="bb-footer__contact-mail bb-copy-email" aria-label="<?php esc_attr_e( 'ইমেইল কপি করুন', 'bichitro-biggan' ); ?>" title="<?php esc_attr_e( 'ইমেইল কপি করুন', 'bichitro-biggan' ); ?>">✉</button>
 					</div>
 					<?php
 					$bb_ft_yt_url  = get_theme_mod( 'bb_footer_youtube_url', get_theme_mod( 'bb_youtube_url', 'https://www.youtube.com/@bigganbichitro' ) );
@@ -116,7 +116,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					if ( $bb_ft_yt_url ) :
 						?>
 						<div class="bb-footer__subscribe">
-							<span class="bb-footer__subscribe-title"><?php echo esc_html( get_theme_mod( 'bb_subscribe_title', 'SUBSCRIBE US' ) ); ?></span>
+							<span class="bb-footer__subscribe-title"><?php echo esc_html( get_theme_mod( 'bb_subscribe_title', 'সাবস্ক্রাইব করুন' ) ); ?></span>
 							<a class="bb-footer__yt-link" href="<?php echo esc_url( $bb_ft_yt_url ); ?>" target="_blank" rel="noopener noreferrer" title="<?php echo esc_attr( $bb_ft_yt_text ); ?>">
 								<svg class="bb-footer__yt-icon" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
 									<path d="M27.42 3.13A3.51 3.51 0 0 0 24.96.65C22.76 0 14 0 14 0S5.24 0 3.04.65A3.51 3.51 0 0 0 .58 3.13 36.82 36.82 0 0 0 0 10a36.82 36.82 0 0 0 .58 6.87A3.51 3.51 0 0 0 3.04 19.35C5.24 20 14 20 14 20s8.76 0 10.96-.65a3.51 3.51 0 0 0 2.46-2.48A36.82 36.82 0 0 0 28 10a36.82 36.82 0 0 0-.58-6.87Z" fill="#FF0000"/>
@@ -136,7 +136,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="bb-footer__bottom">
 			<div class="bb-footer__bottom-inner">
 				<span>
-					<?php esc_html_e( 'Author and Editor', 'bichitro-biggan' ); ?>
+					<?php esc_html_e( 'লেখক ও সম্পাদক', 'bichitro-biggan' ); ?>
 					<?php bb_footer_credit( 'bb_footer_author', 'Tanvir Hossain', 'bb_footer_author_url' ); ?>
 				</span>
 				<span>
@@ -145,7 +145,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					?>
 				</span>
 				<span>
-					<?php esc_html_e( 'Developed by', 'bichitro-biggan' ); ?>
+					<?php esc_html_e( 'ডেভেলপার', 'bichitro-biggan' ); ?>
 					<?php bb_footer_credit( 'bb_footer_developer', 'Raisul Sohan', 'bb_footer_developer_url' ); ?>
 				</span>
 			</div>

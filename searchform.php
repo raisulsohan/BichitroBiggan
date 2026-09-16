@@ -20,5 +20,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 		value="<?php echo esc_attr( get_search_query() ); ?>"
 		name="s"
 	/>
-	<button type="submit" class="bb-searchform__submit"><?php esc_html_e( 'Search', 'bichitro-biggan' ); ?></button>
+	<button type="submit" class="bb-searchform__submit"><?php esc_html_e( 'খুঁজুন', 'bichitro-biggan' ); ?></button>
 </form>

@@ -21,8 +21,8 @@ if ( post_password_required() ) {
 			<?php
 			printf(
 				/* translators: %s: comment count */
-				esc_html( _n( '%s COMMENT', '%s COMMENTS', get_comments_number(), 'bichitro-biggan' ) ),
-				esc_html( number_format_i18n( get_comments_number() ) )
+				esc_html( _n( '%s টি মন্তব্য', '%s টি মন্তব্য', get_comments_number(), 'bichitro-biggan' ) ),
+				esc_html( bb_bangla_number( get_comments_number() ) )
 			);
 			?>
 		</h3>

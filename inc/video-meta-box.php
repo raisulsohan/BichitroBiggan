@@ -62,13 +62,13 @@ function bb_video_save_meta_box( $post_id ) {
 	}
 
 	if ( isset( $_POST['bb_video_url'] ) ) {
-		update_post_meta( $post_id, 'video_url', sanitize_text_field( $_POST['bb_video_url'] ) );
+		update_post_meta( $post_id, 'video_url', esc_url_raw( wp_unslash( $_POST['bb_video_url'] ) ) );
 	}
 	if ( isset( $_POST['bb_video_duration'] ) ) {
-		update_post_meta( $post_id, 'video_duration', sanitize_text_field( $_POST['bb_video_duration'] ) );
+		update_post_meta( $post_id, 'video_duration', sanitize_text_field( wp_unslash( $_POST['bb_video_duration'] ) ) );
 	}
 	if ( isset( $_POST['bb_video_ratio'] ) ) {
-		update_post_meta( $post_id, 'video_ratio', sanitize_text_field( $_POST['bb_video_ratio'] ) );
+		update_post_meta( $post_id, 'video_ratio', sanitize_text_field( wp_unslash( $_POST['bb_video_ratio'] ) ) );
 	}
 }
 add_action( 'save_post', 'bb_video_save_meta_box' );

@@ -569,6 +569,17 @@ function bb_seo_head_meta() {
 
 	if ( $ctx['image'] ) {
 		printf( '<meta property="og:image" content="%s" />' . "\n", esc_url( $ctx['image'] ) );
+
+		/* Facebook picks its crop from these, and without them the very first
+		   share of a new post often goes out with no picture at all. */
+		if ( ! empty( $ctx['image_width'] ) && ! empty( $ctx['image_height'] ) ) {
+			printf( '<meta property="og:image:width" content="%d" />' . "\n", (int) $ctx['image_width'] );
+			printf( '<meta property="og:image:height" content="%d" />' . "\n", (int) $ctx['image_height'] );
+		}
+
+		if ( $ctx['title'] ) {
+			printf( '<meta property="og:image:alt" content="%s" />' . "\n", esc_attr( $ctx['title'] ) );
+		}
 	}
 
 	// Article-নির্দিষ্ট OG ট্যাগ।
@@ -605,6 +616,10 @@ function bb_seo_head_meta() {
 
 	if ( $ctx['image'] ) {
 		printf( '<meta name="twitter:image" content="%s" />' . "\n", esc_url( $ctx['image'] ) );
+
+		if ( $ctx['title'] ) {
+			printf( '<meta name="twitter:image:alt" content="%s" />' . "\n", esc_attr( $ctx['title'] ) );
+		}
 	}
 
 	echo "<!-- / বিচিত্র বিজ্ঞান SEO -->\n\n";

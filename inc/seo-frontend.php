@@ -131,12 +131,14 @@ function bb_seo_get_context() {
 	$paged     = max( 1, (int) get_query_var( 'paged' ), (int) get_query_var( 'page' ) );
 
 	$ctx = array(
-		'title'       => '',
-		'description' => '',
-		'canonical'   => '',
-		'image'       => '',
-		'og_type'     => 'website',
-		'post'        => null,
+		'title'        => '',
+		'description'  => '',
+		'canonical'    => '',
+		'image'        => '',
+		'image_width'  => 0,
+		'image_height' => 0,
+		'og_type'      => 'website',
+		'post'         => null,
 	);
 
 	if ( is_front_page() ) {
@@ -181,9 +183,14 @@ function bb_seo_get_context() {
 			: wp_trim_words( wp_strip_all_tags( strip_shortcodes( $post->post_content ) ), 30, '...' );
 
 		if ( has_post_thumbnail( $post ) ) {
-			$img = wp_get_attachment_image_src( get_post_thumbnail_id( $post ), 'large' );
+			/* 1200x630: Facebook crops a square featured image, often straight
+			   through the face or the headline baked into it. */
+			$img = wp_get_attachment_image_src( get_post_thumbnail_id( $post ), 'bb-og' );
+
 			if ( $img ) {
-				$ctx['image'] = $img[0];
+				$ctx['image']        = $img[0];
+				$ctx['image_width']  = (int) $img[1];
+				$ctx['image_height'] = (int) $img[2];
 			}
 		}
 	} elseif ( is_home() ) {

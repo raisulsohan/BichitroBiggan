@@ -3,7 +3,7 @@ Theme Name: Bichitro Biggan
 Theme URI: https://bichitrobiggan.com
 Author: Raisul Sohan
 Description: Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic WordPress theme built for a Bengali science magazine and digital publication. Custom-made and developed from scratch by Raisul Sohan, it is designed with a world-class reading experience, built-in SEO, live search, and comprehensive customizer controls.
-Version: 7.4.0
+Version: 7.5.0
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
@@ -107,7 +107,7 @@ ol, ul { padding: 0; list-style: none; }
 }
 
 .bb-section { padding-top: 24px; padding-bottom: 24px; }
-.bb-section--bordered { border-top: 1px solid #f3.6.0; }
+.bb-section--bordered { border-top: 1px solid #f3f4f6; }
 
 .bb-hide-desktop { display: block; }
 .bb-hide-mobile  { display: none; }
@@ -552,7 +552,7 @@ ol, ul { padding: 0; list-style: none; }
   margin: 0;
   font-size: 14px;
   border-radius: 0;
-  border-bottom: 1px solid #f3.6.0;
+  border-bottom: 1px solid #f3f4f6;
 }
 .bb-mobile-menu .bb-nav__item:last-child > .bb-nav__link { border-bottom: 0; }
 
@@ -572,7 +572,7 @@ ol, ul { padding: 0; list-style: none; }
 }
 .bb-nav__item:hover > .bb-nav__sub { display: block; }
 .bb-nav__sub .bb-nav__link {
-  border-bottom: 1px solid #f3.6.0;
+  border-bottom: 1px solid #f3f4f6;
   padding: 10px 14px;
   margin: 0;
   border-radius: 0;
@@ -683,11 +683,11 @@ body.bb-nav-stuck { padding-top: 0; }
   transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .bb-arrow-btn:hover {
-  background: #f3.6.0;
+  background: #f3f4f6;
   color: #111827;
   transform: translateY(-1.5px);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  border-color: #9ca3af;
+  border-color: #6b7280;
 }
 .bb-arrow-btn--lg { font-size: 14px; }
 .bb-arrow-group { display: flex; gap: 4px; margin-top: 12px; }
@@ -995,11 +995,11 @@ a.bb-badge:hover {
 .bb-listitem:hover .bb-listitem__title { color: var(--bb-brand-blue); }
 .bb-listitem__date {
   font-size: 13px;
-  color: #9ca3af;
+  color: #6b7280;
   margin-top: 4px;
 }
 
-.bb-divide-y > * + * { border-top: 1px solid #f3.6.0; }
+.bb-divide-y > * + * { border-top: 1px solid #f3f4f6; }
 
 /* The first row of a list sits level with the top of the neighbouring
    column's image — without this its own padding pushes it down. */
@@ -1493,7 +1493,7 @@ a.bb-badge:hover {
   text-align: center;
 }
 .bb-titleonly:hover .bb-titleonly__title { color: #2563eb; }
-.bb-titleonly__meta { font-size: 13px; color: #9ca3af; margin-top: 6px; }
+.bb-titleonly__meta { font-size: 13px; color: #6b7280; margin-top: 6px; }
 .bb-titleonly__meta strong { color: #4b5563; font-weight: 600; }
 
 /* centred dark cards row */
@@ -1660,10 +1660,10 @@ a.bb-badge:hover {
   transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .bb-pagination .page-numbers:hover {
-  background: #f3.6.0;
+  background: #f3f4f6;
   transform: translateY(-1.5px);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  border-color: #9ca3af;
+  border-color: #6b7280;
 }
 .bb-pagination .page-numbers.current {
   background: #1a1a1a;
@@ -1673,9 +1673,9 @@ a.bb-badge:hover {
 }
 .bb-pagination .page-numbers.dots {
   border-color: transparent;
-  color: #9ca3af;
+  color: #6b7280;
 }
-.bb-pagination__info { font-size: 12px; color: #9ca3af; }
+.bb-pagination__info { font-size: 12px; color: #6b7280; }
 
 @media (min-width: 640px) {
   .bb-pagination { flex-direction: row; }
@@ -1706,7 +1706,7 @@ a.bb-badge:hover {
   transition: background-color 0.2s ease;
 }
 .bb-accordion__item + .bb-accordion__item {
-  border-top: 1px solid #f3.6.0;
+  border-top: 1px solid #f3f4f6;
 }
 .bb-accordion__head {
   width: 100%;
@@ -1729,7 +1729,7 @@ a.bb-badge:hover {
   box-shadow: 0 1px 4px rgba(0, 128, 255, 0.08);
 }
 .bb-accordion__caret {
-  color: #9ca3af;
+  color: #6b7280;
   font-size: 11px;
   transition: transform 0.2s ease, color 0.2s ease;
 }
@@ -1798,7 +1798,7 @@ a.bb-badge:hover {
 }
 
 .bb-widget { margin-bottom: 24px; }
-.bb-widget ul li { padding: 6px 0; border-bottom: 1px solid #f3.6.0; font-size: 14px; }
+.bb-widget ul li { padding: 6px 0; border-bottom: 1px solid #f3f4f6; font-size: 14px; }
 .bb-widget ul li a:hover { color: var(--bb-brand-blue); }
 
 /* =========================================================
@@ -1809,7 +1809,7 @@ a.bb-badge:hover {
   max-width: 760px;
   margin: 0 auto;
   border-radius: 8px;
-  border: 1px solid #f3.6.0;
+  border: 1px solid #f3f4f6;
   padding: 20px 16px 28px;
   position: relative;
   font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
@@ -1869,7 +1869,7 @@ a.bb-badge:hover {
   align-items: center;
   gap: 12px;
   font-size: 12px;
-  color: #9ca3af;
+  color: #6b7280;
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -2147,7 +2147,7 @@ body.bb-nav-stuck .bb-floating-bar,
 .bb-content table { width: 100%; border-collapse: collapse; font-size: 15px; margin: 20px 0; border-radius: 8px; overflow: hidden; }
 .bb-content th, .bb-content td { border: 1px solid #e5e7eb; padding: 10px 12px; }
 .bb-content pre {
-  background: #f3.6.0;
+  background: #f3f4f6;
   padding: 14px;
   overflow-x: auto;
   border-radius: 8px;
@@ -2161,7 +2161,7 @@ body.bb-nav-stuck .bb-floating-bar,
   gap: 8px;
   margin-bottom: 20px;
   padding-top: 16px;
-  border-top: 1px solid #f3.6.0;
+  border-top: 1px solid #f3f4f6;
 }
 .bb-tags__item {
   font-size: 12px;
@@ -2188,7 +2188,7 @@ body.bb-nav-stuck .bb-floating-bar,
   gap: 16px;
   font-size: 12px;
   color: var(--bb-brand-blue);
-  border-top: 1px solid #f3.6.0;
+  border-top: 1px solid #f3f4f6;
   padding: 16px 0;
   margin-bottom: 20px;
 }
@@ -2222,7 +2222,7 @@ body.bb-nav-stuck .bb-floating-bar,
   color: #111827;
   letter-spacing: normal;
   margin-bottom: 16px;
-  border-bottom: 2px solid #f3.6.0;
+  border-bottom: 2px solid #f3f4f6;
   padding-bottom: 8px;
 }
 .bb-related__grid {
@@ -2290,7 +2290,7 @@ body.bb-nav-stuck .bb-floating-bar,
 }
 
 /* comments */
-.bb-comments { border-top: 1px solid #f3.6.0; padding-top: 20px; }
+.bb-comments { border-top: 1px solid #f3f4f6; padding-top: 20px; }
 .bb-comments__title {
   font-size: 14px;
   font-weight: 900;
@@ -2299,7 +2299,7 @@ body.bb-nav-stuck .bb-floating-bar,
   margin-bottom: 16px;
 }
 .bb-comments ol.comment-list { list-style: none; }
-.bb-comments .comment-body { border-bottom: 1px solid #f3.6.0; padding: 12px 0; font-size: 14px; }
+.bb-comments .comment-body { border-bottom: 1px solid #f3f4f6; padding: 12px 0; font-size: 14px; }
 .bb-comments .children { padding-left: 24px; }
 .bb-comments input[type="text"],
 .bb-comments input[type="email"],
@@ -2670,7 +2670,7 @@ body.bb-nav-stuck .bb-floating-bar,
   gap: 4px;
   font-size: 13px;
   text-align: center;
-  color: #9ca3af;
+  color: #6b7280;
 }
 .bb-footer__bottom-inner .hl { color: #ffffff; font-weight: 600; transition: color 0.2s; }
 .bb-footer__bottom-inner .hl:hover { color: var(--bb-brand-gold); }
@@ -2879,7 +2879,7 @@ body.bb-nav-stuck .bb-floating-bar,
 .bb-resume-bar__label {
   display: block;
   font-size: 11px;
-  color: #9ca3af;
+  color: #6b7280;
 }
 
 .bb-resume-bar__title {
@@ -2887,7 +2887,7 @@ body.bb-nav-stuck .bb-floating-bar,
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #f3.6.0;
+  color: #f3f4f6;
   text-decoration: none;
   font-weight: 700;
   transition: color 0.15s ease;
@@ -2919,7 +2919,7 @@ body.bb-nav-stuck .bb-floating-bar,
   flex-shrink: 0;
   background: transparent;
   border: none;
-  color: #9ca3af;
+  color: #6b7280;
   font-size: 14px;
   cursor: pointer;
   padding: 4px;
@@ -3044,14 +3044,14 @@ body.bb-nav-stuck .bb-floating-bar,
   flex-shrink: 0;
   transition: background-color .15s ease;
 }
-.bb-search-modal__btn:hover { background: #f3.6.0; }
+.bb-search-modal__btn:hover { background: #f3f4f6; }
 .bb-search-modal__btn[hidden] { display: none; }
 .bb-search-modal__btn--close { color: #4b5563; }
 .bb-search-modal__sep { width: 1px; height: 20px; background: #e5e7eb; flex-shrink: 0; }
 
 .bb-search-modal__results {
   overflow-y: auto;
-  border-top: 1px solid #f3.6.0;
+  border-top: 1px solid #f3f4f6;
 }
 .bb-search-modal__results:empty { border-top: 0; }
 
@@ -3068,7 +3068,7 @@ body.bb-nav-stuck .bb-floating-bar,
 .bb-search-hit {
   display: block;
   padding: 12px 16px;
-  border-bottom: 1px solid #f3.6.0;
+  border-bottom: 1px solid #f3f4f6;
   transition: background-color .15s ease;
 }
 .bb-search-hit:last-child { border-bottom: 0; }
@@ -3090,7 +3090,7 @@ body.bb-nav-stuck .bb-floating-bar,
 }
 .bb-search-hit__date {
   font-size: 12px;
-  color: #9ca3af;
+  color: #6b7280;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -3110,7 +3110,7 @@ body.bb-nav-stuck .bb-floating-bar,
 
 .bb-search-modal__foot {
   padding: 10px 16px;
-  border-top: 1px solid #f3.6.0;
+  border-top: 1px solid #f3f4f6;
   font-size: 12px;
   color: #6b7280;
   background: #fafafa;
@@ -3335,7 +3335,7 @@ body.admin-bar .bb-nav.is-stuck { top: 32px; }
   border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
-  background: #f3.6.0;
+  background: #f3f4f6;
   color: #4b5563;
   border: 1px solid #e5e7eb;
   cursor: pointer;
@@ -3682,7 +3682,7 @@ body.admin-bar .bb-nav.is-stuck { top: 32px; }
   padding: 6px 12px;
   font-size: 12.5px;
   font-weight: 600;
-  color: #f3.6.0;
+  color: #f3f4f6;
   border-radius: 6px;
   cursor: pointer;
   background: transparent;
@@ -3870,3 +3870,75 @@ body.admin-bar .bb-nav.is-stuck { top: 32px; }
 	}
 }
 
+
+/* =========================================================
+   21. FOCUS, MOTION, SHARING AND MOBILE READING
+   ========================================================= */
+
+/* Several inputs set outline:none, which left keyboard users with no idea
+   where they were. :focus-visible only shows for keyboard focus. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--bb-brand-blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Justified Bengali in a 343px column opens rivers of white space between
+   words. !important because older posts carry the alignment inline. */
+@media (max-width: 639px) {
+  .bb-content p,
+  .bb-content li,
+  .bb-content div,
+  .bb-content h2,
+  .bb-content h3 { text-align: left !important; }
+}
+
+/* On a phone the article's own text began 665px down the page. */
+@media (max-width: 767px) {
+  .bb-single-page .bb-searchbar { display: none; }
+}
+
+.bb-ticker__toggle {
+  min-width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  color: #6b7280;
+  font-size: 11px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.bb-ticker__toggle:hover { background: #f3f4f6; color: #1a1a1a; }
+
+.bb-authorrow__updated {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 4px 0 0;
+}
+
+/* Share row: words instead of single letters — "p" and a green dot were not
+   recognisable as Pinterest and WhatsApp. */
+.bb-share { flex-wrap: wrap; row-gap: 8px; }
+.bb-share__btn.bb-share__btn--text {
+  width: auto;
+  height: auto;
+  padding: 7px 14px;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+.bb-share__btn--copy,
+.bb-share__btn--native { background: #374151; }
+.bb-share__btn--copy:hover,
+.bb-share__btn--native:hover { background: #1f2937; }

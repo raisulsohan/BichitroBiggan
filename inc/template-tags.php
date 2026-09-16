@@ -197,7 +197,7 @@ function bb_card( $args = array() ) {
 		<?php if ( $args['meta'] ) : ?>
 			<div class="bb-card__meta">
 				<?php bb_byline( true ); ?>
-				<span class="bb-count"><?php echo esc_html( bb_bangla_number( bb_comment_count() ) ); ?></span>
+				<?php if ( bb_comment_count() ) : ?><span class="bb-count"><?php echo esc_html( bb_bangla_number( bb_comment_count() ) ); ?></span><?php endif; ?>
 			</div>
 		<?php endif; ?>
 		<?php if ( $args['excerpt'] ) : ?>
@@ -245,7 +245,7 @@ function bb_wide_row() {
 				<span class="bb-card__byline">
 					<strong><?php the_author(); ?></strong> · <span><?php echo esc_html( bb_post_date() ); ?></span> · <span class="bb-readtime-pill">⏱ <?php echo esc_html( bb_reading_time() ); ?></span>
 				</span>
-				<span class="bb-count"><?php echo esc_html( bb_bangla_number( bb_comment_count() ) ); ?></span>
+				<?php if ( bb_comment_count() ) : ?><span class="bb-count"><?php echo esc_html( bb_bangla_number( bb_comment_count() ) ); ?></span><?php endif; ?>
 			</span>
 			<span class="bb-card__excerpt bb-clamp-3"><?php echo esc_html( bb_excerpt( 24 ) ); ?></span>
 		</span>
@@ -318,13 +318,15 @@ function bb_hero_card( $args = array() ) {
 	if ( $is_podcast || ! empty( $video_url ) ) {
 		$podcast_class = trim( $args['class'] . ' bb-hero__podcast' . ( ! empty( $video_url ) ? ' bb-has-video' : '' ) );
 		$video_attr    = ! empty( $video_url ) ? ' data-bb-video="' . esc_url( $video_url ) . '"' : '';
-		$thumb_src     = bb_thumb_url( $post_id, 'full' );
+		/* The same size the card's width/height and srcset describe — 'full'
+		   meant the browser was handed a 1600px file for a 360px tile. */
+		$thumb_src     = bb_thumb_url( $post_id, $args['image_size'] );
 		?>
 		<a class="<?php echo esc_attr( $podcast_class ); ?>" href="<?php the_permalink(); ?>"<?php echo $video_attr; ?><?php if ( empty( $video_url ) ) { bb_article_attr( $post_id ); } ?>>
 			<img class="bb-hero__podcast-bg" src="<?php echo esc_url( $thumb_src ); ?>" alt=""<?php bb_img_attrs( $post_id, $args['image_size'], $args['priority'] ); ?> aria-hidden="true" />
 			<img class="bb-hero__podcast-img" src="<?php echo esc_url( $thumb_src ); ?>" alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( $post_id, $args['image_size'], $args['priority'] ); ?> />
 			<?php if ( ! empty( $video_url ) ) : ?>
-				<span class="bb-hero__play-btn" role="button" aria-label="<?php esc_attr_e( 'ভিডিও সরাসরি দেখুন', 'bichitro-biggan' ); ?>">
+				<span class="bb-hero__play-btn" aria-hidden="true">
 					<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
 				</span>
 			<?php endif; ?>
@@ -439,49 +441,49 @@ function bb_breadcrumb() {
  * Share buttons — same four as the design.
  */
 function bb_share_buttons() {
-	$url   = rawurlencode( get_permalink() );
-	$title = rawurlencode( get_the_title() );
-	$image = rawurlencode( bb_thumb_url( get_the_ID(), 'bb-card' ) );
+	$permalink = get_permalink();
+	$url       = rawurlencode( $permalink );
+	$title     = rawurlencode( get_the_title() );
 
+	/* Named buttons, not initials: readers had to guess that "𝐩" was Pinterest
+	   and a green dot was WhatsApp. Pinterest is gone — Telegram, a copied link
+	   and the phone's own share sheet are what this audience actually uses. */
 	$buttons = array(
 		array(
-			'label' => 'f',
-			'bg'    => '#1877f2',
-			'url'   => 'https://www.facebook.com/sharer/sharer.php?u=' . $url,
-			'name'  => 'Facebook',
+			'name' => __( 'ফেসবুক', 'bichitro-biggan' ),
+			'bg'   => '#1877f2',
+			'url'  => 'https://www.facebook.com/sharer/sharer.php?u=' . $url,
 		),
 		array(
-			'label' => '𝕏',
-			'bg'    => '#000000',
-			'url'   => 'https://twitter.com/intent/tweet?url=' . $url . '&text=' . $title,
-			'name'  => 'X',
+			'name' => __( 'হোয়াটসঅ্যাপ', 'bichitro-biggan' ),
+			'bg'   => '#25d366',
+			'url'  => 'https://api.whatsapp.com/send?text=' . $title . '%20' . $url,
 		),
 		array(
-			'label' => '𝐩',
-			'bg'    => '#e60023',
-			'url'   => 'https://pinterest.com/pin/create/button/?url=' . $url . '&media=' . $image . '&description=' . $title,
-			'name'  => 'Pinterest',
+			'name' => __( 'টেলিগ্রাম', 'bichitro-biggan' ),
+			'bg'   => '#229ed9',
+			'url'  => 'https://t.me/share/url?url=' . $url . '&text=' . $title,
 		),
 		array(
-			'label' => '●',
-			'bg'    => '#25d366',
-			'url'   => 'https://api.whatsapp.com/send?text=' . $title . '%20' . $url,
-			'name'  => 'WhatsApp',
+			'name' => __( 'এক্স', 'bichitro-biggan' ),
+			'bg'   => '#000000',
+			'url'  => 'https://twitter.com/intent/tweet?url=' . $url . '&text=' . $title,
 		),
 	);
 	?>
 	<div class="bb-share">
-		<span class="bb-share__label"><?php esc_html_e( 'Share', 'bichitro-biggan' ); ?></span>
+		<span class="bb-share__label"><?php esc_html_e( 'শেয়ার', 'bichitro-biggan' ); ?></span>
 		<?php foreach ( $buttons as $b ) : ?>
-			<a class="bb-share__btn"
+			<a class="bb-share__btn bb-share__btn--text"
 				style="background:<?php echo esc_attr( $b['bg'] ); ?>;"
 				href="<?php echo esc_url( $b['url'] ); ?>"
 				target="_blank"
-				rel="noopener noreferrer nofollow"
-				aria-label="<?php echo esc_attr( $b['name'] ); ?>">
-				<?php echo esc_html( $b['label'] ); ?>
-			</a>
+				rel="noopener noreferrer nofollow"><?php echo esc_html( $b['name'] ); ?></a>
 		<?php endforeach; ?>
+		<button type="button" class="bb-share__btn bb-share__btn--text bb-share__btn--copy"
+			data-bb-copy-link="<?php echo esc_url( $permalink ); ?>"><?php esc_html_e( 'লিংক কপি', 'bichitro-biggan' ); ?></button>
+		<button type="button" class="bb-share__btn bb-share__btn--text bb-share__btn--native"
+			data-bb-native-share="<?php echo esc_url( $permalink ); ?>" hidden><?php esc_html_e( 'শেয়ার করুন', 'bichitro-biggan' ); ?></button>
 	</div>
 	<?php
 }

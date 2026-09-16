@@ -38,6 +38,20 @@ while ( have_posts() ) :
 			<div>
 				<p class="bb-authorrow__date" style="font-size:14px; font-weight:600; color:#1f2937; margin:0 0 2px;"><?php echo esc_html( bb_bangla_date() ); ?></p>
 				<p class="bb-authorrow__reading-time" style="font-size:12px; color:#6b7280; margin:0;">⏱ <?php echo esc_html( bb_reading_time() ); ?> পড়ার সময়</p>
+				<?php
+				/* Most posts here are edited after publication; readers only ever saw the original date. */
+				if ( get_the_modified_date( 'Y-m-d' ) !== get_the_date( 'Y-m-d' ) ) :
+					?>
+					<p class="bb-authorrow__updated">
+						<?php
+						printf(
+							/* translators: %s: date the post was last edited. */
+							esc_html__( 'সর্বশেষ হালনাগাদ: %s', 'bichitro-biggan' ),
+							esc_html( bb_bangla_timestamp( get_post_modified_time( 'U', true ) ) )
+						);
+						?>
+					</p>
+				<?php endif; ?>
 			</div>
 			<div class="bb-authorrow__stats">
 				<span>👁 <?php echo esc_html( bb_bangla_number( bb_get_views() ) ); ?></span>
@@ -59,13 +73,13 @@ while ( have_posts() ) :
 		<div class="bb-floating-bar">
 			<?php if ( ! empty( $bb_parsed['toc'] ) ) : ?>
 				<div class="bb-toc-container">
-					<button type="button" class="bb-toc-toggle" aria-label="<?php esc_attr_e( 'Toggle Table of Contents', 'bichitro-biggan' ); ?>" aria-expanded="false">
+					<button type="button" class="bb-toc-toggle" aria-label="<?php esc_attr_e( 'সূচিপত্র দেখান বা লুকান', 'bichitro-biggan' ); ?>" aria-expanded="false">
 						<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
 						<span><?php esc_html_e( 'সূচিপত্র', 'bichitro-biggan' ); ?></span>
 						<span class="bb-toc-caret">▼</span>
 					</button>
-					<nav class="bb-toc" aria-label="<?php esc_attr_e( 'Table of contents', 'bichitro-biggan' ); ?>">
-						<p class="bb-toc__title"><?php esc_html_e( 'Table of contents', 'bichitro-biggan' ); ?></p>
+					<nav class="bb-toc" aria-label="<?php esc_attr_e( 'সূচিপত্র', 'bichitro-biggan' ); ?>">
+						<p class="bb-toc__title"><?php esc_html_e( 'সূচিপত্র', 'bichitro-biggan' ); ?></p>
 						<ul class="bb-toc__list">
 							<?php foreach ( $bb_parsed['toc'] as $bb_item ) : ?>
 								<li class="<?php echo ( 2 === $bb_item['level'] ) ? 'bb-toc__sub' : ''; ?>">

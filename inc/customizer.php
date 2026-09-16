@@ -372,7 +372,7 @@ function bb_customize_register( $wp_customize ) {
 
 	// 1. Editor Picks Heading
 	$wp_customize->add_setting( 'bb_editor_picks_title', array(
-		'default'           => 'EDITOR PICKS',
+		'default'           => 'সম্পাদকের পছন্দ',
 		'sanitize_callback' => 'sanitize_text_field',
 		'transport'         => 'postMessage',
 	) );
@@ -400,7 +400,7 @@ function bb_customize_register( $wp_customize ) {
 
 	// 2. Popular Posts Heading
 	$wp_customize->add_setting( 'bb_popular_title', array(
-		'default'           => 'POPULAR POSTS',
+		'default'           => 'জনপ্রিয় লেখা',
 		'sanitize_callback' => 'sanitize_text_field',
 		'transport'         => 'postMessage',
 	) );
@@ -413,7 +413,7 @@ function bb_customize_register( $wp_customize ) {
 	// Popular Posts Count
 	// 3. Popular Category Heading
 	$wp_customize->add_setting( 'bb_popular_cat_title', array(
-		'default'           => 'POPULAR CATEGORY',
+		'default'           => 'জনপ্রিয় বিভাগ',
 		'sanitize_callback' => 'sanitize_text_field',
 		'transport'         => 'postMessage',
 	) );

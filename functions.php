@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.4.0' );
+define( 'BB_VERSION', '7.5.0' );
 
 /**
  * Cache-busting version for an asset.
@@ -116,6 +116,7 @@ function bb_setup() {
 	add_image_size( 'bb-card', 600, 380, true );    // standard cards
 	add_image_size( 'bb-thumb', 360, 240, true );   // grid thumbs
 	add_image_size( 'bb-small', 160, 120, true );   // list thumbnails
+	add_image_size( 'bb-og', 1200, 630, true );    // Facebook / Twitter card
 
 	add_editor_style( 'assets/css/editor.css' );
 }
@@ -133,7 +134,7 @@ add_action( 'after_setup_theme', 'bb_content_width', 0 );
 function bb_enqueue_assets() {
 	wp_enqueue_style(
 		'bb-fonts',
-		'https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap',
+		'https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap',
 		array(),
 		null
 	);
@@ -168,6 +169,12 @@ function bb_enqueue_assets() {
 		'resultOne'  => __( '১টি ফলাফল', 'bichitro-biggan' ),
 		'resultMany' => __( '%s টি ফলাফল', 'bichitro-biggan' ),
 		'hint'       => __( 'অন্তত দুটি অক্ষর লিখুন', 'bichitro-biggan' ),
+		'ajaxUrl'    => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+		'viewUrl'    => esc_url_raw( rest_url( 'bb/v1/view' ) ),
+		'copiedLink' => __( 'লিংক কপি হয়েছে', 'bichitro-biggan' ),
+		'shareText'  => __( 'শেয়ার করুন', 'bichitro-biggan' ),
+		'tickerStop' => __( 'খবরের স্ক্রল থামান', 'bichitro-biggan' ),
+		'tickerPlay' => __( 'খবরের স্ক্রল চালু করুন', 'bichitro-biggan' ),
 	) );
 
 	wp_add_inline_style( 'bb-style', bb_dynamic_css() );
@@ -401,6 +408,11 @@ function bb_layout_settings() {
 
 function bb_body_classes( $classes ) {
 	$classes[] = 'bb-body';
+
+	if ( is_singular( 'post' ) ) {
+		$classes[] = 'bb-single-page';
+	}
+
 	return $classes;
 }
 add_filter( 'body_class', 'bb_body_classes' );
@@ -717,10 +729,16 @@ function bb_img_attrs( $post_id = null, $size = 'bb-card', $priority = false ) {
 		list( $width, $height ) = bb_image_size_dimensions( $size );
 	}
 
+	/* Without srcset a phone downloads the desktop crop of every card. */
+	$srcset = $thumb_id ? wp_get_attachment_image_srcset( $thumb_id, $size ) : '';
+	$sizes  = $srcset ? wp_get_attachment_image_sizes( $thumb_id, $size ) : '';
+
 	printf(
-		' width="%1$d" height="%2$d" decoding="async"%3$s',
+		' width="%1$d" height="%2$d" decoding="async"%3$s%4$s%5$s',
 		$width,
 		$height,
+		$srcset ? ' srcset="' . esc_attr( $srcset ) . '"' : '',
+		( $srcset && $sizes ) ? ' sizes="' . esc_attr( $sizes ) . '"' : '',
 		$priority ? ' loading="eager" fetchpriority="high"' : ' loading="lazy"'
 	);
 }
@@ -912,13 +930,41 @@ function bb_post_date( $post_id = null ) {
  */
 function bb_reading_time( $post_id = null ) {
 	$post_id = $post_id ? $post_id : get_the_ID();
+	$minutes = (int) get_post_meta( $post_id, 'bb_read_minutes', true );
+
+	if ( ! $minutes ) {
+		$minutes = bb_calculate_reading_minutes( $post_id );
+		update_post_meta( $post_id, 'bb_read_minutes', $minutes );
+	}
+
+	return bb_bangla_number( $minutes ) . ' মিনিট';
+}
+
+/**
+ * Count the words once. A homepage card used to re-read the whole post to
+ * print "৬ মিনিট", dozens of times per page load.
+ */
+function bb_calculate_reading_minutes( $post_id ) {
 	$content = get_post_field( 'post_content', $post_id );
 	$clean   = wp_strip_all_tags( strip_shortcodes( $content ) );
 	$words   = preg_split( '/\s+/u', trim( $clean ) );
 	$count   = is_array( $words ) ? count( array_filter( $words ) ) : 0;
-	$minutes = max( 1, (int) ceil( $count / 180 ) );
 
-	return bb_bangla_number( $minutes ) . ' মিনিট';
+	return max( 1, (int) ceil( $count / 180 ) );
+}
+
+function bb_flush_reading_time( $post_id ) {
+	delete_post_meta( $post_id, 'bb_read_minutes' );
+}
+add_action( 'save_post', 'bb_flush_reading_time' );
+
+/**
+ * A timestamp as a Bengali date — used for the "last updated" line.
+ */
+function bb_bangla_timestamp( $timestamp ) {
+	return bb_bangla_number( wp_date( 'j', $timestamp ) )
+		. ' ' . bb_bangla_month( wp_date( 'n', $timestamp ) )
+		. ', ' . bb_bangla_number( wp_date( 'Y', $timestamp ) );
 }
 
 /**
@@ -937,19 +983,119 @@ function bb_get_views( $post_id = null ) {
 	return (int) get_post_meta( $post_id, 'post_views_count', true );
 }
 
-function bb_track_views() {
-	if ( ! is_singular( 'post' ) || is_preview() ) {
-		return;
+/**
+ * Count a read from the browser.
+ *
+ * Counting in wp_head meant a page served from the cache — which is nearly
+ * every page — was never counted at all, while every crawler that asked for
+ * an uncached one was. A beacon fires only where JavaScript runs.
+ */
+function bb_register_view_route() {
+	register_rest_route(
+		'bb/v1',
+		'/view',
+		array(
+			'methods'             => 'POST',
+			'callback'            => 'bb_rest_count_view',
+			'permission_callback' => '__return_true',
+			'args'                => array(
+				'id' => array(
+					'required'          => true,
+					'sanitize_callback' => 'absint',
+				),
+			),
+		)
+	);
+}
+add_action( 'rest_api_init', 'bb_register_view_route' );
+
+/**
+ * One reader, one post, once every six hours. The address is hashed with the
+ * site's own salt and never stored.
+ */
+function bb_visitor_key() {
+	$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+	$ua = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
+
+	return wp_hash( $ip . '|' . $ua );
+}
+
+function bb_rest_count_view( WP_REST_Request $request ) {
+	$post_id = absint( $request->get_param( 'id' ) );
+
+	if ( ! $post_id || 'post' !== get_post_type( $post_id ) || 'publish' !== get_post_status( $post_id ) ) {
+		return rest_ensure_response( array( 'counted' => false ) );
 	}
 
-	$post_id = get_queried_object_id();
-	if ( ! $post_id ) {
-		return;
+	$once = 'bb_seen_' . md5( $post_id . '|' . bb_visitor_key() );
+
+	if ( get_transient( $once ) ) {
+		return rest_ensure_response( array( 'counted' => false ) );
 	}
+
+	set_transient( $once, 1, 6 * HOUR_IN_SECONDS );
 
 	update_post_meta( $post_id, 'bb_views', bb_get_views( $post_id ) + 1 );
+	bb_record_daily_view( $post_id );
+
+	return rest_ensure_response( array( 'counted' => true ) );
 }
-add_action( 'wp_head', 'bb_track_views' );
+
+/**
+ * Per-day counts, so "এই সপ্তাহে" can mean posts read this week rather than
+ * posts published this week. Five weeks are kept; older days are dropped.
+ */
+function bb_record_daily_view( $post_id ) {
+	$days = get_option( 'bb_views_daily', array() );
+
+	if ( ! is_array( $days ) ) {
+		$days = array();
+	}
+
+	$today = wp_date( 'Y-m-d' );
+
+	if ( ! isset( $days[ $today ] ) || ! is_array( $days[ $today ] ) ) {
+		$days[ $today ] = array();
+	}
+
+	$days[ $today ][ $post_id ] = ( isset( $days[ $today ][ $post_id ] ) ? (int) $days[ $today ][ $post_id ] : 0 ) + 1;
+
+	if ( count( $days ) > 35 ) {
+		krsort( $days );
+		$days = array_slice( $days, 0, 35, true );
+	}
+
+	update_option( 'bb_views_daily', $days, false );
+}
+
+/**
+ * Views per post over the last N days, most read first.
+ */
+function bb_recent_view_counts( $days_back ) {
+	$days   = get_option( 'bb_views_daily', array() );
+	$totals = array();
+
+	if ( ! is_array( $days ) ) {
+		return $totals;
+	}
+
+	$cutoff = wp_date( 'Y-m-d', time() - ( (int) $days_back * DAY_IN_SECONDS ) );
+
+	foreach ( $days as $date => $posts ) {
+		if ( (string) $date < $cutoff ) {
+			continue;
+		}
+
+		foreach ( (array) $posts as $pid => $hits ) {
+			$pid            = (int) $pid;
+			$totals[ $pid ] = ( isset( $totals[ $pid ] ) ? $totals[ $pid ] : 0 ) + (int) $hits;
+		}
+	}
+
+	arsort( $totals );
+
+	return $totals;
+}
 
 /**
  * Give every published post a bb_views row so ordering by it is meaningful.
@@ -994,6 +1140,29 @@ add_action( 'admin_init', 'bb_backfill_views' );
  */
 function bb_popular_query( $count = 3, $range = 'week' ) {
 	$count = max( 1, (int) $count );
+
+	/* Week and month come from the daily counts; the longer ranges fall back
+	   to the lifetime total held on each post. */
+	if ( 'week' === $range || 'month' === $range ) {
+		$recent = bb_recent_view_counts( 'week' === $range ? 7 : 30 );
+		$ids    = array_slice( array_keys( $recent ), 0, $count );
+
+		if ( ! empty( $ids ) ) {
+			$recent_query = new WP_Query( array(
+				'post_type'           => 'post',
+				'post_status'         => 'publish',
+				'post__in'            => $ids,
+				'orderby'             => 'post__in',
+				'posts_per_page'      => $count,
+				'no_found_rows'       => true,
+				'ignore_sticky_posts' => 1,
+			) );
+
+			if ( $recent_query->have_posts() ) {
+				return $recent_query;
+			}
+		}
+	}
 	$args  = array(
 		'post_type'           => 'post',
 		'post_status'         => 'publish',
@@ -1169,6 +1338,10 @@ function bb_get_post_years() {
 
 function bb_flush_year_cache() {
 	delete_transient( 'bb_post_years' );
+
+	/* The archive trees are cached per category; bumping the version retires
+	   all of them at once, which a transient key cannot do on its own. */
+	update_option( 'bb_cache_version', (int) get_option( 'bb_cache_version', 1 ) + 1, false );
 }
 add_action( 'save_post', 'bb_flush_year_cache' );
 add_action( 'deleted_post', 'bb_flush_year_cache' );
@@ -1196,6 +1369,29 @@ add_action( 'pre_get_posts', 'bb_category_date_filter' );
  * Dynamically adapts to category archives if on category page or $cat_id passed.
  */
 function bb_get_archive_tree( $cat_id = 0 ) {
+	if ( ! $cat_id && is_category() ) {
+		$cat_id = get_queried_object_id();
+	}
+
+	$key    = 'bb_tree_' . (int) get_option( 'bb_cache_version', 1 ) . '_' . (int) $cat_id;
+	$cached = get_transient( $key );
+
+	if ( is_array( $cached ) ) {
+		return $cached;
+	}
+
+	$tree = bb_build_archive_tree( $cat_id );
+
+	set_transient( $key, $tree, 12 * HOUR_IN_SECONDS );
+
+	return $tree;
+}
+
+/**
+ * The grouped query behind the sidebar's year and month list. It scans every
+ * published post, so bb_get_archive_tree() caches what it returns.
+ */
+function bb_build_archive_tree( $cat_id = 0 ) {
 	global $wpdb;
 
 	if ( ! $cat_id && is_category() ) {
@@ -1442,9 +1638,9 @@ function bb_pagination( $query = null ) {
 			<?php
 			printf(
 				/* translators: 1: current page, 2: total pages */
-				esc_html__( 'Page %1$s of %2$s', 'bichitro-biggan' ),
-				esc_html( $current ),
-				esc_html( $total )
+				esc_html__( 'পৃষ্ঠা %1$s / %2$s', 'bichitro-biggan' ),
+				esc_html( bb_bangla_number( $current ) ),
+				esc_html( bb_bangla_number( $total ) )
 			);
 			?>
 		</span>
