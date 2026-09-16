@@ -2,6 +2,13 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.7.4
+
+- The category strip is back at its original size — 15px, 14px padding. 7.7.2
+  had shrunk the type to make ten categories fit; now that the arrows carry the
+  reader along there is no reason to shrink anything. The strip runs 35px past
+  its track, so the arrow is there from the first page load.
+
 ## 7.7.3
 
 - Arrows on the category strip. When there are more categories than fit, a

@@ -3,7 +3,7 @@ Theme Name: Bichitro Biggan
 Theme URI: https://bichitrobiggan.com
 Author: Raisul Sohan
 Description: Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic WordPress theme built for a Bengali science magazine and digital publication. Custom-made and developed from scratch by Raisul Sohan, it is designed with a world-class reading experience, built-in SEO, live search, and comprehensive customizer controls.
-Version: 7.7.3
+Version: 7.7.4
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
@@ -479,7 +479,7 @@ ol, ul { padding: 0; list-style: none; }
 .bb-nav__item { display: block; }
 .bb-nav__link {
   display: block;
-  padding: 10px 11px;
+  padding: 10px 14px;
   margin: 3px 0;
   font-size: 15px;
   font-weight: 600;
@@ -4084,13 +4084,9 @@ textarea:focus-visible,
   mask-image: linear-gradient(to right, #000 calc(100% - 34px), transparent);
 }
 
-/* Ten categories at 15px do not fit a 1,220px strip, and the previous
-   attempt left them fitting it exactly — which is to say not fitting at all
-   the moment a font renders a pixel wider. A step down in size leaves about
-   100px spare, enough for another category or two. */
-@media (min-width: 1024px) {
-  .bb-nav__link { font-size: 14px; padding: 10px 10px; }
-}
+/* The strip keeps its full size. When the categories outgrow it, the arrows
+   added in 7.7.3 carry the reader along rather than the type shrinking away
+   from the problem. */
 
 /* No "wider screen" case to restore the larger size for: the strip is capped
    at 1,220px however wide the window gets, so 1,500px has exactly as little
