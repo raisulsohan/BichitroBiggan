@@ -2,6 +2,12 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.7.6
+
+- No change to the theme itself. The commit history was rewritten to drop an
+  attribution trailer that did not belong in this repository; every commit is
+  the author's own. This release carries a version number to match.
+
 ## 7.7.5
 
 - The strip arrows keep out of the way: invisible until the pointer is over
