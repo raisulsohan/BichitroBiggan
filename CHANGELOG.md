@@ -2,6 +2,13 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.7.5
+
+- The strip arrows keep out of the way: invisible until the pointer is over
+  the strip, then they fade in. Still nothing at all when every category fits.
+- They stay reachable by keyboard — the arrow appears when it takes focus, so
+  Tab still finds it.
+
 ## 7.7.4
 
 - The category strip is back at its original size — 15px, 14px padding. 7.7.2

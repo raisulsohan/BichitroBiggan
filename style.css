@@ -3,7 +3,7 @@ Theme Name: Bichitro Biggan
 Theme URI: https://bichitrobiggan.com
 Author: Raisul Sohan
 Description: Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic WordPress theme built for a Bengali science magazine and digital publication. Custom-made and developed from scratch by Raisul Sohan, it is designed with a world-class reading experience, built-in SEO, live search, and comprehensive customizer controls.
-Version: 7.7.4
+Version: 7.7.5
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
@@ -4126,7 +4126,29 @@ textarea:focus-visible,
 .bb-nav__arrow:hover { background: #f3f4f6; }
 .bb-nav__arrow--prev { left: 2px; }
 .bb-nav__arrow--next { right: 2px; }
+
+/* [hidden] means there is nothing that way to scroll towards. The rest of
+   the time the arrow waits out of sight and surfaces when the reader brings
+   the pointer to the strip — or tabs to it, which hover alone would miss. */
 .bb-nav__arrow[hidden] { display: none; }
+.bb-nav__arrow {
+  opacity: 0;
+  /* Not visibility: hidden — that takes the button out of the tab order, so
+     a keyboard could never reach it. Transparent but focusable, and the rule
+     below brings it back the moment it is focused. */
+  pointer-events: none;
+  transition: opacity 0.18s ease, background 0.15s ease;
+}
+.bb-nav__strip:hover .bb-nav__arrow,
+.bb-nav__strip:focus-within .bb-nav__arrow,
+.bb-nav__arrow:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bb-nav__arrow { transition: none; }
+}
 
 /* === BEGIN GENERATED DARK MODE === */
 /* =========================================================
