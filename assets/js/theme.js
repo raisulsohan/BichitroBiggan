@@ -524,22 +524,50 @@
 	 * saying there is more to the right.
 	 * ------------------------------------------------------------ */
 	function initNavScroll() {
-		var lists = document.querySelectorAll('.bb-nav__list');
+		var strips = document.querySelectorAll('.bb-nav__strip');
 
-		if (!lists.length) return;
+		if (!strips.length) return;
 
-		function update(list) {
-			var remaining = list.scrollWidth - list.clientWidth - list.scrollLeft;
-			list.classList.toggle('is-scrollable', remaining > 4);
-		}
+		Array.prototype.forEach.call(strips, function (strip) {
+			var list = strip.querySelector('.bb-nav__list');
 
-		Array.prototype.forEach.call(lists, function (list) {
-			update(list);
-			list.addEventListener('scroll', function () { update(list); }, { passive: true });
-		});
+			if (!list) return;
 
-		window.addEventListener('resize', function () {
-			Array.prototype.forEach.call(lists, update);
+			var prev = strip.querySelector('[data-bb-nav-scroll="prev"]');
+			var next = strip.querySelector('[data-bb-nav-scroll="next"]');
+
+			function update() {
+				var max = list.scrollWidth - list.clientWidth;
+				var left = list.scrollLeft;
+				var atStart = left <= 4;
+				var atEnd = max - left <= 4;
+
+				// The fade sits under the next arrow, so it goes when that does.
+				list.classList.toggle('is-scrollable', max > 4 && !atEnd);
+
+				if (prev) prev.hidden = max <= 4 || atStart;
+				if (next) next.hidden = max <= 4 || atEnd;
+			}
+
+			/* The scroll itself is a plain assignment, which every browser honours.
+			   Whether it glides or jumps is left to CSS scroll-behavior — neither
+			   scrollBy({ behavior: 'smooth' }) nor a hand-rolled animation could be
+			   relied on here. */
+			function step(direction) {
+				var amount = Math.max(160, Math.round(list.clientWidth * 0.6));
+				var max = list.scrollWidth - list.clientWidth;
+
+				list.scrollLeft = Math.max(0, Math.min(max, list.scrollLeft + (direction * amount)));
+				update();
+			}
+
+			if (prev) prev.addEventListener('click', function () { step(-1); });
+			if (next) next.addEventListener('click', function () { step(1); });
+
+			list.addEventListener('scroll', update, { passive: true });
+			window.addEventListener('resize', update);
+
+			update();
 		});
 	}
 

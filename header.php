@@ -145,20 +145,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<div class="bb-container-wide">
 
-			<?php
-			if ( has_nav_menu( 'primary' ) ) {
-				wp_nav_menu( array(
-					'theme_location' => 'primary',
-					'container'      => false,
-					'menu_class'     => 'bb-nav__list',
-					'items_wrap'     => '<ul class="%2$s">%3$s</ul>',
-					'walker'         => new BB_Nav_Walker(),
-					'depth'          => 2,
-				) );
-			} else {
-				bb_nav_fallback();
-			}
-			?>
+			<div class="bb-nav__strip">
+				<button type="button" class="bb-nav__arrow bb-nav__arrow--prev" data-bb-nav-scroll="prev"
+					aria-label="<?php esc_attr_e( 'আগের বিভাগগুলো', 'bichitro-biggan' ); ?>" hidden>‹</button>
+
+				<?php
+				if ( has_nav_menu( 'primary' ) ) {
+					wp_nav_menu( array(
+						'theme_location' => 'primary',
+						'container'      => false,
+						'menu_class'     => 'bb-nav__list',
+						'items_wrap'     => '<ul class="%2$s">%3$s</ul>',
+						'walker'         => new BB_Nav_Walker(),
+						'depth'          => 2,
+					) );
+				} else {
+					bb_nav_fallback();
+				}
+				?>
+
+				<button type="button" class="bb-nav__arrow bb-nav__arrow--next" data-bb-nav-scroll="next"
+					aria-label="<?php esc_attr_e( 'পরের বিভাগগুলো', 'bichitro-biggan' ); ?>" hidden>›</button>
+			</div>
 
 			<div class="bb-nav__mobilebar">
 				<span class="bb-nav__current"><?php echo esc_html( bb_current_label() ); ?></span>

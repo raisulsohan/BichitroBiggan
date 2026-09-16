@@ -3,7 +3,7 @@ Theme Name: Bichitro Biggan
 Theme URI: https://bichitrobiggan.com
 Author: Raisul Sohan
 Description: Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic WordPress theme built for a Bengali science magazine and digital publication. Custom-made and developed from scratch by Raisul Sohan, it is designed with a world-class reading experience, built-in SEO, live search, and comprehensive customizer controls.
-Version: 7.7.2
+Version: 7.7.3
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
@@ -4096,6 +4096,42 @@ textarea:focus-visible,
    at 1,220px however wide the window gets, so 1,500px has exactly as little
    room as 1,280px does. */
 
+
+
+/* Arrows for the category strip.
+   They appear only when there are more categories than fit, and only on the
+   side there is something to scroll towards. */
+.bb-nav__strip {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.bb-nav__strip .bb-nav__list { flex: 1 1 auto; }
+
+.bb-nav__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14);
+  font-size: 17px;
+  line-height: 1;
+  padding: 0 0 2px;
+}
+.bb-nav__arrow:hover { background: #f3f4f6; }
+.bb-nav__arrow--prev { left: 2px; }
+.bb-nav__arrow--next { right: 2px; }
+.bb-nav__arrow[hidden] { display: none; }
+
 /* === BEGIN GENERATED DARK MODE === */
 /* =========================================================
    26. DARK MODE
@@ -4994,6 +5030,16 @@ textarea:focus-visible,
 [data-theme="dark"] .bb-footer .bb-readtime-pill,
 [data-theme="dark"] .bb-footer .bb-catcount__row {
   color: #9aa3b0;
+}
+
+[data-theme="dark"] .bb-nav__arrow {
+  background: #171b21;
+  color: #dde1e7;
+  border: 1px solid #272d36;
+}
+
+[data-theme="dark"] .bb-nav__arrow:hover {
+  background: #1d222a;
 }
 
 /* === END GENERATED DARK MODE === */

@@ -2,6 +2,18 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.7.3
+
+- Arrows on the category strip. When there are more categories than fit, a
+  round ‹ / › button appears on the side there is something to scroll towards
+  and slides the strip along. They are real buttons, so the keyboard reaches
+  them, and they hold still for anyone who has asked for less motion.
+- Nothing appears while the categories fit, which is the case today.
+- The strip jumps rather than glides: neither scrollBy({ behavior: 'smooth' })
+  nor scroll-behavior: smooth could be relied on — in testing the second one
+  stopped the scroll happening at all — and an arrow that does nothing is worse
+  than an arrow without an animation.
+
 ## 7.7.2
 
 - The category strip actually fits now. 7.7.1 left it fitting 1,220px in
