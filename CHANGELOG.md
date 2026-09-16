@@ -2,6 +2,22 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.6.1
+
+- Dark mode reaches the places the generator could not see: three-digit hex
+  colours, panels written as rgba(), and a variable with a fallback value. The
+  navigation, the YouTube button and the contents toggle were unreadable.
+- tools/contrast-check.js: paste it into the browser console and it lists every
+  piece of text that falls below WCAG AA, in whichever theme is showing.
+- Colour fixes it found, in both themes: badge and section-heading text now
+  picks black or white by measurement; the share buttons use accessible shades
+  of their brand colours; the footer credit line, category counts, resume bar,
+  previous/next links and contents caret all read properly.
+- Login names are no longer public: the users REST endpoint is closed to
+  logged-out requests, /?author=1 no longer redirects to an account, the
+  authors sitemap is gone and oEmbed stops carrying the author URL. Author
+  pages themselves are unaffected.
+
 ## 7.6.0
 
 **Reading**
