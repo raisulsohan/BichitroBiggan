@@ -2,6 +2,16 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.8.0
+
+- The SEO box's fields — focus keyphrase, keyphrase synonyms, SEO title, meta
+  description — and the তথ্যসূত্র list can be set through the REST API. A post
+  sent in by a publishing script, signed in with an Application Password,
+  arrives with them already filled in instead of waiting to be typed.
+- Writing them takes the same permission as editing the post. Reading them
+  shows nothing the page does not already print in its head.
+- Nothing changes in the editor, and posts that have these saved keep them.
+
 ## 7.7.6
 
 - No change to the theme itself. The commit history was rewritten to drop an

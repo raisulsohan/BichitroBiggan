@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.7.6' );
+define( 'BB_VERSION', '7.8.0' );
 
 /**
  * The built copy of an asset, when there is one and it is not stale.
@@ -1680,6 +1680,7 @@ require_once get_template_directory() . '/inc/editor.php';
 require_once get_template_directory() . '/inc/seo-meta-box.php';
 require_once get_template_directory() . '/inc/video-meta-box.php';
 require_once get_template_directory() . '/inc/references-meta-box.php';
+require_once get_template_directory() . '/inc/rest-meta.php';
 require_once get_template_directory() . '/inc/seo-frontend.php';
 
 if ( is_admin() ) {
