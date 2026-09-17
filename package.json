@@ -1,6 +1,6 @@
 {
   "name": "bichitro-biggan",
-  "version": "7.8.0",
+  "version": "7.8.1",
   "private": true,
   "description": "Build tooling for the Bichitro Biggan WordPress theme. The theme itself needs none of this to run — these scripts only produce the minified assets, the dark palette, the font files and the translation template.",
   "license": "GPL-2.0-or-later",

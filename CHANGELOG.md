@@ -2,6 +2,17 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.8.1
+
+- The সূচিপত্র and পরে পড়ুন buttons float on a desktop again. They did float,
+  but stopped 56px from the top, and the stuck menu on a desktop is 106px tall:
+  both buttons sat entirely behind it. Phones were fine only because the phone
+  menu happens to be 57px. They now stop 8px under wherever the menu really
+  ends, measured by the script — which also covers the admin bar pushing the
+  menu down for a signed-in editor. The popup was never affected.
+- A সূচিপত্র link no longer scrolls its heading behind the menu; it lands below
+  the menu and the floating buttons.
+
 ## 7.8.0
 
 - The SEO box's fields — focus keyphrase, keyphrase synonyms, SEO title, meta

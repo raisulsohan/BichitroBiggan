@@ -584,6 +584,14 @@
 
 		var stuck = false;
 
+		/* The article's সূচিপত্র and পরে পড়ুন buttons stick just under the
+		   stuck menu (style.css, .bb-floating-bar). Its height differs between
+		   phone and desktop, and the admin bar moves it down, so tell them
+		   where it actually ends. */
+		function publishBottom() {
+			document.documentElement.style.setProperty('--bb-nav-bottom', Math.round(nav.getBoundingClientRect().bottom) + 'px');
+		}
+
 		function update() {
 			var shouldStick = window.pageYOffset > SCROLL_TRIGGER;
 
@@ -595,6 +603,7 @@
 			if (stuck) {
 				spacer.style.height = nav.offsetHeight + 'px';
 				nav.classList.add('is-stuck');
+				publishBottom();
 			} else {
 				nav.classList.remove('is-stuck');
 				spacer.style.height = '0px';
@@ -606,6 +615,7 @@
 		window.addEventListener('resize', function () {
 			if (stuck) {
 				spacer.style.height = nav.offsetHeight + 'px';
+				publishBottom();
 			}
 		});
 		update();
@@ -899,8 +909,11 @@
 				return;
 			}
 
+			// Land the heading below the stuck menu and the সূচিপত্র / পরে পড়ুন
+			// buttons floating under it, not behind them.
 			var nav = document.getElementById('bb-nav');
-			var offset = nav && nav.classList.contains('is-stuck') ? nav.offsetHeight + 12 : 12;
+			var bar = closestMatch(link, '.bb-floating-bar');
+			var offset = (nav && nav.classList.contains('is-stuck') ? nav.getBoundingClientRect().bottom : 0) + (bar ? bar.offsetHeight + 8 : 0) + 12;
 			var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
 			window.scrollTo({ top: top, behavior: 'smooth' });
 		});
