@@ -2,6 +2,18 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.9.0
+
+- An SEO column in the Posts and Pages lists: a red, amber or green dot per
+  post, the same traffic light the SEO box shows in the editor, so the posts
+  that need work stand out without opening each one. Hovering it lists what
+  holds the score back — no focus keyphrase, keyphrase missing from the title,
+  a description too long, no featured image.
+- The score is worked out from the saved fields by the editor's own rules,
+  including the Yoast values older posts still fall back to. The two were run
+  side by side over 576 combinations of keyphrase, title, description and
+  image, and agreed on every one.
+
 ## 7.8.1
 
 - The সূচিপত্র and পরে পড়ুন buttons float on a desktop again. They did float,

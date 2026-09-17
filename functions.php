@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.8.1' );
+define( 'BB_VERSION', '7.9.0' );
 
 /**
  * The built copy of an asset, when there is one and it is not stale.
@@ -1687,6 +1687,7 @@ if ( is_admin() ) {
 	require_once get_template_directory() . '/inc/admin-settings.php';
 	require_once get_template_directory() . '/inc/admin-post-search.php';
 	require_once get_template_directory() . '/inc/category-colors-admin.php';
+	require_once get_template_directory() . '/inc/seo-admin-column.php';
 }
 
 add_action( 'wp_footer', 'bb_bookmarks_drawer' );
