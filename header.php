@@ -201,7 +201,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<?php
 	/* Ticker — latest posts */
-	if ( get_theme_mod( 'bb_show_ticker', true ) && ! is_singular() ) :
+	if ( get_theme_mod( 'bb_show_ticker', true ) && ( is_front_page() || ! is_singular() ) ) :
 		$bb_ticker = bb_query( 0, get_theme_mod( 'bb_ticker_count', 5 ) );
 		if ( $bb_ticker->have_posts() ) :
 			?>
@@ -249,7 +249,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<?php
 	/* Year tabs */
-	if ( get_theme_mod( 'bb_show_years', true ) && ! is_singular() ) :
+	if ( get_theme_mod( 'bb_show_years', true ) && ( is_front_page() || ! is_singular() ) ) :
 		$bb_years = bb_get_post_years();
 		if ( ! empty( $bb_years ) ) :
 			$bb_active_year = is_year() || is_month() || is_day() ? get_the_date( 'Y' ) : '';

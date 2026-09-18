@@ -2,6 +2,14 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.9.1
+
+- Restore year-wise archive tabs and latest-posts ticker on a static front page.
+  The condition hiding them on single posts had used `! is_singular()`, which
+  WordPress also evaluates as true for a static homepage page, silently
+  dropping them. They now display on the front page as intended while remaining
+  hidden inside individual articles and pages.
+
 ## 7.9.0
 
 - An SEO column in the Posts and Pages lists: a red, amber or green dot per
