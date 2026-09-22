@@ -1833,16 +1833,19 @@ function bb_lang_switch( $class = 'bb-topbar__lang' ) {
 	}
 
 	/*
-	 * Each edition speaks its own language, the switch included: the Bengali
-	 * site offers "EN" in Bengali words, the English one offers "BN" in English.
+	 * The language it leads to, spelled out — the same words the pill on an
+	 * article uses, so the two switches read alike wherever a reader meets one.
 	 */
-	$label = $to_english ? 'EN' : 'BN';
+	$label = $to_english ? 'English' : 'Bangla';
 	$title = $to_english
 		? __( 'ইংরেজিতে পড়ুন', 'bichitro-biggan' )
 		: __( 'Read in Bengali', 'bichitro-biggan' );
 
 	printf(
-		'<a class="%1$s" href="%2$s" hreflang="%3$s" lang="%3$s" title="%4$s" aria-label="%4$s" rel="alternate"><span aria-hidden="true">%5$s</span></a>',
+		'<a class="%1$s" href="%2$s" hreflang="%3$s" lang="%3$s" title="%4$s" aria-label="%4$s" rel="alternate">'
+			. '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">'
+			. '<circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"></path>'
+			. '</svg><span>%5$s</span></a>',
 		esc_attr( $class ),
 		esc_url( $target ),
 		esc_attr( $to_english ? 'en' : 'bn' ),

@@ -2,6 +2,13 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.15.1
+
+- The switch in the top bar and in the sticky menu spells the language out —
+  English, Bangla — with the same globe beside it as the pill on an article.
+  Two switches that do the same thing now read the same way. On a narrow
+  phone the date shortens rather than the buttons wrapping.
+
 ## 7.15.0
 
 - **Where in the world** — which countries readers are in, without ever seeing

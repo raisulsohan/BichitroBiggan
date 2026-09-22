@@ -3,7 +3,7 @@ Theme Name: Bichitro Biggan
 Theme URI: https://bichitrobiggan.com
 Author: Raisul Sohan
 Description: Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic WordPress theme built for a Bengali science magazine and digital publication. Custom-made and developed from scratch by Raisul Sohan, it is designed with a world-class reading experience, built-in SEO, live search, and comprehensive customizer controls.
-Version: 7.15.0
+Version: 7.15.1
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
@@ -4039,25 +4039,29 @@ textarea:focus-visible,
 }
 .bb-topbar__theme:hover { background: rgba(255, 255, 255, 0.12); }
 
-/* The EN / বাং switch, beside the dark-mode button in both bars. */
+/* The English / Bangla switch, beside the dark-mode button in both bars.
+   It names the language it leads to, exactly as the pill on an article does. */
 .bb-topbar__lang {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 28px;
+  gap: 5px;
   height: 28px;
-  padding: 0 7px;
+  padding: 0 9px;
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   font-family: Arial, Helvetica, sans-serif;
   font-size: 11px;
   font-weight: 700;
   line-height: 1;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
   color: inherit;
   text-decoration: none;
   transition: background .15s ease, border-color .15s ease;
 }
+.bb-topbar__lang svg { display: block; opacity: .8; }
+.bb-topbar__lang:hover svg { opacity: 1; }
 .bb-topbar__lang:hover,
 .bb-topbar__lang:focus-visible {
   background: rgba(255, 255, 255, 0.12);
@@ -4066,12 +4070,29 @@ textarea:focus-visible,
 }
 .bb-nav-action-btn--lang {
   width: auto;
-  min-width: 32px;
-  padding: 0 8px;
+  gap: 5px;
+  padding: 0 10px;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.bb-nav-action-btn--lang svg { opacity: .8; }
+.bb-nav-action-btn--lang:hover svg { opacity: 1; }
+
+/* The date yields first when a narrow top bar runs out of room. */
+.bb-topbar__date {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .bb-topbar__actions { gap: 8px; }
+  .bb-topbar__lang { padding: 0 7px; gap: 4px; }
+  .bb-nav-action-btn--lang { padding: 0 8px; }
 }
 
 .bb-single .bb-authorrow__date {
