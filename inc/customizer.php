@@ -181,7 +181,7 @@ function bb_customize_register( $wp_customize ) {
 		'label'       => __( 'YouTube Button Text', 'bichitro-biggan' ),
 		'section'     => 'bb_header_masthead',
 		'type'        => 'text',
-		'description' => __( 'e.g. সাবস্ক্রাইব করুন, YouTube Channel, or leave blank for icon only.', 'bichitro-biggan' ),
+		'description' => __( 'e.g. Subscribe, YouTube Channel, or leave blank for the icon only.', 'bichitro-biggan' ),
 	) );
 
 	$wp_customize->add_setting( 'bb_youtube_url', array(
@@ -210,7 +210,7 @@ function bb_customize_register( $wp_customize ) {
 		'bb_layout_block23' => __( 'Blocks 2 & 3 — Cards & Wide Rows', 'bichitro-biggan' ),
 		'bb_layout_block45' => __( 'Blocks 4 & 5 — Tall & Dark Cards', 'bichitro-biggan' ),
 		'bb_layout_lists'   => __( 'All Posts & Category Pages', 'bichitro-biggan' ),
-		'bb_layout_modal'   => __( 'Article Popup Reading Modal (পপ-আপ রিডার)', 'bichitro-biggan' ),
+		'bb_layout_modal'   => __( 'Article Popup Reading Modal', 'bichitro-biggan' ),
 	);
 
 	$bb_section_priority = 10;
@@ -364,10 +364,10 @@ function bb_customize_register( $wp_customize ) {
 		'transport'         => 'refresh',
 	) );
 	$wp_customize->add_control( 'bb_footer_show_thumbs', array(
-		'label'       => __( 'ফুটার পোস্টের ছবি/থাম্বনেইল দেখাবেন? (Show Thumbnails)', 'bichitro-biggan' ),
+		'label'       => __( 'Show thumbnails in the footer lists', 'bichitro-biggan' ),
 		'section'     => 'bb_footer_columns_section',
 		'type'        => 'checkbox',
-		'description' => __( 'টিক চিহ্ন না দিলে শুধু লেখার টাইটেল, লেখক ও তারিখ দেখাবে।', 'bichitro-biggan' ),
+		'description' => __( 'Unticked, only the title, author and date are shown.', 'bichitro-biggan' ),
 	) );
 
 	// 1. Editor Picks Heading
@@ -391,7 +391,7 @@ function bb_customize_register( $wp_customize ) {
 			'transport'         => 'refresh',
 		) );
 		$wp_customize->add_control( "bb_editor_picks_{$bb_ep_i}", array(
-			'label'       => sprintf( __( 'Editor Pick #%d (লেখা নির্বাচন করুন)', 'bichitro-biggan' ), $bb_ep_i ),
+			'label'       => sprintf( __( 'Editor Pick #%d — choose a post', 'bichitro-biggan' ), $bb_ep_i ),
 			'section'     => 'bb_footer_columns_section',
 			'type'        => 'select',
 			'choices'     => $bb_post_list,

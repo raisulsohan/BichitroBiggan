@@ -22,8 +22,8 @@
 			}
 
 			frame = wp.media({
-				title: 'প্রোফাইল ছবি বেছে নিন',
-				button: { text: 'এই ছবিটি ব্যবহার করুন' },
+				title: 'Choose a profile picture',
+				button: { text: 'Use this picture' },
 				library: { type: 'image' },
 				multiple: false
 			});

@@ -88,10 +88,10 @@ function bb_avatar_field( $user ) {
 	$attachment_id = (int) get_user_meta( $user->ID, 'bb_avatar_id', true );
 	$preview       = $attachment_id ? wp_get_attachment_image_url( $attachment_id, 'thumbnail' ) : '';
 	?>
-	<h2><?php esc_html_e( 'প্রোফাইল ছবি', 'bichitro-biggan' ); ?></h2>
+	<h2><?php esc_html_e( 'Profile picture', 'bichitro-biggan' ); ?></h2>
 	<table class="form-table" role="presentation">
 		<tr>
-			<th><label for="bb_avatar_id"><?php esc_html_e( 'ছবি', 'bichitro-biggan' ); ?></label></th>
+			<th><label for="bb_avatar_id"><?php esc_html_e( 'Picture', 'bichitro-biggan' ); ?></label></th>
 			<td>
 				<div id="bb-avatar-preview" style="margin-bottom:10px;">
 					<?php if ( $preview ) : ?>
@@ -99,10 +99,10 @@ function bb_avatar_field( $user ) {
 					<?php endif; ?>
 				</div>
 				<input type="hidden" name="bb_avatar_id" id="bb_avatar_id" value="<?php echo esc_attr( $attachment_id ); ?>" />
-				<button type="button" class="button" id="bb-avatar-pick"><?php esc_html_e( 'ছবি বেছে নিন', 'bichitro-biggan' ); ?></button>
-				<button type="button" class="button" id="bb-avatar-clear"><?php esc_html_e( 'সরিয়ে দিন', 'bichitro-biggan' ); ?></button>
+				<button type="button" class="button" id="bb-avatar-pick"><?php esc_html_e( 'Choose a picture', 'bichitro-biggan' ); ?></button>
+				<button type="button" class="button" id="bb-avatar-clear"><?php esc_html_e( 'Remove', 'bichitro-biggan' ); ?></button>
 				<p class="description">
-					<?php esc_html_e( 'Media Library থেকে ছবি বেছে নিন। এটি Gravatar-এর বদলে সাইটের সব জায়গায় দেখাবে। বর্গাকার ছবি (যেমন ৫০০×৫০০) সবচেয়ে ভালো দেখায়।', 'bichitro-biggan' ); ?>
+					<?php esc_html_e( 'Pick an image from the Media Library. It is used everywhere on the site in place of Gravatar. A square image (500×500, say) looks best.', 'bichitro-biggan' ); ?>
 				</p>
 			</td>
 		</tr>

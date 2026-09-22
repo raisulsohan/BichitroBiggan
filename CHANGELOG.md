@@ -2,6 +2,19 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.13.0
+
+- The dashboard speaks English. Every screen the theme adds — Theme Settings,
+  Category Colours, Statistics, the SEO box and its analysis, the references
+  and video boxes, the profile fields, the licence page, the update notices —
+  was written in Bengali; all of it now reads in English, including the
+  wording inside, the numbers and the dates.
+- The site itself is untouched: every word a reader sees is still Bengali
+  (and English under /en). Only the screens behind the login changed.
+- The SEO analysis reads in English too — "The title is a good length
+  (54 / 60 characters)", "Overall: Good — 6 checks passed" — since it is
+  written for whoever is editing the post, in the dashboard.
+
 ## 7.12.0
 
 - The site keeps its own statistics, on its own screen: Dashboard →

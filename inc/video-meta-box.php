@@ -33,7 +33,7 @@ function bb_video_meta_box_html( $post ) {
 	</p>
 	<p>
 		<label for="bb_video_duration"><strong><?php esc_html_e( 'Video Duration (Time)', 'bichitro-biggan' ); ?></strong></label><br>
-		<input type="text" id="bb_video_duration" name="bb_video_duration" value="<?php echo esc_attr( $video_duration ); ?>" style="width:100%;" placeholder="e.g. ১২:৪৫ মিনিট or 12:45" />
+		<input type="text" id="bb_video_duration" name="bb_video_duration" value="<?php echo esc_attr( $video_duration ); ?>" style="width:100%;" placeholder="e.g. 12:45" />
 		<small><?php esc_html_e( 'Overrides the default reading time calculation.', 'bichitro-biggan' ); ?></small>
 	</p>
 	<p>

@@ -66,8 +66,8 @@ function bb_post_search_data() {
 	return array(
 		'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
 		'nonce'       => wp_create_nonce( 'bb_post_search' ),
-		'placeholder' => __( 'লেখা খুঁজুন…', 'bichitro-biggan' ),
-		'searching'   => __( 'খোঁজা হচ্ছে…', 'bichitro-biggan' ),
-		'noResults'   => __( 'কিছু পাওয়া যায়নি', 'bichitro-biggan' ),
+		'placeholder' => __( 'Search posts…', 'bichitro-biggan' ),
+		'searching'   => __( 'Searching…', 'bichitro-biggan' ),
+		'noResults'   => __( 'Nothing found', 'bichitro-biggan' ),
 	);
 }

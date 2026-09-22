@@ -46,7 +46,7 @@ function bb_handle_license_activation() {
 
 	$license_key = isset( $_POST['bb_license_key'] ) ? sanitize_text_field( trim( wp_unslash( $_POST['bb_license_key'] ) ) ) : '';
 	if ( empty( $license_key ) ) {
-		add_settings_error( 'bb_license', 'empty', 'লাইসেন্স কী খালি রাখা যাবে না।', 'error' );
+		add_settings_error( 'bb_license', 'empty', 'The licence key cannot be empty.', 'error' );
 		return;
 	}
 
@@ -65,7 +65,7 @@ function bb_handle_license_activation() {
 	);
 
 	if ( is_wp_error( $response ) ) {
-		add_settings_error( 'bb_license', 'conn', 'সার্ভারের সাথে কানেক্ট করা যাচ্ছে না: ' . $response->get_error_message(), 'error' );
+		add_settings_error( 'bb_license', 'conn', 'Could not reach the licence server: ' . $response->get_error_message(), 'error' );
 		return;
 	}
 
@@ -75,10 +75,10 @@ function bb_handle_license_activation() {
 		update_option( 'bb_license_key', $license_key );
 		update_option( 'bb_license_status', 'valid' );
 		update_option( 'bb_license_domain', $domain );
-		add_settings_error( 'bb_license', 'ok', 'লাইসেন্স সফলভাবে অ্যাক্টিভেট হয়েছে! ✅', 'updated' );
+		add_settings_error( 'bb_license', 'ok', 'Licence activated. ✅', 'updated' );
 	} else {
-		$msg = ! empty( $body['message'] ) ? $body['message'] : 'ভুল লাইসেন্স কী!';
-		add_settings_error( 'bb_license', 'fail', 'অ্যাক্টিভেশন ব্যর্থ: ' . $msg, 'error' );
+		$msg = ! empty( $body['message'] ) ? $body['message'] : 'That licence key is not valid.';
+		add_settings_error( 'bb_license', 'fail', 'Activation failed: ' . $msg, 'error' );
 	}
 }
 add_action( 'admin_init', 'bb_handle_license_activation' );
@@ -115,8 +115,8 @@ function bb_license_admin_notice() {
 	}
 
 	$url = admin_url( 'themes.php?page=bb-license' );
-	echo '<div class="notice notice-error"><p><strong>বিচিত্র বিজ্ঞান থিম:</strong> '
-		. 'থিমের স্বয়ংক্রিয় আপডেট পেতে <a href="' . esc_url( $url ) . '">লাইসেন্স অ্যাক্টিভেট করুন</a>। লাইসেন্স ছাড়াও সাইট স্বাভাবিকভাবে চলবে।</p></div>';
+	echo '<div class="notice notice-error"><p><strong>Bichitro Biggan theme:</strong> '
+		. '<a href="' . esc_url( $url ) . '">Activate your licence</a> to receive automatic updates. The site runs perfectly well without one.</p></div>';
 }
 add_action( 'admin_notices', 'bb_license_admin_notice' );
 
@@ -129,28 +129,28 @@ function bb_license_page_html() {
 	$domain = get_option( 'bb_license_domain' );
 	?>
 	<div class="wrap">
-		<h1>বিচিত্র বিজ্ঞান — লাইসেন্স অ্যাক্টিভেশন</h1>
+		<h1>Bichitro Biggan — licence activation</h1>
 		<?php settings_errors( 'bb_license' ); ?>
 
 		<div class="card" style="max-width: 520px; padding: 24px; margin-top: 20px;">
 			<?php if ( $status === 'valid' ) : ?>
-				<p style="color: #00a32a; font-weight: bold; font-size: 15px;">✅ লাইসেন্স অ্যাক্টিভ আছে!</p>
+				<p style="color: #00a32a; font-weight: bold; font-size: 15px;">✅ The licence is active.</p>
 				<table class="form-table">
-					<tr><th>লাইসেন্স কী:</th><td><code><?php echo esc_html( $key ); ?></code></td></tr>
-					<tr><th>ডোমেইন:</th><td><code><?php echo esc_html( $domain ); ?></code></td></tr>
+					<tr><th>Licence key:</th><td><code><?php echo esc_html( $key ); ?></code></td></tr>
+					<tr><th>Domain:</th><td><code><?php echo esc_html( $domain ); ?></code></td></tr>
 				</table>
 			<?php else : ?>
-				<p>থিমের স্বয়ংক্রিয় আপডেট পেতে আপনার লাইসেন্স কী (License Key) দিন। লাইসেন্স ছাড়াও সাইট সম্পূর্ণ চালু থাকে।</p>
+				<p>Enter your licence key to receive automatic theme updates. The site runs in full without one.</p>
 				<form method="post" action="">
 					<?php wp_nonce_field( 'bb_license_nonce' ); ?>
 					<table class="form-table">
 						<tr>
-							<th><label for="bb_license_key">লাইসেন্স কী:</label></th>
+							<th><label for="bb_license_key">Licence key:</label></th>
 							<td><input type="text" id="bb_license_key" name="bb_license_key" value="" style="width:100%;padding:8px;" placeholder="BB-XXXX-XXXX-XXXX" /></td>
 						</tr>
 					</table>
 					<p class="submit">
-						<input type="submit" name="bb_license_activate" class="button-primary" value="অ্যাক্টিভেট করুন" />
+						<input type="submit" name="bb_license_activate" class="button-primary" value="Activate" />
 					</p>
 				</form>
 			<?php endif; ?>

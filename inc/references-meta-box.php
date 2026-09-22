@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 function bb_references_add_meta_box() {
 	add_meta_box(
 		'bb_references_meta_box',
-		__( 'তথ্যসূত্র', 'bichitro-biggan' ),
+		__( 'Sources', 'bichitro-biggan' ),
 		'bb_references_meta_box_html',
 		'post',
 		'normal',
@@ -38,17 +38,17 @@ function bb_references_meta_box_html( $post ) {
 	$value = get_post_meta( $post->ID, 'bb_references', true );
 	?>
 	<p class="description" style="margin:0 0 8px;">
-		<?php esc_html_e( 'প্রতি লাইনে একটি সূত্র। নাম ও লিংক আলাদা করতে | চিহ্ন দিন।', 'bichitro-biggan' ); ?>
+		<?php esc_html_e( 'One source per line. Separate the name and the link with a | sign.', 'bichitro-biggan' ); ?>
 	</p>
 	<textarea
 		id="bb-references"
 		name="bb_references"
 		rows="6"
 		class="large-text"
-		placeholder="Nature | https://www.nature.com/articles/d41586-024-00001-x&#10;NASA — Mars Exploration Program | https://mars.nasa.gov/&#10;বিজ্ঞান ও প্রযুক্তি, জুলাই ২০২৫ সংখ্যা"
+		placeholder="Nature | https://www.nature.com/articles/d41586-024-00001-x&#10;NASA — Mars Exploration Program | https://mars.nasa.gov/&#10;Science &amp; Technology, July 2025 issue"
 	><?php echo esc_textarea( $value ); ?></textarea>
 	<p class="description">
-		<?php esc_html_e( 'খালি রাখলে লেখার নিচে কিছুই দেখাবে না।', 'bichitro-biggan' ); ?>
+		<?php esc_html_e( 'Left empty, nothing is printed under the article.', 'bichitro-biggan' ); ?>
 	</p>
 	<?php
 }

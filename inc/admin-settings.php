@@ -31,7 +31,7 @@ function bb_settings_schema() {
 				'bb_hero_slot_3'         => array( 'type' => 'post_select', 'label' => __( 'Hero Slot 3 — Bottom Left/Mid Post', 'bichitro-biggan' ), 'desc' => __( 'Select specific post or leave as Auto.', 'bichitro-biggan' ) ),
 				'bb_hero_cat_4'          => array( 'type' => 'category', 'label' => __( 'Hero Slot 4 — Filter by Category', 'bichitro-biggan' ), 'hint' => 'All / Podcast' ),
 				'bb_hero_slot_4'         => array( 'type' => 'post_select', 'label' => __( 'Hero Slot 4 — Bottom Right / Podcast Post', 'bichitro-biggan' ), 'desc' => __( 'Select specific post or leave as Auto.', 'bichitro-biggan' ) ),
-				'bb_podcast_custom_time' => array( 'type' => 'text', 'label' => __( 'Custom Podcast Duration (Optional)', 'bichitro-biggan' ), 'desc' => __( 'E.g., "১৫:৪৫ মিনিট" or "45:20"', 'bichitro-biggan' ) ),
+				'bb_podcast_custom_time' => array( 'type' => 'text', 'label' => __( 'Custom Podcast Duration (Optional)', 'bichitro-biggan' ), 'desc' => __( 'E.g., "15:45" or "45:20"', 'bichitro-biggan' ) ),
 				'bb_hero_show_author'    => array( 'type' => 'checkbox', 'label' => __( 'Show Author & Date on all Hero Cards', 'bichitro-biggan' ), 'default' => true ),
 				'bb_cat_block1_left'  => array( 'type' => 'category', 'label' => __( 'Block 1 — Left Side', 'bichitro-biggan' ), 'hint' => 'Quantum Science' ),
 				'bb_cat_block1_right' => array( 'type' => 'category', 'label' => __( 'Block 1 — Right Side', 'bichitro-biggan' ), 'hint' => 'Nobel Prizes' ),

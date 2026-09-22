@@ -163,7 +163,7 @@
 				// Show placeholder style.
 				previewDescEl.style.fontStyle = 'italic';
 				previewDescEl.style.color = '#9aa0a6';
-				desc = 'এখানে আপনার মেটা ডেসক্রিপশন দেখাবে...';
+				desc = 'Your meta description will appear here…';
 			} else {
 				previewDescEl.style.fontStyle = '';
 				previewDescEl.style.color = '';
@@ -345,7 +345,7 @@
 		function updateCounter(len, max, counterEl, barEl, thresholds) {
 			if (!counterEl || !barEl) return;
 
-			counterEl.textContent = len + ' / ' + max + ' অক্ষর';
+			counterEl.textContent = len + ' / ' + max + ' characters';
 
 			// Progress width (cap at 100%).
 			var pct = Math.min((len / max) * 100, 100);
@@ -417,15 +417,15 @@
 			if (!keyphrase) {
 				items.push({
 					status: 'bad',
-					title: 'ফোকাস কি-ফ্রেজ',
-					text: 'পোস্টের জন্য কোনো ফোকাস কি-ফ্রেজ নির্ধারণ করা হয়নি।'
+					title: 'Focus keyphrase',
+					text: 'No focus keyphrase has been set for this post.'
 				});
 				badCount += 2;
 			} else {
 				items.push({
 					status: 'good',
-					title: 'ফোকাস কি-ফ্রেজ',
-					text: 'ফোকাস কি-ফ্রেজ নির্ধারণ করা হয়েছে।'
+					title: 'Focus keyphrase',
+					text: 'A focus keyphrase has been set.'
 				});
 				goodCount++;
 			}
@@ -435,15 +435,15 @@
 				if (titleText.includes(keyphrase)) {
 					items.push({
 						status: 'good',
-						title: 'এসইও টাইটেলে কি-ফ্রেজ',
-						text: 'এসইও টাইটেলে ফোকাস কি-ফ্রেজটি সুন্দরভাবে পাওয়া গেছে।'
+						title: 'Keyphrase in the SEO title',
+						text: 'The focus keyphrase sits nicely in the SEO title.'
 					});
 					goodCount++;
 				} else {
 					items.push({
 						status: 'bad',
-						title: 'এসইও টাইটেলে কি-ফ্রেজ',
-						text: 'এসইও টাইটেলে আপনার ফোকাস কি-ফ্রেজটি খুঁজে পাওয়া যায়নি।'
+						title: 'Keyphrase in the SEO title',
+						text: 'The focus keyphrase is not in the SEO title.'
 					});
 					badCount++;
 				}
@@ -454,21 +454,21 @@
 			if (titleLen >= 25 && titleLen <= 60) {
 				items.push({
 					status: 'good',
-					title: 'এসইও টাইটেলের দৈর্ঘ্য',
-					text: 'টাইটেলের দৈর্ঘ্য উপযুক্ত (' + titleLen + ' / ৬০ অক্ষর)।'
+					title: 'SEO title length',
+					text: 'The title is a good length (' + titleLen + ' / 60 characters).'
 				});
 				goodCount++;
 			} else if (titleLen > 0 && titleLen < 25) {
 				items.push({
 					status: 'ok',
-					title: 'এসইও টাইটেলের দৈর্ঘ্য',
-					text: 'টাইটেলটি কিছুটা ছোট (' + titleLen + ' অক্ষর)। আরেকটু বর্ণনামূলক করতে পারেন।'
+					title: 'SEO title length',
+					text: 'The title is a little short (' + titleLen + ' characters). It could say more.'
 				});
 			} else if (titleLen > 60) {
 				items.push({
 					status: 'bad',
-					title: 'এসইও টাইটেলের দৈর্ঘ্য',
-					text: 'টাইটেলটি বেশি দীর্ঘ (' + titleLen + ' অক্ষর)। ৬০ অক্ষরের মধ্যে রাখা ভালো।'
+					title: 'SEO title length',
+					text: 'The title is too long (' + titleLen + ' characters). Keep it under 60.'
 				});
 				badCount++;
 			}
@@ -478,15 +478,15 @@
 				if (descText.includes(keyphrase)) {
 					items.push({
 						status: 'good',
-						title: 'মেটা ডেসক্রিপশনে কি-ফ্রেজ',
-						text: 'মেটা ডেসক্রিপশনে ফোকাস কি-ফ্রেজটি বিদ্যমান।'
+						title: 'Keyphrase in the meta description',
+						text: 'The focus keyphrase is in the meta description.'
 					});
 					goodCount++;
 				} else {
 					items.push({
 						status: 'ok',
-						title: 'মেটা ডেসক্রিপশনে কি-ফ্রেজ',
-						text: 'মেটা ডেসক্রিপশনে ফোকাস কি-ফ্রেজটি যুক্ত করলে সার্চে ক্লিক রেট বাড়ে।'
+						title: 'Keyphrase in the meta description',
+						text: 'Putting the focus keyphrase in the meta description earns more clicks from search.'
 					});
 				}
 			}
@@ -496,28 +496,28 @@
 			if (descLen >= 80 && descLen <= 160) {
 				items.push({
 					status: 'good',
-					title: 'মেটা ডেসক্রিপশনের দৈর্ঘ্য',
-					text: 'মেটা ডেসক্রিপশনের দৈর্ঘ্য নিখুঁত (' + descLen + ' / ১৬০ অক্ষর)।'
+					title: 'Meta description length',
+					text: 'The meta description is just right (' + descLen + ' / 160 characters).'
 				});
 				goodCount++;
 			} else if (descLen > 0 && descLen < 80) {
 				items.push({
 					status: 'ok',
-					title: 'মেটা ডেসক্রিপশনের দৈর্ঘ্য',
-					text: 'মেটা ডেসক্রিপশনটি কিছুটা ছোট (' + descLen + ' অক্ষর)। ৮০-১৬০ অক্ষর সুপারিশকৃত।'
+					title: 'Meta description length',
+					text: 'The meta description is a little short (' + descLen + ' characters). 80 to 160 is the range to aim for.'
 				});
 			} else if (descLen > 160) {
 				items.push({
 					status: 'bad',
-					title: 'মেটা ডেসক্রিপশনের দৈর্ঘ্য',
-					text: 'মেটা ডেসক্রিপশনটি অতিরিক্ত বড় (' + descLen + ' অক্ষর)। ১৬০ অক্ষরের মধ্যে রাখুন।'
+					title: 'Meta description length',
+					text: 'The meta description is too long (' + descLen + ' characters). Keep it under 160.'
 				});
 				badCount++;
 			} else {
 				items.push({
 					status: 'bad',
-					title: 'মেটা ডেসক্রিপশন',
-					text: 'কোনো মেটা ডেসক্রিপশন দেওয়া হয়নি। গুগল নিজের মতো অংশবিশেষ কেটে নেবে।'
+					title: 'Meta description',
+					text: 'No meta description has been written. Google will cut a piece out of the article instead.'
 				});
 				badCount++;
 			}
@@ -526,15 +526,15 @@
 			if (hasImage) {
 				items.push({
 					status: 'good',
-					title: 'ফিচার্ড ইমেজ',
-					text: 'পোস্টে ফিচার্ড ইমেজ রয়েছে, যা গুগলে থাম্বনেইল হিসেবে দেখাবে।'
+					title: 'Featured image',
+					text: 'The post has a featured image, which Google shows as its thumbnail.'
 				});
 				goodCount++;
 			} else {
 				items.push({
 					status: 'ok',
-					title: 'ফিচার্ড ইমেজ',
-					text: 'ফিচার্ড ইমেজ যুক্ত করলে সামাজিক যোগাযোগ মাধ্যম ও সার্চে প্রিভিউ সুন্দর দেখায়।'
+					title: 'Featured image',
+					text: 'A featured image makes the preview look right on social media and in search.'
 				});
 			}
 
@@ -550,17 +550,17 @@
 
 			// Determine overall score: good, ok, or bad
 			var overallStatus = 'bad';
-			var badgeText     = 'অপর্যাপ্ত (Needs work)';
+			var badgeText     = 'Needs work';
 
 			if (goodCount >= 4 && badCount === 0) {
 				overallStatus = 'good';
-				badgeText     = 'চমৎকার (Good)';
+				badgeText     = 'Good';
 			} else if (goodCount >= 2 && badCount <= 2) {
 				overallStatus = 'ok';
-				badgeText     = 'সাধারণ (OK)';
+				badgeText     = 'OK';
 			} else {
 				overallStatus = 'bad';
-				badgeText     = 'অপর্যাপ্ত (Needs work)';
+				badgeText     = 'Needs work';
 			}
 
 			// Update Indicator & Badge
@@ -571,7 +571,7 @@
 			}
 
 			if (analysisStatus) {
-				analysisStatus.innerHTML = '<span>মোট স্কোর: <strong>' + badgeText + '</strong></span><span>' + goodCount + ' টি পয়েন্ট সফল</span>';
+				analysisStatus.innerHTML = '<span>Overall: <strong>' + badgeText + '</strong></span><span>' + goodCount + ' checks passed</span>';
 			}
 		}
 

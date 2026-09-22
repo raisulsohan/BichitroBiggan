@@ -241,7 +241,7 @@ final class Theme_GitHub_Updater {
 			'changelog'   => sprintf(
 				'<p><a href="%s" target="_blank" rel="noopener">%s</a></p>',
 				esc_url( 'https://github.com/' . $this->repo . '/commits/' . $this->branch ),
-				esc_html__( 'গিটহাবে সম্পূর্ণ চেঞ্জলগ দেখুন →', 'bichitro-biggan' )
+				esc_html__( 'See the full changelog on GitHub →', 'bichitro-biggan' )
 			),
 		);
 
@@ -277,7 +277,7 @@ final class Theme_GitHub_Updater {
 		if ( ! $theme_dir ) {
 			return new WP_Error(
 				'tgu_no_stylesheet',
-				__( 'ডাউনলোড করা zip-এ থিমের style.css খুঁজে পাওয়া যায়নি।', 'bichitro-biggan' )
+				__( 'The downloaded zip has no style.css for the theme in it.', 'bichitro-biggan' )
 			);
 		}
 
@@ -294,7 +294,7 @@ final class Theme_GitHub_Updater {
 		if ( ! $wp_filesystem->move( untrailingslashit( $theme_dir ), untrailingslashit( $wanted ) ) ) {
 			return new WP_Error(
 				'tgu_rename_failed',
-				__( 'zip ফোল্ডারের নাম থিমের স্লাগে বদলানো যায়নি।', 'bichitro-biggan' )
+				__( 'The folder inside the zip could not be renamed to the theme\'s slug.', 'bichitro-biggan' )
 			);
 		}
 

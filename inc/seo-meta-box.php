@@ -115,7 +115,7 @@ function bb_seo_add_meta_box() {
 	foreach ( $post_types as $post_type ) {
 		add_meta_box(
 			'bb_seo_meta_box',
-			__( 'বিচিত্র বিজ্ঞান — SEO', 'bichitro-biggan' ),
+			__( 'Bichitro Biggan — SEO', 'bichitro-biggan' ),
 			'bb_seo_render_meta_box',
 			$post_type,
 			'normal',
@@ -174,7 +174,7 @@ function bb_seo_render_meta_box( $post ) {
 			<div class="bb-seo-tab-btn bb-seo-tab-btn--active">
 				<span id="bb-seo-score-indicator" class="bb-seo-traffic-dot bb-seo-traffic-dot--bad"></span>
 				<span class="bb-seo-tab-label">SEO</span>
-				<span id="bb-seo-score-badge" class="bb-seo-score-badge bb-seo-score-badge--bad">অপর্যাপ্ত</span>
+				<span id="bb-seo-score-badge" class="bb-seo-score-badge bb-seo-score-badge--bad">Needs work</span>
 			</div>
 		</div>
 
@@ -198,10 +198,10 @@ function bb_seo_render_meta_box( $post ) {
 						name="bb_focus_keyphrase"
 						class="bb-seo-input"
 						value="<?php echo esc_attr( $focus_keyphrase ); ?>"
-						placeholder="<?php esc_attr_e( 'এখানে টাইপ করুন', 'bichitro-biggan' ); ?>"
+						placeholder="<?php esc_attr_e( 'Type here', 'bichitro-biggan' ); ?>"
 					/>
 					<p class="bb-seo-help">
-						<?php esc_html_e( 'আপনার কনটেন্ট যেই মূল শব্দ বা ফ্রেজ দিয়ে খুঁজে পাওয়া যাবে সেটি লিখুন।', 'bichitro-biggan' ); ?>
+						<?php esc_html_e( 'The word or phrase you want this piece to be found by.', 'bichitro-biggan' ); ?>
 					</p>
 				</div>
 
@@ -215,7 +215,7 @@ function bb_seo_render_meta_box( $post ) {
 						name="bb_keyphrase_synonyms"
 						class="bb-seo-input"
 						value="<?php echo esc_attr( $keyphrase_synonyms ); ?>"
-						placeholder="<?php esc_attr_e( 'কমা দিয়ে আলাদা করুন', 'bichitro-biggan' ); ?>"
+						placeholder="<?php esc_attr_e( 'Separate them with commas', 'bichitro-biggan' ); ?>"
 					/>
 				</div>
 
@@ -246,7 +246,7 @@ function bb_seo_render_meta_box( $post ) {
 						</div>
 					</div>
 					<p class="bb-seo-help" style="margin-top:0;">
-						<?php esc_html_e( 'Google সার্চ রেজাল্টে আপনার পোস্ট কেমন দেখাবে তার প্রিভিউ।', 'bichitro-biggan' ); ?>
+						<?php esc_html_e( 'How your post will look in Google\'s results.', 'bichitro-biggan' ); ?>
 					</p>
 
 					<div class="bb-seo-preview">
@@ -293,7 +293,7 @@ function bb_seo_render_meta_box( $post ) {
 										if ( $seo_description ) {
 											echo ' — ' . esc_html( $seo_description );
 										} else {
-											esc_html_e( 'এখানে আপনার মেটা ডেসক্রিপশন দেখাবে...', 'bichitro-biggan' );
+											esc_html_e( 'Your meta description will appear here…', 'bichitro-biggan' );
 										}
 										?>
 									</div>
@@ -319,7 +319,7 @@ function bb_seo_render_meta_box( $post ) {
 							<?php esc_html_e( 'SEO title', 'bichitro-biggan' ); ?>
 						</label>
 						<span id="bb-seo-title-counter" class="bb-seo-counter bb-seo-counter--good">
-							0 / 60 <?php esc_html_e( 'অক্ষর', 'bichitro-biggan' ); ?>
+							0 / 60 <?php esc_html_e( 'characters', 'bichitro-biggan' ); ?>
 						</span>
 					</div>
 					<input
@@ -355,7 +355,7 @@ function bb_seo_render_meta_box( $post ) {
 					/>
 					<input type="hidden" name="bb_seo_slug_original" value="<?php echo esc_attr( $post->post_name ); ?>" />
 					<p class="bb-seo-help">
-						<?php esc_html_e( 'পোস্টের পারমালিঙ্ক বা স্লাগ পরিবর্তন করতে এখানে টাইপ করুন।', 'bichitro-biggan' ); ?>
+						<?php esc_html_e( 'Type here to change the post\'s permalink.', 'bichitro-biggan' ); ?>
 					</p>
 				</div>
 
@@ -366,7 +366,7 @@ function bb_seo_render_meta_box( $post ) {
 							<?php esc_html_e( 'Meta description', 'bichitro-biggan' ); ?>
 						</label>
 						<span id="bb-seo-desc-counter" class="bb-seo-counter bb-seo-counter--good">
-							0 / 160 <?php esc_html_e( 'অক্ষর', 'bichitro-biggan' ); ?>
+							0 / 160 <?php esc_html_e( 'characters', 'bichitro-biggan' ); ?>
 						</span>
 					</div>
 					<textarea
@@ -374,7 +374,7 @@ function bb_seo_render_meta_box( $post ) {
 						name="bb_seo_description"
 						class="bb-seo-input bb-seo-textarea"
 						rows="3"
-						placeholder="<?php esc_attr_e( 'সার্চ রেজাল্টে যেই বর্ণনা দেখাতে চান সেটি লিখুন...', 'bichitro-biggan' ); ?>"
+						placeholder="<?php esc_attr_e( 'The description you want search results to show…', 'bichitro-biggan' ); ?>"
 					><?php echo esc_textarea( $seo_description ); ?></textarea>
 					<div class="bb-seo-progress">
 						<div id="bb-seo-desc-progress-bar" class="bb-seo-progress-bar"></div>
@@ -390,7 +390,7 @@ function bb_seo_render_meta_box( $post ) {
 		<div class="bb-seo-section bb-seo-section--analysis">
 			<div class="bb-seo-section-header" role="button" tabindex="0">
 				<span class="bb-seo-section-title">
-					<?php esc_html_e( 'SEO বিশ্লেষণ (SEO Analysis)', 'bichitro-biggan' ); ?>
+					<?php esc_html_e( 'SEO analysis', 'bichitro-biggan' ); ?>
 				</span>
 				<span class="bb-seo-section-arrow" aria-hidden="true">&#9650;</span>
 			</div>
@@ -750,13 +750,13 @@ function bb_seo_migration_notice() {
 		<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
 			<div style="flex:1;min-width:200px;">
 				<p style="margin:0 0 4px;font-size:14px;">
-					<strong>🔄 Yoast SEO ডেটা পাওয়া গেছে!</strong>
+					<strong>🔄 Yoast SEO data found</strong>
 				</p>
 				<p style="margin:0;color:#50575e;">
 					<?php
 					printf(
 						/* translators: %d = number of posts */
-						__( '%d টি পোস্ট/পেজে Yoast SEO ডেটা আছে যেগুলো এখনও থিমের SEO সিস্টেমে কপি হয়নি। এক ক্লিকে সব কপি করুন — Yoast-এর আসল ডেটা মুছবে না।', 'bichitro-biggan' ),
+						__( '%d posts and pages still hold Yoast SEO data that has not been copied into the theme\'s own fields. Copy it all in one click — nothing of Yoast\'s is deleted.', 'bichitro-biggan' ),
 						$count
 					);
 					?>
@@ -764,10 +764,10 @@ function bb_seo_migration_notice() {
 			</div>
 			<div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
 				<button type="button" id="bb-seo-migrate-btn" class="button button-primary" style="white-space:nowrap;">
-					⚡ মাইগ্রেট করুন (<span id="bb-seo-migrate-count"><?php echo esc_html( $count ); ?></span>টি)
+					⚡ Migrate (<span id="bb-seo-migrate-count"><?php echo esc_html( $count ); ?></span>)
 				</button>
 				<button type="button" id="bb-seo-migrate-dismiss" class="button" style="white-space:nowrap;">
-					পরে করবো
+					Later
 				</button>
 			</div>
 		</div>
@@ -794,9 +794,9 @@ function bb_seo_migration_notice() {
 
 		btn.addEventListener('click', function() {
 			btn.disabled = true;
-			btn.textContent = '⏳ মাইগ্রেট হচ্ছে...';
+			btn.textContent = '⏳ Migrating…';
 			progress.style.display = 'block';
-			status.textContent = 'শুরু হচ্ছে...';
+			status.textContent = 'Starting…';
 
 			runBatch(0);
 		});
@@ -820,7 +820,7 @@ function bb_seo_migration_notice() {
 				.then(function(r) { return r.json(); })
 				.then(function(data) {
 					if (!data.success) {
-						status.textContent = '❌ ত্রুটি: ' + (data.data || 'অজানা সমস্যা');
+						status.textContent = '❌ Error: ' + (data.data || 'something went wrong');
 						btn.disabled = false;
 						return;
 					}
@@ -828,13 +828,13 @@ function bb_seo_migration_notice() {
 					var d    = data.data;
 					var pct  = Math.round((d.processed / d.total) * 100);
 					bar.style.width = pct + '%';
-					status.textContent = d.processed + ' / ' + d.total + ' পোস্ট প্রসেস হয়েছে...';
+					status.textContent = d.processed + ' / ' + d.total + ' posts done…';
 
 					if (d.done) {
 						bar.style.width = '100%';
 						bar.style.background = '#00a32a';
-						status.textContent = '✅ সফল! ' + d.migrated + ' টি পোস্টের Yoast ডেটা কপি হয়েছে।';
-						btn.textContent = '✅ সম্পন্ন';
+						status.textContent = '✅ Done. Yoast data copied for ' + d.migrated + ' posts.';
+						btn.textContent = '✅ Finished';
 						dismiss.style.display = 'none';
 
 						// Auto-hide after 5 seconds.
@@ -849,7 +849,7 @@ function bb_seo_migration_notice() {
 					}
 				})
 				.catch(function(err) {
-					status.textContent = '❌ নেটওয়ার্ক ত্রুটি: ' + err.message;
+					status.textContent = '❌ Network error: ' + err.message;
 					btn.disabled = false;
 				});
 		}
@@ -866,7 +866,7 @@ function bb_seo_ajax_migrate_yoast() {
 	check_ajax_referer( 'bb_seo_migration', '_wpnonce' );
 
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_send_json_error( 'অনুমতি নেই।' );
+		wp_send_json_error( 'You do not have permission to do this.' );
 	}
 
 	global $wpdb;

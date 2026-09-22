@@ -71,7 +71,7 @@ function bb_seo_score( $post ) {
 	// 1. Focus keyphrase — missing counts double, as in the editor.
 	if ( '' === $keyphrase ) {
 		$bad    += 2;
-		$notes[] = __( 'ফোকাস কি-ফ্রেজ নেই', 'bichitro-biggan' );
+		$notes[] = __( 'No focus keyphrase', 'bichitro-biggan' );
 	} else {
 		$good++;
 
@@ -80,7 +80,7 @@ function bb_seo_score( $post ) {
 			$good++;
 		} else {
 			$bad++;
-			$notes[] = __( 'এসইও টাইটেলে কি-ফ্রেজ নেই', 'bichitro-biggan' );
+			$notes[] = __( 'Keyphrase missing from the SEO title', 'bichitro-biggan' );
 		}
 	}
 
@@ -91,10 +91,10 @@ function bb_seo_score( $post ) {
 	} elseif ( $title_len > 60 ) {
 		$bad++;
 		/* translators: %d: characters in the SEO title. */
-		$notes[] = sprintf( __( 'এসইও টাইটেল বেশি লম্বা (%d অক্ষর)', 'bichitro-biggan' ), $title_len );
+		$notes[] = sprintf( __( 'SEO title too long (%d characters)', 'bichitro-biggan' ), $title_len );
 	} elseif ( $title_len > 0 ) {
 		/* translators: %d: characters in the SEO title. */
-		$notes[] = sprintf( __( 'এসইও টাইটেল ছোট (%d অক্ষর)', 'bichitro-biggan' ), $title_len );
+		$notes[] = sprintf( __( 'SEO title too short (%d characters)', 'bichitro-biggan' ), $title_len );
 	}
 
 	// 4. Keyphrase in the meta description.
@@ -102,7 +102,7 @@ function bb_seo_score( $post ) {
 		if ( false !== strpos( $desc_text, $keyphrase ) ) {
 			$good++;
 		} else {
-			$notes[] = __( 'মেটা ডেসক্রিপশনে কি-ফ্রেজ নেই', 'bichitro-biggan' );
+			$notes[] = __( 'Keyphrase missing from the meta description', 'bichitro-biggan' );
 		}
 	}
 
@@ -113,31 +113,31 @@ function bb_seo_score( $post ) {
 	} elseif ( $desc_len > 160 ) {
 		$bad++;
 		/* translators: %d: characters in the meta description. */
-		$notes[] = sprintf( __( 'মেটা ডেসক্রিপশন বেশি লম্বা (%d অক্ষর)', 'bichitro-biggan' ), $desc_len );
+		$notes[] = sprintf( __( 'Meta description too long (%d characters)', 'bichitro-biggan' ), $desc_len );
 	} elseif ( $desc_len > 0 ) {
 		/* translators: %d: characters in the meta description. */
-		$notes[] = sprintf( __( 'মেটা ডেসক্রিপশন ছোট (%d অক্ষর)', 'bichitro-biggan' ), $desc_len );
+		$notes[] = sprintf( __( 'Meta description too short (%d characters)', 'bichitro-biggan' ), $desc_len );
 	} else {
 		$bad++;
-		$notes[] = __( 'মেটা ডেসক্রিপশন নেই', 'bichitro-biggan' );
+		$notes[] = __( 'No meta description', 'bichitro-biggan' );
 	}
 
 	// 6. Featured image.
 	if ( has_post_thumbnail( $post ) ) {
 		$good++;
 	} else {
-		$notes[] = __( 'ফিচার্ড ইমেজ নেই', 'bichitro-biggan' );
+		$notes[] = __( 'No featured image', 'bichitro-biggan' );
 	}
 
 	if ( $good >= 4 && 0 === $bad ) {
-		return array( 'status' => 'good', 'label' => __( 'এসইও: চমৎকার', 'bichitro-biggan' ), 'notes' => $notes );
+		return array( 'status' => 'good', 'label' => __( 'SEO: good', 'bichitro-biggan' ), 'notes' => $notes );
 	}
 
 	if ( $good >= 2 && $bad <= 2 ) {
-		return array( 'status' => 'ok', 'label' => __( 'এসইও: সাধারণ', 'bichitro-biggan' ), 'notes' => $notes );
+		return array( 'status' => 'ok', 'label' => __( 'SEO: fair', 'bichitro-biggan' ), 'notes' => $notes );
 	}
 
-	return array( 'status' => 'bad', 'label' => __( 'এসইও: অপর্যাপ্ত', 'bichitro-biggan' ), 'notes' => $notes );
+	return array( 'status' => 'bad', 'label' => __( 'SEO: needs work', 'bichitro-biggan' ), 'notes' => $notes );
 }
 
 /**

@@ -1,6 +1,6 @@
 <?php
 /**
- * The statistics screen: Dashboard → পরিসংখ্যান.
+ * The statistics screen: Dashboard → Statistics.
  *
  * Everything on it comes from the site's own table — no account to sign in to,
  * no permission to be granted, nothing to expire. Drawn with plain HTML and one
@@ -16,17 +16,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 /** The windows the screen offers, in days. */
 function bb_stats_ranges() {
 	return array(
-		7   => __( 'গত ৭ দিন', 'bichitro-biggan' ),
-		30  => __( 'গত ৩০ দিন', 'bichitro-biggan' ),
-		90  => __( 'গত ৯০ দিন', 'bichitro-biggan' ),
-		365 => __( 'গত এক বছর', 'bichitro-biggan' ),
+		7   => __( 'Last 7 days', 'bichitro-biggan' ),
+		30  => __( 'Last 30 days', 'bichitro-biggan' ),
+		90  => __( 'Last 90 days', 'bichitro-biggan' ),
+		365 => __( 'Last year', 'bichitro-biggan' ),
 	);
 }
 
 function bb_stats_menu() {
 	add_menu_page(
-		__( 'পরিসংখ্যান', 'bichitro-biggan' ),
-		__( 'পরিসংখ্যান', 'bichitro-biggan' ),
+		__( 'Statistics', 'bichitro-biggan' ),
+		__( 'Statistics', 'bichitro-biggan' ),
 		'edit_posts',
 		'bb-stats',
 		'bb_stats_page',
@@ -37,13 +37,15 @@ function bb_stats_menu() {
 add_action( 'admin_menu', 'bb_stats_menu' );
 
 /**
- * A number in the site's own digits.
+ * A number, grouped the way the dashboard's language groups numbers. The
+ * dashboard is English, so these stay in Latin digits even though the site
+ * itself writes ২৩৪.
  *
  * @param int $number Number.
  * @return string
  */
 function bb_stats_number( $number ) {
-	return function_exists( 'bb_bangla_number' ) ? bb_bangla_number( number_format_i18n( (int) $number ) ) : number_format_i18n( (int) $number );
+	return number_format_i18n( (int) $number );
 }
 
 /**
@@ -54,8 +56,8 @@ function bb_stats_number( $number ) {
  */
 function bb_stats_source_label( $source ) {
 	$names = array(
-		'direct'    => __( 'সরাসরি / বুকমার্ক', 'bichitro-biggan' ),
-		'internal'  => __( 'সাইটের ভেতর থেকে', 'bichitro-biggan' ),
+		'direct'    => __( 'Direct / bookmark', 'bichitro-biggan' ),
+		'internal'  => __( 'From this site', 'bichitro-biggan' ),
 		'google'    => 'Google',
 		'facebook'  => 'Facebook',
 		'youtube'   => 'YouTube',
@@ -80,11 +82,11 @@ function bb_stats_source_label( $source ) {
  */
 function bb_stats_plain_label( $key ) {
 	$names = array(
-		'mobile'  => __( 'মোবাইল', 'bichitro-biggan' ),
-		'tablet'  => __( 'ট্যাবলেট', 'bichitro-biggan' ),
-		'desktop' => __( 'কম্পিউটার', 'bichitro-biggan' ),
-		'bn'      => __( 'বাংলা', 'bichitro-biggan' ),
-		'en'      => __( 'ইংরেজি (/en)', 'bichitro-biggan' ),
+		'mobile'  => __( 'Phone', 'bichitro-biggan' ),
+		'tablet'  => __( 'Tablet', 'bichitro-biggan' ),
+		'desktop' => __( 'Computer', 'bichitro-biggan' ),
+		'bn'      => __( 'Bengali', 'bichitro-biggan' ),
+		'en'      => __( 'English (/en)', 'bichitro-biggan' ),
 	);
 
 	return isset( $names[ $key ] ) ? $names[ $key ] : $key;
@@ -134,7 +136,7 @@ function bb_stats_chart( array $series ) {
 	?>
 	<div class="bb-stats-chart">
 		<svg viewBox="0 0 <?php echo (int) $width; ?> <?php echo (int) $height; ?>" preserveAspectRatio="none" role="img"
-			aria-label="<?php esc_attr_e( 'প্রতিদিনের পাঠ', 'bichitro-biggan' ); ?>">
+			aria-label="<?php esc_attr_e( 'Reads per day', 'bichitro-biggan' ); ?>">
 			<polygon fill="rgba(0,128,255,0.12)"
 				points="<?php echo esc_attr( $pad . ',' . ( $height - $pad ) . ' ' . $area . ' ' . ( $width - $pad ) . ',' . ( $height - $pad ) ); ?>" />
 			<polyline fill="none" stroke="#0080ff" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"
@@ -156,7 +158,7 @@ function bb_stats_chart( array $series ) {
 }
 
 /**
- * A day as the site writes dates.
+ * A day, written the way the dashboard writes dates.
  *
  * @param string $day Y-m-d.
  * @return string
@@ -166,10 +168,6 @@ function bb_stats_day_label( $day ) {
 
 	if ( ! $time ) {
 		return (string) $day;
-	}
-
-	if ( function_exists( 'bb_bangla_timestamp' ) ) {
-		return bb_bangla_timestamp( $time );
 	}
 
 	return wp_date( 'j M Y', $time );
@@ -222,10 +220,10 @@ function bb_stats_page() {
 	$per_day = $totals['days'] > 0 ? round( $totals['hits'] / $totals['days'] ) : 0;
 	?>
 	<div class="wrap bb-stats">
-		<h1><?php esc_html_e( 'পরিসংখ্যান', 'bichitro-biggan' ); ?></h1>
+		<h1><?php esc_html_e( 'Statistics', 'bichitro-biggan' ); ?></h1>
 
 		<p class="bb-stats__lede">
-			<?php esc_html_e( 'সাইটের নিজের হিসাব — কোনো বাইরের সেবা, অ্যাকাউন্ট বা অনুমতি ছাড়াই। পাঠকের ঠিকানা বা কুকি কিছুই রাখা হয় না, আর যাঁরা সাইট চালান তাঁদের নিজেদের ভিজিট গোনা হয় না।', 'bichitro-biggan' ); ?>
+			<?php esc_html_e( 'The site\'s own count — no outside service, no account, no permission that can be withdrawn. Nothing that identifies a reader is stored, and visits by the people who run the site are left out.', 'bichitro-biggan' ); ?>
 		</p>
 
 		<h2 class="nav-tab-wrapper">
@@ -240,71 +238,71 @@ function bb_stats_page() {
 		<?php if ( ! $first ) : ?>
 			<div class="notice notice-info inline">
 				<p>
-					<strong><?php esc_html_e( 'গোনা শুরু হয়েছে।', 'bichitro-biggan' ); ?></strong>
-					<?php esc_html_e( 'এখনো কোনো পাঠ জমা হয়নি — কেউ সাইটে এলেই এখানে দেখা যাবে। নিজের ভিজিট দেখতে চাইলে লগআউট করে (বা অন্য ব্রাউজারে) সাইটটা খুলুন।', 'bichitro-biggan' ); ?>
+					<strong><?php esc_html_e( 'Counting has started.', 'bichitro-biggan' ); ?></strong>
+					<?php esc_html_e( 'Nothing has been counted yet — it will appear here as soon as somebody visits. To see your own visit, open the site logged out, or in another browser.', 'bichitro-biggan' ); ?>
 				</p>
 			</div>
 		<?php endif; ?>
 
 		<div class="bb-stats__cards">
 			<div class="bb-stats-card">
-				<span class="bb-stats-card__label"><?php esc_html_e( 'মোট পাঠ', 'bichitro-biggan' ); ?></span>
+				<span class="bb-stats-card__label"><?php esc_html_e( 'Reads', 'bichitro-biggan' ); ?></span>
 				<strong class="bb-stats-card__value"><?php echo esc_html( bb_stats_number( $totals['hits'] ) ); ?></strong>
 				<span class="bb-stats-card__note">
 					<?php
 					printf(
 						/* translators: %s: reads per day. */
-						esc_html__( 'দিনে গড়ে %s', 'bichitro-biggan' ),
+						esc_html__( '%s a day on average', 'bichitro-biggan' ),
 						esc_html( bb_stats_number( $per_day ) )
 					);
 					?>
 				</span>
 			</div>
 			<div class="bb-stats-card">
-				<span class="bb-stats-card__label"><?php esc_html_e( 'ভিজিট', 'bichitro-biggan' ); ?></span>
+				<span class="bb-stats-card__label"><?php esc_html_e( 'Visits', 'bichitro-biggan' ); ?></span>
 				<strong class="bb-stats-card__value"><?php echo esc_html( bb_stats_number( $totals['visits'] ) ); ?></strong>
-				<span class="bb-stats-card__note"><?php esc_html_e( 'একেকজন পাঠকের একেকবার আসা', 'bichitro-biggan' ); ?></span>
+				<span class="bb-stats-card__note"><?php esc_html_e( 'One reader arriving once', 'bichitro-biggan' ); ?></span>
 			</div>
 			<div class="bb-stats-card">
-				<span class="bb-stats-card__label"><?php esc_html_e( 'যতগুলো লেখা পড়া হয়েছে', 'bichitro-biggan' ); ?></span>
+				<span class="bb-stats-card__label"><?php esc_html_e( 'Articles read', 'bichitro-biggan' ); ?></span>
 				<strong class="bb-stats-card__value"><?php echo esc_html( bb_stats_number( $totals['articles'] ) ); ?></strong>
 				<span class="bb-stats-card__note">
 					<?php
 					printf(
 						/* translators: %s: how many posts the site has. */
-						esc_html__( 'সাইটে আছে %s', 'bichitro-biggan' ),
+						esc_html__( '%s published in all', 'bichitro-biggan' ),
 						esc_html( bb_stats_number( (int) wp_count_posts()->publish ) )
 					);
 					?>
 				</span>
 			</div>
 			<div class="bb-stats-card">
-				<span class="bb-stats-card__label"><?php esc_html_e( 'গোনা শুরু', 'bichitro-biggan' ); ?></span>
+				<span class="bb-stats-card__label"><?php esc_html_e( 'Counting since', 'bichitro-biggan' ); ?></span>
 				<strong class="bb-stats-card__value bb-stats-card__value--small">
 					<?php echo esc_html( $first ? bb_stats_day_label( $first ) : '—' ); ?>
 				</strong>
-				<span class="bb-stats-card__note"><?php esc_html_e( 'এর আগের হিসাব এখানে নেই', 'bichitro-biggan' ); ?></span>
+				<span class="bb-stats-card__note"><?php esc_html_e( 'Nothing from before this is here', 'bichitro-biggan' ); ?></span>
 			</div>
 		</div>
 
 		<div class="bb-stats-panel">
-			<h2><?php esc_html_e( 'প্রতিদিন কত পাঠ', 'bichitro-biggan' ); ?></h2>
+			<h2><?php esc_html_e( 'Reads per day', 'bichitro-biggan' ); ?></h2>
 			<?php bb_stats_chart( $series ); ?>
 		</div>
 
 		<div class="bb-stats__columns">
 			<div class="bb-stats-panel">
-				<h2><?php esc_html_e( 'সবচেয়ে বেশি পড়া লেখা', 'bichitro-biggan' ); ?></h2>
+				<h2><?php esc_html_e( 'Most read', 'bichitro-biggan' ); ?></h2>
 				<?php if ( empty( $top ) ) : ?>
-					<p class="bb-stats__empty"><?php esc_html_e( 'এই সময়ে কোনো লেখা পড়া হয়নি।', 'bichitro-biggan' ); ?></p>
+					<p class="bb-stats__empty"><?php esc_html_e( 'No article was read in this period.', 'bichitro-biggan' ); ?></p>
 				<?php else : ?>
 					<table class="widefat striped bb-stats-table">
 						<thead>
 							<tr>
-								<th><?php esc_html_e( 'লেখা', 'bichitro-biggan' ); ?></th>
-								<th class="bb-stats-table__num"><?php esc_html_e( 'বাংলা', 'bichitro-biggan' ); ?></th>
+								<th><?php esc_html_e( 'Article', 'bichitro-biggan' ); ?></th>
+								<th class="bb-stats-table__num"><?php esc_html_e( 'Bengali', 'bichitro-biggan' ); ?></th>
 								<th class="bb-stats-table__num">EN</th>
-								<th class="bb-stats-table__num"><?php esc_html_e( 'মোট', 'bichitro-biggan' ); ?></th>
+								<th class="bb-stats-table__num"><?php esc_html_e( 'Total', 'bichitro-biggan' ); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -326,9 +324,9 @@ function bb_stats_page() {
 			</div>
 
 			<div class="bb-stats-panel">
-				<h2><?php esc_html_e( 'পাঠক আসছে কোথা থেকে', 'bichitro-biggan' ); ?></h2>
+				<h2><?php esc_html_e( 'Where readers come from', 'bichitro-biggan' ); ?></h2>
 				<?php if ( empty( $sources ) ) : ?>
-					<p class="bb-stats__empty"><?php esc_html_e( 'এখনো কিছু জানা যায়নি।', 'bichitro-biggan' ); ?></p>
+					<p class="bb-stats__empty"><?php esc_html_e( 'Nothing to show yet.', 'bichitro-biggan' ); ?></p>
 				<?php else : ?>
 					<ul class="bb-stats-bars">
 						<?php
@@ -340,7 +338,7 @@ function bb_stats_page() {
 					</ul>
 				<?php endif; ?>
 
-				<h2><?php esc_html_e( 'কী দিয়ে পড়ছে', 'bichitro-biggan' ); ?></h2>
+				<h2><?php esc_html_e( 'What they read on', 'bichitro-biggan' ); ?></h2>
 				<ul class="bb-stats-bars">
 					<?php
 					$max = ! empty( $devices ) ? (int) $devices[0]['hits'] : 0;
@@ -350,7 +348,7 @@ function bb_stats_page() {
 					?>
 				</ul>
 
-				<h2><?php esc_html_e( 'কোন ভাষায়', 'bichitro-biggan' ); ?></h2>
+				<h2><?php esc_html_e( 'Which edition', 'bichitro-biggan' ); ?></h2>
 				<ul class="bb-stats-bars">
 					<?php
 					$max = ! empty( $langs ) ? (int) $langs[0]['hits'] : 0;

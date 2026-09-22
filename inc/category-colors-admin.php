@@ -17,8 +17,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 function bb_category_colors_menu() {
 	add_submenu_page(
 		'bb-theme-settings',
-		__( 'ক্যাটাগরির রং', 'bichitro-biggan' ),
-		__( 'ক্যাটাগরির রং', 'bichitro-biggan' ),
+		__( 'Category Colours', 'bichitro-biggan' ),
+		__( 'Category Colours', 'bichitro-biggan' ),
 		'manage_categories',
 		'bb-category-colors',
 		'bb_category_colors_page'
@@ -48,11 +48,11 @@ function bb_category_colors_assets( $hook ) {
 		'bb-category-colors',
 		'bbCategoryColors',
 		array(
-			'ratio'     => __( 'কনট্রাস্ট', 'bichitro-biggan' ),
-			'good'      => __( 'ভালো', 'bichitro-biggan' ),
-			'ok'        => __( 'চলনসই', 'bichitro-biggan' ),
-			'poor'      => __( 'কম', 'bichitro-biggan' ),
-			'autoLabel' => __( 'অটো', 'bichitro-biggan' ),
+			'ratio'     => __( 'Contrast', 'bichitro-biggan' ),
+			'good'      => __( 'Good', 'bichitro-biggan' ),
+			'ok'        => __( 'Passable', 'bichitro-biggan' ),
+			'poor'      => __( 'Low', 'bichitro-biggan' ),
+			'autoLabel' => __( 'Auto', 'bichitro-biggan' ),
 		)
 	);
 }
@@ -110,14 +110,14 @@ function bb_category_colors_page() {
 	$categories = get_categories( array( 'hide_empty' => false ) );
 	?>
 	<div class="wrap">
-		<h1><?php esc_html_e( 'ক্যাটাগরির রং', 'bichitro-biggan' ); ?></h1>
+		<h1><?php esc_html_e( 'Category Colours', 'bichitro-biggan' ); ?></h1>
 
 		<?php if ( $saved ) : ?>
-			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'সংরক্ষিত হয়েছে।', 'bichitro-biggan' ); ?></p></div>
+			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Saved.', 'bichitro-biggan' ); ?></p></div>
 		<?php endif; ?>
 
 		<p class="description" style="max-width:820px;margin:14px 0 18px;">
-			<?php esc_html_e( 'প্রতিটি ক্যাটাগরির ব্যাজ ও সেকশন হেডিংয়ের রং। লেখার রঙে তিনটি বিকল্প — নিচের ব্যাজগুলোতেই দেখতে পাবেন কোনটা কেমন দেখায়। পাশে কনট্রাস্টের মাপ দেওয়া আছে: ৪.৫ বা তার বেশি হলে সব পাঠকের জন্য আরামদায়ক।', 'bichitro-biggan' ); ?>
+			<?php esc_html_e( 'The badge and section-heading colour of every category. The text on a badge has three options — the badges below show how each one looks, with its contrast measured beside it: 4.5 or more is comfortable for every reader.', 'bichitro-biggan' ); ?>
 		</p>
 
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin.php?page=bb-category-colors' ) ); ?>">
@@ -126,9 +126,9 @@ function bb_category_colors_page() {
 			<table class="widefat striped" style="max-width:1000px;">
 				<thead>
 					<tr>
-						<th style="width:22%;"><?php esc_html_e( 'ক্যাটাগরি', 'bichitro-biggan' ); ?></th>
-						<th style="width:20%;"><?php esc_html_e( 'ব্যাজের রং', 'bichitro-biggan' ); ?></th>
-						<th><?php esc_html_e( 'লেখার রং — যেটা পছন্দ সেটায় ক্লিক করুন', 'bichitro-biggan' ); ?></th>
+						<th style="width:22%;"><?php esc_html_e( 'Category', 'bichitro-biggan' ); ?></th>
+						<th style="width:20%;"><?php esc_html_e( 'Badge colour', 'bichitro-biggan' ); ?></th>
+						<th><?php esc_html_e( 'Text colour — click the one you want', 'bichitro-biggan' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -146,7 +146,7 @@ function bb_category_colors_page() {
 									<?php
 									printf(
 										/* translators: %s: number of posts, in Bengali digits. */
-										esc_html__( '%s টি লেখা', 'bichitro-biggan' ),
+										esc_html__( '%s posts', 'bichitro-biggan' ),
 										esc_html( bb_bangla_number( (int) $category->count ) )
 									);
 									?>
@@ -162,9 +162,9 @@ function bb_category_colors_page() {
 							<td>
 								<?php
 								$options = array(
-									'auto'    => __( 'অটো — থিম নিজে বেছে নেবে', 'bichitro-biggan' ),
-									'#ffffff' => __( 'সাদা', 'bichitro-biggan' ),
-									'#1a1a1a' => __( 'কালো', 'bichitro-biggan' ),
+									'auto'    => __( 'Auto — let the theme choose', 'bichitro-biggan' ),
+									'#ffffff' => __( 'White', 'bichitro-biggan' ),
+									'#1a1a1a' => __( 'Black', 'bichitro-biggan' ),
 								);
 
 								foreach ( $options as $value => $label ) :
@@ -186,7 +186,7 @@ function bb_category_colors_page() {
 				</tbody>
 			</table>
 
-			<?php submit_button( __( 'সংরক্ষণ করুন', 'bichitro-biggan' ), 'primary', 'bb_category_colors_submit' ); ?>
+			<?php submit_button( __( 'Save', 'bichitro-biggan' ), 'primary', 'bb_category_colors_submit' ); ?>
 		</form>
 	</div>
 	<?php

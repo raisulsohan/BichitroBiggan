@@ -376,8 +376,14 @@ msgstr "Dark mode"
 msgid "ইউটিউব চ্যানেল"
 msgstr "YouTube channel"
 
-msgid "লেখা খুঁজুন…"
-msgstr "Search the articles…"
+msgid "Search posts…"
+msgstr ""
+
+msgid "Searching…"
+msgstr ""
+
+msgid "Nothing found"
+msgstr ""
 
 msgid "EDITOR PICKS — Select Posts"
 msgstr ""
@@ -511,7 +517,7 @@ msgstr ""
 msgid "Custom Podcast Duration (Optional)"
 msgstr ""
 
-msgid "E.g., \"১৫:৪৫ মিনিট\" or \"45:20\""
+msgid "E.g., \"15:45\" or \"45:20\""
 msgstr ""
 
 msgid "Show Author & Date on all Hero Cards"
@@ -607,58 +613,61 @@ msgstr ""
 msgid "EDITOR PICKS — Post Count"
 msgstr ""
 
-msgid "লেখক পাতার ঠিকানা"
+msgid "Author page address"
 msgstr ""
 
-msgid "ঠিকানা"
+msgid "Address"
 msgstr ""
 
-msgid "খালি রাখলে প্রদর্শিত নাম থেকে নিজে থেকেই তৈরি হবে। লগইন নাম কখনো ব্যবহার হবে না।"
+msgid "Left empty, it is made from the display name. The login name is never used."
 msgstr ""
 
-msgid "সংরক্ষিত হয়েছে।"
+msgid "Saved."
 msgstr ""
 
-msgid "প্রতিটি ক্যাটাগরির ব্যাজ ও সেকশন হেডিংয়ের রং। লেখার রঙে তিনটি বিকল্প — নিচের ব্যাজগুলোতেই দেখতে পাবেন কোনটা কেমন দেখায়। পাশে কনট্রাস্টের মাপ দেওয়া আছে: ৪.৫ বা তার বেশি হলে সব পাঠকের জন্য আরামদায়ক।"
+msgid "The badge and section-heading colour of every category. The text on a badge has three options — the badges below show how each one looks, with its contrast measured beside it: 4.5 or more is comfortable for every reader."
 msgstr ""
 
-msgid "ক্যাটাগরি"
+msgid "Category"
 msgstr ""
 
-msgid "ব্যাজের রং"
+msgid "Badge colour"
 msgstr ""
 
-msgid "লেখার রং — যেটা পছন্দ সেটায় ক্লিক করুন"
+msgid "Text colour — click the one you want"
 msgstr ""
 
-msgid "অটো — থিম নিজে বেছে নেবে"
+msgid "%s posts"
 msgstr ""
 
-msgid "সাদা"
+msgid "Auto — let the theme choose"
 msgstr ""
 
-msgid "কালো"
+msgid "White"
 msgstr ""
 
-msgid "সংরক্ষণ করুন"
+msgid "Black"
 msgstr ""
 
-msgid "ক্যাটাগরির রং"
+msgid "Save"
 msgstr ""
 
-msgid "কনট্রাস্ট"
+msgid "Category Colours"
 msgstr ""
 
-msgid "ভালো"
+msgid "Contrast"
 msgstr ""
 
-msgid "চলনসই"
+msgid "Good"
 msgstr ""
 
-msgid "কম"
+msgid "Passable"
 msgstr ""
 
-msgid "অটো"
+msgid "Low"
+msgstr ""
+
+msgid "Auto"
 msgstr ""
 
 msgid "Tagline / Bio Font Size (px)"
@@ -688,7 +697,7 @@ msgstr ""
 msgid "YouTube Button Text"
 msgstr ""
 
-msgid "e.g. সাবস্ক্রাইব করুন, YouTube Channel, or leave blank for icon only."
+msgid "e.g. Subscribe, YouTube Channel, or leave blank for the icon only."
 msgstr ""
 
 msgid "YouTube Channel URL"
@@ -718,7 +727,7 @@ msgstr ""
 msgid "All Posts & Category Pages"
 msgstr ""
 
-msgid "Article Popup Reading Modal (পপ-আপ রিডার)"
+msgid "Article Popup Reading Modal"
 msgstr ""
 
 msgid "— All Categories —"
@@ -760,16 +769,16 @@ msgstr ""
 msgid "Customize headings, post counts, and pick specific articles for Editor Picks and Popular Posts."
 msgstr ""
 
-msgid "ফুটার পোস্টের ছবি/থাম্বনেইল দেখাবেন? (Show Thumbnails)"
+msgid "Show thumbnails in the footer lists"
 msgstr ""
 
-msgid "টিক চিহ্ন না দিলে শুধু লেখার টাইটেল, লেখক ও তারিখ দেখাবে।"
+msgid "Unticked, only the title, author and date are shown."
 msgstr ""
 
 msgid "Editor Picks Heading"
 msgstr ""
 
-msgid "Editor Pick #%d (লেখা নির্বাচন করুন)"
+msgid "Editor Pick #%d — choose a post"
 msgstr ""
 
 msgid "Popular Posts Heading"
@@ -823,19 +832,19 @@ msgstr ""
 msgid "Footer Logo Height (px)"
 msgstr ""
 
-msgid "ছবি বেছে নিন"
+msgid "Choose a picture"
 msgstr ""
 
-msgid "সরিয়ে দিন"
+msgid "Remove"
 msgstr ""
 
-msgid "Media Library থেকে ছবি বেছে নিন। এটি Gravatar-এর বদলে সাইটের সব জায়গায় দেখাবে। বর্গাকার ছবি (যেমন ৫০০×৫০০) সবচেয়ে ভালো দেখায়।"
+msgid "Pick an image from the Media Library. It is used everywhere on the site in place of Gravatar. A square image (500×500, say) looks best."
 msgstr ""
 
-msgid "প্রোফাইল ছবি"
+msgid "Profile picture"
 msgstr ""
 
-msgid "ছবি"
+msgid "Picture"
 msgstr ""
 
 msgid "English title"
@@ -924,13 +933,13 @@ msgstr ""
 msgid "%s পড়ার সময়"
 msgstr "%s read"
 
-msgid "গিটহাবে সম্পূর্ণ চেঞ্জলগ দেখুন →"
+msgid "See the full changelog on GitHub →"
 msgstr ""
 
-msgid "ডাউনলোড করা zip-এ থিমের style.css খুঁজে পাওয়া যায়নি।"
+msgid "The downloaded zip has no style.css for the theme in it."
 msgstr ""
 
-msgid "zip ফোল্ডারের নাম থিমের স্লাগে বদলানো যায়নি।"
+msgid "The folder inside the zip could not be renamed to the theme\\'s slug."
 msgstr ""
 
 msgid "Primary Menu (English edition)"
@@ -1002,49 +1011,52 @@ msgstr ""
 msgid "তথ্যসূত্র"
 msgstr "References"
 
-msgid "প্রতি লাইনে একটি সূত্র। নাম ও লিংক আলাদা করতে | চিহ্ন দিন।"
-msgstr "One source per line. Separate the name and the link with |."
-
-msgid "খালি রাখলে লেখার নিচে কিছুই দেখাবে না।"
-msgstr "Left empty, nothing is printed under the article."
-
-msgid "মেটা ডেসক্রিপশনে কি-ফ্রেজ নেই"
+msgid "Sources"
 msgstr ""
 
-msgid "মেটা ডেসক্রিপশন বেশি লম্বা (%d অক্ষর)"
+msgid "One source per line. Separate the name and the link with a | sign."
 msgstr ""
 
-msgid "মেটা ডেসক্রিপশন ছোট (%d অক্ষর)"
+msgid "Left empty, nothing is printed under the article."
 msgstr ""
 
-msgid "মেটা ডেসক্রিপশন নেই"
+msgid "Keyphrase missing from the meta description"
 msgstr ""
 
-msgid "ফিচার্ড ইমেজ নেই"
+msgid "Meta description too long (%d characters)"
 msgstr ""
 
-msgid "এসইও: চমৎকার"
+msgid "Meta description too short (%d characters)"
 msgstr ""
 
-msgid "এসইও: সাধারণ"
+msgid "No meta description"
 msgstr ""
 
-msgid "এসইও: অপর্যাপ্ত"
+msgid "No featured image"
+msgstr ""
+
+msgid "SEO: good"
+msgstr ""
+
+msgid "SEO: fair"
+msgstr ""
+
+msgid "SEO: needs work"
 msgstr ""
 
 msgid "SEO"
 msgstr ""
 
-msgid "ফোকাস কি-ফ্রেজ নেই"
+msgid "No focus keyphrase"
 msgstr ""
 
-msgid "এসইও টাইটেলে কি-ফ্রেজ নেই"
+msgid "Keyphrase missing from the SEO title"
 msgstr ""
 
-msgid "এসইও টাইটেল বেশি লম্বা (%d অক্ষর)"
+msgid "SEO title too long (%d characters)"
 msgstr ""
 
-msgid "এসইও টাইটেল ছোট (%d অক্ষর)"
+msgid "SEO title too short (%d characters)"
 msgstr ""
 
 msgid "ব্লগ"
@@ -1059,22 +1071,22 @@ msgstr "Everything %2$s has written about %1$s."
 msgid "হোম"
 msgstr "Home"
 
-msgid "বিচিত্র বিজ্ঞান — SEO"
+msgid "Bichitro Biggan — SEO"
 msgstr ""
 
 msgid "Focus keyphrase"
 msgstr ""
 
-msgid "এখানে টাইপ করুন"
+msgid "Type here"
 msgstr ""
 
-msgid "আপনার কনটেন্ট যেই মূল শব্দ বা ফ্রেজ দিয়ে খুঁজে পাওয়া যাবে সেটি লিখুন।"
+msgid "The word or phrase you want this piece to be found by."
 msgstr ""
 
 msgid "Keyphrase synonyms"
 msgstr ""
 
-msgid "কমা দিয়ে আলাদা করুন"
+msgid "Separate them with commas"
 msgstr ""
 
 msgid "Search appearance"
@@ -1089,16 +1101,16 @@ msgstr ""
 msgid "Desktop"
 msgstr ""
 
-msgid "Google সার্চ রেজাল্টে আপনার পোস্ট কেমন দেখাবে তার প্রিভিউ।"
+msgid "How your post will look in Google\\'s results."
 msgstr ""
 
-msgid "এখানে আপনার মেটা ডেসক্রিপশন দেখাবে..."
+msgid "Your meta description will appear here…"
 msgstr ""
 
 msgid "SEO title"
 msgstr ""
 
-msgid "অক্ষর"
+msgid "characters"
 msgstr ""
 
 msgid "Slug"
@@ -1107,118 +1119,115 @@ msgstr ""
 msgid "post-url-slug"
 msgstr ""
 
-msgid "পোস্টের পারমালিঙ্ক বা স্লাগ পরিবর্তন করতে এখানে টাইপ করুন।"
+msgid "Type here to change the post\\'s permalink."
 msgstr ""
 
 msgid "Meta description"
 msgstr ""
 
-msgid "সার্চ রেজাল্টে যেই বর্ণনা দেখাতে চান সেটি লিখুন..."
+msgid "The description you want search results to show…"
 msgstr ""
 
-msgid "SEO বিশ্লেষণ (SEO Analysis)"
+msgid "SEO analysis"
 msgstr ""
 
-msgid "%d টি পোস্ট/পেজে Yoast SEO ডেটা আছে যেগুলো এখনও থিমের SEO সিস্টেমে কপি হয়নি। এক ক্লিকে সব কপি করুন — Yoast-এর আসল ডেটা মুছবে না।"
+msgid "%d posts and pages still hold Yoast SEO data that has not been copied into the theme\\'s own fields. Copy it all in one click — nothing of Yoast\\'s is deleted."
 msgstr ""
 
-msgid "প্রতিদিনের পাঠ"
+msgid "Reads per day"
 msgstr ""
 
-msgid "গত ৭ দিন"
+msgid "Last 7 days"
 msgstr ""
 
-msgid "গত ৩০ দিন"
+msgid "Last 30 days"
 msgstr ""
 
-msgid "গত ৯০ দিন"
+msgid "Last 90 days"
 msgstr ""
 
-msgid "গত এক বছর"
+msgid "Last year"
 msgstr ""
 
-msgid "সাইটের নিজের হিসাব — কোনো বাইরের সেবা, অ্যাকাউন্ট বা অনুমতি ছাড়াই। পাঠকের ঠিকানা বা কুকি কিছুই রাখা হয় না, আর যাঁরা সাইট চালান তাঁদের নিজেদের ভিজিট গোনা হয় না।"
+msgid "The site\\'s own count — no outside service, no account, no permission that can be withdrawn. Nothing that identifies a reader is stored, and visits by the people who run the site are left out."
 msgstr ""
 
-msgid "গোনা শুরু হয়েছে।"
+msgid "Counting has started."
 msgstr ""
 
-msgid "এখনো কোনো পাঠ জমা হয়নি — কেউ সাইটে এলেই এখানে দেখা যাবে। নিজের ভিজিট দেখতে চাইলে লগআউট করে (বা অন্য ব্রাউজারে) সাইটটা খুলুন।"
+msgid "Nothing has been counted yet — it will appear here as soon as somebody visits. To see your own visit, open the site logged out, or in another browser."
 msgstr ""
 
-msgid "মোট পাঠ"
+msgid "Reads"
 msgstr ""
 
-msgid "দিনে গড়ে %s"
+msgid "%s a day on average"
 msgstr ""
 
-msgid "ভিজিট"
+msgid "Visits"
 msgstr ""
 
-msgid "একেকজন পাঠকের একেকবার আসা"
+msgid "One reader arriving once"
 msgstr ""
 
-msgid "যতগুলো লেখা পড়া হয়েছে"
+msgid "Articles read"
 msgstr ""
 
-msgid "সাইটে আছে %s"
+msgid "%s published in all"
 msgstr ""
 
-msgid "পরিসংখ্যান"
+msgid "Statistics"
 msgstr ""
 
-msgid "গোনা শুরু"
+msgid "Counting since"
 msgstr ""
 
-msgid "এর আগের হিসাব এখানে নেই"
+msgid "Nothing from before this is here"
 msgstr ""
 
-msgid "প্রতিদিন কত পাঠ"
+msgid "Most read"
 msgstr ""
 
-msgid "সবচেয়ে বেশি পড়া লেখা"
+msgid "No article was read in this period."
 msgstr ""
 
-msgid "এই সময়ে কোনো লেখা পড়া হয়নি।"
+msgid "Article"
 msgstr ""
 
-msgid "লেখা"
+msgid "Total"
 msgstr ""
 
-msgid "মোট"
+msgid "Where readers come from"
 msgstr ""
 
-msgid "পাঠক আসছে কোথা থেকে"
+msgid "Nothing to show yet."
 msgstr ""
 
-msgid "এখনো কিছু জানা যায়নি।"
+msgid "What they read on"
 msgstr ""
 
-msgid "কী দিয়ে পড়ছে"
+msgid "Which edition"
 msgstr ""
 
-msgid "কোন ভাষায়"
+msgid "Direct / bookmark"
 msgstr ""
 
-msgid "সরাসরি / বুকমার্ক"
+msgid "From this site"
 msgstr ""
 
-msgid "সাইটের ভেতর থেকে"
+msgid "Phone"
 msgstr ""
 
-msgid "মোবাইল"
+msgid "Tablet"
 msgstr ""
 
-msgid "ট্যাবলেট"
+msgid "Computer"
 msgstr ""
 
-msgid "কম্পিউটার"
+msgid "Bengali"
 msgstr ""
 
-msgid "বাংলা"
-msgstr ""
-
-msgid "ইংরেজি (/en)"
+msgid "English (/en)"
 msgstr ""
 
 msgid "পডকাস্ট"

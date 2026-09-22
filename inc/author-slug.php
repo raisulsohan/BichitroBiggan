@@ -208,10 +208,10 @@ add_action( 'template_redirect', 'bb_redirect_nicename_author', 1 );
 function bb_author_slug_field( $user ) {
 	$slug = get_user_meta( $user->ID, 'bb_author_slug', true );
 	?>
-	<h2><?php esc_html_e( 'লেখক পাতার ঠিকানা', 'bichitro-biggan' ); ?></h2>
+	<h2><?php esc_html_e( 'Author page address', 'bichitro-biggan' ); ?></h2>
 	<table class="form-table" role="presentation">
 		<tr>
-			<th><label for="bb_author_slug"><?php esc_html_e( 'ঠিকানা', 'bichitro-biggan' ); ?></label></th>
+			<th><label for="bb_author_slug"><?php esc_html_e( 'Address', 'bichitro-biggan' ); ?></label></th>
 			<td>
 				<code><?php echo esc_html( trailingslashit( home_url( '/author' ) ) ); ?></code>
 				<input type="text" name="bb_author_slug" id="bb_author_slug"
@@ -219,7 +219,7 @@ function bb_author_slug_field( $user ) {
 					placeholder="<?php echo esc_attr( bb_author_slug( $user->ID ) ); ?>"
 					class="regular-text" />
 				<p class="description">
-					<?php esc_html_e( 'খালি রাখলে প্রদর্শিত নাম থেকে নিজে থেকেই তৈরি হবে। লগইন নাম কখনো ব্যবহার হবে না।', 'bichitro-biggan' ); ?>
+					<?php esc_html_e( 'Left empty, it is made from the display name. The login name is never used.', 'bichitro-biggan' ); ?>
 				</p>
 			</td>
 		</tr>
