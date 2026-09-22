@@ -1070,6 +1070,40 @@ function bb_en_register_user_meta() {
 }
 add_action( 'init', 'bb_en_register_user_meta' );
 
+/**
+ * A video embedded by pasting its address carries the title YouTube holds for
+ * it — which is Bengali, because the video is. Screen readers announce that
+ * title, and it is the one scrap of Bengali left on an English article, so the
+ * English edition puts the article's own English title there instead.
+ *
+ * @param string $html    The embed markup.
+ * @param string $url     The address that was pasted.
+ * @param array  $attr    Embed attributes.
+ * @param int    $post_id The post it sits in.
+ * @return string
+ */
+function bb_en_embed_title( $html, $url = '', $attr = array(), $post_id = 0 ) {
+	if ( ! bb_is_en() || ! is_string( $html ) || '' === $html ) {
+		return $html;
+	}
+
+	$post_id = $post_id ? (int) $post_id : (int) get_the_ID();
+	$english = bb_en_title( $post_id );
+
+	if ( '' === $english ) {
+		return $html;
+	}
+
+	$title = esc_attr( $english );
+
+	if ( preg_match( '/<iframe\b[^>]*\btitle="/i', $html ) ) {
+		return preg_replace( '/(<iframe\b[^>]*\btitle=")[^"]*(")/i', '${1}' . $title . '${2}', $html, 1 );
+	}
+
+	return preg_replace( '/<iframe\b/i', '<iframe title="' . $title . '"', $html, 1 );
+}
+add_filter( 'embed_oembed_html', 'bb_en_embed_title', 20, 4 );
+
 /* -------------------------------------------------------------------------
  * 8b. Writers
  * ---------------------------------------------------------------------- */

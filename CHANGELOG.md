@@ -2,6 +2,19 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.13.1
+
+- "পরে পড়ুন" was coming through untranslated on the saved-articles button.
+  ড়, ঢ় and য় can each be written two ways in Unicode — one character, or the
+  letter plus a nukta — and gettext matches byte for byte, so a msgid typed one
+  way and a translation stored the other silently failed while looking
+  identical on screen. The compiler now writes both spellings of every string
+  into the .mo, which closes the whole class of failure rather than this one
+  instance of it.
+- A video embedded by pasting its address carried the title YouTube holds for
+  it, which is Bengali; on /en the article's own English title is used instead,
+  so a screen reader announces the right thing.
+
 ## 7.13.0
 
 - The dashboard speaks English. Every screen the theme adds — Theme Settings,
