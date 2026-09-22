@@ -2,6 +2,13 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.10.5
+
+- The structured data on an English article carried the Bengali headline. The
+  schema and the title fallback read the post title straight from the database,
+  where the rest of the page reads it through the filter that swaps in the
+  English one; all three read it the same way now. Bengali pages are unchanged.
+
 ## 7.10.4
 
 - The hreflang tags drop the query string. A page reached with ?utm_source= or

@@ -175,7 +175,7 @@ function bb_seo_get_context() {
 		$custom_title  = bb_seo_get_field( $post->ID, 'bb_seo_title' );
 		$ctx['title']  = $custom_title
 			? bb_seo_resolve_variables( $custom_title, $post )
-			: bb_seo_join_title( array( $post->post_title, $site_name ) );
+			: bb_seo_join_title( array( get_the_title( $post ), $site_name ) );
 
 		$custom_desc        = bb_seo_get_field( $post->ID, 'bb_seo_description' );
 		$ctx['description'] = $custom_desc
@@ -492,7 +492,9 @@ function bb_seo_article_node( array $ctx, WP_Post $post ) {
 	$url     = $ctx['canonical'] ? $ctx['canonical'] : (string) get_permalink( $post );
 
 	// Google NewsArticle-এর headline ১১০ ক্যারেক্টারের বেশি হলে উপেক্ষা করে।
-	$headline = wp_strip_all_tags( $post->post_title );
+	// get_the_title(), not post_title: under /en the English headline comes
+	// back, and a Bengali page is left exactly as it was.
+	$headline = wp_strip_all_tags( get_the_title( $post ) );
 	$headline = bb_str_sub( $headline, 0, 110 );
 
 	$node = array(
@@ -590,7 +592,7 @@ function bb_seo_breadcrumb_node( array $ctx ) {
 		}
 
 		$items[] = array(
-			'name' => wp_strip_all_tags( $post->post_title ),
+			'name' => wp_strip_all_tags( get_the_title( $post ) ),
 			'url'  => $ctx['canonical'] ? $ctx['canonical'] : (string) get_permalink( $post ),
 		);
 	} elseif ( is_archive() ) {
