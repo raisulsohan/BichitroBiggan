@@ -2007,8 +2007,14 @@
 	 * Reading counter
 	 *
 	 * Pages are served from a cache, so the server never sees most reads
-	 * and counting them in PHP counted crawlers instead. This reports one
-	 * read, from the browser, once the article has been on screen a while.
+	 * and counting them in PHP counted crawlers instead. This reports the
+	 * read from the browser, once the page has been on screen a while —
+	 * every page, not only articles, because the site keeps its own
+	 * statistics and a homepage read is still a read.
+	 *
+	 * What travels with it: which article (0 for anything else), which
+	 * edition, the page the reader came from, and whether this is the
+	 * first page of their visit. No identifier of any kind.
 	 * ------------------------------------------------------------ */
 	function initViewCounter() {
 		if (!D.viewUrl) {
@@ -2017,18 +2023,27 @@
 
 		var sent = {};
 
-		function send(id) {
-			if (!id || sent[id]) return;
-			sent[id] = true;
-
-			// One read per article per visit, whatever the reader does next.
-			try {
-				if (sessionStorage.getItem('bb_seen_' + id)) return;
-				sessionStorage.setItem('bb_seen_' + id, '1');
-			} catch (e) {}
+		function send(id, key) {
+			if (sent[key]) return;
+			sent[key] = true;
 
 			var payload = new FormData();
-			payload.append('id', id);
+			payload.append('id', id || 0);
+			payload.append('lang', D.lang || 'bn');
+
+			try {
+				payload.append('ref', document.referrer || '');
+			} catch (e) {}
+
+			// The first page of a visit, counted once per browser session.
+			var first = '0';
+			try {
+				if (!sessionStorage.getItem('bb_visit')) {
+					sessionStorage.setItem('bb_visit', '1');
+					first = '1';
+				}
+			} catch (e) {}
+			payload.append('first', first);
 
 			if (navigator.sendBeacon) {
 				navigator.sendBeacon(D.viewUrl, payload);
@@ -2044,16 +2059,15 @@
 
 		function count(scope) {
 			var article = (scope || document).querySelector('.bb-single');
-			if (!article) return;
+			var match = article ? /post-(\d+)/.exec(article.id || '') : null;
+			var id = match ? match[1] : 0;
 
-			var match = /post-(\d+)/.exec(article.id || '');
-			if (!match) return;
-
-			var id = match[1];
+			// One report per address; the popup changes it as it goes.
+			var key = (id || 'page') + '|' + location.pathname;
 
 			window.setTimeout(function () {
 				if (document.visibilityState === 'hidden') return;
-				send(id);
+				send(id, key);
 			}, 4000);
 		}
 

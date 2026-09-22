@@ -638,6 +638,7 @@ msgstr ""
 
 #: inc/admin-settings.php:164
 #: inc/category-colors-admin.php:105
+#: inc/stats-admin.php:207
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
@@ -1553,6 +1554,141 @@ msgstr ""
 
 #: inc/seo-meta-box.php:759
 msgid "%d টি পোস্ট/পেজে Yoast SEO ডেটা আছে যেগুলো এখনও থিমের SEO সিস্টেমে কপি হয়নি। এক ক্লিকে সব কপি করুন — Yoast-এর আসল ডেটা মুছবে না।"
+msgstr ""
+
+#: inc/stats-admin.php:137
+msgid "প্রতিদিনের পাঠ"
+msgstr ""
+
+#: inc/stats-admin.php:19
+msgid "গত ৭ দিন"
+msgstr ""
+
+#: inc/stats-admin.php:20
+msgid "গত ৩০ দিন"
+msgstr ""
+
+#: inc/stats-admin.php:21
+msgid "গত ৯০ দিন"
+msgstr ""
+
+#: inc/stats-admin.php:22
+msgid "গত এক বছর"
+msgstr ""
+
+#: inc/stats-admin.php:228
+msgid "সাইটের নিজের হিসাব — কোনো বাইরের সেবা, অ্যাকাউন্ট বা অনুমতি ছাড়াই। পাঠকের ঠিকানা বা কুকি কিছুই রাখা হয় না, আর যাঁরা সাইট চালান তাঁদের নিজেদের ভিজিট গোনা হয় না।"
+msgstr ""
+
+#: inc/stats-admin.php:243
+msgid "গোনা শুরু হয়েছে।"
+msgstr ""
+
+#: inc/stats-admin.php:244
+msgid "এখনো কোনো পাঠ জমা হয়নি — কেউ সাইটে এলেই এখানে দেখা যাবে। নিজের ভিজিট দেখতে চাইলে লগআউট করে (বা অন্য ব্রাউজারে) সাইটটা খুলুন।"
+msgstr ""
+
+#: inc/stats-admin.php:251
+msgid "মোট পাঠ"
+msgstr ""
+
+#: inc/stats-admin.php:257
+msgid "দিনে গড়ে %s"
+msgstr ""
+
+#: inc/stats-admin.php:264
+msgid "ভিজিট"
+msgstr ""
+
+#: inc/stats-admin.php:266
+msgid "একেকজন পাঠকের একেকবার আসা"
+msgstr ""
+
+#: inc/stats-admin.php:269
+msgid "যতগুলো লেখা পড়া হয়েছে"
+msgstr ""
+
+#: inc/stats-admin.php:275
+msgid "সাইটে আছে %s"
+msgstr ""
+
+#: inc/stats-admin.php:28
+#: inc/stats-admin.php:29
+#: inc/stats-admin.php:225
+msgid "পরিসংখ্যান"
+msgstr ""
+
+#: inc/stats-admin.php:282
+msgid "গোনা শুরু"
+msgstr ""
+
+#: inc/stats-admin.php:286
+msgid "এর আগের হিসাব এখানে নেই"
+msgstr ""
+
+#: inc/stats-admin.php:291
+msgid "প্রতিদিন কত পাঠ"
+msgstr ""
+
+#: inc/stats-admin.php:297
+msgid "সবচেয়ে বেশি পড়া লেখা"
+msgstr ""
+
+#: inc/stats-admin.php:299
+msgid "এই সময়ে কোনো লেখা পড়া হয়নি।"
+msgstr ""
+
+#: inc/stats-admin.php:304
+msgid "লেখা"
+msgstr ""
+
+#: inc/stats-admin.php:307
+msgid "মোট"
+msgstr ""
+
+#: inc/stats-admin.php:329
+msgid "পাঠক আসছে কোথা থেকে"
+msgstr ""
+
+#: inc/stats-admin.php:331
+msgid "এখনো কিছু জানা যায়নি।"
+msgstr ""
+
+#: inc/stats-admin.php:343
+msgid "কী দিয়ে পড়ছে"
+msgstr ""
+
+#: inc/stats-admin.php:353
+msgid "কোন ভাষায়"
+msgstr ""
+
+#: inc/stats-admin.php:57
+msgid "সরাসরি / বুকমার্ক"
+msgstr ""
+
+#: inc/stats-admin.php:58
+msgid "সাইটের ভেতর থেকে"
+msgstr ""
+
+#: inc/stats-admin.php:83
+msgid "মোবাইল"
+msgstr ""
+
+#: inc/stats-admin.php:84
+msgid "ট্যাবলেট"
+msgstr ""
+
+#: inc/stats-admin.php:85
+msgid "কম্পিউটার"
+msgstr ""
+
+#: inc/stats-admin.php:86
+#: inc/stats-admin.php:305
+msgid "বাংলা"
+msgstr ""
+
+#: inc/stats-admin.php:87
+msgid "ইংরেজি (/en)"
 msgstr ""
 
 #: inc/template-tags.php:344

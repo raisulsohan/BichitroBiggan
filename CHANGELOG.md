@@ -2,6 +2,22 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.12.0
+
+- The site keeps its own statistics, on its own screen: Dashboard →
+  পরিসংখ্যান. Reads per day as a chart, the most-read articles, where readers
+  came from, what they read on, and how the two editions compare — over 7, 30,
+  90 or 365 days. No account to sign in to and no permission that can be
+  withdrawn.
+- The reading beacon the theme already used now reports every page rather than
+  only articles, and carries the edition, the referring site and whether this
+  is the first page of the visit. It is still sent from the browser, so a page
+  served from the cache is counted and a crawler is not.
+- Nothing that identifies a reader is stored: no address, no cookie, no
+  fingerprint — one row per day per combination, counted up. Visits by anyone
+  who can edit posts are left out, so the people running the site do not
+  inflate its figures.
+
 ## 7.11.0
 
 - A language switch on the article itself, opposite the category badge: from a

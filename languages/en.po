@@ -1122,6 +1122,105 @@ msgstr ""
 msgid "%d টি পোস্ট/পেজে Yoast SEO ডেটা আছে যেগুলো এখনও থিমের SEO সিস্টেমে কপি হয়নি। এক ক্লিকে সব কপি করুন — Yoast-এর আসল ডেটা মুছবে না।"
 msgstr ""
 
+msgid "প্রতিদিনের পাঠ"
+msgstr ""
+
+msgid "গত ৭ দিন"
+msgstr ""
+
+msgid "গত ৩০ দিন"
+msgstr ""
+
+msgid "গত ৯০ দিন"
+msgstr ""
+
+msgid "গত এক বছর"
+msgstr ""
+
+msgid "সাইটের নিজের হিসাব — কোনো বাইরের সেবা, অ্যাকাউন্ট বা অনুমতি ছাড়াই। পাঠকের ঠিকানা বা কুকি কিছুই রাখা হয় না, আর যাঁরা সাইট চালান তাঁদের নিজেদের ভিজিট গোনা হয় না।"
+msgstr ""
+
+msgid "গোনা শুরু হয়েছে।"
+msgstr ""
+
+msgid "এখনো কোনো পাঠ জমা হয়নি — কেউ সাইটে এলেই এখানে দেখা যাবে। নিজের ভিজিট দেখতে চাইলে লগআউট করে (বা অন্য ব্রাউজারে) সাইটটা খুলুন।"
+msgstr ""
+
+msgid "মোট পাঠ"
+msgstr ""
+
+msgid "দিনে গড়ে %s"
+msgstr ""
+
+msgid "ভিজিট"
+msgstr ""
+
+msgid "একেকজন পাঠকের একেকবার আসা"
+msgstr ""
+
+msgid "যতগুলো লেখা পড়া হয়েছে"
+msgstr ""
+
+msgid "সাইটে আছে %s"
+msgstr ""
+
+msgid "পরিসংখ্যান"
+msgstr ""
+
+msgid "গোনা শুরু"
+msgstr ""
+
+msgid "এর আগের হিসাব এখানে নেই"
+msgstr ""
+
+msgid "প্রতিদিন কত পাঠ"
+msgstr ""
+
+msgid "সবচেয়ে বেশি পড়া লেখা"
+msgstr ""
+
+msgid "এই সময়ে কোনো লেখা পড়া হয়নি।"
+msgstr ""
+
+msgid "লেখা"
+msgstr ""
+
+msgid "মোট"
+msgstr ""
+
+msgid "পাঠক আসছে কোথা থেকে"
+msgstr ""
+
+msgid "এখনো কিছু জানা যায়নি।"
+msgstr ""
+
+msgid "কী দিয়ে পড়ছে"
+msgstr ""
+
+msgid "কোন ভাষায়"
+msgstr ""
+
+msgid "সরাসরি / বুকমার্ক"
+msgstr ""
+
+msgid "সাইটের ভেতর থেকে"
+msgstr ""
+
+msgid "মোবাইল"
+msgstr ""
+
+msgid "ট্যাবলেট"
+msgstr ""
+
+msgid "কম্পিউটার"
+msgstr ""
+
+msgid "বাংলা"
+msgstr ""
+
+msgid "ইংরেজি (/en)"
+msgstr ""
+
 msgid "পডকাস্ট"
 msgstr "Podcast"
 

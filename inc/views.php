@@ -40,8 +40,21 @@ function bb_register_view_route() {
 			'callback'            => 'bb_rest_count_view',
 			'permission_callback' => '__return_true',
 			'args'                => array(
-				'id' => array(
+				'id'    => array(
 					'required'          => true,
+					'sanitize_callback' => 'absint',
+				),
+				/* What the site's own statistics need, and nothing more. */
+				'lang'  => array(
+					'required'          => false,
+					'sanitize_callback' => 'sanitize_key',
+				),
+				'ref'   => array(
+					'required'          => false,
+					'sanitize_callback' => 'esc_url_raw',
+				),
+				'first' => array(
+					'required'          => false,
 					'sanitize_callback' => 'absint',
 				),
 			),
@@ -63,8 +76,22 @@ function bb_visitor_key() {
 
 function bb_rest_count_view( WP_REST_Request $request ) {
 	$post_id = absint( $request->get_param( 'id' ) );
+	$lang    = 'en' === $request->get_param( 'lang' ) ? 'en' : 'bn';
+	$ref     = (string) $request->get_param( 'ref' );
+	$first   = (bool) $request->get_param( 'first' );
 
-	if ( ! $post_id || 'post' !== get_post_type( $post_id ) || 'publish' !== get_post_status( $post_id ) ) {
+	$is_article = $post_id && 'post' === get_post_type( $post_id ) && 'publish' === get_post_status( $post_id );
+
+	/*
+	 * The site's own statistics hear about every page, article or not — a
+	 * homepage read is still a read. The per-post counter below is separate,
+	 * and still only about articles.
+	 */
+	if ( function_exists( 'bb_stats_record' ) ) {
+		bb_stats_record( $is_article ? $post_id : 0, $lang, $ref, $first );
+	}
+
+	if ( ! $is_article ) {
 		return rest_ensure_response( array( 'counted' => false ) );
 	}
 
