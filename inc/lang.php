@@ -1351,6 +1351,28 @@ function bb_en_customize_register( $wp_customize ) {
 		)
 	);
 
+	$wp_customize->add_setting(
+		'bb_en_logo',
+		array(
+			'default'           => 0,
+			'sanitize_callback' => 'absint',
+			'transport'         => 'refresh',
+		)
+	);
+
+	$wp_customize->add_control(
+		new WP_Customize_Media_Control(
+			$wp_customize,
+			'bb_en_logo',
+			array(
+				'label'       => __( 'Logo for the English edition', 'bichitro-biggan' ),
+				'description' => __( 'Shown instead of the site logo under /en. Leave empty to use the same logo as the Bengali site.', 'bichitro-biggan' ),
+				'section'     => 'bb_english_section',
+				'mime_type'   => 'image',
+			)
+		)
+	);
+
 	$fields = bb_en_text_settings();
 
 	$fields['bb_site_description'] = array(
@@ -1519,6 +1541,130 @@ function bb_en_seo_context( $ctx ) {
 	return $ctx;
 }
 add_filter( 'bb_seo_context', 'bb_en_seo_context' );
+
+/**
+ * The page title in the browser tab and in Google's results.
+ *
+ * The SEO engine reads bb_seo_title straight from the post rather than through
+ * its own context, so the English title has to be put back afterwards. This
+ * runs after that filter, on the value it produced.
+ *
+ * @param string $title Title so far.
+ * @return string
+ */
+function bb_en_document_title( $title ) {
+	if ( ! bb_is_en() || is_admin() || is_feed() || ! is_singular() ) {
+		return $title;
+	}
+
+	$post = get_queried_object();
+
+	if ( ! $post instanceof WP_Post ) {
+		return $title;
+	}
+
+	$english = bb_en_get( $post->ID, 'bb_en_seo_title' );
+
+	if ( '' === $english ) {
+		$english = bb_en_title( $post->ID );
+
+		if ( '' !== $english ) {
+			$english .= ' — ' . get_bloginfo( 'name' );
+		}
+	}
+
+	return ( '' === $english ) ? $title : $english;
+}
+add_filter( 'pre_get_document_title', 'bb_en_document_title', 20 );
+
+/* -------------------------------------------------------------------------
+ * 13b. The English logo
+ * ---------------------------------------------------------------------- */
+
+/**
+ * The English edition can carry a logo of its own — the same design with the
+ * name set in English. Left unset, it wears the Bengali one.
+ *
+ * @param mixed $logo Attachment ID of the site logo.
+ * @return mixed
+ */
+function bb_en_custom_logo( $logo ) {
+	if ( ! bb_is_en() ) {
+		return $logo;
+	}
+
+	$english = (int) get_theme_mod( 'bb_en_logo', 0 );
+
+	return $english ? $english : $logo;
+}
+add_filter( 'theme_mod_custom_logo', 'bb_en_custom_logo' );
+
+/**
+ * Set either logo from a script.
+ *
+ * The Customizer is the usual place for this, but a logo that has just been
+ * uploaded by the publishing tool should not need a trip through the browser
+ * to be put in place. Only someone who could change it in the Customizer can
+ * change it here, and only to an image already in the media library.
+ */
+function bb_en_register_logo_route() {
+	register_rest_route(
+		'bb/v1',
+		'/logo',
+		array(
+			'methods'             => 'POST',
+			'callback'            => 'bb_en_rest_set_logo',
+			'permission_callback' => function () {
+				return current_user_can( 'edit_theme_options' );
+			},
+			'args'                => array(
+				'custom_logo' => array( 'sanitize_callback' => 'absint' ),
+				'en_logo'     => array( 'sanitize_callback' => 'absint' ),
+			),
+		)
+	);
+}
+add_action( 'rest_api_init', 'bb_en_register_logo_route' );
+
+/**
+ * @param WP_REST_Request $request Request.
+ * @return WP_REST_Response|WP_Error
+ */
+function bb_en_rest_set_logo( WP_REST_Request $request ) {
+	$pairs = array(
+		'custom_logo' => 'custom_logo',
+		'en_logo'     => 'bb_en_logo',
+	);
+
+	$changed = array();
+
+	foreach ( $pairs as $param => $mod ) {
+		if ( null === $request->get_param( $param ) ) {
+			continue;
+		}
+
+		$id = (int) $request->get_param( $param );
+
+		if ( $id > 0 && ! wp_attachment_is_image( $id ) ) {
+			return new WP_Error(
+				'bb_logo_not_an_image',
+				sprintf( /* translators: %d: attachment ID. */ __( '#%d is not an image in the media library.', 'bichitro-biggan' ), $id ),
+				array( 'status' => 400 )
+			);
+		}
+
+		set_theme_mod( $mod, $id );
+		$changed[ $mod ] = $id;
+	}
+
+	return rest_ensure_response(
+		array(
+			'changed'     => $changed,
+			'custom_logo' => (int) get_theme_mod( 'custom_logo', 0 ),
+			'en_logo'     => (int) get_theme_mod( 'bb_en_logo', 0 ),
+		)
+	);
+}
 
 /* -------------------------------------------------------------------------
  * 14. The switcher

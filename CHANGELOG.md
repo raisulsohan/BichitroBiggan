@@ -2,6 +2,23 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.10.2
+
+- The English edition can wear a logo of its own — Appearance → Customize →
+  English edition (/en) → Logo for the English edition. Left empty, /en keeps
+  the Bengali logo.
+- The logo no longer arrives as a full-width image on a phone. WordPress tells
+  the browser an image may fill the window, so a phone was downloading the
+  1024-pixel copy of a logo painted about 160 pixels wide; the theme now
+  states the real drawn width, worked out from the masthead height and the
+  image's own proportions, and registers a 400-pixel size for it to pick.
+- The English title tag. The SEO engine reads the Bengali SEO title straight
+  from the post, bypassing the filter that swaps the rest of the English
+  fields in, so /en pages carried a Bengali <title> while their description,
+  og:title and schema were English.
+- A small REST route, bb/v1/logo, sets either logo from a script for anyone
+  who could set it in the Customizer.
+
 ## 7.10.1
 
 - Everything around an article now reads English under /en, not just the

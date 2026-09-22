@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.10.1' );
+define( 'BB_VERSION', '7.10.2' );
 
 /**
  * The built copy of an asset, when there is one and it is not stale.
@@ -111,6 +111,41 @@ function bb_async_images( $attr ) {
 }
 add_filter( 'wp_get_attachment_image_attributes', 'bb_async_images' );
 
+/**
+ * Ask for a logo the size it is actually drawn.
+ *
+ * WordPress tells the browser the logo may fill the whole window, so a phone
+ * dutifully downloads the 1024-pixel copy of an image that is painted about
+ * 160 pixels wide. The masthead height is known — the width follows from the
+ * image's own proportions — so the browser can be told the truth and pick the
+ * smallest file that will do.
+ *
+ * @param array        $attr       Attributes for the <img>.
+ * @param WP_Post      $attachment The image.
+ * @param string|int[] $size       Size being rendered.
+ * @return array
+ */
+function bb_logo_image_sizes( $attr, $attachment, $size ) {
+	if ( empty( $attr['class'] ) || false === strpos( $attr['class'], 'custom-logo' ) ) {
+		return $attr;
+	}
+
+	$meta  = wp_get_attachment_metadata( $attachment->ID );
+	$ratio = ( ! empty( $meta['width'] ) && ! empty( $meta['height'] ) ) ? $meta['width'] / $meta['height'] : 3;
+
+	$header = (int) get_theme_mod( 'bb_logo_height', 70 );
+	$header = $header > 0 ? $header : 70;
+
+	// Phones below 420px draw it at 80% (see .custom-logo in style.css).
+	$desktop = (int) ceil( $header * $ratio );
+	$mobile  = (int) ceil( $header * 0.8 * $ratio );
+
+	$attr['sizes'] = sprintf( '(max-width: 600px) %dpx, %dpx', $mobile, $desktop );
+
+	return $attr;
+}
+add_filter( 'wp_get_attachment_image_attributes', 'bb_logo_image_sizes', 10, 3 );
+
 /* -------------------------------------------------------------------------
  * 1. Theme setup
  * ---------------------------------------------------------------------- */
@@ -141,6 +176,7 @@ function bb_setup() {
 	add_image_size( 'bb-thumb', 360, 240, true );   // grid thumbs
 	add_image_size( 'bb-small', 160, 120, true );   // list thumbnails
 	add_image_size( 'bb-og', 1200, 630, true );    // Facebook / Twitter card
+	add_image_size( 'bb-logo', 400, 0, false );    // the masthead logo on a phone
 
 	add_editor_style( 'assets/css/editor.css' );
 }
