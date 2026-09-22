@@ -606,7 +606,7 @@ msgid "Select which category to show in each homepage block. Leave empty to auto
 msgstr ""
 
 #: inc/admin-settings.php:242
-#: inc/lang.php:1404
+#: inc/lang.php:1465
 msgid "Default: %s"
 msgstr ""
 
@@ -1175,7 +1175,7 @@ msgstr ""
 
 #: inc/english-meta-box.php:30
 #: inc/english-meta-box.php:264
-#: inc/lang.php:1348
+#: inc/lang.php:1409
 msgid "English edition (/en)"
 msgstr ""
 
@@ -1240,79 +1240,79 @@ msgstr ""
 msgid "zip ফোল্ডারের নাম থিমের স্লাগে বদলানো যায়নি।"
 msgstr ""
 
-#: inc/lang.php:1096
+#: inc/lang.php:1157
 msgid "Primary Menu (English edition)"
 msgstr ""
 
-#: inc/lang.php:1185
+#: inc/lang.php:1246
 msgid "Tagline"
 msgstr ""
 
-#: inc/lang.php:1190
+#: inc/lang.php:1251
 msgid "Editor's picks heading"
 msgstr ""
 
-#: inc/lang.php:1195
+#: inc/lang.php:1256
 msgid "Popular posts heading"
 msgstr ""
 
-#: inc/lang.php:1200
+#: inc/lang.php:1261
 msgid "Popular categories heading"
 msgstr ""
 
-#: inc/lang.php:1205
+#: inc/lang.php:1266
 msgid "About heading"
 msgstr ""
 
-#: inc/lang.php:1210
+#: inc/lang.php:1271
 msgid "About text"
 msgstr ""
 
-#: inc/lang.php:1215
+#: inc/lang.php:1276
 msgid "Contact heading"
 msgstr ""
 
-#: inc/lang.php:1220
+#: inc/lang.php:1281
 msgid "Subscribe heading"
 msgstr ""
 
-#: inc/lang.php:1225
+#: inc/lang.php:1286
 msgid "YouTube button text"
 msgstr ""
 
-#: inc/lang.php:1230
+#: inc/lang.php:1291
 msgid "YouTube button text (footer)"
 msgstr ""
 
-#: inc/lang.php:1235
+#: inc/lang.php:1296
 msgid "Site name"
 msgstr ""
 
-#: inc/lang.php:1350
+#: inc/lang.php:1411
 msgid "The wording the site uses under /en. Leave a field empty to use the built-in English text."
 msgstr ""
 
-#: inc/lang.php:1368
+#: inc/lang.php:1429
 msgid "Logo for the English edition"
 msgstr ""
 
-#: inc/lang.php:1369
+#: inc/lang.php:1430
 msgid "Shown instead of the site logo under /en. Leave empty to use the same logo as the Bengali site."
 msgstr ""
 
-#: inc/lang.php:1379
+#: inc/lang.php:1440
 msgid "Site description (search engines)"
 msgstr ""
 
-#: inc/lang.php:1651
+#: inc/lang.php:1754
 msgid "#%d is not an image in the media library."
 msgstr ""
 
-#: inc/lang.php:1700
+#: inc/lang.php:1803
 msgid "ইংরেজিতে পড়ুন"
 msgstr ""
 
-#: inc/lang.php:1701
+#: inc/lang.php:1804
 msgid "Read in Bengali"
 msgstr ""
 
@@ -1401,89 +1401,89 @@ msgstr ""
 msgid "হোম"
 msgstr ""
 
-#: inc/seo-meta-box.php:102
+#: inc/seo-meta-box.php:118
 msgid "বিচিত্র বিজ্ঞান — SEO"
 msgstr ""
 
-#: inc/seo-meta-box.php:170
-#: inc/seo-meta-box.php:177
+#: inc/seo-meta-box.php:186
+#: inc/seo-meta-box.php:193
 msgid "Focus keyphrase"
 msgstr ""
 
-#: inc/seo-meta-box.php:185
+#: inc/seo-meta-box.php:201
 msgid "এখানে টাইপ করুন"
 msgstr ""
 
-#: inc/seo-meta-box.php:188
+#: inc/seo-meta-box.php:204
 msgid "আপনার কনটেন্ট যেই মূল শব্দ বা ফ্রেজ দিয়ে খুঁজে পাওয়া যাবে সেটি লিখুন।"
 msgstr ""
 
-#: inc/seo-meta-box.php:194
+#: inc/seo-meta-box.php:210
 msgid "Keyphrase synonyms"
 msgstr ""
 
-#: inc/seo-meta-box.php:202
+#: inc/seo-meta-box.php:218
 msgid "কমা দিয়ে আলাদা করুন"
 msgstr ""
 
-#: inc/seo-meta-box.php:214
+#: inc/seo-meta-box.php:230
 msgid "Search appearance"
 msgstr ""
 
-#: inc/seo-meta-box.php:222
+#: inc/seo-meta-box.php:238
 msgid "Google preview"
 msgstr ""
 
-#: inc/seo-meta-box.php:225
+#: inc/seo-meta-box.php:241
 msgid "Mobile"
 msgstr ""
 
-#: inc/seo-meta-box.php:228
+#: inc/seo-meta-box.php:244
 msgid "Desktop"
 msgstr ""
 
-#: inc/seo-meta-box.php:233
+#: inc/seo-meta-box.php:249
 msgid "Google সার্চ রেজাল্টে আপনার পোস্ট কেমন দেখাবে তার প্রিভিউ।"
 msgstr ""
 
-#: inc/seo-meta-box.php:280
+#: inc/seo-meta-box.php:296
 msgid "এখানে আপনার মেটা ডেসক্রিপশন দেখাবে..."
 msgstr ""
 
-#: inc/seo-meta-box.php:303
+#: inc/seo-meta-box.php:319
 msgid "SEO title"
 msgstr ""
 
-#: inc/seo-meta-box.php:306
-#: inc/seo-meta-box.php:353
+#: inc/seo-meta-box.php:322
+#: inc/seo-meta-box.php:369
 msgid "অক্ষর"
 msgstr ""
 
-#: inc/seo-meta-box.php:330
+#: inc/seo-meta-box.php:346
 msgid "Slug"
 msgstr ""
 
-#: inc/seo-meta-box.php:338
+#: inc/seo-meta-box.php:354
 msgid "post-url-slug"
 msgstr ""
 
-#: inc/seo-meta-box.php:342
+#: inc/seo-meta-box.php:358
 msgid "পোস্টের পারমালিঙ্ক বা স্লাগ পরিবর্তন করতে এখানে টাইপ করুন।"
 msgstr ""
 
-#: inc/seo-meta-box.php:350
+#: inc/seo-meta-box.php:366
 msgid "Meta description"
 msgstr ""
 
-#: inc/seo-meta-box.php:361
+#: inc/seo-meta-box.php:377
 msgid "সার্চ রেজাল্টে যেই বর্ণনা দেখাতে চান সেটি লিখুন..."
 msgstr ""
 
-#: inc/seo-meta-box.php:377
+#: inc/seo-meta-box.php:393
 msgid "SEO বিশ্লেষণ (SEO Analysis)"
 msgstr ""
 
-#: inc/seo-meta-box.php:743
+#: inc/seo-meta-box.php:759
 msgid "%d টি পোস্ট/পেজে Yoast SEO ডেটা আছে যেগুলো এখনও থিমের SEO সিস্টেমে কপি হয়নি। এক ক্লিকে সব কপি করুন — Yoast-এর আসল ডেটা মুছবে না।"
 msgstr ""
 

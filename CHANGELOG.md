@@ -2,6 +2,17 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.10.3
+
+- The English edition answers with its own SEO fields wherever the site asks
+  for them, not only where the page context is built. The keywords tag was
+  still printing the Bengali focus keyphrase and its synonyms on /en.
+- A tag nobody has translated yet is left off an English article — in the list
+  under it and in what it reports to search engines. Categories are unaffected:
+  they always have an English name. As tags are translated they appear.
+- Writers carry their English name and biography through the REST API now, so
+  a script can fill them in; the same two fields remain on the profile screen.
+
 ## 7.10.2
 
 - The English edition can wear a logo of its own — Appearance → Customize →

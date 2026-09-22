@@ -49,6 +49,22 @@ function bb_seo_yoast_map() {
  * @return string
  */
 function bb_seo_get_field( $post_id, $meta_key ) {
+	/**
+	 * Answer for an SEO field before it is looked up.
+	 *
+	 * The English edition uses it to hand back the post's English title,
+	 * description and keyphrase wherever the site asks for its Bengali ones.
+	 *
+	 * @param string|null $value    Non-null to use instead of the stored field.
+	 * @param int         $post_id  Post.
+	 * @param string      $meta_key Which field.
+	 */
+	$pre = apply_filters( 'bb_seo_pre_field', null, $post_id, $meta_key );
+
+	if ( null !== $pre ) {
+		return $pre;
+	}
+
 	$value = get_post_meta( $post_id, $meta_key, true );
 
 	if ( $value ) {

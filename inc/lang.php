@@ -945,7 +945,40 @@ function bb_en_swap_terms( $terms ) {
 }
 add_filter( 'get_terms', 'bb_en_swap_terms' );
 add_filter( 'wp_get_object_terms', 'bb_en_swap_terms' );
-add_filter( 'get_the_terms', 'bb_en_swap_terms' );
+
+/**
+ * A post's own terms, with the tags nobody has translated yet left out.
+ *
+ * Categories are a fixed handful and always have an English name; tags run
+ * into the thousands and are translated a postful at a time, as each article
+ * is. A Bengali tag under an English article — in the list below it and in the
+ * keywords it reports to search engines — is worse than no tag at all.
+ *
+ * @param array|WP_Error $terms    The post's terms.
+ * @param int            $post_id  Post.
+ * @param string         $taxonomy Which taxonomy.
+ * @return array|WP_Error
+ */
+function bb_en_post_terms( $terms, $post_id = 0, $taxonomy = '' ) {
+	$terms = bb_en_swap_terms( $terms );
+
+	if ( ! bb_is_en() || 'post_tag' !== $taxonomy || ! is_array( $terms ) ) {
+		return $terms;
+	}
+
+	$kept = array();
+
+	foreach ( $terms as $term ) {
+		if ( $term instanceof WP_Term && '' === bb_en_term_name( $term ) ) {
+			continue;
+		}
+
+		$kept[] = $term;
+	}
+
+	return $kept;
+}
+add_filter( 'get_the_terms', 'bb_en_post_terms', 10, 3 );
 
 /**
  * The heading on a category or tag archive.
@@ -1009,6 +1042,34 @@ add_action( 'init', 'bb_en_register_term_meta' );
 function bb_en_term_meta_can_edit() {
 	return current_user_can( 'manage_categories' );
 }
+
+/**
+ * A writer's English name and biography, through the REST API, for the same
+ * reason: so they can be filled in by a script rather than by hand.
+ */
+function bb_en_register_user_meta() {
+	$fields = array(
+		'bb_en_display_name' => 'sanitize_text_field',
+		'bb_en_description'  => 'sanitize_textarea_field',
+	);
+
+	foreach ( $fields as $key => $sanitize ) {
+		register_meta(
+			'user',
+			$key,
+			array(
+				'type'              => 'string',
+				'single'            => true,
+				'show_in_rest'      => true,
+				'sanitize_callback' => $sanitize,
+				'auth_callback'     => function ( $allowed, $meta_key, $object_id ) {
+					return current_user_can( 'edit_user', $object_id );
+				},
+			)
+		);
+	}
+}
+add_action( 'init', 'bb_en_register_user_meta' );
 
 /* -------------------------------------------------------------------------
  * 8b. Writers
@@ -1496,6 +1557,48 @@ add_action( 'wp_head', 'bb_en_hreflang_tags', 4 );
 /* -------------------------------------------------------------------------
  * 13. SEO fields
  * ---------------------------------------------------------------------- */
+
+/**
+ * Wherever the SEO engine asks a post for its title, description or keyphrase,
+ * the English edition answers with the English one — including the places that
+ * read the field straight rather than through the page's context, like the
+ * title tag and the keywords meta.
+ *
+ * @param string|null $value    Set by an earlier filter, or null.
+ * @param int         $post_id  Post.
+ * @param string      $meta_key Which field.
+ * @return string|null
+ */
+function bb_en_seo_field( $value, $post_id, $meta_key ) {
+	if ( ! bb_is_en() || null !== $value ) {
+		return $value;
+	}
+
+	$map = array(
+		'bb_seo_title'          => 'bb_en_seo_title',
+		'bb_seo_description'    => 'bb_en_seo_description',
+		'bb_focus_keyphrase'    => 'bb_en_focus_keyphrase',
+		// There is no English synonyms field: an empty answer keeps the
+		// Bengali synonyms out of the English keywords tag.
+		'bb_keyphrase_synonyms' => '',
+	);
+
+	if ( ! isset( $map[ $meta_key ] ) ) {
+		return $value;
+	}
+
+	if ( '' === $map[ $meta_key ] ) {
+		return '';
+	}
+
+	/*
+	 * '' rather than null even when the English field is empty: an empty
+	 * answer sends the page back to its own English title, where null would
+	 * let the Bengali SEO field through.
+	 */
+	return bb_en_get( $post_id, $map[ $meta_key ] );
+}
+add_filter( 'bb_seo_pre_field', 'bb_en_seo_field', 10, 3 );
 
 /**
  * The English title and description for the page's own <head>.
