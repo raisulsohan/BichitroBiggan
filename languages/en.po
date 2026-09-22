@@ -1164,7 +1164,31 @@ msgstr ""
 msgid "%1$s — %2$s reads"
 msgstr ""
 
+msgid "Unknown"
+msgstr ""
+
 msgid "Statistics"
+msgstr ""
+
+msgid "Not measured yet — it is recorded as a reader leaves an article."
+msgstr ""
+
+msgid "Read to the end"
+msgstr ""
+
+msgid "Three quarters"
+msgstr ""
+
+msgid "Half"
+msgstr ""
+
+msgid "A quarter"
+msgstr ""
+
+msgid "Barely started"
+msgstr ""
+
+msgid "On average a reader gets %s of the way down."
 msgstr ""
 
 msgid "The site\\'s own count — no outside service, no account, no permission that can be withdrawn. Nothing that identifies a reader is stored, and visits by the people who run the site are left out."
@@ -1224,10 +1248,37 @@ msgstr ""
 msgid "Reads by hour of the day across this whole period, on the site\\'s own clock."
 msgstr ""
 
+msgid "How far they read"
+msgstr ""
+
+msgid "Measured as a reader leaves an article — a view says it was opened, this says it was read."
+msgstr ""
+
+msgid "Addresses that led nowhere"
+msgstr ""
+
+msgid "Pages readers asked for and did not get — a broken link somewhere, and the one thing here you can actually fix."
+msgstr ""
+
+msgid "Nobody has hit a missing page. Good."
+msgstr ""
+
+msgid "Came from"
+msgstr ""
+
+msgid "Times"
+msgstr ""
+
 msgid "Where readers come from"
 msgstr ""
 
 msgid "Nothing to show yet."
+msgstr ""
+
+msgid "Where in the world"
+msgstr ""
+
+msgid "From the browser\\'s own time zone, never from an address — nothing is sent anywhere to work this out."
 msgstr ""
 
 msgid "What they read on"
@@ -1236,19 +1287,19 @@ msgstr ""
 msgid "Which edition"
 msgstr ""
 
+msgid "Direct / bookmark"
+msgstr ""
+
 msgid "What they searched for"
 msgstr ""
 
 msgid "Typed into the site\\'s own search box — all time, most asked first."
 msgstr ""
 
-msgid "Nobody has searched yet."
-msgstr ""
-
-msgid "Direct / bookmark"
-msgstr ""
-
 msgid "From this site"
+msgstr ""
+
+msgid "Nobody has searched yet."
 msgstr ""
 
 msgid "Phone"

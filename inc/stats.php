@@ -20,8 +20,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/** Bump when the table's shape changes. 2 added the hour column. */
-define( 'BB_STATS_SCHEMA', 2 );
+/** Bump when the table's shape changes. 2 added the hour, 3 the country. */
+define( 'BB_STATS_SCHEMA', 3 );
 
 /** How many minutes count as "right now". */
 define( 'BB_STATS_PULSE_MINUTES', 30 );
@@ -31,6 +31,13 @@ function bb_stats_table() {
 	global $wpdb;
 
 	return $wpdb->prefix . 'bb_stats';
+}
+
+/** @return string Where how far people read is kept. */
+function bb_stats_depth_table() {
+	global $wpdb;
+
+	return $wpdb->prefix . 'bb_depth';
 }
 
 /**
@@ -55,11 +62,24 @@ function bb_stats_install() {
 			lang char(2) NOT NULL DEFAULT 'bn',
 			device varchar(8) NOT NULL DEFAULT 'desktop',
 			source varchar(48) NOT NULL DEFAULT 'direct',
+			country char(2) NOT NULL DEFAULT '',
 			hits int unsigned NOT NULL DEFAULT 0,
 			visits int unsigned NOT NULL DEFAULT 0,
-			PRIMARY KEY  (day,hour,post_id,lang,device,source),
+			PRIMARY KEY  (day,hour,post_id,lang,device,source,country),
 			KEY day (day),
 			KEY post_id (post_id)
+		) {$collate};"
+	);
+
+	// How far down an article people got, in quarters.
+	dbDelta(
+		'CREATE TABLE ' . bb_stats_depth_table() . " (
+			day date NOT NULL,
+			post_id bigint(20) unsigned NOT NULL DEFAULT 0,
+			bucket tinyint unsigned NOT NULL DEFAULT 0,
+			n int unsigned NOT NULL DEFAULT 0,
+			PRIMARY KEY  (day,post_id,bucket),
+			KEY day (day)
 		) {$collate};"
 	);
 
@@ -76,10 +96,14 @@ function bb_stats_install() {
 		$wpdb->query( "ALTER TABLE {$table} ADD COLUMN hour tinyint unsigned NOT NULL DEFAULT 0 AFTER day" );
 	}
 
+	if ( is_array( $columns ) && ! in_array( 'country', $columns, true ) ) {
+		$wpdb->query( "ALTER TABLE {$table} ADD COLUMN country char(2) NOT NULL DEFAULT '' AFTER source" );
+	}
+
 	$key_columns = $wpdb->get_col( "SHOW KEYS FROM {$table} WHERE Key_name = 'PRIMARY'", 4 );
 
-	if ( is_array( $key_columns ) && ! in_array( 'hour', $key_columns, true ) ) {
-		$wpdb->query( "ALTER TABLE {$table} DROP PRIMARY KEY, ADD PRIMARY KEY (day,hour,post_id,lang,device,source)" );
+	if ( is_array( $key_columns ) && ( ! in_array( 'hour', $key_columns, true ) || ! in_array( 'country', $key_columns, true ) ) ) {
+		$wpdb->query( "ALTER TABLE {$table} DROP PRIMARY KEY, ADD PRIMARY KEY (day,hour,post_id,lang,device,source,country)" );
 	}
 	// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
@@ -201,15 +225,138 @@ function bb_stats_is_bot() {
 }
 
 /**
+ * Which country the reader is in — without ever knowing their address.
+ *
+ * Three ways, in order of how much they can be trusted:
+ *
+ * 1. The host's own header, when there is one. A CDN in front of the site has
+ *    already resolved the country; it is the most accurate answer available
+ *    and costs nothing.
+ * 2. The browser's time zone, which the page sends. "Asia/Dhaka" is Bangladesh
+ *    and nothing else. This is how the country is known for almost every
+ *    reader: no address, no lookup service, no third party told anything.
+ * 3. The language the browser asks for — bn-BD says Bangladesh.
+ *
+ * The answer is two letters, stored as one more column on a counted row. It
+ * can never be narrowed to a person.
+ *
+ * @param string $timezone What the browser reported, e.g. "Asia/Dhaka".
+ * @return string Two-letter code, or '' when nothing said.
+ */
+function bb_stats_country( $timezone = '' ) {
+	foreach ( array( 'HTTP_CF_IPCOUNTRY', 'HTTP_X_COUNTRY_CODE', 'HTTP_X_GEO_COUNTRY', 'GEOIP_COUNTRY_CODE' ) as $header ) {
+		if ( empty( $_SERVER[ $header ] ) ) {
+			continue;
+		}
+
+		$code = strtoupper( substr( sanitize_text_field( wp_unslash( $_SERVER[ $header ] ) ), 0, 2 ) );
+
+		if ( preg_match( '/^[A-Z]{2}$/', $code ) && 'XX' !== $code && 'T1' !== $code ) {
+			return $code;
+		}
+	}
+
+	$timezone = trim( (string) $timezone );
+
+	if ( $timezone ) {
+		$map  = bb_stats_timezone_countries();
+		$code = isset( $map[ $timezone ] ) ? $map[ $timezone ] : '';
+
+		if ( $code ) {
+			return $code;
+		}
+	}
+
+	// Last resort: bn-BD, en-GB, hi-IN — the region half of the first language.
+	$accept = isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ) : '';
+
+	if ( preg_match( '/^[a-z]{2,3}-([A-Za-z]{2})/', $accept, $match ) ) {
+		return strtoupper( $match[1] );
+	}
+
+	return '';
+}
+
+/**
+ * Time zone => country. Every zone the site's readers plausibly sit in, which
+ * is most of the inhabited ones; anything unlisted simply counts as unknown.
+ *
+ * @return array<string, string>
+ */
+function bb_stats_timezone_countries() {
+	static $map = null;
+
+	if ( null !== $map ) {
+		return $map;
+	}
+
+	$map = array(
+		'Asia/Dhaka' => 'BD', 'Asia/Kolkata' => 'IN', 'Asia/Calcutta' => 'IN', 'Asia/Karachi' => 'PK',
+		'Asia/Kathmandu' => 'NP', 'Asia/Katmandu' => 'NP', 'Asia/Colombo' => 'LK', 'Asia/Thimphu' => 'BT',
+		'Asia/Kabul' => 'AF', 'Asia/Yangon' => 'MM', 'Asia/Rangoon' => 'MM', 'Asia/Bangkok' => 'TH',
+		'Asia/Singapore' => 'SG', 'Asia/Kuala_Lumpur' => 'MY', 'Asia/Jakarta' => 'ID', 'Asia/Makassar' => 'ID',
+		'Asia/Manila' => 'PH', 'Asia/Ho_Chi_Minh' => 'VN', 'Asia/Saigon' => 'VN', 'Asia/Phnom_Penh' => 'KH',
+		'Asia/Vientiane' => 'LA', 'Asia/Hong_Kong' => 'HK', 'Asia/Macau' => 'MO', 'Asia/Taipei' => 'TW',
+		'Asia/Shanghai' => 'CN', 'Asia/Urumqi' => 'CN', 'Asia/Chongqing' => 'CN', 'Asia/Tokyo' => 'JP',
+		'Asia/Seoul' => 'KR', 'Asia/Pyongyang' => 'KP', 'Asia/Ulaanbaatar' => 'MN',
+		'Asia/Dubai' => 'AE', 'Asia/Muscat' => 'OM', 'Asia/Qatar' => 'QA', 'Asia/Bahrain' => 'BH',
+		'Asia/Kuwait' => 'KW', 'Asia/Riyadh' => 'SA', 'Asia/Aden' => 'YE', 'Asia/Baghdad' => 'IQ',
+		'Asia/Tehran' => 'IR', 'Asia/Jerusalem' => 'IL', 'Asia/Tel_Aviv' => 'IL', 'Asia/Gaza' => 'PS',
+		'Asia/Hebron' => 'PS', 'Asia/Amman' => 'JO', 'Asia/Beirut' => 'LB', 'Asia/Damascus' => 'SY',
+		'Asia/Nicosia' => 'CY', 'Asia/Istanbul' => 'TR', 'Europe/Istanbul' => 'TR', 'Asia/Baku' => 'AZ',
+		'Asia/Tbilisi' => 'GE', 'Asia/Yerevan' => 'AM', 'Asia/Tashkent' => 'UZ', 'Asia/Almaty' => 'KZ',
+		'Asia/Bishkek' => 'KG', 'Asia/Dushanbe' => 'TJ', 'Asia/Ashgabat' => 'TM',
+		'Europe/London' => 'GB', 'Europe/Dublin' => 'IE', 'Europe/Lisbon' => 'PT', 'Europe/Madrid' => 'ES',
+		'Europe/Paris' => 'FR', 'Europe/Brussels' => 'BE', 'Europe/Amsterdam' => 'NL', 'Europe/Luxembourg' => 'LU',
+		'Europe/Berlin' => 'DE', 'Europe/Zurich' => 'CH', 'Europe/Vienna' => 'AT', 'Europe/Rome' => 'IT',
+		'Europe/Malta' => 'MT', 'Europe/Prague' => 'CZ', 'Europe/Bratislava' => 'SK', 'Europe/Warsaw' => 'PL',
+		'Europe/Budapest' => 'HU', 'Europe/Ljubljana' => 'SI', 'Europe/Zagreb' => 'HR', 'Europe/Belgrade' => 'RS',
+		'Europe/Sarajevo' => 'BA', 'Europe/Skopje' => 'MK', 'Europe/Tirane' => 'AL', 'Europe/Athens' => 'GR',
+		'Europe/Sofia' => 'BG', 'Europe/Bucharest' => 'RO', 'Europe/Chisinau' => 'MD', 'Europe/Kiev' => 'UA',
+		'Europe/Kyiv' => 'UA', 'Europe/Minsk' => 'BY', 'Europe/Moscow' => 'RU', 'Asia/Yekaterinburg' => 'RU',
+		'Asia/Novosibirsk' => 'RU', 'Asia/Vladivostok' => 'RU', 'Europe/Riga' => 'LV', 'Europe/Tallinn' => 'EE',
+		'Europe/Vilnius' => 'LT', 'Europe/Helsinki' => 'FI', 'Europe/Stockholm' => 'SE', 'Europe/Oslo' => 'NO',
+		'Europe/Copenhagen' => 'DK', 'Atlantic/Reykjavik' => 'IS',
+		'America/New_York' => 'US', 'America/Detroit' => 'US', 'America/Chicago' => 'US', 'America/Denver' => 'US',
+		'America/Phoenix' => 'US', 'America/Los_Angeles' => 'US', 'America/Anchorage' => 'US', 'Pacific/Honolulu' => 'US',
+		'America/Toronto' => 'CA', 'America/Vancouver' => 'CA', 'America/Edmonton' => 'CA', 'America/Winnipeg' => 'CA',
+		'America/Halifax' => 'CA', 'America/St_Johns' => 'CA', 'America/Mexico_City' => 'MX', 'America/Tijuana' => 'MX',
+		'America/Guatemala' => 'GT', 'America/Havana' => 'CU', 'America/Jamaica' => 'JM', 'America/Panama' => 'PA',
+		'America/Bogota' => 'CO', 'America/Lima' => 'PE', 'America/Caracas' => 'VE', 'America/Santiago' => 'CL',
+		'America/Argentina/Buenos_Aires' => 'AR', 'America/Sao_Paulo' => 'BR', 'America/Bahia' => 'BR',
+		'America/Manaus' => 'BR', 'America/Montevideo' => 'UY', 'America/Asuncion' => 'PY', 'America/La_Paz' => 'BO',
+		'Africa/Cairo' => 'EG', 'Africa/Tripoli' => 'LY', 'Africa/Tunis' => 'TN', 'Africa/Algiers' => 'DZ',
+		'Africa/Casablanca' => 'MA', 'Africa/Khartoum' => 'SD', 'Africa/Addis_Ababa' => 'ET', 'Africa/Nairobi' => 'KE',
+		'Africa/Kampala' => 'UG', 'Africa/Dar_es_Salaam' => 'TZ', 'Africa/Lagos' => 'NG', 'Africa/Accra' => 'GH',
+		'Africa/Abidjan' => 'CI', 'Africa/Dakar' => 'SN', 'Africa/Johannesburg' => 'ZA', 'Africa/Harare' => 'ZW',
+		'Africa/Lusaka' => 'ZM', 'Africa/Maputo' => 'MZ', 'Africa/Kinshasa' => 'CD', 'Africa/Luanda' => 'AO',
+		'Australia/Sydney' => 'AU', 'Australia/Melbourne' => 'AU', 'Australia/Brisbane' => 'AU',
+		'Australia/Perth' => 'AU', 'Australia/Adelaide' => 'AU', 'Australia/Darwin' => 'AU', 'Australia/Hobart' => 'AU',
+		'Pacific/Auckland' => 'NZ', 'Pacific/Fiji' => 'FJ', 'Pacific/Port_Moresby' => 'PG', 'Indian/Maldives' => 'MV',
+		'Indian/Mauritius' => 'MU',
+	);
+
+	/**
+	 * Filter the time-zone map, to add a zone the site's readers turn out to use.
+	 *
+	 * @param array<string, string> $map Zone => two-letter country code.
+	 */
+	$map = (array) apply_filters( 'bb_stats_timezone_countries', $map );
+
+	return $map;
+}
+
+/**
  * Add one read to this hour's row.
  *
  * @param int    $post_id  The article, or 0 for a page that is not one.
  * @param string $lang     'bn' or 'en'.
  * @param string $referrer Where the reader came from.
  * @param bool   $first    Whether this is the first page of their visit.
+ * @param string $timezone The browser's time zone, for the country.
  * @return void
  */
-function bb_stats_record( $post_id, $lang = 'bn', $referrer = '', $first = false ) {
+function bb_stats_record( $post_id, $lang = 'bn', $referrer = '', $first = false, $timezone = '' ) {
 	global $wpdb;
 
 	if ( bb_stats_is_bot() ) {
@@ -223,18 +370,19 @@ function bb_stats_record( $post_id, $lang = 'bn', $referrer = '', $first = false
 
 	$table = bb_stats_table();
 
-	$day    = wp_date( 'Y-m-d' );
-	$hour   = (int) wp_date( 'G' );
-	$lang   = ( 'en' === $lang ) ? 'en' : 'bn';
-	$device = bb_stats_device();
-	$source = bb_stats_source( $referrer );
-	$visit  = $first ? 1 : 0;
+	$day     = wp_date( 'Y-m-d' );
+	$hour    = (int) wp_date( 'G' );
+	$lang    = ( 'en' === $lang ) ? 'en' : 'bn';
+	$device  = bb_stats_device();
+	$source  = bb_stats_source( $referrer );
+	$country = bb_stats_country( $timezone );
+	$visit   = $first ? 1 : 0;
 
 	// phpcs:disable WordPress.DB.DirectDatabaseQuery
 	$wpdb->query(
 		$wpdb->prepare(
-			"INSERT INTO {$table} (day, hour, post_id, lang, device, source, hits, visits)
-			 VALUES (%s, %d, %d, %s, %s, %s, 1, %d)
+			"INSERT INTO {$table} (day, hour, post_id, lang, device, source, country, hits, visits)
+			 VALUES (%s, %d, %d, %s, %s, %s, %s, 1, %d)
 			 ON DUPLICATE KEY UPDATE hits = hits + 1, visits = visits + %d",
 			$day,
 			$hour,
@@ -242,6 +390,7 @@ function bb_stats_record( $post_id, $lang = 'bn', $referrer = '', $first = false
 			$lang,
 			$device,
 			$source,
+			$country,
 			$visit,
 			$visit
 		)
@@ -389,6 +538,152 @@ function bb_stats_top_searches( $limit = 12 ) {
 	}
 
 	return $rows;
+}
+
+/* -------------------------------------------------------------------------
+ * How far down they got
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Record how much of an article a reader reached, in quarters.
+ *
+ * Views say a piece was opened; this says whether it was read. The number is
+ * rounded to 0, 25, 50, 75 or 100 before it is stored — precise enough to see
+ * where a long piece loses people, too coarse to be about anybody.
+ *
+ * @param int $post_id The article.
+ * @param int $percent How far down, 0–100.
+ * @return void
+ */
+function bb_stats_record_depth( $post_id, $percent ) {
+	global $wpdb;
+
+	$post_id = (int) $post_id;
+
+	if ( ! $post_id || 'post' !== get_post_type( $post_id ) ) {
+		return;
+	}
+
+	if ( bb_stats_is_bot() || ( is_user_logged_in() && current_user_can( 'edit_posts' ) ) ) {
+		return;
+	}
+
+	$percent = max( 0, min( 100, (int) $percent ) );
+
+	if ( $percent >= 90 ) {
+		$bucket = 100;
+	} elseif ( $percent >= 70 ) {
+		$bucket = 75;
+	} elseif ( $percent >= 45 ) {
+		$bucket = 50;
+	} elseif ( $percent >= 20 ) {
+		$bucket = 25;
+	} else {
+		$bucket = 0;
+	}
+
+	$table = bb_stats_depth_table();
+
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery
+	$wpdb->query(
+		$wpdb->prepare(
+			"INSERT INTO {$table} (day, post_id, bucket, n) VALUES (%s, %d, %d, 1)
+			 ON DUPLICATE KEY UPDATE n = n + 1",
+			wp_date( 'Y-m-d' ),
+			$post_id,
+			$bucket
+		)
+	);
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery
+}
+
+/* -------------------------------------------------------------------------
+ * Addresses that lead nowhere
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Remember a 404, and where the reader was sent from.
+ *
+ * A broken link is the one thing on this screen that can actually be fixed, so
+ * the address matters more than the count. Kept as a small list, newest and
+ * most asked first.
+ */
+function bb_stats_record_not_found() {
+	if ( ! is_404() || is_admin() ) {
+		return;
+	}
+
+	if ( bb_stats_is_bot() || ( is_user_logged_in() && current_user_can( 'edit_posts' ) ) ) {
+		return;
+	}
+
+	$request = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	$path    = (string) wp_parse_url( $request, PHP_URL_PATH );
+	$path    = esc_url_raw( $path );
+
+	if ( '' === $path || strlen( $path ) > 190 ) {
+		return;
+	}
+
+	$referrer = isset( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
+	$rows = get_option( 'bb_stats_404', array() );
+
+	if ( ! is_array( $rows ) ) {
+		$rows = array();
+	}
+
+	if ( ! isset( $rows[ $path ] ) || ! is_array( $rows[ $path ] ) ) {
+		$rows[ $path ] = array(
+			'n'    => 0,
+			'from' => '',
+		);
+	}
+
+	$rows[ $path ]['n']    = (int) $rows[ $path ]['n'] + 1;
+	$rows[ $path ]['d']    = wp_date( 'Y-m-d' );
+	$rows[ $path ]['from'] = $referrer ? bb_stats_source( $referrer ) : $rows[ $path ]['from'];
+
+	if ( count( $rows ) > 200 ) {
+		uasort( $rows, function ( $a, $b ) {
+			return (int) $b['n'] <=> (int) $a['n'];
+		} );
+		$rows = array_slice( $rows, 0, 200, true );
+	}
+
+	update_option( 'bb_stats_404', $rows, false );
+}
+add_action( 'template_redirect', 'bb_stats_record_not_found', 30 );
+
+/**
+ * The addresses readers asked for and did not get, most asked first.
+ *
+ * @param int $limit How many.
+ * @return array<int, array{path:string,hits:int,from:string,last:string}>
+ */
+function bb_stats_not_found( $limit = 10 ) {
+	$rows = get_option( 'bb_stats_404', array() );
+
+	if ( ! is_array( $rows ) || ! $rows ) {
+		return array();
+	}
+
+	uasort( $rows, function ( $a, $b ) {
+		return (int) $b['n'] <=> (int) $a['n'];
+	} );
+
+	$out = array();
+
+	foreach ( array_slice( $rows, 0, max( 1, (int) $limit ), true ) as $path => $row ) {
+		$out[] = array(
+			'path' => (string) $path,
+			'hits' => (int) $row['n'],
+			'from' => isset( $row['from'] ) ? (string) $row['from'] : '',
+			'last' => isset( $row['d'] ) ? (string) $row['d'] : '',
+		);
+	}
+
+	return $out;
 }
 
 /**
@@ -620,7 +915,7 @@ function bb_stats_top_posts( $key, $limit = 15 ) {
 function bb_stats_grouped( $column, $key, $limit = 12 ) {
 	global $wpdb;
 
-	$allowed = array( 'source', 'device', 'lang' );
+	$allowed = array( 'source', 'device', 'lang', 'country' );
 
 	if ( ! in_array( $column, $allowed, true ) ) {
 		return array();
@@ -681,6 +976,66 @@ function bb_stats_by_hour( $key ) {
 	}
 
 	return $hours;
+}
+
+/**
+ * How far readers got, across a window.
+ *
+ * @param string $key Window key.
+ * @return array{average:int,buckets:array<int,int>,total:int}
+ */
+function bb_stats_depth_summary( $key ) {
+	global $wpdb;
+
+	list( $where, $params ) = bb_stats_where( $key );
+
+	// The depth table keeps no hour, so an hourly window falls back to its days.
+	$where = str_replace( "CONCAT(day, ' ', LPAD(hour, 2, '0'))", 'day', $where );
+	$params = array_map(
+		function ( $value ) {
+			return substr( (string) $value, 0, 10 );
+		},
+		$params
+	);
+
+	$table = bb_stats_depth_table();
+
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	$rows = $wpdb->get_results(
+		$wpdb->prepare( "SELECT bucket, SUM(n) AS n FROM {$table} WHERE {$where} GROUP BY bucket", $params ),
+		ARRAY_A
+	);
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+	$buckets = array(
+		0   => 0,
+		25  => 0,
+		50  => 0,
+		75  => 0,
+		100 => 0,
+	);
+
+	$total  = 0;
+	$weight = 0;
+
+	foreach ( (array) $rows as $row ) {
+		$bucket = (int) $row['bucket'];
+		$n      = (int) $row['n'];
+
+		if ( ! isset( $buckets[ $bucket ] ) ) {
+			continue;
+		}
+
+		$buckets[ $bucket ] += $n;
+		$total              += $n;
+		$weight             += $bucket * $n;
+	}
+
+	return array(
+		'average' => $total > 0 ? (int) round( $weight / $total ) : 0,
+		'buckets' => $buckets,
+		'total'   => $total,
+	);
 }
 
 /** The day the table first heard anything, or '' when it is still empty. */

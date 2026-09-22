@@ -2,6 +2,20 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.15.0
+
+- **Where in the world** — which countries readers are in, without ever seeing
+  an address. The page sends the browser's own time zone; Asia/Dhaka is
+  Bangladesh and nothing else. No lookup service is called, nothing about the
+  reader leaves the site, and what is stored is two letters on a counted row.
+  A country header from a CDN is preferred when the host sends one.
+- **How far they read** — a view says an article was opened; this says whether
+  it was read. The furthest point reached is measured as the reader leaves and
+  rounded to a quarter, with the average across the period above it.
+- **Addresses that led nowhere** — every 404 a reader hit, most asked first,
+  with where the bad link was on. The one thing on the screen that can actually
+  be fixed.
+
 ## 7.14.0
 
 - Statistics opens on **Last 24 hours**, and the chart under it is hour by

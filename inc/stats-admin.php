@@ -253,6 +253,97 @@ function bb_stats_hour_pattern( array $hours ) {
 }
 
 /**
+ * A country's name, and its flag if the browser can draw one.
+ *
+ * The flag is the two letters of the code shifted into the regional-indicator
+ * block — no image, no font, nothing to load.
+ *
+ * @param string $code Two-letter country code.
+ * @return string
+ */
+function bb_stats_country_label( $code ) {
+	$code = strtoupper( trim( (string) $code ) );
+
+	if ( ! preg_match( '/^[A-Z]{2}$/', $code ) ) {
+		return __( 'Unknown', 'bichitro-biggan' );
+	}
+
+	$names = array(
+		'BD' => 'Bangladesh', 'IN' => 'India', 'PK' => 'Pakistan', 'NP' => 'Nepal', 'LK' => 'Sri Lanka',
+		'BT' => 'Bhutan', 'MV' => 'Maldives', 'AF' => 'Afghanistan', 'MM' => 'Myanmar', 'TH' => 'Thailand',
+		'SG' => 'Singapore', 'MY' => 'Malaysia', 'ID' => 'Indonesia', 'PH' => 'Philippines', 'VN' => 'Vietnam',
+		'CN' => 'China', 'HK' => 'Hong Kong', 'TW' => 'Taiwan', 'JP' => 'Japan', 'KR' => 'South Korea',
+		'AE' => 'United Arab Emirates', 'SA' => 'Saudi Arabia', 'QA' => 'Qatar', 'KW' => 'Kuwait',
+		'OM' => 'Oman', 'BH' => 'Bahrain', 'IQ' => 'Iraq', 'IR' => 'Iran', 'IL' => 'Israel', 'TR' => 'Türkiye',
+		'JO' => 'Jordan', 'LB' => 'Lebanon', 'GB' => 'United Kingdom', 'IE' => 'Ireland', 'FR' => 'France',
+		'DE' => 'Germany', 'IT' => 'Italy', 'ES' => 'Spain', 'PT' => 'Portugal', 'NL' => 'Netherlands',
+		'BE' => 'Belgium', 'CH' => 'Switzerland', 'AT' => 'Austria', 'SE' => 'Sweden', 'NO' => 'Norway',
+		'DK' => 'Denmark', 'FI' => 'Finland', 'PL' => 'Poland', 'CZ' => 'Czechia', 'GR' => 'Greece',
+		'RO' => 'Romania', 'RU' => 'Russia', 'UA' => 'Ukraine', 'US' => 'United States', 'CA' => 'Canada',
+		'MX' => 'Mexico', 'BR' => 'Brazil', 'AR' => 'Argentina', 'CL' => 'Chile', 'CO' => 'Colombia',
+		'EG' => 'Egypt', 'MA' => 'Morocco', 'DZ' => 'Algeria', 'NG' => 'Nigeria', 'KE' => 'Kenya',
+		'ZA' => 'South Africa', 'ET' => 'Ethiopia', 'AU' => 'Australia', 'NZ' => 'New Zealand',
+	);
+
+	$name = isset( $names[ $code ] ) ? $names[ $code ] : $code;
+
+	if ( ! function_exists( 'mb_chr' ) ) {
+		return $name;
+	}
+
+	$flag = '';
+
+	foreach ( str_split( $code ) as $letter ) {
+		$flag .= mb_chr( 0x1F1E6 + ( ord( $letter ) - 65 ), 'UTF-8' );
+	}
+
+	return $flag . ' ' . $name;
+}
+
+/**
+ * How far down articles were read, as a row of quarters.
+ *
+ * @param array $depth From bb_stats_depth_summary().
+ * @return void
+ */
+function bb_stats_depth_bars( array $depth ) {
+	if ( ! $depth['total'] ) {
+		?>
+		<p class="bb-stats__empty"><?php esc_html_e( 'Not measured yet — it is recorded as a reader leaves an article.', 'bichitro-biggan' ); ?></p>
+		<?php
+		return;
+	}
+
+	$labels = array(
+		100 => __( 'Read to the end', 'bichitro-biggan' ),
+		75  => __( 'Three quarters', 'bichitro-biggan' ),
+		50  => __( 'Half', 'bichitro-biggan' ),
+		25  => __( 'A quarter', 'bichitro-biggan' ),
+		0   => __( 'Barely started', 'bichitro-biggan' ),
+	);
+	?>
+	<p class="bb-stats-depth__average">
+		<?php
+		printf(
+			/* translators: %s: average percentage of an article that gets read. */
+			esc_html__( 'On average a reader gets %s of the way down.', 'bichitro-biggan' ),
+			'<strong>' . esc_html( bb_stats_number( $depth['average'] ) ) . '%</strong>'
+		);
+		?>
+	</p>
+	<ul class="bb-stats-bars">
+		<?php
+		$max = max( $depth['buckets'] );
+
+		foreach ( $labels as $bucket => $label ) {
+			bb_stats_bar( $label, $depth['buckets'][ $bucket ], $max, $depth['total'] );
+		}
+		?>
+	</ul>
+	<?php
+}
+
+/**
  * One bar in a breakdown list.
  *
  * @param string $label Row label.
@@ -296,10 +387,13 @@ function bb_stats_page() {
 	$sources  = bb_stats_grouped( 'source', $key );
 	$devices  = bb_stats_grouped( 'device', $key );
 	$langs    = bb_stats_grouped( 'lang', $key );
-	$hours    = bb_stats_by_hour( $key );
-	$searches = bb_stats_top_searches( 12 );
-	$first    = bb_stats_first_day();
-	$now      = bb_stats_pulse( 30 );
+	$hours     = bb_stats_by_hour( $key );
+	$countries = bb_stats_grouped( 'country', $key, 12 );
+	$depth     = bb_stats_depth_summary( $key );
+	$searches  = bb_stats_top_searches( 12 );
+	$missing   = bb_stats_not_found( 10 );
+	$first     = bb_stats_first_day();
+	$now       = bb_stats_pulse( 30 );
 	?>
 	<div class="wrap bb-stats">
 		<h1><?php esc_html_e( 'Statistics', 'bichitro-biggan' ); ?></h1>
@@ -410,6 +504,35 @@ function bb_stats_page() {
 				<h2><?php esc_html_e( 'When they read', 'bichitro-biggan' ); ?></h2>
 				<p class="bb-stats__hint"><?php esc_html_e( 'Reads by hour of the day across this whole period, on the site\'s own clock.', 'bichitro-biggan' ); ?></p>
 				<?php bb_stats_hour_pattern( $hours ); ?>
+
+				<h2><?php esc_html_e( 'How far they read', 'bichitro-biggan' ); ?></h2>
+				<p class="bb-stats__hint"><?php esc_html_e( 'Measured as a reader leaves an article — a view says it was opened, this says it was read.', 'bichitro-biggan' ); ?></p>
+				<?php bb_stats_depth_bars( $depth ); ?>
+
+				<h2><?php esc_html_e( 'Addresses that led nowhere', 'bichitro-biggan' ); ?></h2>
+				<p class="bb-stats__hint"><?php esc_html_e( 'Pages readers asked for and did not get — a broken link somewhere, and the one thing here you can actually fix.', 'bichitro-biggan' ); ?></p>
+				<?php if ( empty( $missing ) ) : ?>
+					<p class="bb-stats__empty"><?php esc_html_e( 'Nobody has hit a missing page. Good.', 'bichitro-biggan' ); ?></p>
+				<?php else : ?>
+					<table class="widefat striped bb-stats-table">
+						<thead>
+							<tr>
+								<th><?php esc_html_e( 'Address', 'bichitro-biggan' ); ?></th>
+								<th><?php esc_html_e( 'Came from', 'bichitro-biggan' ); ?></th>
+								<th class="bb-stats-table__num"><?php esc_html_e( 'Times', 'bichitro-biggan' ); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach ( $missing as $row ) : ?>
+								<tr>
+									<td><code><?php echo esc_html( $row['path'] ); ?></code></td>
+									<td><?php echo esc_html( $row['from'] ? bb_stats_source_label( $row['from'] ) : '—' ); ?></td>
+									<td class="bb-stats-table__num"><?php echo esc_html( bb_stats_number( $row['hits'] ) ); ?></td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				<?php endif; ?>
 			</div>
 
 			<div class="bb-stats-panel">
@@ -422,6 +545,21 @@ function bb_stats_page() {
 						$max = (int) $sources[0]['hits'];
 						foreach ( $sources as $row ) {
 							bb_stats_bar( bb_stats_source_label( $row['label'] ), $row['hits'], $max, $totals['hits'] );
+						}
+						?>
+					</ul>
+				<?php endif; ?>
+
+				<h2><?php esc_html_e( 'Where in the world', 'bichitro-biggan' ); ?></h2>
+				<p class="bb-stats__hint"><?php esc_html_e( 'From the browser\'s own time zone, never from an address — nothing is sent anywhere to work this out.', 'bichitro-biggan' ); ?></p>
+				<?php if ( empty( $countries ) ) : ?>
+					<p class="bb-stats__empty"><?php esc_html_e( 'Nothing to show yet.', 'bichitro-biggan' ); ?></p>
+				<?php else : ?>
+					<ul class="bb-stats-bars">
+						<?php
+						$max = (int) $countries[0]['hits'];
+						foreach ( $countries as $row ) {
+							bb_stats_bar( bb_stats_country_label( $row['label'] ), $row['hits'], $max, $totals['hits'] );
 						}
 						?>
 					</ul>
@@ -511,6 +649,8 @@ function bb_stats_page() {
 		.bb-stats-bar__value { text-align: right; font-variant-numeric: tabular-nums; }
 		.bb-stats-bar__value small { color: #646970; margin-left: 4px; }
 		.bb-stats__empty { color: #646970; }
+		.bb-stats-depth__average { margin: 0 0 10px; color: #1d2327; }
+		.bb-stats-table code { font-size: 12px; }
 	</style>
 	<?php
 }

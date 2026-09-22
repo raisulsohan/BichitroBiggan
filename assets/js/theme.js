@@ -2045,6 +2045,12 @@
 			} catch (e) {}
 			payload.append('first', first);
 
+			/* The browser's own time zone, which is how the site knows which
+			   country a reader is in without ever seeing their address. */
+			try {
+				payload.append('tz', Intl.DateTimeFormat().resolvedOptions().timeZone || '');
+			} catch (e) {}
+
 			if (navigator.sendBeacon) {
 				navigator.sendBeacon(D.viewUrl, payload);
 			} else {
@@ -2078,6 +2084,87 @@
 			var modalBody = document.querySelector('#bb-modal .bb-modal__body');
 			count(modalBody || document);
 		});
+
+		/* ---------------------------------------------------------------
+		 * How far down the article they got
+		 *
+		 * A view says the piece was opened; this says whether it was read.
+		 * The furthest point reached is kept while they read and sent once,
+		 * as they leave — nothing is sent while they are still reading.
+		 * ------------------------------------------------------------ */
+		if (!D.depthUrl) return;
+
+		var depth = { id: 0, max: 0, sent: {} };
+
+		function currentArticle() {
+			var dialog = document.querySelector('#bb-modal:not([hidden]) .bb-modal__dialog');
+			var scope = dialog || document;
+			var article = scope.querySelector('.bb-single');
+			if (!article) return null;
+
+			var match = /post-(\d+)/.exec(article.id || '');
+			if (!match) return null;
+
+			return { id: match[1], article: article, scroller: dialog };
+		}
+
+		function measure() {
+			var current = currentArticle();
+			if (!current) return;
+
+			if (current.id !== depth.id) {
+				sendDepth();
+				depth.id = current.id;
+				depth.max = 0;
+			}
+
+			var box = current.article.getBoundingClientRect();
+			var height = current.scroller ? current.scroller.clientHeight : window.innerHeight;
+			var seen = height - box.top;
+			var percent = box.height > 0 ? Math.round((seen / box.height) * 100) : 0;
+
+			depth.max = Math.max(depth.max, Math.min(100, Math.max(0, percent)));
+		}
+
+		function sendDepth() {
+			if (!depth.id || depth.max <= 0 || depth.sent[depth.id]) return;
+			depth.sent[depth.id] = true;
+
+			var payload = new FormData();
+			payload.append('id', depth.id);
+			payload.append('depth', depth.max);
+
+			if (navigator.sendBeacon) {
+				navigator.sendBeacon(D.depthUrl, payload);
+			} else {
+				fetch(D.depthUrl, { method: 'POST', body: payload, keepalive: true }).catch(function () {});
+			}
+		}
+
+		var measuring = false;
+
+		function onScroll() {
+			if (measuring) return;
+			measuring = true;
+			window.requestAnimationFrame(function () {
+				measure();
+				measuring = false;
+			});
+		}
+
+		window.addEventListener('scroll', onScroll, { passive: true });
+		document.addEventListener('scroll', onScroll, { passive: true, capture: true });
+		window.addEventListener('bb_article_shown', function () {
+			depth.max = 0;
+			measure();
+		});
+
+		window.addEventListener('pagehide', sendDepth);
+		document.addEventListener('visibilitychange', function () {
+			if (document.visibilityState === 'hidden') sendDepth();
+		});
+
+		measure();
 	}
 
 })();

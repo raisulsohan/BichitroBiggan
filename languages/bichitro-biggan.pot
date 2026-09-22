@@ -217,20 +217,20 @@ msgstr ""
 msgid "এখনো কোনো লেখা প্রকাশ করা হয়নি।"
 msgstr ""
 
-#: functions.php:1181
+#: functions.php:1182
 msgid "এই সময়ের কোনো লেখা পাওয়া যায়নি"
 msgstr ""
 
-#: functions.php:1602
+#: functions.php:1603
 msgid "পেজ নেভিগেশন"
 msgstr ""
 
-#: functions.php:1610
+#: functions.php:1611
 msgid "পৃষ্ঠা %1$s / %2$s"
 msgstr ""
 
-#: functions.php:1677
-#: functions.php:1699
+#: functions.php:1678
+#: functions.php:1700
 #: inc/template-tags.php:416
 msgid "প্রথম পাতা"
 msgstr ""
@@ -240,11 +240,11 @@ msgstr ""
 msgid "প্রধান মেন্যু"
 msgstr ""
 
-#: functions.php:1706
+#: functions.php:1707
 msgid "%s সাল"
 msgstr ""
 
-#: functions.php:1712
+#: functions.php:1713
 msgid "সার্চ"
 msgstr ""
 
@@ -280,200 +280,200 @@ msgstr ""
 msgid "অন্তত দুটি অক্ষর লিখুন"
 msgstr ""
 
-#: functions.php:239
+#: functions.php:240
 msgid "লিংক কপি হয়েছে"
 msgstr ""
 
-#: functions.php:240
+#: functions.php:241
 #: inc/template-tags.php:487
 msgid "শেয়ার করুন"
 msgstr ""
 
-#: functions.php:241
+#: functions.php:242
 #: header.php:233
 msgid "খবরের স্ক্রল থামান"
 msgstr ""
 
-#: functions.php:242
+#: functions.php:243
 msgid "খবরের স্ক্রল চালু করুন"
 msgstr ""
 
-#: functions.php:243
+#: functions.php:244
 #: header.php:53
 #: header.php:121
 msgid "ডার্ক মোড চালু করুন"
 msgstr ""
 
-#: functions.php:244
+#: functions.php:245
 msgid "লাইট মোড চালু করুন"
 msgstr ""
 
-#: functions.php:253
+#: functions.php:254
 msgid "পরে পড়ুন"
 msgstr ""
 
-#: functions.php:254
+#: functions.php:255
 msgid "সংরক্ষিত"
 msgstr ""
 
-#: functions.php:255
+#: functions.php:256
 msgid "কোনো লেখা সংরক্ষিত নেই"
 msgstr ""
 
-#: functions.php:256
+#: functions.php:257
 msgid "যেকোনো লেখার “পরে পড়ুন” বাটনে ক্লিক করে এখানে জমা রাখুন।"
 msgstr ""
 
-#: functions.php:257
+#: functions.php:258
 msgid "সংরক্ষণ থেকে সরান"
 msgstr ""
 
-#: functions.php:258
+#: functions.php:259
 msgid "লেখাটি সংরক্ষণ থেকে সরানো হয়েছে"
 msgstr ""
 
-#: functions.php:259
+#: functions.php:260
 msgid "লেখাটি পরে পড়ার জন্য সংরক্ষিত হয়েছে"
 msgstr ""
 
-#: functions.php:260
+#: functions.php:261
 msgid "সংরক্ষিত সব লেখা মুছে ফেলা হয়েছে"
 msgstr ""
 
-#: functions.php:261
+#: functions.php:262
 msgid "কপি"
 msgstr ""
 
-#: functions.php:262
+#: functions.php:263
 msgid "ফেসবুকে শেয়ার"
 msgstr ""
 
-#: functions.php:263
+#: functions.php:264
 msgid "সূত্র"
 msgstr ""
 
-#: functions.php:265
+#: functions.php:266
 msgid "উক্তি ও %s-এর লিঙ্ক কপি হয়েছে!"
 msgstr ""
 
-#: functions.php:267
+#: functions.php:268
 msgid "কপি করা লেখার সাথে %s-এর লিঙ্ক যুক্ত হয়েছে"
 msgstr ""
 
-#: functions.php:268
+#: functions.php:269
 msgid "ভিডিও"
 msgstr ""
 
-#: functions.php:269
+#: functions.php:270
 msgid "ভিডিও বন্ধ করুন"
 msgstr ""
 
-#: functions.php:528
+#: functions.php:529
 msgid "Hero Total Height (মোট উচ্চতা)"
 msgstr ""
 
-#: functions.php:529
+#: functions.php:530
 msgid "Left Main Hero Width (১নং বড় হিরোর প্রস্থ)"
 msgstr ""
 
-#: functions.php:530
+#: functions.php:531
 msgid "Right Top Card Height (২নং ওপরের কার্ডের উচ্চতা)"
 msgstr ""
 
-#: functions.php:531
+#: functions.php:532
 msgid "Bottom Left Card Width (৩নং কার্ডের প্রস্থ অনুপাত)"
 msgstr ""
 
-#: functions.php:534
+#: functions.php:535
 msgid "Featured Column Width"
 msgstr ""
 
-#: functions.php:535
+#: functions.php:536
 msgid "Featured Card Image Height"
 msgstr ""
 
-#: functions.php:536
+#: functions.php:537
 msgid "Side List Thumbnail Width"
 msgstr ""
 
-#: functions.php:537
+#: functions.php:538
 msgid "Side List Thumbnail Height"
 msgstr ""
 
-#: functions.php:538
+#: functions.php:539
 msgid "Right Grid Card Height"
 msgstr ""
 
-#: functions.php:541
+#: functions.php:542
 msgid "Standard Card Image Height"
 msgstr ""
 
-#: functions.php:542
+#: functions.php:543
 msgid "Right Column Big Card Height"
 msgstr ""
 
-#: functions.php:543
+#: functions.php:544
 msgid "Wide Row Thumbnail Width"
 msgstr ""
 
-#: functions.php:544
+#: functions.php:545
 msgid "Wide Row Thumbnail Height"
 msgstr ""
 
-#: functions.php:547
+#: functions.php:548
 msgid "Tall Card Height"
 msgstr ""
 
-#: functions.php:548
+#: functions.php:549
 msgid "Three Column Grid Gap"
 msgstr ""
 
-#: functions.php:551
+#: functions.php:552
 msgid "All Posts Card Image Height"
 msgstr ""
 
-#: functions.php:552
+#: functions.php:553
 msgid "Category Page Card Image Height"
 msgstr ""
 
-#: functions.php:555
+#: functions.php:556
 msgid "Popup Reading Window Max Width"
 msgstr ""
 
-#: functions.php:556
+#: functions.php:557
 msgid "Popup Reading Window Max Height"
 msgstr ""
 
-#: functions.php:598
+#: functions.php:599
 msgid "Sidebar"
 msgstr ""
 
-#: functions.php:600
+#: functions.php:601
 msgid "Right-hand sidebar for homepage and archives (displayed below Archive list)."
 msgstr ""
 
-#: functions.php:809
-#: functions.php:822
+#: functions.php:810
+#: functions.php:823
 msgid "ক্যাটাগরির রঙ"
 msgstr ""
 
-#: functions.php:811
+#: functions.php:812
 msgid "ব্যাজ ও সেকশন হেডিং-এ এই রঙ ব্যবহার হবে। খালি রাখলে ডিফল্ট রঙ বসবে।"
 msgstr ""
 
-#: functions.php:812
+#: functions.php:813
 msgid "লেখার রং ও প্রিভিউ: Theme Settings → ক্যাটাগরির রং।"
 msgstr ""
 
-#: functions.php:826
+#: functions.php:827
 msgid "লেখার রং ও প্রিভিউ দেখুন"
 msgstr ""
 
-#: functions.php:828
+#: functions.php:829
 msgid "ব্যাজ ও সেকশন হেডিং-এ এই রঙ ব্যবহার হবে।"
 msgstr ""
 
-#: functions.php:895
+#: functions.php:896
 msgid "জীবনের বিজ্ঞান, মহাবিশ্বের মহাবিস্ময়, মহাকাশ অভিযানের কাহিনী, পদার্থের স্বরূপ, কালজয়ী বিজ্ঞানীদের গল্প – এসব নানা চমকপ্রদ বিষয়ে বিভিন্ন সময়ে আমার লেখাগুলোকে নিয়ে তৈরি করেছি, ‘বিচিত্র বিজ্ঞান’ নামের এই ওয়েব সাইট।"
 msgstr ""
 
@@ -643,7 +643,7 @@ msgstr ""
 
 #: inc/admin-settings.php:164
 #: inc/category-colors-admin.php:105
-#: inc/stats-admin.php:284
+#: inc/stats-admin.php:375
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
@@ -864,6 +864,7 @@ msgid "Author page address"
 msgstr ""
 
 #: inc/author-slug.php:214
+#: inc/stats-admin.php:520
 msgid "Address"
 msgstr ""
 
@@ -1608,122 +1609,191 @@ msgstr ""
 msgid "%1$s — %2$s reads"
 msgstr ""
 
+#: inc/stats-admin.php:268
+msgid "Unknown"
+msgstr ""
+
 #: inc/stats-admin.php:29
 #: inc/stats-admin.php:30
-#: inc/stats-admin.php:305
+#: inc/stats-admin.php:399
 msgid "Statistics"
 msgstr ""
 
-#: inc/stats-admin.php:308
+#: inc/stats-admin.php:312
+msgid "Not measured yet — it is recorded as a reader leaves an article."
+msgstr ""
+
+#: inc/stats-admin.php:318
+msgid "Read to the end"
+msgstr ""
+
+#: inc/stats-admin.php:319
+msgid "Three quarters"
+msgstr ""
+
+#: inc/stats-admin.php:320
+msgid "Half"
+msgstr ""
+
+#: inc/stats-admin.php:321
+msgid "A quarter"
+msgstr ""
+
+#: inc/stats-admin.php:322
+msgid "Barely started"
+msgstr ""
+
+#: inc/stats-admin.php:329
+msgid "On average a reader gets %s of the way down."
+msgstr ""
+
+#: inc/stats-admin.php:402
 msgid "The site\\'s own count — no outside service, no account, no permission that can be withdrawn. Nothing that identifies a reader is stored, and visits by the people who run the site are left out."
 msgstr ""
 
-#: inc/stats-admin.php:323
+#: inc/stats-admin.php:417
 msgid "Counting has started."
 msgstr ""
 
-#: inc/stats-admin.php:324
+#: inc/stats-admin.php:418
 msgid "Nothing has been counted yet — it will appear here as soon as somebody visits. To see your own visit, open the site logged out, or in another browser."
 msgstr ""
 
-#: inc/stats-admin.php:333
+#: inc/stats-admin.php:427
 msgid "Right now"
 msgstr ""
 
-#: inc/stats-admin.php:336
+#: inc/stats-admin.php:430
 msgid "reads in the last 30 minutes"
 msgstr ""
 
-#: inc/stats-admin.php:339
+#: inc/stats-admin.php:433
 msgid "Reads"
 msgstr ""
 
-#: inc/stats-admin.php:344
+#: inc/stats-admin.php:438
 msgid "Visits"
 msgstr ""
 
-#: inc/stats-admin.php:349
+#: inc/stats-admin.php:443
 msgid "Articles read"
 msgstr ""
 
-#: inc/stats-admin.php:355
+#: inc/stats-admin.php:449
 msgid "%1$s article reads, %2$s elsewhere"
 msgstr ""
 
-#: inc/stats-admin.php:363
+#: inc/stats-admin.php:457
 msgid "Counting since"
 msgstr ""
 
-#: inc/stats-admin.php:367
+#: inc/stats-admin.php:461
 msgid "nothing from before this is here"
 msgstr ""
 
-#: inc/stats-admin.php:373
+#: inc/stats-admin.php:467
 msgid "Reads by the hour"
 msgstr ""
 
-#: inc/stats-admin.php:373
+#: inc/stats-admin.php:467
 msgid "Reads per day"
 msgstr ""
 
-#: inc/stats-admin.php:380
+#: inc/stats-admin.php:474
 msgid "Most read"
 msgstr ""
 
-#: inc/stats-admin.php:382
+#: inc/stats-admin.php:476
 msgid "No article was read in this period."
 msgstr ""
 
-#: inc/stats-admin.php:387
+#: inc/stats-admin.php:481
 msgid "Article"
 msgstr ""
 
-#: inc/stats-admin.php:390
+#: inc/stats-admin.php:484
 msgid "Total"
 msgstr ""
 
-#: inc/stats-admin.php:410
+#: inc/stats-admin.php:504
 msgid "When they read"
 msgstr ""
 
-#: inc/stats-admin.php:411
+#: inc/stats-admin.php:505
 msgid "Reads by hour of the day across this whole period, on the site\\'s own clock."
 msgstr ""
 
-#: inc/stats-admin.php:416
+#: inc/stats-admin.php:508
+msgid "How far they read"
+msgstr ""
+
+#: inc/stats-admin.php:509
+msgid "Measured as a reader leaves an article — a view says it was opened, this says it was read."
+msgstr ""
+
+#: inc/stats-admin.php:512
+msgid "Addresses that led nowhere"
+msgstr ""
+
+#: inc/stats-admin.php:513
+msgid "Pages readers asked for and did not get — a broken link somewhere, and the one thing here you can actually fix."
+msgstr ""
+
+#: inc/stats-admin.php:515
+msgid "Nobody has hit a missing page. Good."
+msgstr ""
+
+#: inc/stats-admin.php:521
+msgid "Came from"
+msgstr ""
+
+#: inc/stats-admin.php:522
+msgid "Times"
+msgstr ""
+
+#: inc/stats-admin.php:539
 msgid "Where readers come from"
 msgstr ""
 
-#: inc/stats-admin.php:418
+#: inc/stats-admin.php:541
+#: inc/stats-admin.php:556
 msgid "Nothing to show yet."
 msgstr ""
 
-#: inc/stats-admin.php:430
+#: inc/stats-admin.php:553
+msgid "Where in the world"
+msgstr ""
+
+#: inc/stats-admin.php:554
+msgid "From the browser\\'s own time zone, never from an address — nothing is sent anywhere to work this out."
+msgstr ""
+
+#: inc/stats-admin.php:568
 msgid "What they read on"
 msgstr ""
 
-#: inc/stats-admin.php:440
+#: inc/stats-admin.php:578
 msgid "Which edition"
-msgstr ""
-
-#: inc/stats-admin.php:450
-msgid "What they searched for"
-msgstr ""
-
-#: inc/stats-admin.php:451
-msgid "Typed into the site\\'s own search box — all time, most asked first."
-msgstr ""
-
-#: inc/stats-admin.php:453
-msgid "Nobody has searched yet."
 msgstr ""
 
 #: inc/stats-admin.php:58
 msgid "Direct / bookmark"
 msgstr ""
 
+#: inc/stats-admin.php:588
+msgid "What they searched for"
+msgstr ""
+
+#: inc/stats-admin.php:589
+msgid "Typed into the site\\'s own search box — all time, most asked first."
+msgstr ""
+
 #: inc/stats-admin.php:59
 msgid "From this site"
+msgstr ""
+
+#: inc/stats-admin.php:591
+msgid "Nobody has searched yet."
 msgstr ""
 
 #: inc/stats-admin.php:84
@@ -1739,7 +1809,7 @@ msgid "Computer"
 msgstr ""
 
 #: inc/stats-admin.php:87
-#: inc/stats-admin.php:388
+#: inc/stats-admin.php:482
 msgid "Bengali"
 msgstr ""
 

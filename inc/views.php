@@ -57,11 +57,77 @@ function bb_register_view_route() {
 					'required'          => false,
 					'sanitize_callback' => 'absint',
 				),
+				/* The browser's own time zone — how the country is known. */
+				'tz'    => array(
+					'required'          => false,
+					'sanitize_callback' => 'sanitize_text_field',
+				),
 			),
 		)
 	);
 }
 add_action( 'rest_api_init', 'bb_register_view_route' );
+
+/**
+ * How far down the article the reader got, reported as they leave it.
+ *
+ * A view says the piece was opened. This says whether it was read — and it is
+ * the only thing the browser sends that the page could not have said at the
+ * moment it loaded.
+ */
+function bb_register_depth_route() {
+	register_rest_route(
+		'bb/v1',
+		'/depth',
+		array(
+			'methods'             => 'POST',
+			'callback'            => 'bb_rest_count_depth',
+			'permission_callback' => '__return_true',
+			'args'                => array(
+				'id'    => array(
+					'required'          => true,
+					'sanitize_callback' => 'absint',
+				),
+				'depth' => array(
+					'required'          => true,
+					'sanitize_callback' => 'absint',
+				),
+			),
+		)
+	);
+}
+add_action( 'rest_api_init', 'bb_register_depth_route' );
+
+/**
+ * @param WP_REST_Request $request Request.
+ * @return WP_REST_Response
+ */
+function bb_rest_count_depth( WP_REST_Request $request ) {
+	$post_id = absint( $request->get_param( 'id' ) );
+	$depth   = absint( $request->get_param( 'depth' ) );
+
+	if ( ! $post_id || 'publish' !== get_post_status( $post_id ) ) {
+		return rest_ensure_response( array( 'counted' => false ) );
+	}
+
+	/*
+	 * Once per article per visit, the same rule the view counter uses — a
+	 * reader who scrolls up and down is one reader who finished it.
+	 */
+	$once = 'bb_depth_' . md5( $post_id . '|' . bb_visitor_key() );
+
+	if ( get_transient( $once ) ) {
+		return rest_ensure_response( array( 'counted' => false ) );
+	}
+
+	set_transient( $once, 1, 6 * HOUR_IN_SECONDS );
+
+	if ( function_exists( 'bb_stats_record_depth' ) ) {
+		bb_stats_record_depth( $post_id, $depth );
+	}
+
+	return rest_ensure_response( array( 'counted' => true ) );
+}
 
 /**
  * One reader, one post, once every six hours. The address is hashed with the
@@ -88,7 +154,7 @@ function bb_rest_count_view( WP_REST_Request $request ) {
 	 * and still only about articles.
 	 */
 	if ( function_exists( 'bb_stats_record' ) ) {
-		bb_stats_record( $is_article ? $post_id : 0, $lang, $ref, $first );
+		bb_stats_record( $is_article ? $post_id : 0, $lang, $ref, $first, (string) $request->get_param( 'tz' ) );
 	}
 
 	if ( ! $is_article ) {
