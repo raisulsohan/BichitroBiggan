@@ -643,7 +643,7 @@ msgstr ""
 
 #: inc/admin-settings.php:164
 #: inc/category-colors-admin.php:105
-#: inc/stats-admin.php:205
+#: inc/stats-admin.php:284
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
@@ -672,7 +672,7 @@ msgid "Select which category to show in each homepage block. Leave empty to auto
 msgstr ""
 
 #: inc/admin-settings.php:242
-#: inc/lang.php:1464
+#: inc/lang.php:1498
 msgid "Default: %s"
 msgstr ""
 
@@ -1245,7 +1245,7 @@ msgstr ""
 
 #: inc/english-meta-box.php:30
 #: inc/english-meta-box.php:264
-#: inc/lang.php:1408
+#: inc/lang.php:1442
 msgid "English edition (/en)"
 msgstr ""
 
@@ -1310,87 +1310,87 @@ msgstr ""
 msgid "The folder inside the zip could not be renamed to the theme\\'s slug."
 msgstr ""
 
-#: inc/lang.php:1156
+#: inc/lang.php:1190
 msgid "Primary Menu (English edition)"
 msgstr ""
 
-#: inc/lang.php:1245
+#: inc/lang.php:1279
 msgid "Tagline"
 msgstr ""
 
-#: inc/lang.php:1250
+#: inc/lang.php:1284
 msgid "Editor's picks heading"
 msgstr ""
 
-#: inc/lang.php:1255
+#: inc/lang.php:1289
 msgid "Popular posts heading"
 msgstr ""
 
-#: inc/lang.php:1260
+#: inc/lang.php:1294
 msgid "Popular categories heading"
 msgstr ""
 
-#: inc/lang.php:1265
+#: inc/lang.php:1299
 msgid "About heading"
 msgstr ""
 
-#: inc/lang.php:1270
+#: inc/lang.php:1304
 msgid "About text"
 msgstr ""
 
-#: inc/lang.php:1275
+#: inc/lang.php:1309
 msgid "Contact heading"
 msgstr ""
 
-#: inc/lang.php:1280
+#: inc/lang.php:1314
 msgid "Subscribe heading"
 msgstr ""
 
-#: inc/lang.php:1285
+#: inc/lang.php:1319
 msgid "YouTube button text"
 msgstr ""
 
-#: inc/lang.php:1290
+#: inc/lang.php:1324
 msgid "YouTube button text (footer)"
 msgstr ""
 
-#: inc/lang.php:1295
+#: inc/lang.php:1329
 msgid "Site name"
 msgstr ""
 
-#: inc/lang.php:1410
+#: inc/lang.php:1444
 msgid "The wording the site uses under /en. Leave a field empty to use the built-in English text."
 msgstr ""
 
-#: inc/lang.php:1428
+#: inc/lang.php:1462
 msgid "Logo for the English edition"
 msgstr ""
 
-#: inc/lang.php:1429
+#: inc/lang.php:1463
 msgid "Shown instead of the site logo under /en. Leave empty to use the same logo as the Bengali site."
 msgstr ""
 
-#: inc/lang.php:1439
+#: inc/lang.php:1473
 msgid "Site description (search engines)"
 msgstr ""
 
-#: inc/lang.php:1758
+#: inc/lang.php:1792
 msgid "#%d is not an image in the media library."
 msgstr ""
 
-#: inc/lang.php:1807
+#: inc/lang.php:1841
 msgid "ইংরেজিতে পড়ুন"
 msgstr ""
 
-#: inc/lang.php:1808
+#: inc/lang.php:1842
 msgid "Read in Bengali"
 msgstr ""
 
-#: inc/lang.php:1862
+#: inc/lang.php:1896
 msgid "এই লেখাটি ইংরেজিতে পড়ুন"
 msgstr ""
 
-#: inc/lang.php:1863
+#: inc/lang.php:1897
 msgid "Read this article in Bangla"
 msgstr ""
 
@@ -1568,135 +1568,182 @@ msgstr ""
 msgid "%d posts and pages still hold Yoast SEO data that has not been copied into the theme\\'s own fields. Copy it all in one click — nothing of Yoast\\'s is deleted."
 msgstr ""
 
-#: inc/stats-admin.php:139
-#: inc/stats-admin.php:289
-msgid "Reads per day"
+#: inc/stats-admin.php:119
+msgid "first of its kind"
+msgstr ""
+
+#: inc/stats-admin.php:128
+msgid "level with the period before"
+msgstr ""
+
+#: inc/stats-admin.php:138
+msgid "vs the period before"
 msgstr ""
 
 #: inc/stats-admin.php:19
-msgid "Last 7 days"
+msgid "Last 24 hours"
 msgstr ""
 
 #: inc/stats-admin.php:20
-msgid "Last 30 days"
+msgid "Last 7 days"
+msgstr ""
+
+#: inc/stats-admin.php:201
+msgid "Reads over time"
 msgstr ""
 
 #: inc/stats-admin.php:21
-msgid "Last 90 days"
+msgid "Last 30 days"
 msgstr ""
 
 #: inc/stats-admin.php:22
+msgid "Last 90 days"
+msgstr ""
+
+#: inc/stats-admin.php:23
 msgid "Last year"
 msgstr ""
 
-#: inc/stats-admin.php:226
-msgid "The site\\'s own count — no outside service, no account, no permission that can be withdrawn. Nothing that identifies a reader is stored, and visits by the people who run the site are left out."
+#: inc/stats-admin.php:239
+msgid "%1$s — %2$s reads"
 msgstr ""
 
-#: inc/stats-admin.php:241
-msgid "Counting has started."
-msgstr ""
-
-#: inc/stats-admin.php:242
-msgid "Nothing has been counted yet — it will appear here as soon as somebody visits. To see your own visit, open the site logged out, or in another browser."
-msgstr ""
-
-#: inc/stats-admin.php:249
-msgid "Reads"
-msgstr ""
-
-#: inc/stats-admin.php:255
-msgid "%s a day on average"
-msgstr ""
-
-#: inc/stats-admin.php:262
-msgid "Visits"
-msgstr ""
-
-#: inc/stats-admin.php:264
-msgid "One reader arriving once"
-msgstr ""
-
-#: inc/stats-admin.php:267
-msgid "Articles read"
-msgstr ""
-
-#: inc/stats-admin.php:273
-msgid "%s published in all"
-msgstr ""
-
-#: inc/stats-admin.php:28
 #: inc/stats-admin.php:29
-#: inc/stats-admin.php:223
+#: inc/stats-admin.php:30
+#: inc/stats-admin.php:305
 msgid "Statistics"
 msgstr ""
 
-#: inc/stats-admin.php:280
+#: inc/stats-admin.php:308
+msgid "The site\\'s own count — no outside service, no account, no permission that can be withdrawn. Nothing that identifies a reader is stored, and visits by the people who run the site are left out."
+msgstr ""
+
+#: inc/stats-admin.php:323
+msgid "Counting has started."
+msgstr ""
+
+#: inc/stats-admin.php:324
+msgid "Nothing has been counted yet — it will appear here as soon as somebody visits. To see your own visit, open the site logged out, or in another browser."
+msgstr ""
+
+#: inc/stats-admin.php:333
+msgid "Right now"
+msgstr ""
+
+#: inc/stats-admin.php:336
+msgid "reads in the last 30 minutes"
+msgstr ""
+
+#: inc/stats-admin.php:339
+msgid "Reads"
+msgstr ""
+
+#: inc/stats-admin.php:344
+msgid "Visits"
+msgstr ""
+
+#: inc/stats-admin.php:349
+msgid "Articles read"
+msgstr ""
+
+#: inc/stats-admin.php:355
+msgid "%1$s article reads, %2$s elsewhere"
+msgstr ""
+
+#: inc/stats-admin.php:363
 msgid "Counting since"
 msgstr ""
 
-#: inc/stats-admin.php:284
-msgid "Nothing from before this is here"
+#: inc/stats-admin.php:367
+msgid "nothing from before this is here"
 msgstr ""
 
-#: inc/stats-admin.php:295
+#: inc/stats-admin.php:373
+msgid "Reads by the hour"
+msgstr ""
+
+#: inc/stats-admin.php:373
+msgid "Reads per day"
+msgstr ""
+
+#: inc/stats-admin.php:380
 msgid "Most read"
 msgstr ""
 
-#: inc/stats-admin.php:297
+#: inc/stats-admin.php:382
 msgid "No article was read in this period."
 msgstr ""
 
-#: inc/stats-admin.php:302
+#: inc/stats-admin.php:387
 msgid "Article"
 msgstr ""
 
-#: inc/stats-admin.php:305
+#: inc/stats-admin.php:390
 msgid "Total"
 msgstr ""
 
-#: inc/stats-admin.php:327
+#: inc/stats-admin.php:410
+msgid "When they read"
+msgstr ""
+
+#: inc/stats-admin.php:411
+msgid "Reads by hour of the day across this whole period, on the site\\'s own clock."
+msgstr ""
+
+#: inc/stats-admin.php:416
 msgid "Where readers come from"
 msgstr ""
 
-#: inc/stats-admin.php:329
+#: inc/stats-admin.php:418
 msgid "Nothing to show yet."
 msgstr ""
 
-#: inc/stats-admin.php:341
+#: inc/stats-admin.php:430
 msgid "What they read on"
 msgstr ""
 
-#: inc/stats-admin.php:351
+#: inc/stats-admin.php:440
 msgid "Which edition"
 msgstr ""
 
-#: inc/stats-admin.php:59
+#: inc/stats-admin.php:450
+msgid "What they searched for"
+msgstr ""
+
+#: inc/stats-admin.php:451
+msgid "Typed into the site\\'s own search box — all time, most asked first."
+msgstr ""
+
+#: inc/stats-admin.php:453
+msgid "Nobody has searched yet."
+msgstr ""
+
+#: inc/stats-admin.php:58
 msgid "Direct / bookmark"
 msgstr ""
 
-#: inc/stats-admin.php:60
+#: inc/stats-admin.php:59
 msgid "From this site"
 msgstr ""
 
-#: inc/stats-admin.php:85
+#: inc/stats-admin.php:84
 msgid "Phone"
 msgstr ""
 
-#: inc/stats-admin.php:86
+#: inc/stats-admin.php:85
 msgid "Tablet"
 msgstr ""
 
-#: inc/stats-admin.php:87
+#: inc/stats-admin.php:86
 msgid "Computer"
 msgstr ""
 
-#: inc/stats-admin.php:88
-#: inc/stats-admin.php:303
+#: inc/stats-admin.php:87
+#: inc/stats-admin.php:388
 msgid "Bengali"
 msgstr ""
 
-#: inc/stats-admin.php:89
+#: inc/stats-admin.php:88
 msgid "English (/en)"
 msgstr ""
 

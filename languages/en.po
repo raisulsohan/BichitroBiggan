@@ -1134,10 +1134,22 @@ msgstr ""
 msgid "%d posts and pages still hold Yoast SEO data that has not been copied into the theme\\'s own fields. Copy it all in one click — nothing of Yoast\\'s is deleted."
 msgstr ""
 
-msgid "Reads per day"
+msgid "first of its kind"
+msgstr ""
+
+msgid "level with the period before"
+msgstr ""
+
+msgid "vs the period before"
+msgstr ""
+
+msgid "Last 24 hours"
 msgstr ""
 
 msgid "Last 7 days"
+msgstr ""
+
+msgid "Reads over time"
 msgstr ""
 
 msgid "Last 30 days"
@@ -1149,6 +1161,12 @@ msgstr ""
 msgid "Last year"
 msgstr ""
 
+msgid "%1$s — %2$s reads"
+msgstr ""
+
+msgid "Statistics"
+msgstr ""
+
 msgid "The site\\'s own count — no outside service, no account, no permission that can be withdrawn. Nothing that identifies a reader is stored, and visits by the people who run the site are left out."
 msgstr ""
 
@@ -1158,31 +1176,34 @@ msgstr ""
 msgid "Nothing has been counted yet — it will appear here as soon as somebody visits. To see your own visit, open the site logged out, or in another browser."
 msgstr ""
 
-msgid "Reads"
+msgid "Right now"
 msgstr ""
 
-msgid "%s a day on average"
+msgid "reads in the last 30 minutes"
+msgstr ""
+
+msgid "Reads"
 msgstr ""
 
 msgid "Visits"
 msgstr ""
 
-msgid "One reader arriving once"
-msgstr ""
-
 msgid "Articles read"
 msgstr ""
 
-msgid "%s published in all"
-msgstr ""
-
-msgid "Statistics"
+msgid "%1$s article reads, %2$s elsewhere"
 msgstr ""
 
 msgid "Counting since"
 msgstr ""
 
-msgid "Nothing from before this is here"
+msgid "nothing from before this is here"
+msgstr ""
+
+msgid "Reads by the hour"
+msgstr ""
+
+msgid "Reads per day"
 msgstr ""
 
 msgid "Most read"
@@ -1197,6 +1218,12 @@ msgstr ""
 msgid "Total"
 msgstr ""
 
+msgid "When they read"
+msgstr ""
+
+msgid "Reads by hour of the day across this whole period, on the site\\'s own clock."
+msgstr ""
+
 msgid "Where readers come from"
 msgstr ""
 
@@ -1207,6 +1234,15 @@ msgid "What they read on"
 msgstr ""
 
 msgid "Which edition"
+msgstr ""
+
+msgid "What they searched for"
+msgstr ""
+
+msgid "Typed into the site\\'s own search box — all time, most asked first."
+msgstr ""
+
+msgid "Nobody has searched yet."
 msgstr ""
 
 msgid "Direct / bookmark"

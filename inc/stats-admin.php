@@ -3,7 +3,7 @@
  * The statistics screen: Dashboard → Statistics.
  *
  * Everything on it comes from the site's own table — no account to sign in to,
- * no permission to be granted, nothing to expire. Drawn with plain HTML and one
+ * no permission to be granted, nothing to expire. Drawn with plain HTML and
  * inline SVG; no charting library is loaded.
  *
  * @package BichitroBiggan
@@ -13,13 +13,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/** The windows the screen offers, in days. */
+/** The windows the screen offers. The first one is what it opens on. */
 function bb_stats_ranges() {
 	return array(
-		7   => __( 'Last 7 days', 'bichitro-biggan' ),
-		30  => __( 'Last 30 days', 'bichitro-biggan' ),
-		90  => __( 'Last 90 days', 'bichitro-biggan' ),
-		365 => __( 'Last year', 'bichitro-biggan' ),
+		'24h'  => __( 'Last 24 hours', 'bichitro-biggan' ),
+		'7d'   => __( 'Last 7 days', 'bichitro-biggan' ),
+		'30d'  => __( 'Last 30 days', 'bichitro-biggan' ),
+		'90d'  => __( 'Last 90 days', 'bichitro-biggan' ),
+		'365d' => __( 'Last year', 'bichitro-biggan' ),
 	);
 }
 
@@ -37,9 +38,7 @@ function bb_stats_menu() {
 add_action( 'admin_menu', 'bb_stats_menu' );
 
 /**
- * A number, grouped the way the dashboard's language groups numbers. The
- * dashboard is English, so these stay in Latin digits even though the site
- * itself writes ২৩৪.
+ * A number, grouped the way the dashboard's language groups numbers.
  *
  * @param int $number Number.
  * @return string
@@ -93,20 +92,68 @@ function bb_stats_plain_label( $key ) {
 }
 
 /**
- * The line chart: reads per day, with the visits underneath it.
+ * A day, written the way the dashboard writes dates.
  *
- * @param array $series day => array{hits,visits}.
+ * @param string $day Y-m-d.
+ * @return string
+ */
+function bb_stats_day_label( $day ) {
+	$time = strtotime( (string) $day . ' 12:00:00' );
+
+	return $time ? wp_date( 'j M Y', $time ) : (string) $day;
+}
+
+/**
+ * How this window compares with the one immediately before it.
+ *
+ * @param int $now    This window.
+ * @param int $before The window before.
+ * @return void
+ */
+function bb_stats_change( $now, $before ) {
+	if ( $before <= 0 ) {
+		if ( $now <= 0 ) {
+			return;
+		}
+		?>
+		<span class="bb-stats-change bb-stats-change--up"><?php esc_html_e( 'first of its kind', 'bichitro-biggan' ); ?></span>
+		<?php
+		return;
+	}
+
+	$change = (int) round( 100 * ( $now - $before ) / $before );
+
+	if ( 0 === $change ) {
+		?>
+		<span class="bb-stats-change"><?php esc_html_e( 'level with the period before', 'bichitro-biggan' ); ?></span>
+		<?php
+		return;
+	}
+
+	$up = $change > 0;
+	?>
+	<span class="bb-stats-change <?php echo $up ? 'bb-stats-change--up' : 'bb-stats-change--down'; ?>">
+		<?php echo $up ? '▲' : '▼'; ?>
+		<?php echo esc_html( bb_stats_number( abs( $change ) ) ); ?>%
+		<small><?php esc_html_e( 'vs the period before', 'bichitro-biggan' ); ?></small>
+	</span>
+	<?php
+}
+
+/**
+ * The line: reads per hour, or per day.
+ *
+ * @param array $series Slot => array{hits,visits,label}.
  * @return void
  */
 function bb_stats_chart( array $series ) {
-	$days = array_keys( $series );
-	$hits = array_map(
+	$rows  = array_values( $series );
+	$hits  = array_map(
 		function ( $row ) {
 			return (int) $row['hits'];
 		},
-		array_values( $series )
+		$rows
 	);
-
 	$count = count( $hits );
 
 	if ( ! $count ) {
@@ -133,10 +180,25 @@ function bb_stats_chart( array $series ) {
 	}
 
 	$area = implode( ' ', $points );
+
+	// A handful of labels along the bottom, not one per point.
+	$every  = max( 1, (int) ceil( $count / 8 ) );
+	$labels = array();
+
+	foreach ( $rows as $i => $row ) {
+		if ( 0 !== $i % $every && $i !== $count - 1 ) {
+			continue;
+		}
+
+		$labels[] = array(
+			'x'    => $x( $i ),
+			'text' => $row['label'],
+		);
+	}
 	?>
 	<div class="bb-stats-chart">
 		<svg viewBox="0 0 <?php echo (int) $width; ?> <?php echo (int) $height; ?>" preserveAspectRatio="none" role="img"
-			aria-label="<?php esc_attr_e( 'Reads per day', 'bichitro-biggan' ); ?>">
+			aria-label="<?php esc_attr_e( 'Reads over time', 'bichitro-biggan' ); ?>">
 			<polygon fill="rgba(0,128,255,0.12)"
 				points="<?php echo esc_attr( $pad . ',' . ( $height - $pad ) . ' ' . $area . ' ' . ( $width - $pad ) . ',' . ( $height - $pad ) ); ?>" />
 			<polyline fill="none" stroke="#0080ff" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"
@@ -149,28 +211,45 @@ function bb_stats_chart( array $series ) {
 			<span><?php echo esc_html( bb_stats_number( $top ) ); ?></span>
 			<span>0</span>
 		</div>
-		<div class="bb-stats-chart__days">
-			<span><?php echo esc_html( bb_stats_day_label( reset( $days ) ) ); ?></span>
-			<span><?php echo esc_html( bb_stats_day_label( end( $days ) ) ); ?></span>
+		<div class="bb-stats-chart__labels">
+			<?php foreach ( $labels as $label ) : ?>
+				<span style="left:<?php echo esc_attr( round( 100 * $label['x'] / $width, 2 ) ); ?>%">
+					<?php echo esc_html( $label['text'] ); ?>
+				</span>
+			<?php endforeach; ?>
 		</div>
 	</div>
 	<?php
 }
 
 /**
- * A day, written the way the dashboard writes dates.
+ * The hour-of-day pattern, as 24 small columns.
  *
- * @param string $day Y-m-d.
- * @return string
+ * @param array $hours Hour => reads.
+ * @return void
  */
-function bb_stats_day_label( $day ) {
-	$time = strtotime( (string) $day . ' 12:00:00' );
-
-	if ( ! $time ) {
-		return (string) $day;
-	}
-
-	return wp_date( 'j M Y', $time );
+function bb_stats_hour_pattern( array $hours ) {
+	$top = max( 1, max( $hours ) );
+	?>
+	<div class="bb-stats-hours">
+		<?php foreach ( $hours as $hour => $value ) : ?>
+			<?php
+			$title = sprintf(
+				/* translators: 1: hour of the day, 2: how many reads. */
+				__( '%1$s — %2$s reads', 'bichitro-biggan' ),
+				sprintf( '%02d:00', $hour ),
+				bb_stats_number( $value )
+			);
+			?>
+			<div class="bb-stats-hours__col" title="<?php echo esc_attr( $title ); ?>">
+				<span class="bb-stats-hours__bar" style="height:<?php echo (int) max( 2, round( 100 * $value / $top ) ); ?>%"></span>
+				<?php if ( 0 === $hour % 6 ) : ?>
+					<span class="bb-stats-hours__tick"><?php echo esc_html( sprintf( '%02d', $hour ) ); ?></span>
+				<?php endif; ?>
+			</div>
+		<?php endforeach; ?>
+	</div>
+	<?php
 }
 
 /**
@@ -207,17 +286,20 @@ function bb_stats_page() {
 
 	$ranges = bb_stats_ranges();
 	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- choosing how far back to look changes nothing.
-	$days = isset( $_GET['days'] ) ? absint( $_GET['days'] ) : 30;
-	$days = isset( $ranges[ $days ] ) ? $days : 30;
+	$key = isset( $_GET['range'] ) ? sanitize_key( wp_unslash( $_GET['range'] ) ) : '24h';
+	$key = isset( $ranges[ $key ] ) ? $key : '24h';
 
-	$totals  = bb_stats_totals( $days );
-	$series  = bb_stats_daily( $days );
-	$top     = bb_stats_top_posts( $days, 15 );
-	$sources = bb_stats_grouped( 'source', $days );
-	$devices = bb_stats_grouped( 'device', $days );
-	$langs   = bb_stats_grouped( 'lang', $days );
-	$first   = bb_stats_first_day();
-	$per_day = $totals['days'] > 0 ? round( $totals['hits'] / $totals['days'] ) : 0;
+	$totals   = bb_stats_totals( $key );
+	$before   = bb_stats_totals( $key, true );
+	$series   = bb_stats_series( $key );
+	$top      = bb_stats_top_posts( $key, 15 );
+	$sources  = bb_stats_grouped( 'source', $key );
+	$devices  = bb_stats_grouped( 'device', $key );
+	$langs    = bb_stats_grouped( 'lang', $key );
+	$hours    = bb_stats_by_hour( $key );
+	$searches = bb_stats_top_searches( 12 );
+	$first    = bb_stats_first_day();
+	$now      = bb_stats_pulse( 30 );
 	?>
 	<div class="wrap bb-stats">
 		<h1><?php esc_html_e( 'Statistics', 'bichitro-biggan' ); ?></h1>
@@ -228,8 +310,8 @@ function bb_stats_page() {
 
 		<h2 class="nav-tab-wrapper">
 			<?php foreach ( $ranges as $value => $label ) : ?>
-				<a class="nav-tab <?php echo ( $value === $days ) ? 'nav-tab-active' : ''; ?>"
-					href="<?php echo esc_url( admin_url( 'admin.php?page=bb-stats&days=' . (int) $value ) ); ?>">
+				<a class="nav-tab <?php echo ( $value === $key ) ? 'nav-tab-active' : ''; ?>"
+					href="<?php echo esc_url( admin_url( 'admin.php?page=bb-stats&range=' . rawurlencode( $value ) ) ); ?>">
 					<?php echo esc_html( $label ); ?>
 				</a>
 			<?php endforeach; ?>
@@ -245,23 +327,23 @@ function bb_stats_page() {
 		<?php endif; ?>
 
 		<div class="bb-stats__cards">
+			<div class="bb-stats-card bb-stats-card--now">
+				<span class="bb-stats-card__label">
+					<span class="bb-stats-dot" aria-hidden="true"></span>
+					<?php esc_html_e( 'Right now', 'bichitro-biggan' ); ?>
+				</span>
+				<strong class="bb-stats-card__value"><?php echo esc_html( bb_stats_number( $now ) ); ?></strong>
+				<span class="bb-stats-card__note"><?php esc_html_e( 'reads in the last 30 minutes', 'bichitro-biggan' ); ?></span>
+			</div>
 			<div class="bb-stats-card">
 				<span class="bb-stats-card__label"><?php esc_html_e( 'Reads', 'bichitro-biggan' ); ?></span>
 				<strong class="bb-stats-card__value"><?php echo esc_html( bb_stats_number( $totals['hits'] ) ); ?></strong>
-				<span class="bb-stats-card__note">
-					<?php
-					printf(
-						/* translators: %s: reads per day. */
-						esc_html__( '%s a day on average', 'bichitro-biggan' ),
-						esc_html( bb_stats_number( $per_day ) )
-					);
-					?>
-				</span>
+				<?php bb_stats_change( $totals['hits'], $before['hits'] ); ?>
 			</div>
 			<div class="bb-stats-card">
 				<span class="bb-stats-card__label"><?php esc_html_e( 'Visits', 'bichitro-biggan' ); ?></span>
 				<strong class="bb-stats-card__value"><?php echo esc_html( bb_stats_number( $totals['visits'] ) ); ?></strong>
-				<span class="bb-stats-card__note"><?php esc_html_e( 'One reader arriving once', 'bichitro-biggan' ); ?></span>
+				<?php bb_stats_change( $totals['visits'], $before['visits'] ); ?>
 			</div>
 			<div class="bb-stats-card">
 				<span class="bb-stats-card__label"><?php esc_html_e( 'Articles read', 'bichitro-biggan' ); ?></span>
@@ -269,9 +351,10 @@ function bb_stats_page() {
 				<span class="bb-stats-card__note">
 					<?php
 					printf(
-						/* translators: %s: how many posts the site has. */
-						esc_html__( '%s published in all', 'bichitro-biggan' ),
-						esc_html( bb_stats_number( (int) wp_count_posts()->publish ) )
+						/* translators: 1: reads of articles, 2: reads of every other page. */
+						esc_html__( '%1$s article reads, %2$s elsewhere', 'bichitro-biggan' ),
+						esc_html( bb_stats_number( $totals['article_hits'] ) ),
+						esc_html( bb_stats_number( $totals['other_hits'] ) )
 					);
 					?>
 				</span>
@@ -281,12 +364,14 @@ function bb_stats_page() {
 				<strong class="bb-stats-card__value bb-stats-card__value--small">
 					<?php echo esc_html( $first ? bb_stats_day_label( $first ) : '—' ); ?>
 				</strong>
-				<span class="bb-stats-card__note"><?php esc_html_e( 'Nothing from before this is here', 'bichitro-biggan' ); ?></span>
+				<span class="bb-stats-card__note"><?php esc_html_e( 'nothing from before this is here', 'bichitro-biggan' ); ?></span>
 			</div>
 		</div>
 
 		<div class="bb-stats-panel">
-			<h2><?php esc_html_e( 'Reads per day', 'bichitro-biggan' ); ?></h2>
+			<h2>
+				<?php echo esc_html( '24h' === $key ? __( 'Reads by the hour', 'bichitro-biggan' ) : __( 'Reads per day', 'bichitro-biggan' ) ); ?>
+			</h2>
 			<?php bb_stats_chart( $series ); ?>
 		</div>
 
@@ -321,6 +406,10 @@ function bb_stats_page() {
 						</tbody>
 					</table>
 				<?php endif; ?>
+
+				<h2><?php esc_html_e( 'When they read', 'bichitro-biggan' ); ?></h2>
+				<p class="bb-stats__hint"><?php esc_html_e( 'Reads by hour of the day across this whole period, on the site\'s own clock.', 'bichitro-biggan' ); ?></p>
+				<?php bb_stats_hour_pattern( $hours ); ?>
 			</div>
 
 			<div class="bb-stats-panel">
@@ -357,27 +446,63 @@ function bb_stats_page() {
 					}
 					?>
 				</ul>
+
+				<h2><?php esc_html_e( 'What they searched for', 'bichitro-biggan' ); ?></h2>
+				<p class="bb-stats__hint"><?php esc_html_e( 'Typed into the site\'s own search box — all time, most asked first.', 'bichitro-biggan' ); ?></p>
+				<?php if ( empty( $searches ) ) : ?>
+					<p class="bb-stats__empty"><?php esc_html_e( 'Nobody has searched yet.', 'bichitro-biggan' ); ?></p>
+				<?php else : ?>
+					<table class="widefat striped bb-stats-table">
+						<tbody>
+							<?php foreach ( $searches as $row ) : ?>
+								<tr>
+									<td>
+										<?php echo esc_html( $row['term'] ); ?>
+										<?php if ( 'en' === $row['lang'] ) : ?>
+											<span class="bb-stats-tag">EN</span>
+										<?php endif; ?>
+									</td>
+									<td class="bb-stats-table__num"><?php echo esc_html( bb_stats_number( $row['hits'] ) ); ?></td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				<?php endif; ?>
 			</div>
 		</div>
 	</div>
 
 	<style>
 		.bb-stats__lede { max-width: 820px; color: #50575e; }
-		.bb-stats__cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; margin: 20px 0; }
+		.bb-stats__hint { color: #646970; margin: -6px 0 10px; font-size: 12px; }
+		.bb-stats__cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin: 20px 0; }
 		.bb-stats-card { background: #fff; border: 1px solid #dcdcde; border-radius: 8px; padding: 16px 18px; }
+		.bb-stats-card--now { border-color: #b7e3c0; background: #f4fbf5; }
 		.bb-stats-card__label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #646970; }
 		.bb-stats-card__value { display: block; font-size: 30px; line-height: 1.2; margin: 6px 0 2px; color: #1d2327; }
 		.bb-stats-card__value--small { font-size: 17px; }
 		.bb-stats-card__note { font-size: 12px; color: #646970; }
+		.bb-stats-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #00a32a; margin-right: 5px; vertical-align: 1px; }
+		.bb-stats-change { display: block; font-size: 12px; color: #646970; }
+		.bb-stats-change--up { color: #00733c; }
+		.bb-stats-change--down { color: #b32d2e; }
+		.bb-stats-change small { color: #646970; font-size: 11px; }
 		.bb-stats-panel { background: #fff; border: 1px solid #dcdcde; border-radius: 8px; padding: 6px 20px 18px; margin: 0 0 20px; }
 		.bb-stats-panel h2 { font-size: 15px; }
 		.bb-stats__columns { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: start; }
 		@media (max-width: 1100px) { .bb-stats__columns { grid-template-columns: 1fr; } }
-		.bb-stats-chart { position: relative; }
+		.bb-stats-chart { position: relative; padding-bottom: 18px; }
 		.bb-stats-chart svg { width: 100%; height: 220px; display: block; }
 		.bb-stats-chart__scale { position: absolute; top: 18px; left: 0; height: 170px; display: flex; flex-direction: column; justify-content: space-between; font-size: 11px; color: #646970; }
-		.bb-stats-chart__days { display: flex; justify-content: space-between; font-size: 12px; color: #646970; margin-top: -6px; }
+		.bb-stats-chart__labels { position: relative; height: 16px; }
+		.bb-stats-chart__labels span { position: absolute; transform: translateX(-50%); font-size: 11px; color: #646970; white-space: nowrap; }
+		.bb-stats-hours { display: flex; align-items: flex-end; gap: 3px; height: 110px; margin: 0 0 24px; }
+		.bb-stats-hours__col { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; position: relative; }
+		.bb-stats-hours__bar { display: block; width: 100%; background: #0080ff; border-radius: 3px 3px 0 0; opacity: .85; }
+		.bb-stats-hours__col:hover .bb-stats-hours__bar { opacity: 1; }
+		.bb-stats-hours__tick { position: absolute; bottom: -16px; font-size: 10px; color: #646970; }
 		.bb-stats-table__num { text-align: right; width: 80px; }
+		.bb-stats-tag { background: #edf4ff; color: #0073aa; border-radius: 3px; font-size: 10px; padding: 1px 5px; margin-left: 6px; vertical-align: 1px; }
 		.bb-stats-bars { margin: 0 0 18px; }
 		.bb-stats-bar { display: grid; grid-template-columns: 1fr 120px 92px; align-items: center; gap: 10px; margin: 0 0 8px; }
 		.bb-stats-bar__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

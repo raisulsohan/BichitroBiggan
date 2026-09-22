@@ -119,6 +119,11 @@ function bb_rest_search( WP_REST_Request $request ) {
 		) );
 	}
 
+	// What readers look for is worth knowing; who looked is not.
+	if ( function_exists( 'bb_stats_record_search' ) ) {
+		bb_stats_record_search( $term, bb_lang() );
+	}
+
 	$query = new WP_Query( array(
 		'post_type'           => array( 'post', 'page' ),
 		'post_status'         => 'publish',

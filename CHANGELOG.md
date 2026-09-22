@@ -2,6 +2,25 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.14.0
+
+- Statistics opens on **Last 24 hours**, and the chart under it is hour by
+  hour. Counting is kept by the hour now rather than by the day, so a morning
+  can be told from an evening.
+- **Right now** — how many reads in the last half hour, on a card of its own.
+- Every figure is compared with the period before it: 1,240 reads, ▲ 18% on the
+  previous 24 hours. A quiet week no longer has to be worked out by eye.
+- **When they read** — the hour-of-day pattern across the whole period, so the
+  shape of a day is visible: when to publish, when nobody is there.
+- **What they searched for** — the words readers type into the site's own
+  search box, most asked first, with the edition they asked from. The surest
+  list of what the site is missing.
+- Articles and everything else are counted apart, so a homepage read is no
+  longer confused with an article read.
+- Rows recorded before this update have no hour of their own and are all
+  counted at midnight in the hour-of-day pattern; every other figure is
+  unaffected.
+
 ## 7.13.1
 
 - "পরে পড়ুন" was coming through untranslated on the saved-articles button.
