@@ -157,9 +157,6 @@ msgstr "Nothing has been published yet."
 msgid "এই সময়ের কোনো লেখা পাওয়া যায়নি"
 msgstr "No articles from this period"
 
-msgid "প্রধান মেন্যু"
-msgstr "Main menu"
-
 msgid "পেজ নেভিগেশন"
 msgstr "Page navigation"
 
@@ -168,6 +165,9 @@ msgstr "Page %1$s of %2$s"
 
 msgid "প্রথম পাতা"
 msgstr "Home"
+
+msgid "প্রধান মেন্যু"
+msgstr "Main menu"
 
 msgid "%s সাল"
 msgstr "%s"
@@ -216,6 +216,51 @@ msgstr "Switch to dark mode"
 
 msgid "লাইট মোড চালু করুন"
 msgstr "Switch to light mode"
+
+msgid "পরে পড়ুন"
+msgstr ""
+
+msgid "সংরক্ষিত"
+msgstr "Saved"
+
+msgid "কোনো লেখা সংরক্ষিত নেই"
+msgstr "Nothing saved yet"
+
+msgid "যেকোনো লেখার “পরে পড়ুন” বাটনে ক্লিক করে এখানে জমা রাখুন।"
+msgstr "Tap “Read later” on any article and it will be kept here."
+
+msgid "সংরক্ষণ থেকে সরান"
+msgstr "Remove from saved"
+
+msgid "লেখাটি সংরক্ষণ থেকে সরানো হয়েছে"
+msgstr "Removed from your saved articles"
+
+msgid "লেখাটি পরে পড়ার জন্য সংরক্ষিত হয়েছে"
+msgstr "Saved to read later"
+
+msgid "সংরক্ষিত সব লেখা মুছে ফেলা হয়েছে"
+msgstr "All saved articles cleared"
+
+msgid "কপি"
+msgstr "Copy"
+
+msgid "ফেসবুকে শেয়ার"
+msgstr "Share on Facebook"
+
+msgid "সূত্র"
+msgstr "Source"
+
+msgid "উক্তি ও %s-এর লিঙ্ক কপি হয়েছে!"
+msgstr "The quote and the link to %s have been copied."
+
+msgid "কপি করা লেখার সাথে %s-এর লিঙ্ক যুক্ত হয়েছে"
+msgstr "The link to %s was added to what you copied"
+
+msgid "ভিডিও"
+msgstr "Video"
+
+msgid "ভিডিও বন্ধ করুন"
+msgstr "Close the video"
 
 msgid "Hero Total Height (মোট উচ্চতা)"
 msgstr ""
@@ -927,13 +972,28 @@ msgstr ""
 msgid "The wording the site uses under /en. Leave a field empty to use the built-in English text."
 msgstr ""
 
+msgid "Logo for the English edition"
+msgstr ""
+
+msgid "Shown instead of the site logo under /en. Leave empty to use the same logo as the Bengali site."
+msgstr ""
+
 msgid "Site description (search engines)"
 msgstr ""
 
-msgid "Read this site in English"
+msgid "#%d is not an image in the media library."
 msgstr ""
 
-msgid "বাংলায় পড়ুন"
+msgid "ইংরেজিতে পড়ুন"
+msgstr ""
+
+msgid "Read in Bengali"
+msgstr ""
+
+msgid "এই লেখাটি ইংরেজিতে পড়ুন"
+msgstr "Read this article in English"
+
+msgid "Read this article in Bangla"
 msgstr ""
 
 msgid "English slug (the /en/… address)"

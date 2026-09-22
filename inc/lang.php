@@ -1822,6 +1822,58 @@ function bb_en_home_link() {
 	return home_url( '/' );
 }
 
+/**
+ * The switch that belongs to one article — "read this same piece in the other
+ * language", at the top of the article and inside the reading modal.
+ *
+ * Nothing is printed when there is nowhere to go: most posts have no English
+ * version yet, and a button that lands the reader on a front page instead of
+ * the article they were reading is worse than no button.
+ *
+ * @param int|null $post_id Post, or the current one.
+ * @return void
+ */
+function bb_post_lang_switch( $post_id = null ) {
+	$post_id = $post_id ? (int) $post_id : (int) get_the_ID();
+
+	if ( ! $post_id || 'post' !== get_post_type( $post_id ) ) {
+		return;
+	}
+
+	$to_english = ! bb_is_en();
+
+	if ( $to_english && ! bb_en_has( $post_id ) ) {
+		return;
+	}
+
+	$url = (string) bb_en_in_lang(
+		$to_english ? 'en' : 'bn',
+		function () use ( $post_id ) {
+			return get_permalink( $post_id );
+		}
+	);
+
+	if ( ! $url ) {
+		return;
+	}
+
+	$label = $to_english ? 'English' : 'Bangla';
+	$title = $to_english
+		? __( 'এই লেখাটি ইংরেজিতে পড়ুন', 'bichitro-biggan' )
+		: __( 'Read this article in Bangla', 'bichitro-biggan' );
+
+	printf(
+		'<a class="bb-lang-pill" href="%1$s" data-bb-lang-link hreflang="%2$s" lang="%2$s" rel="alternate" title="%3$s" aria-label="%3$s">'
+			. '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">'
+			. '<circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"></path>'
+			. '</svg><span>%4$s</span></a>',
+		esc_url( $url ),
+		esc_attr( $to_english ? 'en' : 'bn' ),
+		esc_attr( $title ),
+		esc_html( $label )
+	);
+}
+
 /* -------------------------------------------------------------------------
  * 15. The English sitemap
  * ---------------------------------------------------------------------- */

@@ -28,9 +28,17 @@ while ( have_posts() ) :
 
 		<?php bb_breadcrumb(); ?>
 
-		<?php if ( $bb_cat ) : ?>
-			<div class="bb-single__badge"><?php bb_badge( $bb_cat, '', true ); ?></div>
-		<?php endif; ?>
+		<div class="bb-single__topline">
+			<?php if ( $bb_cat ) : ?>
+				<div class="bb-single__badge"><?php bb_badge( $bb_cat, '', true ); ?></div>
+			<?php endif; ?>
+			<?php
+			/* The same article in the other language — nothing when there is none. */
+			if ( function_exists( 'bb_post_lang_switch' ) ) {
+				bb_post_lang_switch();
+			}
+			?>
+		</div>
 
 		<h1 class="bb-single__title"><?php the_title(); ?></h1>
 

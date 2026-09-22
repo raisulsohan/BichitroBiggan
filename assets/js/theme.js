@@ -957,6 +957,18 @@
 				return;
 			}
 
+			/* The other language of the article being read: swap it in place
+			   rather than closing the popup and loading a whole page. Outside
+			   the popup the link is left to the browser, so the address bar
+			   and the back button behave the ordinary way. */
+			var langLink = closestMatch(e.target, 'a[data-bb-lang-link]');
+			if (langLink && open && isPlainClick(e, langLink)) {
+				e.preventDefault();
+				lastFocus = langLink;
+				load(langLink.href);
+				return;
+			}
+
 			var link = closestMatch(e.target, 'a[data-bb-article]');
 			if (!link || !isPlainClick(e, link)) return;
 
@@ -1368,10 +1380,10 @@
 				var textEl = btn.querySelector('.bb-bookmark-text');
 				if (ids.indexOf(id) !== -1) {
 					btn.classList.add('is-bookmarked');
-					if (textEl) textEl.textContent = 'সংরক্ষিত';
+					if (textEl) textEl.textContent = (D.bmSavedLabel || 'সংরক্ষিত');
 				} else {
 					btn.classList.remove('is-bookmarked');
-					if (textEl) textEl.textContent = 'পরে পড়ুন';
+					if (textEl) textEl.textContent = (D.bmSaveLabel || 'পরে পড়ুন');
 				}
 			});
 		}
@@ -1400,11 +1412,11 @@
 
 				var emptyTitle = document.createElement('p');
 				emptyTitle.className = 'bb-drawer__empty-title';
-				emptyTitle.textContent = "কোনো লেখা সংরক্ষিত নেই";
+				emptyTitle.textContent = D.bmEmptyTitle || 'কোনো লেখা সংরক্ষিত নেই';
 
 				var emptyDesc = document.createElement('p');
 				emptyDesc.className = 'bb-drawer__empty-desc';
-				emptyDesc.textContent = "যেকোনো লেখার \"পরে পড়ুন\" বাটনে ক্লিক করে এখানে জমা রাখুন।";
+				emptyDesc.textContent = D.bmEmptyText || '';
 
 				empty.appendChild(icon);
 				empty.appendChild(emptyTitle);
@@ -1455,8 +1467,8 @@
 				remove.type = 'button';
 				remove.className = 'bb-drawer__remove';
 				remove.setAttribute('data-bb-remove-bookmark', item.id);
-				remove.setAttribute('aria-label', "মুছে ফেলুন");
-				remove.title = "মুছে ফেলুন";
+				remove.setAttribute('aria-label', (D.bmRemove || "মুছে ফেলুন"));
+				remove.title = (D.bmRemove || "মুছে ফেলুন");
 				remove.textContent = '✕';
 
 				row.appendChild(remove);
@@ -1530,7 +1542,7 @@
 					list.splice(index, 1);
 					saveList(list);
 					syncButtons();
-					showToast('লেখাটি বুকমার্ক থেকে সরানো হয়েছে');
+					showToast((D.bmRemoved || 'লেখাটি বুকমার্ক থেকে সরানো হয়েছে'));
 				} else {
 					var item = {
 						id: id,
@@ -1543,7 +1555,7 @@
 					list.unshift(item);
 					saveList(list);
 					syncButtons();
-					showToast('লেখাটি পরবর্তীতে পড়ার জন্য সংরক্ষিত হয়েছে');
+					showToast((D.bmSaved || 'লেখাটি পরবর্তীতে পড়ার জন্য সংরক্ষিত হয়েছে'));
 				}
 				return;
 			}
@@ -1582,7 +1594,7 @@
 				saveList([]);
 				renderDrawer();
 				syncButtons();
-				showToast('সকল সংরক্ষিত লেখা মুছে ফেলা হয়েছে');
+				showToast((D.bmCleared || 'সকল সংরক্ষিত লেখা মুছে ফেলা হয়েছে'));
 			}
 		});
 
@@ -1601,8 +1613,8 @@
 		tooltip.id = 'bb-quote-tooltip';
 		tooltip.className = 'bb-quote-tooltip';
 		tooltip.style.display = 'none';
-		tooltip.innerHTML = '<button type="button" class="bb-quote-btn bb-quote-btn--copy" id="bb-quote-copy-btn">📋 কপি</button>' +
-			'<button type="button" class="bb-quote-btn bb-quote-btn--fb" id="bb-quote-fb-btn">💬 ফেসবুকে শেয়ার</button>';
+		tooltip.innerHTML = ('<button type="button" class="bb-quote-btn bb-quote-btn--copy" id="bb-quote-copy-btn">📋 ' + (D.quoteCopy || 'Copy') + '</button>') +
+			('<button type="button" class="bb-quote-btn bb-quote-btn--fb" id="bb-quote-fb-btn">💬 ' + (D.quoteFacebook || 'Share') + '</button>');
 		document.body.appendChild(tooltip);
 
 		var copyBtn = tooltip.querySelector('#bb-quote-copy-btn');
@@ -1619,7 +1631,7 @@
 
 		function getAttributionText(text) {
 			var details = getArticleDetails();
-			return '“' + text + '”\n\n— ' + details.title + '\nসূত্র: বিচিত্র বিজ্ঞান (' + details.url + ')';
+			return '“' + text + '”\n\n— ' + details.title + '\n' + (D.quoteSource || 'সূত্র') + ': ' + (D.siteName || 'বিচিত্র বিজ্ঞান') + ' (' + details.url + ')';
 		}
 
 		function showTooltip(x, y) {
@@ -1699,7 +1711,7 @@
 				var fullText = getAttributionText(currentSelectedText);
 				if (navigator.clipboard && navigator.clipboard.writeText) {
 					navigator.clipboard.writeText(fullText).then(function () {
-						showToast('উক্তি ও বিচিত্র বিজ্ঞানের লিঙ্ক কপি হয়েছে!', '📋');
+						showToast((D.quoteCopied || 'উক্তি ও বিচিত্র বিজ্ঞানের লিঙ্ক কপি হয়েছে!'), '📋');
 					});
 				} else {
 					var ta = document.createElement('textarea');
@@ -1710,7 +1722,7 @@
 					ta.select();
 					try {
 						document.execCommand('copy');
-						showToast('উক্তি ও বিচিত্র বিজ্ঞানের লিঙ্ক কপি হয়েছে!', '📋');
+						showToast((D.quoteCopied || 'উক্তি ও বিচিত্র বিজ্ঞানের লিঙ্ক কপি হয়েছে!'), '📋');
 					} catch(err) {}
 					document.body.removeChild(ta);
 				}
@@ -1726,7 +1738,7 @@
 				if (!currentSelectedText) return;
 
 				var details = getArticleDetails();
-				var quoteText = '“' + currentSelectedText + '” — ' + details.title + ' (বিচিত্র বিজ্ঞান)';
+				var quoteText = '“' + currentSelectedText + '” — ' + details.title + ' (' + (D.siteName || 'বিচিত্র বিজ্ঞান') + ')';
 				var fbUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(details.url) + '&quote=' + encodeURIComponent(quoteText);
 				window.open(fbUrl, 'bb_fb_share', 'width=640,height=520,menubar=no,toolbar=no,resizable=yes,scrollbars=yes');
 				hideTooltip();
@@ -1749,7 +1761,7 @@
 				if (e.clipboardData) {
 					e.clipboardData.setData('text/plain', fullText);
 					e.preventDefault();
-					showToast('কপি করা লেখার সাথে বিচিত্র বিজ্ঞানের লিঙ্ক যুক্ত হয়েছে', '📋');
+					showToast((D.copyWithLink || 'কপি করা লেখার সাথে বিচিত্র বিজ্ঞানের লিঙ্ক যুক্ত হয়েছে'), '📋');
 				}
 			}
 		});
@@ -1797,7 +1809,7 @@
 				var wrap = document.createElement('div');
 				wrap.className = 'bb-hero__video-wrap';
 				wrap.innerHTML = '<iframe class="bb-hero__video-iframe" src="' + embedSrc + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' +
-					'<button type="button" class="bb-hero__video-close" aria-label="ভিডিও বন্ধ করুন" title="ভিডিও বন্ধ করুন">✕</button>';
+					'<button type="button" class="bb-hero__video-close" aria-label="' + (D.videoClose || 'ভিডিও বন্ধ করুন') + '" title="' + (D.videoClose || 'ভিডিও বন্ধ করুন') + '">✕</button>';
 
 				card.appendChild(wrap);
 			}
@@ -1866,9 +1878,9 @@
 				modal.className = 'bb-video-modal';
 				modal.setAttribute('role', 'dialog');
 				modal.setAttribute('aria-modal', 'true');
-				modal.setAttribute('aria-label', 'ভিডিও');
+				modal.setAttribute('aria-label', D.video || 'ভিডিও');
 				modal.innerHTML = '<div class="bb-video-modal__inner">' +
-					'<button type="button" class="bb-video-modal__close" aria-label="ভিডিও বন্ধ করুন">×</button>' +
+					'<button type="button" class="bb-video-modal__close" aria-label="' + (D.videoClose || 'ভিডিও বন্ধ করুন') + '">×</button>' +
 					'<div id="bb-video-modal-frame"></div>' +
 				'</div>';
 				document.body.appendChild(modal);

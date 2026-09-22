@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.10.5' );
+define( 'BB_VERSION', '7.11.0' );
 
 /**
  * The built copy of an asset, when there is one and it is not stale.
@@ -242,6 +242,31 @@ function bb_enqueue_assets() {
 		'tickerPlay' => __( 'খবরের স্ক্রল চালু করুন', 'bichitro-biggan' ),
 		'themeDark'  => __( 'ডার্ক মোড চালু করুন', 'bichitro-biggan' ),
 		'themeLight' => __( 'লাইট মোড চালু করুন', 'bichitro-biggan' ),
+
+		/*
+		 * Everything the script writes on the page itself. These used to be
+		 * typed into theme.js, where no translation could reach them — the
+		 * English edition was left with Bengali buttons on the quote tooltip
+		 * and in the saved-articles drawer.
+		 */
+		'siteName'      => get_bloginfo( 'name' ),
+		'bmSaveLabel'   => __( 'পরে পড়ুন', 'bichitro-biggan' ),
+		'bmSavedLabel'  => __( 'সংরক্ষিত', 'bichitro-biggan' ),
+		'bmEmptyTitle'  => __( 'কোনো লেখা সংরক্ষিত নেই', 'bichitro-biggan' ),
+		'bmEmptyText'   => __( 'যেকোনো লেখার “পরে পড়ুন” বাটনে ক্লিক করে এখানে জমা রাখুন।', 'bichitro-biggan' ),
+		'bmRemove'      => __( 'সংরক্ষণ থেকে সরান', 'bichitro-biggan' ),
+		'bmRemoved'     => __( 'লেখাটি সংরক্ষণ থেকে সরানো হয়েছে', 'bichitro-biggan' ),
+		'bmSaved'       => __( 'লেখাটি পরে পড়ার জন্য সংরক্ষিত হয়েছে', 'bichitro-biggan' ),
+		'bmCleared'     => __( 'সংরক্ষিত সব লেখা মুছে ফেলা হয়েছে', 'bichitro-biggan' ),
+		'quoteCopy'     => __( 'কপি', 'bichitro-biggan' ),
+		'quoteFacebook' => __( 'ফেসবুকে শেয়ার', 'bichitro-biggan' ),
+		'quoteSource'   => __( 'সূত্র', 'bichitro-biggan' ),
+		/* translators: %s: the name of the site. */
+		'quoteCopied'   => sprintf( __( 'উক্তি ও %s-এর লিঙ্ক কপি হয়েছে!', 'bichitro-biggan' ), get_bloginfo( 'name' ) ),
+		/* translators: %s: the name of the site. */
+		'copyWithLink'  => sprintf( __( 'কপি করা লেখার সাথে %s-এর লিঙ্ক যুক্ত হয়েছে', 'bichitro-biggan' ), get_bloginfo( 'name' ) ),
+		'video'         => __( 'ভিডিও', 'bichitro-biggan' ),
+		'videoClose'    => __( 'ভিডিও বন্ধ করুন', 'bichitro-biggan' ),
 		'katexCss'   => BB_KATEX_CSS,
 		'katexJs'    => BB_KATEX_JS,
 		'katexAuto'  => BB_KATEX_AUTO,

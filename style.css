@@ -3,7 +3,7 @@ Theme Name: Bichitro Biggan
 Theme URI: https://bichitrobiggan.com
 Author: Raisul Sohan
 Description: Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic WordPress theme built for a Bengali science magazine and digital publication. Custom-made and developed from scratch by Raisul Sohan, it is designed with a world-class reading experience, built-in SEO, live search, and comprehensive customizer controls.
-Version: 7.10.5
+Version: 7.11.0
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
@@ -1816,6 +1816,50 @@ a.bb-badge:hover {
 }
 
 .bb-single .bb-breadcrumb { margin-bottom: 12px; }
+/* Category on the left, the other language on the right. */
+.bb-single__topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.bb-single__topline .bb-single__badge { margin-bottom: 0; }
+.bb-single__topline .bb-lang-pill { margin-left: auto; }
+
+.bb-lang-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 6px 12px 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  background: #fff;
+  color: #374151;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bb-lang-pill:hover,
+.bb-lang-pill:focus-visible {
+  transform: translateY(-1.5px);
+  border-color: var(--bb-brand-blue);
+  color: var(--bb-brand-blue);
+  box-shadow: 0 3px 8px rgba(0, 128, 255, 0.2);
+}
+.bb-lang-pill svg { display: block; opacity: .75; }
+.bb-lang-pill:hover svg { opacity: 1; }
+
+@media (max-width: 420px) {
+  .bb-lang-pill { padding: 5px 10px 5px 8px; font-size: 11px; }
+}
+
 .bb-single__badge {
   margin-bottom: 14px;
   display: flex;
@@ -4265,6 +4309,12 @@ textarea:focus-visible,
 [data-theme="dark"] .bb-nav-action-btn {
   background: #171b21;
   border: 1px solid #313947;
+  color: #c5ccd6;
+}
+
+[data-theme="dark"] .bb-lang-pill {
+  background: #171b21;
+  border-color: #313947;
   color: #c5ccd6;
 }
 

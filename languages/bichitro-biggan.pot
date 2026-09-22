@@ -218,35 +218,35 @@ msgstr ""
 msgid "এখনো কোনো লেখা প্রকাশ করা হয়নি।"
 msgstr ""
 
-#: functions.php:1156
+#: functions.php:1181
 msgid "এই সময়ের কোনো লেখা পাওয়া যায়নি"
 msgstr ""
 
-#: functions.php:1577
+#: functions.php:1602
 msgid "পেজ নেভিগেশন"
 msgstr ""
 
-#: functions.php:1585
+#: functions.php:1610
 msgid "পৃষ্ঠা %1$s / %2$s"
 msgstr ""
 
-#: functions.php:1652
-#: functions.php:1674
+#: functions.php:1677
+#: functions.php:1699
 #: inc/template-tags.php:416
 msgid "প্রথম পাতা"
-msgstr ""
-
-#: functions.php:1681
-msgid "%s সাল"
-msgstr ""
-
-#: functions.php:1687
-msgid "সার্চ"
 msgstr ""
 
 #: functions.php:170
 #: header.php:109
 msgid "প্রধান মেন্যু"
+msgstr ""
+
+#: functions.php:1706
+msgid "%s সাল"
+msgstr ""
+
+#: functions.php:1712
+msgid "সার্চ"
 msgstr ""
 
 #: functions.php:224
@@ -311,112 +311,172 @@ msgstr ""
 msgid "লাইট মোড চালু করুন"
 msgstr ""
 
-#: functions.php:503
+#: functions.php:253
+msgid "পরে পড়ুন"
+msgstr ""
+
+#: functions.php:254
+msgid "সংরক্ষিত"
+msgstr ""
+
+#: functions.php:255
+msgid "কোনো লেখা সংরক্ষিত নেই"
+msgstr ""
+
+#: functions.php:256
+msgid "যেকোনো লেখার “পরে পড়ুন” বাটনে ক্লিক করে এখানে জমা রাখুন।"
+msgstr ""
+
+#: functions.php:257
+msgid "সংরক্ষণ থেকে সরান"
+msgstr ""
+
+#: functions.php:258
+msgid "লেখাটি সংরক্ষণ থেকে সরানো হয়েছে"
+msgstr ""
+
+#: functions.php:259
+msgid "লেখাটি পরে পড়ার জন্য সংরক্ষিত হয়েছে"
+msgstr ""
+
+#: functions.php:260
+msgid "সংরক্ষিত সব লেখা মুছে ফেলা হয়েছে"
+msgstr ""
+
+#: functions.php:261
+msgid "কপি"
+msgstr ""
+
+#: functions.php:262
+msgid "ফেসবুকে শেয়ার"
+msgstr ""
+
+#: functions.php:263
+msgid "সূত্র"
+msgstr ""
+
+#: functions.php:265
+msgid "উক্তি ও %s-এর লিঙ্ক কপি হয়েছে!"
+msgstr ""
+
+#: functions.php:267
+msgid "কপি করা লেখার সাথে %s-এর লিঙ্ক যুক্ত হয়েছে"
+msgstr ""
+
+#: functions.php:268
+msgid "ভিডিও"
+msgstr ""
+
+#: functions.php:269
+msgid "ভিডিও বন্ধ করুন"
+msgstr ""
+
+#: functions.php:528
 msgid "Hero Total Height (মোট উচ্চতা)"
 msgstr ""
 
-#: functions.php:504
+#: functions.php:529
 msgid "Left Main Hero Width (১নং বড় হিরোর প্রস্থ)"
 msgstr ""
 
-#: functions.php:505
+#: functions.php:530
 msgid "Right Top Card Height (২নং ওপরের কার্ডের উচ্চতা)"
 msgstr ""
 
-#: functions.php:506
+#: functions.php:531
 msgid "Bottom Left Card Width (৩নং কার্ডের প্রস্থ অনুপাত)"
 msgstr ""
 
-#: functions.php:509
+#: functions.php:534
 msgid "Featured Column Width"
 msgstr ""
 
-#: functions.php:510
+#: functions.php:535
 msgid "Featured Card Image Height"
 msgstr ""
 
-#: functions.php:511
+#: functions.php:536
 msgid "Side List Thumbnail Width"
 msgstr ""
 
-#: functions.php:512
+#: functions.php:537
 msgid "Side List Thumbnail Height"
 msgstr ""
 
-#: functions.php:513
+#: functions.php:538
 msgid "Right Grid Card Height"
 msgstr ""
 
-#: functions.php:516
+#: functions.php:541
 msgid "Standard Card Image Height"
 msgstr ""
 
-#: functions.php:517
+#: functions.php:542
 msgid "Right Column Big Card Height"
 msgstr ""
 
-#: functions.php:518
+#: functions.php:543
 msgid "Wide Row Thumbnail Width"
 msgstr ""
 
-#: functions.php:519
+#: functions.php:544
 msgid "Wide Row Thumbnail Height"
 msgstr ""
 
-#: functions.php:522
+#: functions.php:547
 msgid "Tall Card Height"
 msgstr ""
 
-#: functions.php:523
+#: functions.php:548
 msgid "Three Column Grid Gap"
 msgstr ""
 
-#: functions.php:526
+#: functions.php:551
 msgid "All Posts Card Image Height"
 msgstr ""
 
-#: functions.php:527
+#: functions.php:552
 msgid "Category Page Card Image Height"
 msgstr ""
 
-#: functions.php:530
+#: functions.php:555
 msgid "Popup Reading Window Max Width"
 msgstr ""
 
-#: functions.php:531
+#: functions.php:556
 msgid "Popup Reading Window Max Height"
 msgstr ""
 
-#: functions.php:573
+#: functions.php:598
 msgid "Sidebar"
 msgstr ""
 
-#: functions.php:575
+#: functions.php:600
 msgid "Right-hand sidebar for homepage and archives (displayed below Archive list)."
 msgstr ""
 
-#: functions.php:784
-#: functions.php:797
+#: functions.php:809
+#: functions.php:822
 msgid "ক্যাটাগরির রঙ"
 msgstr ""
 
-#: functions.php:786
+#: functions.php:811
 msgid "ব্যাজ ও সেকশন হেডিং-এ এই রঙ ব্যবহার হবে। খালি রাখলে ডিফল্ট রঙ বসবে।"
 msgstr ""
 
-#: functions.php:787
+#: functions.php:812
 msgid "লেখার রং ও প্রিভিউ: Theme Settings → ক্যাটাগরির রং।"
 msgstr ""
 
-#: functions.php:801
+#: functions.php:826
 msgid "লেখার রং ও প্রিভিউ দেখুন"
 msgstr ""
 
-#: functions.php:803
+#: functions.php:828
 msgid "ব্যাজ ও সেকশন হেডিং-এ এই রঙ ব্যবহার হবে।"
 msgstr ""
 
-#: functions.php:870
+#: functions.php:895
 msgid "জীবনের বিজ্ঞান, মহাবিশ্বের মহাবিস্ময়, মহাকাশ অভিযানের কাহিনী, পদার্থের স্বরূপ, কালজয়ী বিজ্ঞানীদের গল্প – এসব নানা চমকপ্রদ বিষয়ে বিভিন্ন সময়ে আমার লেখাগুলোকে নিয়ে তৈরি করেছি, ‘বিচিত্র বিজ্ঞান’ নামের এই ওয়েব সাইট।"
 msgstr ""
 
@@ -606,7 +666,7 @@ msgid "Select which category to show in each homepage block. Leave empty to auto
 msgstr ""
 
 #: inc/admin-settings.php:242
-#: inc/lang.php:1465
+#: inc/lang.php:1464
 msgid "Default: %s"
 msgstr ""
 
@@ -1104,7 +1164,7 @@ msgid "ছবি"
 msgstr ""
 
 #: inc/english-meta-box.php:103
-#: inc/lang.php:398
+#: inc/lang.php:397
 msgid "English title"
 msgstr ""
 
@@ -1117,7 +1177,7 @@ msgid "— the address under /en/. Leave empty to reuse the Bengali one."
 msgstr ""
 
 #: inc/english-meta-box.php:117
-#: inc/lang.php:408
+#: inc/lang.php:407
 msgid "English excerpt"
 msgstr ""
 
@@ -1126,22 +1186,22 @@ msgid "— used on cards and lists. Leave empty to trim the article."
 msgstr ""
 
 #: inc/english-meta-box.php:124
-#: inc/lang.php:413
+#: inc/lang.php:412
 msgid "English article"
 msgstr ""
 
 #: inc/english-meta-box.php:143
-#: inc/lang.php:418
+#: inc/lang.php:417
 msgid "English SEO title"
 msgstr ""
 
 #: inc/english-meta-box.php:147
-#: inc/lang.php:428
+#: inc/lang.php:427
 msgid "English focus keyphrase"
 msgstr ""
 
 #: inc/english-meta-box.php:154
-#: inc/lang.php:423
+#: inc/lang.php:422
 msgid "English meta description"
 msgstr ""
 
@@ -1175,7 +1235,7 @@ msgstr ""
 
 #: inc/english-meta-box.php:30
 #: inc/english-meta-box.php:264
-#: inc/lang.php:1409
+#: inc/lang.php:1408
 msgid "English edition (/en)"
 msgstr ""
 
@@ -1210,7 +1270,7 @@ msgid "A post needs an English title, an English article and the tick below befo
 msgstr ""
 
 #: inc/english-meta-box.php:98
-#: inc/lang.php:393
+#: inc/lang.php:392
 msgid "Ready — show this post in the English edition"
 msgstr ""
 
@@ -1240,83 +1300,91 @@ msgstr ""
 msgid "zip ফোল্ডারের নাম থিমের স্লাগে বদলানো যায়নি।"
 msgstr ""
 
-#: inc/lang.php:1157
+#: inc/lang.php:1156
 msgid "Primary Menu (English edition)"
 msgstr ""
 
-#: inc/lang.php:1246
+#: inc/lang.php:1245
 msgid "Tagline"
 msgstr ""
 
-#: inc/lang.php:1251
+#: inc/lang.php:1250
 msgid "Editor's picks heading"
 msgstr ""
 
-#: inc/lang.php:1256
+#: inc/lang.php:1255
 msgid "Popular posts heading"
 msgstr ""
 
-#: inc/lang.php:1261
+#: inc/lang.php:1260
 msgid "Popular categories heading"
 msgstr ""
 
-#: inc/lang.php:1266
+#: inc/lang.php:1265
 msgid "About heading"
 msgstr ""
 
-#: inc/lang.php:1271
+#: inc/lang.php:1270
 msgid "About text"
 msgstr ""
 
-#: inc/lang.php:1276
+#: inc/lang.php:1275
 msgid "Contact heading"
 msgstr ""
 
-#: inc/lang.php:1281
+#: inc/lang.php:1280
 msgid "Subscribe heading"
 msgstr ""
 
-#: inc/lang.php:1286
+#: inc/lang.php:1285
 msgid "YouTube button text"
 msgstr ""
 
-#: inc/lang.php:1291
+#: inc/lang.php:1290
 msgid "YouTube button text (footer)"
 msgstr ""
 
-#: inc/lang.php:1296
+#: inc/lang.php:1295
 msgid "Site name"
 msgstr ""
 
-#: inc/lang.php:1411
+#: inc/lang.php:1410
 msgid "The wording the site uses under /en. Leave a field empty to use the built-in English text."
 msgstr ""
 
-#: inc/lang.php:1429
+#: inc/lang.php:1428
 msgid "Logo for the English edition"
 msgstr ""
 
-#: inc/lang.php:1430
+#: inc/lang.php:1429
 msgid "Shown instead of the site logo under /en. Leave empty to use the same logo as the Bengali site."
 msgstr ""
 
-#: inc/lang.php:1440
+#: inc/lang.php:1439
 msgid "Site description (search engines)"
 msgstr ""
 
-#: inc/lang.php:1754
+#: inc/lang.php:1758
 msgid "#%d is not an image in the media library."
 msgstr ""
 
-#: inc/lang.php:1803
+#: inc/lang.php:1807
 msgid "ইংরেজিতে পড়ুন"
 msgstr ""
 
-#: inc/lang.php:1804
+#: inc/lang.php:1808
 msgid "Read in Bengali"
 msgstr ""
 
-#: inc/lang.php:403
+#: inc/lang.php:1862
+msgid "এই লেখাটি ইংরেজিতে পড়ুন"
+msgstr ""
+
+#: inc/lang.php:1863
+msgid "Read this article in Bangla"
+msgstr ""
+
+#: inc/lang.php:402
 msgid "English slug (the /en/… address)"
 msgstr ""
 
@@ -1397,7 +1465,7 @@ msgstr ""
 msgid "%1$s বিষয়ে %2$s-এর সব লেখা।"
 msgstr ""
 
-#: inc/seo-frontend.php:569
+#: inc/seo-frontend.php:571
 msgid "হোম"
 msgstr ""
 
@@ -1605,36 +1673,36 @@ msgstr ""
 msgid "অন্য কোনো শব্দ দিয়ে খুঁজে দেখুন।"
 msgstr ""
 
-#: single.php:143
+#: single.php:151
 msgid "আগের আর্টিকেল"
 msgstr ""
 
-#: single.php:146
+#: single.php:154
 msgid "পরের আর্টিকেল"
 msgstr ""
 
-#: single.php:162
+#: single.php:170
 msgid "বিজ্ঞানের প্রতি গভীর আগ্রহ থেকে লেখালেখির শুরু। জটিল বৈজ্ঞানিক বিষয়গুলোকে সহজ বাংলায় পাঠকের কাছে পৌঁছে দেওয়াই লক্ষ্য।"
 msgstr ""
 
-#: single.php:203
+#: single.php:211
 msgid "এই বিভাগের আরও লেখা"
 msgstr ""
 
-#: single.php:49
+#: single.php:57
 msgid "সর্বশেষ হালনাগাদ: %s"
 msgstr ""
 
-#: single.php:64
+#: single.php:72
 msgid "সম্পাদনা"
 msgstr ""
 
-#: single.php:76
+#: single.php:84
 msgid "সূচিপত্র দেখান বা লুকান"
 msgstr ""
 
-#: single.php:78
-#: single.php:81
-#: single.php:82
+#: single.php:86
+#: single.php:89
+#: single.php:90
 msgid "সূচিপত্র"
 msgstr ""

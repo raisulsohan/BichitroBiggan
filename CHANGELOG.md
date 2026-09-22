@@ -2,6 +2,21 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.11.0
+
+- A language switch on the article itself, opposite the category badge: from a
+  Bengali article it opens that same article in English, and from the English
+  one it comes back to the Bengali. Inside the reading popup it swaps the
+  article in place instead of closing the popup for a page load.
+- It appears only where there is somewhere to go. Most articles have no English
+  version yet, and a button that drops the reader on a front page instead of
+  the piece they were reading is worse than no button at all.
+- Everything the script writes on the page is translatable now — the quote
+  tooltip's Copy and Share buttons, the saved-articles drawer, the toasts, the
+  video popup's labels. They were typed into theme.js in Bengali, where no
+  translation could reach them, so the English edition showed Bengali buttons
+  on an English page.
+
 ## 7.10.5
 
 - The structured data on an English article carried the Bengali headline. The
