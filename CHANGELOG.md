@@ -2,6 +2,22 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.10.1
+
+- Everything around an article now reads English under /en, not just the
+  article. A category with no English name of its own takes it from its own
+  slug — space-science becomes "Space Science" — so the badges, the section
+  headings and the category strip are English from the first load, and a name
+  typed into Categories → English name still wins.
+- Menu labels follow. A label written in Bengali is replaced by the English
+  name of the category it points at, or by the theme's own translation of it,
+  which is how "প্রথম পাতা" reads "Home". A label already written in English is
+  left alone, so a menu built for /en keeps its own wording.
+- The month list in the sidebar was cached once and served to both editions,
+  which left Bengali month names under /en. Each edition caches its own now.
+- The switch itself reads EN on the Bengali site and BN on the English one —
+  each side in its own language, tooltip included.
+
 ## 7.10.0
 
 - An English edition at `/en`. The same site, the same design, the same

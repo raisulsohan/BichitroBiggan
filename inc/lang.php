@@ -855,13 +855,52 @@ add_action( 'template_redirect', 'bb_en_template_redirect', 5 );
  * @return string
  */
 function bb_en_term_name( $term ) {
-	$term_id = ( $term instanceof WP_Term ) ? (int) $term->term_id : (int) $term;
+	$term = ( $term instanceof WP_Term ) ? $term : get_term( (int) $term );
 
-	if ( ! $term_id ) {
+	if ( ! $term instanceof WP_Term ) {
 		return '';
 	}
 
-	return trim( (string) get_term_meta( $term_id, 'bb_en_name', true ) );
+	$english = trim( (string) get_term_meta( $term->term_id, 'bb_en_name', true ) );
+
+	if ( '' !== $english ) {
+		return $english;
+	}
+
+	/*
+	 * Nothing was typed in — but this site's slugs are already English
+	 * (space-science, wonders-of-the-universe), so the slug is a better name
+	 * than the Bengali one. "Nature and Environment", not "প্রকৃতি ও পরিবেশ".
+	 */
+	return bb_en_name_from_slug( $term->slug );
+}
+
+/**
+ * "wonders-of-the-universe" => "Wonders of the Universe".
+ *
+ * Returns '' for a slug that is not English to begin with, so a Bengali or
+ * percent-encoded slug never turns into nonsense.
+ *
+ * @param string $slug Term slug.
+ * @return string
+ */
+function bb_en_name_from_slug( $slug ) {
+	$slug = (string) $slug;
+
+	if ( '' === $slug || ! preg_match( '/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug ) ) {
+		return '';
+	}
+
+	// Words English keeps in lower case inside a title.
+	$small = array( 'a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'from', 'in', 'of', 'on', 'or', 'the', 'to', 'vs', 'with' );
+	$words = explode( '-', $slug );
+	$out   = array();
+
+	foreach ( $words as $index => $word ) {
+		$out[] = ( 0 !== $index && in_array( $word, $small, true ) ) ? $word : ucfirst( $word );
+	}
+
+	return implode( ' ', $out );
 }
 
 /**
@@ -932,6 +971,44 @@ function bb_en_term_title( $title ) {
 add_filter( 'single_cat_title', 'bb_en_term_title' );
 add_filter( 'single_tag_title', 'bb_en_term_title' );
 add_filter( 'single_term_title', 'bb_en_term_title' );
+
+/**
+ * The English name and description of a category or tag, through the REST API,
+ * so they can be set by the same script that publishes posts.
+ */
+function bb_en_register_term_meta() {
+	foreach ( array( 'category', 'post_tag' ) as $taxonomy ) {
+		register_term_meta(
+			$taxonomy,
+			'bb_en_name',
+			array(
+				'type'              => 'string',
+				'single'            => true,
+				'show_in_rest'      => true,
+				'sanitize_callback' => 'sanitize_text_field',
+				'auth_callback'     => 'bb_en_term_meta_can_edit',
+			)
+		);
+
+		register_term_meta(
+			$taxonomy,
+			'bb_en_description',
+			array(
+				'type'              => 'string',
+				'single'            => true,
+				'show_in_rest'      => true,
+				'sanitize_callback' => 'sanitize_textarea_field',
+				'auth_callback'     => 'bb_en_term_meta_can_edit',
+			)
+		);
+	}
+}
+add_action( 'init', 'bb_en_register_term_meta' );
+
+/** Writing a term's English name needs the same right as renaming it. */
+function bb_en_term_meta_can_edit() {
+	return current_user_can( 'manage_categories' );
+}
 
 /* -------------------------------------------------------------------------
  * 8b. Writers
@@ -1019,6 +1096,59 @@ function bb_en_register_menu() {
 	register_nav_menu( 'primary_en', __( 'Primary Menu (English edition)', 'bichitro-biggan' ) );
 }
 add_action( 'after_setup_theme', 'bb_en_register_menu', 11 );
+
+/**
+ * Menu labels are typed by hand and stored in Bengali, so a menu built for the
+ * Bengali site would read "প্রথম পাতা" and "মহাকাশ বিজ্ঞান" under /en.
+ *
+ * A label already written in English is left exactly as it is — that is how a
+ * menu made for the English edition keeps its own wording. A Bengali one is
+ * replaced by the category's English name, or, failing that, by the theme's own
+ * translation of it, which is where "প্রথম পাতা" becomes "Home".
+ *
+ * @param object $item A menu item on its way to the walker.
+ * @return object
+ */
+function bb_en_nav_menu_item( $item ) {
+	if ( ! bb_is_en() || ! isset( $item->title ) ) {
+		return $item;
+	}
+
+	if ( ! preg_match( '/[\x{0980}-\x{09FF}]/u', (string) $item->title ) ) {
+		return $item;
+	}
+
+	if ( isset( $item->type ) && 'taxonomy' === $item->type && ! empty( $item->object_id ) ) {
+		$english = bb_en_term_name( (int) $item->object_id );
+
+		if ( '' !== $english ) {
+			$item->title = $english;
+
+			return $item;
+		}
+	}
+
+	if ( isset( $item->type ) && 'post_type' === $item->type && ! empty( $item->object_id ) ) {
+		$english = bb_en_title( (int) $item->object_id );
+
+		if ( '' !== $english ) {
+			$item->title = $english;
+
+			return $item;
+		}
+	}
+
+	// translate(), not __(): the label is data, and only a string the theme
+	// already knows — "প্রথম পাতা", "সকল লেখা" — comes back changed.
+	$translated = translate( $item->title, 'bichitro-biggan' );
+
+	if ( $translated !== $item->title ) {
+		$item->title = $translated;
+	}
+
+	return $item;
+}
+add_filter( 'wp_setup_nav_menu_item', 'bb_en_nav_menu_item' );
 
 /**
  * @param array $args wp_nav_menu() arguments.
@@ -1415,10 +1545,14 @@ function bb_lang_switch( $class = 'bb-topbar__lang' ) {
 		return;
 	}
 
-	$label = $to_english ? 'EN' : 'বাং';
+	/*
+	 * Each edition speaks its own language, the switch included: the Bengali
+	 * site offers "EN" in Bengali words, the English one offers "BN" in English.
+	 */
+	$label = $to_english ? 'EN' : 'BN';
 	$title = $to_english
-		? __( 'Read this site in English', 'bichitro-biggan' )
-		: __( 'বাংলায় পড়ুন', 'bichitro-biggan' );
+		? __( 'ইংরেজিতে পড়ুন', 'bichitro-biggan' )
+		: __( 'Read in Bengali', 'bichitro-biggan' );
 
 	printf(
 		'<a class="%1$s" href="%2$s" hreflang="%3$s" lang="%3$s" title="%4$s" aria-label="%4$s" rel="alternate"><span aria-hidden="true">%5$s</span></a>',

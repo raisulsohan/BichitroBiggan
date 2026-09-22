@@ -2,7 +2,7 @@
 
 [![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b.svg?logo=wordpress&logoColor=white)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg?logo=php&logoColor=white)](https://php.net)
-[![Version](https://img.shields.io/badge/Version-7.10.0-0080ff.svg)](style.css)
+[![Version](https://img.shields.io/badge/Version-7.10.1-0080ff.svg)](style.css)
 [![Zero-Plugin Architecture](https://img.shields.io/badge/Plugins-0%20(Built--in)-success.svg)](#-key-features)
 [![Responsive](https://img.shields.io/badge/Responsive-Mobile%20%26%20Desktop-brightgreen.svg)](#-key-features)
 
@@ -106,6 +106,7 @@ npm run build        # style.min.css and theme.min.js
 npm run dark         # rebuild the dark palette from the light rules
 npm run fonts        # re-download the font files and their @font-face sheet
 npm run pot          # refresh languages/bichitro-biggan.pot
+npm run mo           # compile languages/en.po into the .mo /en reads
 npm run lint:php     # parse every PHP file and report syntax errors
 ```
 

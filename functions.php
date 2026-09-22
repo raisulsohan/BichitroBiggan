@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.10.0' );
+define( 'BB_VERSION', '7.10.1' );
 
 /**
  * The built copy of an asset, when there is one and it is not stale.
@@ -1272,7 +1272,8 @@ function bb_get_archive_tree( $cat_id = 0 ) {
 		$cat_id = get_queried_object_id();
 	}
 
-	$key    = 'bb_tree_' . (int) get_option( 'bb_cache_version', 1 ) . '_' . (int) $cat_id;
+	// The month names are baked into the tree, so each edition caches its own.
+	$key    = 'bb_tree_' . bb_lang() . '_' . (int) get_option( 'bb_cache_version', 1 ) . '_' . (int) $cat_id;
 	$cached = get_transient( $key );
 
 	if ( is_array( $cached ) ) {

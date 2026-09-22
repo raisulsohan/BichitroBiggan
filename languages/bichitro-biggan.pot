@@ -227,25 +227,25 @@ msgstr ""
 msgid "প্রধান মেন্যু"
 msgstr ""
 
-#: functions.php:1540
+#: functions.php:1541
 msgid "পেজ নেভিগেশন"
 msgstr ""
 
-#: functions.php:1548
+#: functions.php:1549
 msgid "পৃষ্ঠা %1$s / %2$s"
 msgstr ""
 
-#: functions.php:1615
-#: functions.php:1637
+#: functions.php:1616
+#: functions.php:1638
 #: inc/template-tags.php:416
 msgid "প্রথম পাতা"
 msgstr ""
 
-#: functions.php:1644
+#: functions.php:1645
 msgid "%s সাল"
 msgstr ""
 
-#: functions.php:1650
+#: functions.php:1651
 msgid "সার্চ"
 msgstr ""
 
@@ -606,7 +606,7 @@ msgid "Select which category to show in each homepage block. Leave empty to auto
 msgstr ""
 
 #: inc/admin-settings.php:242
-#: inc/lang.php:1252
+#: inc/lang.php:1382
 msgid "Default: %s"
 msgstr ""
 
@@ -1175,7 +1175,7 @@ msgstr ""
 
 #: inc/english-meta-box.php:30
 #: inc/english-meta-box.php:264
-#: inc/lang.php:1218
+#: inc/lang.php:1348
 msgid "English edition (/en)"
 msgstr ""
 
@@ -1240,68 +1240,68 @@ msgstr ""
 msgid "zip ফোল্ডারের নাম থিমের স্লাগে বদলানো যায়নি।"
 msgstr ""
 
-#: inc/lang.php:1019
+#: inc/lang.php:1096
 msgid "Primary Menu (English edition)"
 msgstr ""
 
-#: inc/lang.php:1055
+#: inc/lang.php:1185
 msgid "Tagline"
 msgstr ""
 
-#: inc/lang.php:1060
+#: inc/lang.php:1190
 msgid "Editor's picks heading"
 msgstr ""
 
-#: inc/lang.php:1065
+#: inc/lang.php:1195
 msgid "Popular posts heading"
 msgstr ""
 
-#: inc/lang.php:1070
+#: inc/lang.php:1200
 msgid "Popular categories heading"
 msgstr ""
 
-#: inc/lang.php:1075
+#: inc/lang.php:1205
 msgid "About heading"
 msgstr ""
 
-#: inc/lang.php:1080
+#: inc/lang.php:1210
 msgid "About text"
 msgstr ""
 
-#: inc/lang.php:1085
+#: inc/lang.php:1215
 msgid "Contact heading"
 msgstr ""
 
-#: inc/lang.php:1090
+#: inc/lang.php:1220
 msgid "Subscribe heading"
 msgstr ""
 
-#: inc/lang.php:1095
+#: inc/lang.php:1225
 msgid "YouTube button text"
 msgstr ""
 
-#: inc/lang.php:1100
+#: inc/lang.php:1230
 msgid "YouTube button text (footer)"
 msgstr ""
 
-#: inc/lang.php:1105
+#: inc/lang.php:1235
 msgid "Site name"
 msgstr ""
 
-#: inc/lang.php:1220
+#: inc/lang.php:1350
 msgid "The wording the site uses under /en. Leave a field empty to use the built-in English text."
 msgstr ""
 
-#: inc/lang.php:1227
+#: inc/lang.php:1357
 msgid "Site description (search engines)"
 msgstr ""
 
-#: inc/lang.php:1420
-msgid "Read this site in English"
+#: inc/lang.php:1554
+msgid "ইংরেজিতে পড়ুন"
 msgstr ""
 
-#: inc/lang.php:1421
-msgid "বাংলায় পড়ুন"
+#: inc/lang.php:1555
+msgid "Read in Bengali"
 msgstr ""
 
 #: inc/lang.php:403
