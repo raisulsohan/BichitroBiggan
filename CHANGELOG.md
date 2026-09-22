@@ -2,6 +2,14 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.10.4
+
+- The hreflang tags drop the query string. A page reached with ?utm_source= or
+  a cache-buster on it was offering that exact address to search engines as the
+  other language of itself; they now point at the clean address. The switch in
+  the top bar still keeps the query, so a filtered archive stays filtered when
+  the reader crosses over.
+
 ## 7.10.3
 
 - The English edition answers with its own SEO fields wherever the site asks

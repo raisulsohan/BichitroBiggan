@@ -260,7 +260,7 @@ function bb_en_current_url() {
  * @param string $lang 'en' or 'bn'.
  * @return string
  */
-function bb_en_url_for( $lang ) {
+function bb_en_url_for( $lang, $with_query = true ) {
 	$lang = ( 'en' === $lang ) ? 'en' : 'bn';
 
 	if ( is_singular() && ! is_front_page() ) {
@@ -282,8 +282,7 @@ function bb_en_url_for( $lang ) {
 		);
 	}
 
-	$path  = bb_en_neutral_uri();
-	$query = bb_en_current_query();
+	$path = bb_en_neutral_uri();
 
 	$base = (string) bb_en_in_lang(
 		$lang,
@@ -292,7 +291,7 @@ function bb_en_url_for( $lang ) {
 		}
 	);
 
-	return $base . $query;
+	return $with_query ? $base . bb_en_current_query() : $base;
 }
 
 /* -------------------------------------------------------------------------
@@ -1537,8 +1536,13 @@ function bb_en_hreflang_tags() {
 		return;
 	}
 
-	$bengali = bb_en_url_for( 'bn' );
-	$english = bb_en_url_for( 'en' );
+	/*
+	 * Without the query string: an address arrived at with ?utm_source= or a
+	 * cache-buster on it must not be offered to a search engine as the
+	 * canonical other-language version of the page.
+	 */
+	$bengali = bb_en_url_for( 'bn', false );
+	$english = bb_en_url_for( 'en', false );
 
 	if ( ! $bengali ) {
 		return;
