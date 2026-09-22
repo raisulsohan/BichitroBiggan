@@ -1,1628 +1,1174 @@
-# Translation template for Bichitro Biggan.
-# This file is distributed under the same license as the theme.
-#, fuzzy
+# English (United States) for the Bichitro Biggan theme.
+# Loaded by inc/lang.php only while /en is being served — never by the Bengali site,
+# whatever locale WordPress itself is running in. The name is deliberately not a
+# locale (en_US.mo would be picked up automatically on an English-locale install).
+#
+# Edit this file (Poedit works), then run: npm run mo
 msgid ""
 msgstr ""
 "Project-Id-Version: Bichitro Biggan\n"
-"Report-Msgid-Bugs-To: https://github.com/raisulsohan/BichitroBiggan/issues\n"
+"Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language-Team: Bengali\n"
-"X-Generator: tools/make-pot.mjs\n"
-"X-Domain: bichitro-biggan\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: tools/make-mo.mjs\n"
 
-#: 404.php:18
 msgid "পাতাটি খুঁজে পাওয়া যায়নি"
-msgstr ""
+msgstr "Page not found"
 
-#: 404.php:19
 msgid "আপনি যে ঠিকানায় এসেছেন সেটি সরানো হয়েছে বা কখনো ছিল না।"
-msgstr ""
+msgstr "The address you followed has moved, or never existed."
 
-#: 404.php:24
 msgid "সাম্প্রতিক লেখা"
-msgstr ""
+msgstr "Recent articles"
 
-#: archive.php:198
-#: author.php:93
-#: home.php:48
-#: index.php:46
-#: template-posts.php:56
 msgid "কোনো লেখা পাওয়া যায়নি"
-msgstr ""
+msgstr "No articles found"
 
-#: archive.php:199
 msgid "এই বিভাগে এখনো কিছু প্রকাশ করা হয়নি। অন্য কিছু খুঁজে দেখুন।"
-msgstr ""
+msgstr "Nothing has been published in this section yet. Try another one."
 
-#: archive.php:22
 msgid "%s সালের লেখা"
-msgstr ""
+msgstr "Articles from %s"
 
-#: archive.php:58
 msgid "%1$s %2$s সালের আর্কাইভ"
-msgstr ""
+msgstr "%1$s %2$s archive"
 
-#: archive.php:64
 msgid "%s সালের আর্কাইভ"
-msgstr ""
+msgstr "%s archive"
 
-#: archive.php:70
 msgid "ফিল্টার মুছুন"
-msgstr ""
+msgstr "Clear the filter"
 
-#: archive.php:70
 msgid "সব লেখা দেখুন"
-msgstr ""
+msgstr "Show every article"
 
-#: author.php:42
-#: inc/category-colors-admin.php:149
 msgid "%s টি লেখা"
-msgstr ""
+msgstr "%s articles"
 
-#: category-videos.php:82
 msgid "কোনো পডকাস্ট পাওয়া যায়নি"
-msgstr ""
+msgstr "No podcasts found"
 
-#: comments.php:24
 msgid "%s টি মন্তব্য"
 msgid_plural "%s টি মন্তব্য"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%s comment"
+msgstr[1] "%s comments"
 
-#: comments.php:49
 msgid "এই লেখায় মন্তব্য বন্ধ আছে।"
-msgstr ""
+msgstr "Comments are closed on this article."
 
-#: comments.php:54
 msgid "মন্তব্য করুন"
-msgstr ""
+msgstr "Leave a comment"
 
-#: comments.php:58
 msgid "আপনার মন্তব্য…"
-msgstr ""
+msgstr "Your comment…"
 
-#: footer.php:111
-#: footer.php:111
-#: header.php:56
-#: header.php:56
 msgid "ইমেইল কপি করুন"
-msgstr ""
+msgstr "Copy the email address"
 
-#: footer.php:139
 msgid "লেখক ও সম্পাদক"
-msgstr ""
+msgstr "Writer and editor"
 
-#: footer.php:148
 msgid "ডেভেলপার"
-msgstr ""
+msgstr "Developer"
 
-#: footer.php:157
-#: header.php:139
-#: header.php:139
-#: searchform.php:14
-#: searchform.php:23
 msgid "খুঁজুন"
-msgstr ""
+msgstr "Search"
 
-#: footer.php:165
-#: searchform.php:19
 msgid "খুঁজুন..."
-msgstr ""
+msgstr "Search…"
 
-#: footer.php:168
 msgid "মুছে ফেলুন"
-msgstr ""
+msgstr "Clear"
 
-#: footer.php:171
-#: footer.php:183
-#: footer.php:198
-#: inc/template-tags.php:766
 msgid "বন্ধ করুন"
-msgstr ""
+msgstr "Close"
 
-#: footer.php:181
 msgid "আর্টিকেল"
-msgstr ""
+msgstr "Article"
 
-#: footer.php:185
-#: footer.php:202
 msgid "উপরে যান"
-msgstr ""
+msgstr "Back to top"
 
-#: footer.php:194
 msgid "আপনি পড়ছিলেন:"
-msgstr ""
+msgstr "You were reading:"
 
-#: footer.php:197
 msgid "পড়া চালিয়ে যান"
-msgstr ""
+msgstr "Continue reading"
 
-#: footer.php:40
 msgid "সময় নির্বাচন করুন"
-msgstr ""
+msgstr "Choose a period"
 
-#: footer.php:41
 msgid "এই সপ্তাহে"
-msgstr ""
+msgstr "This week"
 
-#: footer.php:42
 msgid "এই মাসে"
-msgstr ""
+msgstr "This month"
 
-#: footer.php:43
 msgid "এই বছরে"
-msgstr ""
+msgstr "This year"
 
-#: footer.php:44
 msgid "সব সময়"
-msgstr ""
+msgstr "All time"
 
-#: front-page.php:174
 msgid "কোয়ান্টাম বিজ্ঞান"
-msgstr ""
+msgstr "Quantum Science"
 
-#: front-page.php:175
 msgid "নোবেল পুরষ্কার"
-msgstr ""
+msgstr "The Nobel Prize"
 
-#: front-page.php:278
 msgid "জীবনের বিজ্ঞান"
-msgstr ""
+msgstr "The Science of Life"
 
-#: front-page.php:279
 msgid "পদার্থ বিজ্ঞান"
-msgstr ""
+msgstr "Physics"
 
-#: front-page.php:373
 msgid "বিবিধ বিজ্ঞান"
-msgstr ""
+msgstr "Miscellaneous Science"
 
-#: front-page.php:374
 msgid "সাম্প্রতিক বিজ্ঞান"
-msgstr ""
+msgstr "Science Now"
 
-#: front-page.php:437
 msgid "মহাকাশ বিজ্ঞান"
-msgstr ""
+msgstr "Space Science"
 
-#: front-page.php:438
 msgid "বিজ্ঞানীদের কথা"
-msgstr ""
+msgstr "Lives of Scientists"
 
-#: front-page.php:478
 msgid "আরও পড়ুন"
-msgstr ""
+msgstr "Read more"
 
-#: front-page.php:499
 msgid "মহাবিশ্বের মহাবিস্ময়"
-msgstr ""
+msgstr "Wonders of the Universe"
 
-#: front-page.php:500
 msgid "প্রকৃতি ও পরিবেশ"
-msgstr ""
+msgstr "Nature and Environment"
 
-#: front-page.php:501
 msgid "বিজ্ঞান ও প্রযুক্তি"
-msgstr ""
+msgstr "Science and Technology"
 
-#: front-page.php:569
-#: home.php:24
-#: index.php:22
-#: template-posts.php:32
 msgid "সকল লেখা"
-msgstr ""
+msgstr "All articles"
 
-#: front-page.php:587
 msgid "এখনো কোনো লেখা প্রকাশ করা হয়নি।"
-msgstr ""
+msgstr "Nothing has been published yet."
 
-#: functions.php:1120
 msgid "এই সময়ের কোনো লেখা পাওয়া যায়নি"
-msgstr ""
+msgstr "No articles from this period"
 
-#: functions.php:135
-#: header.php:109
 msgid "প্রধান মেন্যু"
-msgstr ""
+msgstr "Main menu"
 
-#: functions.php:1540
 msgid "পেজ নেভিগেশন"
-msgstr ""
+msgstr "Page navigation"
 
-#: functions.php:1548
 msgid "পৃষ্ঠা %1$s / %2$s"
-msgstr ""
+msgstr "Page %1$s of %2$s"
 
-#: functions.php:1615
-#: functions.php:1637
-#: inc/template-tags.php:416
 msgid "প্রথম পাতা"
-msgstr ""
+msgstr "Home"
 
-#: functions.php:1644
 msgid "%s সাল"
-msgstr ""
+msgstr "%s"
 
-#: functions.php:1650
 msgid "সার্চ"
-msgstr ""
+msgstr "Search"
 
-#: functions.php:188
 msgid "ইমেইল কপি হয়েছে"
-msgstr ""
+msgstr "Email address copied"
 
-#: functions.php:191
 msgid "লোড হচ্ছে…"
-msgstr ""
+msgstr "Loading…"
 
-#: functions.php:192
 msgid "লেখাটি আনা যায়নি।"
-msgstr ""
+msgstr "The article could not be loaded."
 
-#: functions.php:196
-#: inc/admin-post-search.php:70
 msgid "খোঁজা হচ্ছে…"
-msgstr ""
+msgstr "Searching…"
 
-#: functions.php:197
-#: inc/admin-post-search.php:71
 msgid "কিছু পাওয়া যায়নি"
-msgstr ""
+msgstr "Nothing found"
 
-#: functions.php:198
 msgid "১টি ফলাফল"
-msgstr ""
+msgstr "1 result"
 
-#: functions.php:199
 msgid "%s টি ফলাফল"
-msgstr ""
+msgstr "%s results"
 
-#: functions.php:200
 msgid "অন্তত দুটি অক্ষর লিখুন"
-msgstr ""
+msgstr "Type at least two letters"
 
-#: functions.php:203
 msgid "লিংক কপি হয়েছে"
-msgstr ""
+msgstr "Link copied"
 
-#: functions.php:204
-#: inc/template-tags.php:487
 msgid "শেয়ার করুন"
-msgstr ""
+msgstr "Share"
 
-#: functions.php:205
-#: header.php:233
 msgid "খবরের স্ক্রল থামান"
-msgstr ""
+msgstr "Pause the headline scroll"
 
-#: functions.php:206
 msgid "খবরের স্ক্রল চালু করুন"
-msgstr ""
+msgstr "Start the headline scroll"
 
-#: functions.php:207
-#: header.php:53
-#: header.php:121
 msgid "ডার্ক মোড চালু করুন"
-msgstr ""
+msgstr "Switch to dark mode"
 
-#: functions.php:208
 msgid "লাইট মোড চালু করুন"
-msgstr ""
+msgstr "Switch to light mode"
 
-#: functions.php:467
 msgid "Hero Total Height (মোট উচ্চতা)"
 msgstr ""
 
-#: functions.php:468
 msgid "Left Main Hero Width (১নং বড় হিরোর প্রস্থ)"
 msgstr ""
 
-#: functions.php:469
 msgid "Right Top Card Height (২নং ওপরের কার্ডের উচ্চতা)"
 msgstr ""
 
-#: functions.php:470
 msgid "Bottom Left Card Width (৩নং কার্ডের প্রস্থ অনুপাত)"
 msgstr ""
 
-#: functions.php:473
 msgid "Featured Column Width"
 msgstr ""
 
-#: functions.php:474
 msgid "Featured Card Image Height"
 msgstr ""
 
-#: functions.php:475
 msgid "Side List Thumbnail Width"
 msgstr ""
 
-#: functions.php:476
 msgid "Side List Thumbnail Height"
 msgstr ""
 
-#: functions.php:477
 msgid "Right Grid Card Height"
 msgstr ""
 
-#: functions.php:480
 msgid "Standard Card Image Height"
 msgstr ""
 
-#: functions.php:481
 msgid "Right Column Big Card Height"
 msgstr ""
 
-#: functions.php:482
 msgid "Wide Row Thumbnail Width"
 msgstr ""
 
-#: functions.php:483
 msgid "Wide Row Thumbnail Height"
 msgstr ""
 
-#: functions.php:486
 msgid "Tall Card Height"
 msgstr ""
 
-#: functions.php:487
 msgid "Three Column Grid Gap"
 msgstr ""
 
-#: functions.php:490
 msgid "All Posts Card Image Height"
 msgstr ""
 
-#: functions.php:491
 msgid "Category Page Card Image Height"
 msgstr ""
 
-#: functions.php:494
 msgid "Popup Reading Window Max Width"
 msgstr ""
 
-#: functions.php:495
 msgid "Popup Reading Window Max Height"
 msgstr ""
 
-#: functions.php:537
 msgid "Sidebar"
 msgstr ""
 
-#: functions.php:539
 msgid "Right-hand sidebar for homepage and archives (displayed below Archive list)."
 msgstr ""
 
-#: functions.php:748
-#: functions.php:761
 msgid "ক্যাটাগরির রঙ"
 msgstr ""
 
-#: functions.php:750
 msgid "ব্যাজ ও সেকশন হেডিং-এ এই রঙ ব্যবহার হবে। খালি রাখলে ডিফল্ট রঙ বসবে।"
 msgstr ""
 
-#: functions.php:751
 msgid "লেখার রং ও প্রিভিউ: Theme Settings → ক্যাটাগরির রং।"
 msgstr ""
 
-#: functions.php:765
 msgid "লেখার রং ও প্রিভিউ দেখুন"
 msgstr ""
 
-#: functions.php:767
 msgid "ব্যাজ ও সেকশন হেডিং-এ এই রঙ ব্যবহার হবে।"
 msgstr ""
 
-#: functions.php:834
 msgid "জীবনের বিজ্ঞান, মহাবিশ্বের মহাবিস্ময়, মহাকাশ অভিযানের কাহিনী, পদার্থের স্বরূপ, কালজয়ী বিজ্ঞানীদের গল্প – এসব নানা চমকপ্রদ বিষয়ে বিভিন্ন সময়ে আমার লেখাগুলোকে নিয়ে তৈরি করেছি, ‘বিচিত্র বিজ্ঞান’ নামের এই ওয়েব সাইট।"
-msgstr ""
+msgstr "The science of life, the wonders of the universe, the stories behind space missions, the nature of matter, the lives of scientists who changed how we see it all — the writing I have done on these over the years is gathered here, on ‘Bichitro Biggan’."
 
-#: header.php:144
-#: header.php:180
 msgid "মেন্যু"
-msgstr ""
+msgstr "Menu"
 
-#: header.php:152
 msgid "আগের বিভাগগুলো"
-msgstr ""
+msgstr "Previous sections"
 
-#: header.php:170
 msgid "পরের বিভাগগুলো"
-msgstr ""
+msgstr "Next sections"
 
-#: header.php:212
 msgid "নতুন লেখা"
-msgstr ""
+msgstr "Latest"
 
-#: header.php:231
 msgid "আগের লেখা"
-msgstr ""
+msgstr "Previous article"
 
-#: header.php:232
 msgid "পরের লেখা"
-msgstr ""
+msgstr "Next article"
 
-#: header.php:38
 msgid "মূল কন্টেন্টে যান"
-msgstr ""
+msgstr "Skip to the main content"
 
-#: header.php:47
-#: header.php:47
-#: header.php:124
-#: header.php:124
-#: header.php:176
-#: header.php:176
 msgid "সংরক্ষিত লেখাগুলো দেখুন"
-msgstr ""
+msgstr "See your saved articles"
 
-#: header.php:49
-#: inc/template-tags.php:748
 msgid "পরে পড়ুন"
-msgstr ""
+msgstr "Read later"
 
-#: header.php:54
-#: header.php:122
 msgid "ডার্ক মোড"
-msgstr ""
+msgstr "Dark mode"
 
-#: header.php:94
-#: header.php:132
-#: header.php:132
 msgid "ইউটিউব চ্যানেল"
-msgstr ""
+msgstr "YouTube channel"
 
-#: inc/admin-post-search.php:69
 msgid "লেখা খুঁজুন…"
-msgstr ""
+msgstr "Search the articles…"
 
-#: inc/admin-settings.php:102
 msgid "EDITOR PICKS — Select Posts"
 msgstr ""
 
-#: inc/admin-settings.php:104
 msgid "Displays selected posts in order. If fewer posts are chosen, recent posts fill remaining slots."
 msgstr ""
 
-#: inc/admin-settings.php:108
 msgid "POPULAR POSTS — Post Count"
 msgstr ""
 
-#: inc/admin-settings.php:112
 msgid "Displays most viewed posts sorted by view count."
 msgstr ""
 
-#: inc/admin-settings.php:114
 msgid "ABOUT US Heading"
 msgstr ""
 
-#: inc/admin-settings.php:115
 msgid "ABOUT US text"
 msgstr ""
 
-#: inc/admin-settings.php:116
 msgid "CONTACT US Heading"
 msgstr ""
 
-#: inc/admin-settings.php:117
 msgid "SUBSCRIBE US Heading"
 msgstr ""
 
-#: inc/admin-settings.php:118
 msgid "Footer YouTube Channel URL"
 msgstr ""
 
-#: inc/admin-settings.php:119
 msgid "Footer YouTube Button Label"
 msgstr ""
 
-#: inc/admin-settings.php:120
 msgid "Author and Editor — Name"
 msgstr ""
 
-#: inc/admin-settings.php:121
 msgid "Author and Editor — URL"
 msgstr ""
 
-#: inc/admin-settings.php:122
 msgid "Copyright Text"
 msgstr ""
 
-#: inc/admin-settings.php:122
 msgid "Current year will be appended automatically."
 msgstr ""
 
-#: inc/admin-settings.php:123
 msgid "Developed by — Name"
 msgstr ""
 
-#: inc/admin-settings.php:124
 msgid "Developed by — URL"
 msgstr ""
 
-#: inc/admin-settings.php:125
 msgid "Site name displayed in author bio"
 msgstr ""
 
-#: inc/admin-settings.php:130
 msgid "Advanced"
 msgstr ""
 
-#: inc/admin-settings.php:131
 msgid "Site-specific settings that are not part of the design."
 msgstr ""
 
-#: inc/admin-settings.php:135
 msgid "Google Search Console verification file"
 msgstr ""
 
-#: inc/admin-settings.php:136
 msgid "Only for the \"HTML file\" verification method — enter the file name Google gives you, e.g. google1234abcd5678.html. Leave empty if you verify through Site Kit or DNS."
 msgstr ""
 
-#: inc/admin-settings.php:140
 msgid "Google tag (GA4 Measurement ID)"
 msgstr ""
 
-#: inc/admin-settings.php:142
 msgid "The ID from Google Analytics → Admin → Data streams. Entered here, the Google tag is printed on every page of the site, including /en — nothing else has to be installed, and Google\\'s own \"Test / Verify installation\" button will then find it."
 msgstr ""
 
-#: inc/admin-settings.php:151
-#: inc/admin-settings.php:152
-#: inc/admin-settings.php:432
 msgid "Theme Settings"
 msgstr ""
 
-#: inc/admin-settings.php:164
-#: inc/category-colors-admin.php:105
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
-#: inc/admin-settings.php:183
 msgid "Bichitro Biggan — Theme Settings"
 msgstr ""
 
-#: inc/admin-settings.php:186
 msgid "Settings saved."
 msgstr ""
 
-#: inc/admin-settings.php:197
 msgid "Logo & Tagline (Customizer)"
 msgstr ""
 
-#: inc/admin-settings.php:218
 msgid "Save Settings"
 msgstr ""
 
-#: inc/admin-settings.php:23
 msgid "Homepage"
 msgstr ""
 
-#: inc/admin-settings.php:24
 msgid "Select which category to show in each homepage block. Leave empty to automatically detect categories. For block sizes & layout adjustments, go to: Appearance → Customize → Homepage Layout."
 msgstr ""
 
-#: inc/admin-settings.php:242
-#: inc/lang.php:1252
 msgid "Default: %s"
 msgstr ""
 
-#: inc/admin-settings.php:26
 msgid "Hero Slot 1 — Filter by Category"
 msgstr ""
 
-#: inc/admin-settings.php:27
-#: inc/customizer.php:253
 msgid "Hero Slot 1 — Main Large Post (Left)"
 msgstr ""
 
-#: inc/admin-settings.php:27
-#: inc/admin-settings.php:29
-#: inc/admin-settings.php:31
-#: inc/admin-settings.php:33
 msgid "Select specific post or leave as Auto."
 msgstr ""
 
-#: inc/admin-settings.php:270
 msgid "— None —"
 msgstr ""
 
-#: inc/admin-settings.php:28
 msgid "Hero Slot 2 — Filter by Category"
 msgstr ""
 
-#: inc/admin-settings.php:29
-#: inc/customizer.php:256
 msgid "Hero Slot 2 — Top Right Post"
 msgstr ""
 
-#: inc/admin-settings.php:30
 msgid "Hero Slot 3 — Filter by Category"
 msgstr ""
 
-#: inc/admin-settings.php:300
 msgid "Enabled"
 msgstr ""
 
-#: inc/admin-settings.php:31
-#: inc/customizer.php:259
 msgid "Hero Slot 3 — Bottom Left/Mid Post"
 msgstr ""
 
-#: inc/admin-settings.php:32
 msgid "Hero Slot 4 — Filter by Category"
 msgstr ""
 
-#: inc/admin-settings.php:33
-#: inc/customizer.php:262
 msgid "Hero Slot 4 — Bottom Right / Podcast Post"
 msgstr ""
 
-#: inc/admin-settings.php:34
 msgid "Custom Podcast Duration (Optional)"
 msgstr ""
 
-#: inc/admin-settings.php:34
 msgid "E.g., \"১৫:৪৫ মিনিট\" or \"45:20\""
 msgstr ""
 
-#: inc/admin-settings.php:35
 msgid "Show Author & Date on all Hero Cards"
 msgstr ""
 
-#: inc/admin-settings.php:36
 msgid "Block 1 — Left Side"
 msgstr ""
 
-#: inc/admin-settings.php:37
 msgid "Block 1 — Right Side"
 msgstr ""
 
-#: inc/admin-settings.php:38
 msgid "Block 2 — Left Side"
 msgstr ""
 
-#: inc/admin-settings.php:39
 msgid "Block 2 — Right Side"
 msgstr ""
 
-#: inc/admin-settings.php:40
 msgid "Block 3 — Left Side"
 msgstr ""
 
-#: inc/admin-settings.php:41
 msgid "Block 3 — Right Side"
 msgstr ""
 
-#: inc/admin-settings.php:42
 msgid "Block 4 — Column 1"
 msgstr ""
 
-#: inc/admin-settings.php:43
 msgid "Block 4 — Column 2"
 msgstr ""
 
-#: inc/admin-settings.php:44
 msgid "Block 5 — Column 1"
 msgstr ""
 
-#: inc/admin-settings.php:45
 msgid "Block 5 — Column 2"
 msgstr ""
 
-#: inc/admin-settings.php:46
 msgid "Block 5 — Column 3"
 msgstr ""
 
-#: inc/admin-settings.php:47
 msgid "Podcast Tile (Hero)"
 msgstr ""
 
-#: inc/admin-settings.php:48
 msgid "Show \"New Posts\" Ticker"
 msgstr ""
 
-#: inc/admin-settings.php:49
 msgid "Ticker Post Count"
 msgstr ""
 
-#: inc/admin-settings.php:50
 msgid "Show Search Bar in Header"
 msgstr ""
 
-#: inc/admin-settings.php:51
 msgid "Show Year-wise Archive Tabs"
 msgstr ""
 
-#: inc/admin-settings.php:56
 msgid "Popup, Search & Editor"
 msgstr ""
 
-#: inc/admin-settings.php:57
 msgid "Site interaction settings. If disabled, standard full-page navigation will be used."
 msgstr ""
 
-#: inc/admin-settings.php:61
 msgid "Open articles in popup modal"
 msgstr ""
 
-#: inc/admin-settings.php:63
 msgid "Pushes real post URL to browser address bar and supports back/forward navigation."
 msgstr ""
 
-#: inc/admin-settings.php:65
 msgid "Enable AJAX pagination without full reload"
 msgstr ""
 
-#: inc/admin-settings.php:68
 msgid "Enable live search popup"
 msgstr ""
 
-#: inc/admin-settings.php:70
 msgid "Opens live search overlay with instant results as you type."
 msgstr ""
 
-#: inc/admin-settings.php:74
 msgid "Category slider slides count"
 msgstr ""
 
-#: inc/admin-settings.php:78
 msgid "Setting to 1 hides the ‹ › navigation arrows."
 msgstr ""
 
-#: inc/admin-settings.php:82
 msgid "Enable Classic Editor with Justify button"
 msgstr ""
 
-#: inc/admin-settings.php:84
 msgid "Enables classic editor without extra plugins. Unchecking restores the Block Editor (Gutenberg)."
 msgstr ""
 
-#: inc/admin-settings.php:90
 msgid "Footer"
 msgstr ""
 
-#: inc/admin-settings.php:91
 msgid "Configure footer content, lists, and credit links."
 msgstr ""
 
-#: inc/admin-settings.php:95
 msgid "EDITOR PICKS — Post Count"
 msgstr ""
 
-#: inc/author-slug.php:211
 msgid "লেখক পাতার ঠিকানা"
 msgstr ""
 
-#: inc/author-slug.php:214
 msgid "ঠিকানা"
 msgstr ""
 
-#: inc/author-slug.php:222
 msgid "খালি রাখলে প্রদর্শিত নাম থেকে নিজে থেকেই তৈরি হবে। লগইন নাম কখনো ব্যবহার হবে না।"
 msgstr ""
 
-#: inc/category-colors-admin.php:116
 msgid "সংরক্ষিত হয়েছে।"
 msgstr ""
 
-#: inc/category-colors-admin.php:120
 msgid "প্রতিটি ক্যাটাগরির ব্যাজ ও সেকশন হেডিংয়ের রং। লেখার রঙে তিনটি বিকল্প — নিচের ব্যাজগুলোতেই দেখতে পাবেন কোনটা কেমন দেখায়। পাশে কনট্রাস্টের মাপ দেওয়া আছে: ৪.৫ বা তার বেশি হলে সব পাঠকের জন্য আরামদায়ক।"
 msgstr ""
 
-#: inc/category-colors-admin.php:129
 msgid "ক্যাটাগরি"
 msgstr ""
 
-#: inc/category-colors-admin.php:130
 msgid "ব্যাজের রং"
 msgstr ""
 
-#: inc/category-colors-admin.php:131
 msgid "লেখার রং — যেটা পছন্দ সেটায় ক্লিক করুন"
 msgstr ""
 
-#: inc/category-colors-admin.php:165
 msgid "অটো — থিম নিজে বেছে নেবে"
 msgstr ""
 
-#: inc/category-colors-admin.php:166
 msgid "সাদা"
 msgstr ""
 
-#: inc/category-colors-admin.php:167
 msgid "কালো"
 msgstr ""
 
-#: inc/category-colors-admin.php:189
 msgid "সংরক্ষণ করুন"
 msgstr ""
 
-#: inc/category-colors-admin.php:20
-#: inc/category-colors-admin.php:21
-#: inc/category-colors-admin.php:113
 msgid "ক্যাটাগরির রং"
 msgstr ""
 
-#: inc/category-colors-admin.php:51
 msgid "কনট্রাস্ট"
 msgstr ""
 
-#: inc/category-colors-admin.php:52
 msgid "ভালো"
 msgstr ""
 
-#: inc/category-colors-admin.php:53
 msgid "চলনসই"
 msgstr ""
 
-#: inc/category-colors-admin.php:54
 msgid "কম"
 msgstr ""
 
-#: inc/category-colors-admin.php:55
 msgid "অটো"
 msgstr ""
 
-#: inc/customizer.php:100
 msgid "Tagline / Bio Font Size (px)"
 msgstr ""
 
-#: inc/customizer.php:106
 msgid "Tagline Max Width (px)"
 msgstr ""
 
-#: inc/customizer.php:112
 msgid "YouTube Icon Size (px)"
 msgstr ""
 
-#: inc/customizer.php:118
 msgid "YouTube Button Text Size (px)"
 msgstr ""
 
-#: inc/customizer.php:146
 msgid "Text Logo Size (px) — when no image is uploaded"
 msgstr ""
 
-#: inc/customizer.php:158
 msgid "Show YouTube Button in Header (Desktop)"
 msgstr ""
 
-#: inc/customizer.php:169
 msgid "Show YouTube Button on Mobile (< 640px)"
 msgstr ""
 
-#: inc/customizer.php:172
 msgid "Uncheck to hide the YouTube button on mobile screens so the logo stays clean and centered."
 msgstr ""
 
-#: inc/customizer.php:181
 msgid "YouTube Button Text"
 msgstr ""
 
-#: inc/customizer.php:184
 msgid "e.g. সাবস্ক্রাইব করুন, YouTube Channel, or leave blank for icon only."
 msgstr ""
 
-#: inc/customizer.php:193
 msgid "YouTube Channel URL"
 msgstr ""
 
-#: inc/customizer.php:20
 msgid "— Select Category —"
 msgstr ""
 
-#: inc/customizer.php:202
 msgid "Homepage Layout"
 msgstr ""
 
-#: inc/customizer.php:204
 msgid "Drag sliders to adjust block heights and widths with live preview. Click Publish to save."
 msgstr ""
 
-#: inc/customizer.php:208
 msgid "Hero Mosaic"
 msgstr ""
 
-#: inc/customizer.php:209
 msgid "Block 1 — Featured Card & Side List"
 msgstr ""
 
-#: inc/customizer.php:210
 msgid "Blocks 2 & 3 — Cards & Wide Rows"
 msgstr ""
 
-#: inc/customizer.php:211
 msgid "Blocks 4 & 5 — Tall & Dark Cards"
 msgstr ""
 
-#: inc/customizer.php:212
 msgid "All Posts & Category Pages"
 msgstr ""
 
-#: inc/customizer.php:213
 msgid "Article Popup Reading Modal (পপ-আপ রিডার)"
 msgstr ""
 
-#: inc/customizer.php:249
 msgid "— All Categories —"
 msgstr ""
 
-#: inc/customizer.php:277
 msgid "Slot %d — Filter by Category"
 msgstr ""
 
-#: inc/customizer.php:281
 msgid "Select category to filter posts below."
 msgstr ""
 
-#: inc/customizer.php:291
 msgid "Slot %d — Post"
 msgstr ""
 
-#: inc/customizer.php:295
 msgid "Select specific post or leave on Auto."
 msgstr ""
 
-#: inc/customizer.php:307
 msgid "Block 1 Side List Post Count"
 msgstr ""
 
-#: inc/customizer.php:311
 msgid "Number of posts displayed in the side list next to the main card."
 msgstr ""
 
-#: inc/customizer.php:320
 msgid "All Posts Page — Posts Per Page"
 msgstr ""
 
-#: inc/customizer.php:332
 msgid "Category Pages — Posts Per Page"
 msgstr ""
 
-#: inc/customizer.php:336
 msgid "To preview, open a category page in the preview frame."
 msgstr ""
 
-#: inc/customizer.php:345
 msgid "Featured Hero Mosaic Post Count"
 msgstr ""
 
-#: inc/customizer.php:355
 msgid "Footer 3 Columns (Editor Picks & Popular)"
 msgstr ""
 
-#: inc/customizer.php:357
 msgid "Customize headings, post counts, and pick specific articles for Editor Picks and Popular Posts."
 msgstr ""
 
-#: inc/customizer.php:367
 msgid "ফুটার পোস্টের ছবি/থাম্বনেইল দেখাবেন? (Show Thumbnails)"
 msgstr ""
 
-#: inc/customizer.php:370
 msgid "টিক চিহ্ন না দিলে শুধু লেখার টাইটেল, লেখক ও তারিখ দেখাবে।"
 msgstr ""
 
-#: inc/customizer.php:380
 msgid "Editor Picks Heading"
 msgstr ""
 
-#: inc/customizer.php:394
 msgid "Editor Pick #%d (লেখা নির্বাচন করুন)"
 msgstr ""
 
-#: inc/customizer.php:408
 msgid "Popular Posts Heading"
 msgstr ""
 
-#: inc/customizer.php:41
 msgid "Header Tagline / Bio"
 msgstr ""
 
-#: inc/customizer.php:421
 msgid "Popular Category Heading"
 msgstr ""
 
-#: inc/customizer.php:433
 msgid "Popular Category Count"
 msgstr ""
 
-#: inc/customizer.php:44
 msgid "Italic tagline text displayed next to the header logo."
 msgstr ""
 
-#: inc/customizer.php:443
 msgid "Footer About & Contact Info"
 msgstr ""
 
-#: inc/customizer.php:445
 msgid "Customize footer About Us, Contact, and Subscribe elements with live preview."
 msgstr ""
 
-#: inc/customizer.php:458
 msgid "Contact Email (copies on ✉ click)"
 msgstr ""
 
-#: inc/customizer.php:53
 msgid "Contact Email"
 msgstr ""
 
-#: inc/customizer.php:56
 msgid "Email copied to clipboard when clicking the ✉ icon in top bar and footer."
 msgstr ""
 
-#: inc/customizer.php:65
 msgid "Default Fallback Image"
 msgstr ""
 
-#: inc/customizer.php:67
 msgid "Image displayed when a post does not have a featured image."
 msgstr ""
 
-#: inc/customizer.php:74
 msgid "Header & Masthead Layout"
 msgstr ""
 
-#: inc/customizer.php:76
 msgid "Drag sliders to customize logo height, tagline font size, tagline max width, and YouTube button with live preview."
 msgstr ""
 
-#: inc/customizer.php:82
 msgid "Header Logo Height (px)"
 msgstr ""
 
-#: inc/customizer.php:88
 msgid "Sticky Navigation Logo Height (px)"
 msgstr ""
 
-#: inc/customizer.php:94
 msgid "Footer Logo Height (px)"
 msgstr ""
 
-#: inc/editor.php:102
 msgid "ছবি বেছে নিন"
 msgstr ""
 
-#: inc/editor.php:103
 msgid "সরিয়ে দিন"
 msgstr ""
 
-#: inc/editor.php:105
 msgid "Media Library থেকে ছবি বেছে নিন। এটি Gravatar-এর বদলে সাইটের সব জায়গায় দেখাবে। বর্গাকার ছবি (যেমন ৫০০×৫০০) সবচেয়ে ভালো দেখায়।"
 msgstr ""
 
-#: inc/editor.php:91
 msgid "প্রোফাইল ছবি"
 msgstr ""
 
-#: inc/editor.php:94
 msgid "ছবি"
 msgstr ""
 
-#: inc/english-meta-box.php:103
-#: inc/lang.php:398
 msgid "English title"
 msgstr ""
 
-#: inc/english-meta-box.php:109
 msgid "English slug"
 msgstr ""
 
-#: inc/english-meta-box.php:110
 msgid "— the address under /en/. Leave empty to reuse the Bengali one."
 msgstr ""
 
-#: inc/english-meta-box.php:117
-#: inc/lang.php:408
 msgid "English excerpt"
 msgstr ""
 
-#: inc/english-meta-box.php:118
 msgid "— used on cards and lists. Leave empty to trim the article."
 msgstr ""
 
-#: inc/english-meta-box.php:124
-#: inc/lang.php:413
 msgid "English article"
 msgstr ""
 
-#: inc/english-meta-box.php:143
-#: inc/lang.php:418
 msgid "English SEO title"
 msgstr ""
 
-#: inc/english-meta-box.php:147
-#: inc/lang.php:428
 msgid "English focus keyphrase"
 msgstr ""
 
-#: inc/english-meta-box.php:154
-#: inc/lang.php:423
 msgid "English meta description"
 msgstr ""
 
-#: inc/english-meta-box.php:155
 msgid "— up to about 155 characters."
 msgstr ""
 
-#: inc/english-meta-box.php:220
 msgid "EN"
 msgstr ""
 
-#: inc/english-meta-box.php:237
 msgid "Live in the English edition"
 msgstr ""
 
-#: inc/english-meta-box.php:242
 msgid "Translated, not ticked as ready"
 msgstr ""
 
-#: inc/english-meta-box.php:267
 msgid "Name in English"
 msgstr ""
 
-#: inc/english-meta-box.php:270
 msgid "Used for the byline and the author page under /en."
 msgstr ""
 
-#: inc/english-meta-box.php:274
 msgid "Biography in English"
 msgstr ""
 
-#: inc/english-meta-box.php:30
-#: inc/english-meta-box.php:264
-#: inc/lang.php:1218
 msgid "English edition (/en)"
 msgstr ""
 
-#: inc/english-meta-box.php:333
-#: inc/english-meta-box.php:353
 msgid "English name"
 msgstr ""
 
-#: inc/english-meta-box.php:335
-#: inc/english-meta-box.php:356
 msgid "Shown instead of the Bengali name under /en."
 msgstr ""
 
-#: inc/english-meta-box.php:360
 msgid "English description"
 msgstr ""
 
-#: inc/english-meta-box.php:85
 msgid "Live in the English edition."
 msgstr ""
 
-#: inc/english-meta-box.php:87
 msgid "View"
 msgstr ""
 
-#: inc/english-meta-box.php:90
 msgid "Bengali only."
 msgstr ""
 
-#: inc/english-meta-box.php:91
 msgid "A post needs an English title, an English article and the tick below before /en will show it."
 msgstr ""
 
-#: inc/english-meta-box.php:98
-#: inc/lang.php:393
 msgid "Ready — show this post in the English edition"
 msgstr ""
 
-#: inc/formatting.php:148
 msgid "%d min"
 msgid_plural "%d min"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/formatting.php:160
 msgid "%s read"
 msgstr ""
 
-#: inc/formatting.php:164
 msgid "%s পড়ার সময়"
-msgstr ""
+msgstr "%s read"
 
-#: inc/github-updater.php:244
 msgid "গিটহাবে সম্পূর্ণ চেঞ্জলগ দেখুন →"
 msgstr ""
 
-#: inc/github-updater.php:280
 msgid "ডাউনলোড করা zip-এ থিমের style.css খুঁজে পাওয়া যায়নি।"
 msgstr ""
 
-#: inc/github-updater.php:297
 msgid "zip ফোল্ডারের নাম থিমের স্লাগে বদলানো যায়নি।"
 msgstr ""
 
-#: inc/lang.php:1019
 msgid "Primary Menu (English edition)"
 msgstr ""
 
-#: inc/lang.php:1055
 msgid "Tagline"
 msgstr ""
 
-#: inc/lang.php:1060
 msgid "Editor's picks heading"
 msgstr ""
 
-#: inc/lang.php:1065
 msgid "Popular posts heading"
 msgstr ""
 
-#: inc/lang.php:1070
 msgid "Popular categories heading"
 msgstr ""
 
-#: inc/lang.php:1075
 msgid "About heading"
 msgstr ""
 
-#: inc/lang.php:1080
 msgid "About text"
 msgstr ""
 
-#: inc/lang.php:1085
 msgid "Contact heading"
 msgstr ""
 
-#: inc/lang.php:1090
 msgid "Subscribe heading"
 msgstr ""
 
-#: inc/lang.php:1095
 msgid "YouTube button text"
 msgstr ""
 
-#: inc/lang.php:1100
 msgid "YouTube button text (footer)"
 msgstr ""
 
-#: inc/lang.php:1105
 msgid "Site name"
 msgstr ""
 
-#: inc/lang.php:1220
 msgid "The wording the site uses under /en. Leave a field empty to use the built-in English text."
 msgstr ""
 
-#: inc/lang.php:1227
 msgid "Site description (search engines)"
 msgstr ""
 
-#: inc/lang.php:1420
 msgid "Read this site in English"
 msgstr ""
 
-#: inc/lang.php:1421
 msgid "বাংলায় পড়ুন"
 msgstr ""
 
-#: inc/lang.php:403
 msgid "English slug (the /en/… address)"
 msgstr ""
 
-#: inc/references-meta-box.php:23
-#: inc/references-meta-box.php:160
 msgid "তথ্যসূত্র"
-msgstr ""
+msgstr "References"
 
-#: inc/references-meta-box.php:41
 msgid "প্রতি লাইনে একটি সূত্র। নাম ও লিংক আলাদা করতে | চিহ্ন দিন।"
-msgstr ""
+msgstr "One source per line. Separate the name and the link with |."
 
-#: inc/references-meta-box.php:51
 msgid "খালি রাখলে লেখার নিচে কিছুই দেখাবে না।"
-msgstr ""
+msgstr "Left empty, nothing is printed under the article."
 
-#: inc/seo-admin-column.php:105
 msgid "মেটা ডেসক্রিপশনে কি-ফ্রেজ নেই"
 msgstr ""
 
-#: inc/seo-admin-column.php:116
 msgid "মেটা ডেসক্রিপশন বেশি লম্বা (%d অক্ষর)"
 msgstr ""
 
-#: inc/seo-admin-column.php:119
 msgid "মেটা ডেসক্রিপশন ছোট (%d অক্ষর)"
 msgstr ""
 
-#: inc/seo-admin-column.php:122
 msgid "মেটা ডেসক্রিপশন নেই"
 msgstr ""
 
-#: inc/seo-admin-column.php:129
 msgid "ফিচার্ড ইমেজ নেই"
 msgstr ""
 
-#: inc/seo-admin-column.php:133
 msgid "এসইও: চমৎকার"
 msgstr ""
 
-#: inc/seo-admin-column.php:137
 msgid "এসইও: সাধারণ"
 msgstr ""
 
-#: inc/seo-admin-column.php:140
 msgid "এসইও: অপর্যাপ্ত"
 msgstr ""
 
-#: inc/seo-admin-column.php:150
 msgid "SEO"
 msgstr ""
 
-#: inc/seo-admin-column.php:74
 msgid "ফোকাস কি-ফ্রেজ নেই"
 msgstr ""
 
-#: inc/seo-admin-column.php:83
 msgid "এসইও টাইটেলে কি-ফ্রেজ নেই"
 msgstr ""
 
-#: inc/seo-admin-column.php:94
 msgid "এসইও টাইটেল বেশি লম্বা (%d অক্ষর)"
 msgstr ""
 
-#: inc/seo-admin-column.php:97
 msgid "এসইও টাইটেল ছোট (%d অক্ষর)"
 msgstr ""
 
-#: inc/seo-frontend.php:201
 msgid "ব্লগ"
-msgstr ""
+msgstr "Blog"
 
-#: inc/seo-frontend.php:278
 msgid "পৃষ্ঠা %d"
-msgstr ""
+msgstr "Page %d"
 
-#: inc/seo-frontend.php:289
 msgid "%1$s বিষয়ে %2$s-এর সব লেখা।"
-msgstr ""
+msgstr "Everything %2$s has written about %1$s."
 
-#: inc/seo-frontend.php:569
 msgid "হোম"
-msgstr ""
+msgstr "Home"
 
-#: inc/seo-meta-box.php:102
 msgid "বিচিত্র বিজ্ঞান — SEO"
 msgstr ""
 
-#: inc/seo-meta-box.php:170
-#: inc/seo-meta-box.php:177
 msgid "Focus keyphrase"
 msgstr ""
 
-#: inc/seo-meta-box.php:185
 msgid "এখানে টাইপ করুন"
 msgstr ""
 
-#: inc/seo-meta-box.php:188
 msgid "আপনার কনটেন্ট যেই মূল শব্দ বা ফ্রেজ দিয়ে খুঁজে পাওয়া যাবে সেটি লিখুন।"
 msgstr ""
 
-#: inc/seo-meta-box.php:194
 msgid "Keyphrase synonyms"
 msgstr ""
 
-#: inc/seo-meta-box.php:202
 msgid "কমা দিয়ে আলাদা করুন"
 msgstr ""
 
-#: inc/seo-meta-box.php:214
 msgid "Search appearance"
 msgstr ""
 
-#: inc/seo-meta-box.php:222
 msgid "Google preview"
 msgstr ""
 
-#: inc/seo-meta-box.php:225
 msgid "Mobile"
 msgstr ""
 
-#: inc/seo-meta-box.php:228
 msgid "Desktop"
 msgstr ""
 
-#: inc/seo-meta-box.php:233
 msgid "Google সার্চ রেজাল্টে আপনার পোস্ট কেমন দেখাবে তার প্রিভিউ।"
 msgstr ""
 
-#: inc/seo-meta-box.php:280
 msgid "এখানে আপনার মেটা ডেসক্রিপশন দেখাবে..."
 msgstr ""
 
-#: inc/seo-meta-box.php:303
 msgid "SEO title"
 msgstr ""
 
-#: inc/seo-meta-box.php:306
-#: inc/seo-meta-box.php:353
 msgid "অক্ষর"
 msgstr ""
 
-#: inc/seo-meta-box.php:330
 msgid "Slug"
 msgstr ""
 
-#: inc/seo-meta-box.php:338
 msgid "post-url-slug"
 msgstr ""
 
-#: inc/seo-meta-box.php:342
 msgid "পোস্টের পারমালিঙ্ক বা স্লাগ পরিবর্তন করতে এখানে টাইপ করুন।"
 msgstr ""
 
-#: inc/seo-meta-box.php:350
 msgid "Meta description"
 msgstr ""
 
-#: inc/seo-meta-box.php:361
 msgid "সার্চ রেজাল্টে যেই বর্ণনা দেখাতে চান সেটি লিখুন..."
 msgstr ""
 
-#: inc/seo-meta-box.php:377
 msgid "SEO বিশ্লেষণ (SEO Analysis)"
 msgstr ""
 
-#: inc/seo-meta-box.php:743
 msgid "%d টি পোস্ট/পেজে Yoast SEO ডেটা আছে যেগুলো এখনও থিমের SEO সিস্টেমে কপি হয়নি। এক ক্লিকে সব কপি করুন — Yoast-এর আসল ডেটা মুছবে না।"
 msgstr ""
 
-#: inc/template-tags.php:344
 msgid "পডকাস্ট"
-msgstr ""
+msgstr "Podcast"
 
-#: inc/template-tags.php:454
 msgid "ফেসবুক"
-msgstr ""
+msgstr "Facebook"
 
-#: inc/template-tags.php:459
 msgid "হোয়াটসঅ্যাপ"
-msgstr ""
+msgstr "WhatsApp"
 
-#: inc/template-tags.php:464
 msgid "টেলিগ্রাম"
-msgstr ""
+msgstr "Telegram"
 
-#: inc/template-tags.php:469
 msgid "এক্স"
-msgstr ""
+msgstr "X"
 
-#: inc/template-tags.php:476
 msgid "শেয়ার"
-msgstr ""
+msgstr "Share"
 
-#: inc/template-tags.php:485
 msgid "লিংক কপি"
-msgstr ""
+msgstr "Copy the link"
 
-#: inc/template-tags.php:50
 msgid "আগের লেখাগুলো"
-msgstr ""
+msgstr "Previous articles"
 
-#: inc/template-tags.php:51
 msgid "পরের লেখাগুলো"
-msgstr ""
+msgstr "Next articles"
 
-#: inc/template-tags.php:53
-#: inc/template-tags.php:54
 msgid "প্রথম স্লাইডে ফিরে যান"
-msgstr ""
+msgstr "Back to the first slide"
 
-#: inc/template-tags.php:564
 msgid "— Auto (Latest Post) —"
 msgstr ""
 
-#: inc/template-tags.php:745
-#: inc/template-tags.php:746
 msgid "পরে পড়ার জন্য সংরক্ষণ করুন"
-msgstr ""
+msgstr "Save to read later"
 
-#: inc/template-tags.php:763
 msgid "সংরক্ষিত লেখাগুলো"
-msgstr ""
+msgstr "Saved articles"
 
-#: inc/template-tags.php:773
 msgid "সব মুছে ফেলুন"
-msgstr ""
+msgstr "Clear them all"
 
-#: inc/video-meta-box.php:13
 msgid "Video Settings (For Podcast/Video Grid)"
 msgstr ""
 
-#: inc/video-meta-box.php:30
 msgid "Video Embed URL (YouTube/Vimeo)"
 msgstr ""
 
-#: inc/video-meta-box.php:32
 msgid "If empty, the theme will try to extract the first video from the post content."
 msgstr ""
 
-#: inc/video-meta-box.php:35
 msgid "Video Duration (Time)"
 msgstr ""
 
-#: inc/video-meta-box.php:37
 msgid "Overrides the default reading time calculation."
 msgstr ""
 
-#: inc/video-meta-box.php:40
 msgid "Video Aspect Ratio"
 msgstr ""
 
-#: inc/video-meta-box.php:42
 msgid "Auto Detect (Default)"
 msgstr ""
 
-#: inc/video-meta-box.php:43
 msgid "Landscape (16:9)"
 msgstr ""
 
-#: inc/video-meta-box.php:44
 msgid "Portrait / Mobile (9:16)"
 msgstr ""
 
-#: inc/video-meta-box.php:45
 msgid "Standard Mobile (4:5)"
 msgstr ""
 
-#: inc/video-meta-box.php:46
 msgid "Square (1:1)"
 msgstr ""
 
-#: inc/video-meta-box.php:48
 msgid "Forces the video popup size. Auto will detect Shorts/Reels."
 msgstr ""
 
-#: search.php:23
 msgid "\"%s\" — সার্চ ফলাফল"
-msgstr ""
+msgstr "\"%s\" — search results"
 
-#: search.php:51
 msgid "কিছুই পাওয়া গেল না"
-msgstr ""
+msgstr "Nothing found"
 
-#: search.php:52
 msgid "অন্য কোনো শব্দ দিয়ে খুঁজে দেখুন।"
-msgstr ""
+msgstr "Try searching for something else."
 
-#: single.php:143
 msgid "আগের আর্টিকেল"
-msgstr ""
+msgstr "Previous article"
 
-#: single.php:146
 msgid "পরের আর্টিকেল"
-msgstr ""
+msgstr "Next article"
 
-#: single.php:162
 msgid "বিজ্ঞানের প্রতি গভীর আগ্রহ থেকে লেখালেখির শুরু। জটিল বৈজ্ঞানিক বিষয়গুলোকে সহজ বাংলায় পাঠকের কাছে পৌঁছে দেওয়াই লক্ষ্য।"
-msgstr ""
+msgstr "Writes out of a deep interest in science, with one aim: to carry difficult ideas to readers in plain language."
 
-#: single.php:203
 msgid "এই বিভাগের আরও লেখা"
-msgstr ""
+msgstr "More from this section"
 
-#: single.php:49
 msgid "সর্বশেষ হালনাগাদ: %s"
-msgstr ""
+msgstr "Last updated: %s"
 
-#: single.php:64
 msgid "সম্পাদনা"
-msgstr ""
+msgstr "Edit"
 
-#: single.php:76
 msgid "সূচিপত্র দেখান বা লুকান"
-msgstr ""
+msgstr "Show or hide the contents"
 
-#: single.php:78
-#: single.php:81
-#: single.php:82
 msgid "সূচিপত্র"
-msgstr ""
+msgstr "Contents"

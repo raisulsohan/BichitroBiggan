@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.9.2' );
+define( 'BB_VERSION', '7.10.0' );
 
 /**
  * The built copy of an asset, when there is one and it is not stale.
@@ -192,6 +192,7 @@ function bb_enqueue_assets() {
 		'failed'     => __( 'লেখাটি আনা যায়নি।', 'bichitro-biggan' ),
 		'liveSearch' => (bool) get_theme_mod( 'bb_live_search', true ),
 		'searchUrl'  => esc_url_raw( rest_url( 'bb/v1/search' ) ),
+		'lang'       => bb_lang(),
 		'searching'  => __( 'খোঁজা হচ্ছে…', 'bichitro-biggan' ),
 		'noResults'  => __( 'কিছু পাওয়া যায়নি', 'bichitro-biggan' ),
 		'resultOne'  => __( '১টি ফলাফল', 'bichitro-biggan' ),
@@ -1200,27 +1201,42 @@ function bb_comment_count( $post_id = null ) {
  * Years that actually have posts — powers the year tab strip.
  */
 function bb_get_post_years() {
-	$cached = get_transient( 'bb_post_years' );
+	// The English edition has years of its own: only the translated posts count.
+	$key    = bb_is_en() ? 'bb_post_years_en' : 'bb_post_years';
+	$cached = get_transient( $key );
+
 	if ( false !== $cached ) {
 		return $cached;
 	}
 
 	global $wpdb;
-	$years = $wpdb->get_col(
-		"SELECT DISTINCT YEAR(post_date) AS y
-		 FROM {$wpdb->posts}
-		 WHERE post_status = 'publish' AND post_type = 'post'
-		 ORDER BY y DESC"
-	);
+
+	if ( bb_is_en() ) {
+		$years = $wpdb->get_col(
+			"SELECT DISTINCT YEAR(p.post_date) AS y
+			 FROM {$wpdb->posts} p
+			 INNER JOIN {$wpdb->postmeta} m ON ( m.post_id = p.ID AND m.meta_key = 'bb_en_ready' AND m.meta_value = '1' )
+			 WHERE p.post_status = 'publish' AND p.post_type = 'post'
+			 ORDER BY y DESC"
+		);
+	} else {
+		$years = $wpdb->get_col(
+			"SELECT DISTINCT YEAR(post_date) AS y
+			 FROM {$wpdb->posts}
+			 WHERE post_status = 'publish' AND post_type = 'post'
+			 ORDER BY y DESC"
+		);
+	}
 
 	$years = array_map( 'strval', (array) $years );
-	set_transient( 'bb_post_years', $years, DAY_IN_SECONDS );
+	set_transient( $key, $years, DAY_IN_SECONDS );
 
 	return $years;
 }
 
 function bb_flush_year_cache() {
 	delete_transient( 'bb_post_years' );
+	delete_transient( 'bb_post_years_en' );
 
 	/* The archive trees are cached per category; bumping the version retires
 	   all of them at once, which a transient key cannot do on its own. */
@@ -1350,6 +1366,14 @@ function bb_excerpt( $words = 22, $post_id = null ) {
 
 	if ( ! $post ) {
 		return '';
+	}
+
+	if ( bb_is_en() ) {
+		$english = bb_en_excerpt_text( $post->ID, '', $words );
+
+		if ( '' !== $english ) {
+			return $english;
+		}
 	}
 
 	$text = $post->post_excerpt ? $post->post_excerpt : $post->post_content;
@@ -1667,6 +1691,7 @@ function bb_comment_callback( $comment, $args, $depth ) {
  * 9. Includes
  * ---------------------------------------------------------------------- */
 
+require_once get_template_directory() . '/inc/lang.php';
 require_once get_template_directory() . '/inc/formatting.php';
 require_once get_template_directory() . '/inc/images.php';
 require_once get_template_directory() . '/inc/views.php';
@@ -1688,6 +1713,7 @@ if ( is_admin() ) {
 	require_once get_template_directory() . '/inc/admin-post-search.php';
 	require_once get_template_directory() . '/inc/category-colors-admin.php';
 	require_once get_template_directory() . '/inc/seo-admin-column.php';
+	require_once get_template_directory() . '/inc/english-meta-box.php';
 }
 
 add_action( 'wp_footer', 'bb_bookmarks_drawer' );

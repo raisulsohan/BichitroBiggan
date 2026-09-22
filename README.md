@@ -2,7 +2,7 @@
 
 [![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b.svg?logo=wordpress&logoColor=white)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg?logo=php&logoColor=white)](https://php.net)
-[![Version](https://img.shields.io/badge/Version-7.9.1-0080ff.svg)](style.css)
+[![Version](https://img.shields.io/badge/Version-7.10.0-0080ff.svg)](style.css)
 [![Zero-Plugin Architecture](https://img.shields.io/badge/Plugins-0%20(Built--in)-success.svg)](#-key-features)
 [![Responsive](https://img.shields.io/badge/Responsive-Mobile%20%26%20Desktop-brightgreen.svg)](#-key-features)
 
@@ -27,6 +27,7 @@ Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic Word
 - 📱 **Mobile First Fully Responsive:** Automatic adaptive grid and touch-friendly navigation for mobile, tablet, and large desktops.
 - 🚀 **Super Fast Performance:** No jQuery on the frontend, self-hosted fonts, minified assets, and a lightweight CSS variable architecture.
 - 🌙 **Dark Mode:** Follows the reader's own system setting, with a switch in the top bar that is remembered. Chosen before the page paints, so there is no flash.
+- 🌐 **English Edition at `/en`:** The same site in English, from one install. A small **EN** button beside the dark-mode switch crosses over; each post carries its own English title, article and SEO fields, and only appears under `/en` once it is marked ready. hreflang, an English sitemap and an English menu come with it.
 
 ---
 

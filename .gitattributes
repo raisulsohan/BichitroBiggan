@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Compiled translations are binary — never line-ending normalised.
+*.mo binary

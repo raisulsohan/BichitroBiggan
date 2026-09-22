@@ -2,6 +2,39 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.10.0
+
+- An English edition at `/en`. The same site, the same design, the same
+  articles — read in English. A small **EN** button sits beside the dark-mode
+  switch in the top bar and in the sticky menu; on `/en` it turns into **বাং**
+  and leads back to the Bengali page it came from.
+- Every post now has an *English edition* box under the editor: English title,
+  slug, excerpt, article, SEO title, meta description and focus keyphrase, plus
+  a **Ready** tick. Until that tick is on, `/en` does not show the post at all —
+  no half-translated article, and no Bengali article pretending to be English.
+  An **EN** column in the Posts list says at a glance where each one stands.
+- The same fields are open to the REST API, so a translation can be delivered
+  by a script signed in with an Application Password, exactly like a new post.
+- Categories, tags and writers carry English names of their own (and writers an
+  English biography), set on their own edit screens. `/en` can also have its own
+  menu — Appearance → Menus → *Primary Menu (English edition)*.
+- The interface itself speaks English under `/en`: `languages/en.po` holds the
+  translations, `npm run mo` compiles them. Dates, numerals and reading times
+  follow — "22 September, 2025" and "6 min" rather than "২২ সেপ্টেম্বর, ২০২৫"
+  and "৬ মিনিট".
+- Search, the reading modal, the feed, pagination, the previous/next links and
+  the footer columns all stay inside the edition they were opened from, and
+  only ever offer translated articles.
+- For search engines: `hreflang` tags on both editions pointing at each other,
+  `og:locale` and the schema's `inLanguage` following the language, and an
+  English sitemap of its own at `/wp-sitemap-en-1.xml`.
+- The wording around the articles — the tagline, the footer headings, the About
+  text — has English twins in Appearance → Customize → *English edition (/en)*.
+  Left empty, each falls back to built-in English, never to the Bengali text.
+- Theme Settings → Advanced takes a **Google tag (GA4 Measurement ID)**. Entered
+  there, the Google tag is printed on every page of both editions, which is what
+  Analytics looks for when it checks whether a property really belongs to a site.
+
 ## 7.9.1
 
 - Restore year-wise archive tabs and latest-posts ticker on a static front page.

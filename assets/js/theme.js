@@ -367,7 +367,11 @@
 
 			state('<span class="bb-spinner"></span> ' + (D.searching || 'Searching…'));
 
-			fetch(D.searchUrl + '?q=' + encodeURIComponent(query), {
+			/* The REST route sits outside /en, so the edition travels with the query. */
+			var searchUrl = D.searchUrl + '?q=' + encodeURIComponent(query)
+				+ (D.lang === 'en' ? '&lang=en' : '');
+
+			fetch(searchUrl, {
 				credentials: 'same-origin',
 				signal: controller ? controller.signal : undefined
 			})

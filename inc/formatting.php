@@ -14,8 +14,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Month names in Bengali, for the archive list and anywhere else the site
  * shows a month without a full date.
+ *
+ * Under /en every one of these helpers answers in English instead — the
+ * templates call the same functions in both editions.
  */
 function bb_bangla_month( $month_number ) {
+	if ( function_exists( 'bb_is_en' ) && bb_is_en() ) {
+		return date_i18n( 'F', mktime( 0, 0, 0, max( 1, (int) $month_number ), 1, 2024 ) );
+	}
+
 	$months = array(
 		1  => 'জানুয়ারি',
 		2  => 'ফেব্রুয়ারি',
@@ -40,6 +47,10 @@ function bb_bangla_month( $month_number ) {
  * Today's date for the top bar, in Bengali to match the rest of the site.
  */
 function bb_bangla_today() {
+	if ( function_exists( 'bb_is_en' ) && bb_is_en() ) {
+		return wp_date( 'l, j F Y' );
+	}
+
 	$days = array(
 		'Sunday'    => 'রবিবার',
 		'Monday'    => 'সোমবার',
@@ -66,6 +77,10 @@ function bb_bangla_today() {
  * Convert English digits to Bengali digits.
  */
 function bb_bangla_number( $number ) {
+	if ( function_exists( 'bb_is_en' ) && bb_is_en() ) {
+		return (string) $number;
+	}
+
 	$en = array( '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' );
 	$bn = array( '০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯' );
 	return str_replace( $en, $bn, (string) $number );
@@ -75,7 +90,12 @@ function bb_bangla_number( $number ) {
  * Post date in full Bengali format.
  */
 function bb_bangla_date( $post_id = null ) {
-	$post_id  = $post_id ? $post_id : get_the_ID();
+	$post_id = $post_id ? $post_id : get_the_ID();
+
+	if ( function_exists( 'bb_is_en' ) && bb_is_en() ) {
+		return (string) get_the_date( 'j F, Y', $post_id );
+	}
+
 	$day      = get_the_date( 'j', $post_id );
 	$month_en = get_the_date( 'F', $post_id );
 	$year     = get_the_date( 'Y', $post_id );
@@ -113,15 +133,35 @@ function bb_post_date( $post_id = null ) {
  * Calculate post reading time in Bengali.
  */
 function bb_reading_time( $post_id = null ) {
-	$post_id = $post_id ? $post_id : get_the_ID();
-	$minutes = (int) get_post_meta( $post_id, 'bb_read_minutes', true );
+	$post_id  = $post_id ? $post_id : get_the_ID();
+	$english  = function_exists( 'bb_is_en' ) && bb_is_en();
+	$meta_key = $english ? 'bb_en_read_minutes' : 'bb_read_minutes';
+	$minutes  = (int) get_post_meta( $post_id, $meta_key, true );
 
 	if ( ! $minutes ) {
 		$minutes = bb_calculate_reading_minutes( $post_id );
-		update_post_meta( $post_id, 'bb_read_minutes', $minutes );
+		update_post_meta( $post_id, $meta_key, $minutes );
+	}
+
+	if ( $english ) {
+		/* translators: %d: how many minutes the article takes to read. */
+		return sprintf( _n( '%d min', '%d min', $minutes, 'bichitro-biggan' ), $minutes );
 	}
 
 	return bb_bangla_number( $minutes ) . ' মিনিট';
+}
+
+/**
+ * The same figure with its label — "৬ মিনিট পড়ার সময়" / "6 min read".
+ */
+function bb_reading_time_label( $post_id = null ) {
+	if ( function_exists( 'bb_is_en' ) && bb_is_en() ) {
+		/* translators: %s: reading time, e.g. "6 min". */
+		return sprintf( __( '%s read', 'bichitro-biggan' ), bb_reading_time( $post_id ) );
+	}
+
+	/* translators: %s: reading time, e.g. "৬ মিনিট". */
+	return sprintf( __( '%s পড়ার সময়', 'bichitro-biggan' ), bb_reading_time( $post_id ) );
 }
 
 /**
@@ -129,16 +169,31 @@ function bb_reading_time( $post_id = null ) {
  * print "৬ মিনিট", dozens of times per page load.
  */
 function bb_calculate_reading_minutes( $post_id ) {
-	$content = get_post_field( 'post_content', $post_id );
-	$clean   = wp_strip_all_tags( strip_shortcodes( $content ) );
-	$words   = preg_split( '/\s+/u', trim( $clean ) );
-	$count   = is_array( $words ) ? count( array_filter( $words ) ) : 0;
+	$english = function_exists( 'bb_is_en' ) && bb_is_en();
+	$content = '';
 
-	return max( 1, (int) ceil( $count / 180 ) );
+	if ( $english ) {
+		$content = (string) get_post_meta( $post_id, 'bb_en_content', true );
+	}
+
+	if ( '' === $content ) {
+		$english = false;
+		$content = get_post_field( 'post_content', $post_id );
+	}
+
+	$clean = wp_strip_all_tags( strip_shortcodes( $content ) );
+	$words = preg_split( '/\s+/u', trim( $clean ) );
+	$count = is_array( $words ) ? count( array_filter( $words ) ) : 0;
+
+	// English prose reads faster than the same idea written in Bengali.
+	$per_minute = $english ? 200 : 180;
+
+	return max( 1, (int) ceil( $count / $per_minute ) );
 }
 
 function bb_flush_reading_time( $post_id ) {
 	delete_post_meta( $post_id, 'bb_read_minutes' );
+	delete_post_meta( $post_id, 'bb_en_read_minutes' );
 }
 add_action( 'save_post', 'bb_flush_reading_time' );
 
@@ -146,6 +201,10 @@ add_action( 'save_post', 'bb_flush_reading_time' );
  * A timestamp as a Bengali date — used for the "last updated" line.
  */
 function bb_bangla_timestamp( $timestamp ) {
+	if ( function_exists( 'bb_is_en' ) && bb_is_en() ) {
+		return (string) wp_date( 'j F, Y', $timestamp );
+	}
+
 	return bb_bangla_number( wp_date( 'j', $timestamp ) )
 		. ' ' . bb_bangla_month( wp_date( 'n', $timestamp ) )
 		. ', ' . bb_bangla_number( wp_date( 'Y', $timestamp ) );

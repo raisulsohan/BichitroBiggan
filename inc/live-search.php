@@ -86,9 +86,13 @@ function bb_register_search_route() {
 			'callback'            => 'bb_rest_search',
 			'permission_callback' => '__return_true',
 			'args'                => array(
-				'q' => array(
+				'q'    => array(
 					'required'          => true,
 					'sanitize_callback' => 'sanitize_text_field',
+				),
+				'lang' => array(
+					'required'          => false,
+					'sanitize_callback' => 'sanitize_key',
 				),
 			),
 		)
@@ -98,6 +102,15 @@ add_action( 'rest_api_init', 'bb_register_search_route' );
 
 function bb_rest_search( WP_REST_Request $request ) {
 	$term = trim( (string) $request->get_param( 'q' ) );
+
+	/*
+	 * /wp-json/ carries no /en of its own, so the script says which edition
+	 * is asking. Everything below — titles, links, dates, which posts are
+	 * eligible at all — then comes back in that language.
+	 */
+	if ( 'en' === $request->get_param( 'lang' ) ) {
+		bb_lang( 'en' );
+	}
 
 	if ( bb_str_len( $term ) < 2 ) {
 		return rest_ensure_response( array(
@@ -121,6 +134,11 @@ function bb_rest_search( WP_REST_Request $request ) {
 
 		$post_obj = get_post();
 		$source   = $post_obj->post_excerpt ? $post_obj->post_excerpt : $post_obj->post_content;
+
+		if ( bb_is_en() ) {
+			$english = (string) get_post_meta( $post_obj->ID, 'bb_en_content', true );
+			$source  = ( '' !== $english ) ? $english : $source;
+		}
 
 		$results[] = array(
 			'id'      => get_the_ID(),

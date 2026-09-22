@@ -1,0 +1,1459 @@
+<?php
+/**
+ * The English edition — bichitrobiggan.com/en
+ *
+ * One WordPress install read two ways. Every address under /en is the same
+ * post, category or archive as the Bengali one; what changes is which fields
+ * are printed, which language the interface speaks, and how dates and numbers
+ * are written.
+ *
+ * The prefix is taken off the request before WordPress parses it and put back
+ * on by a home_url() filter, so permalinks, pagination, category links, the
+ * search form, the feed and the reading modal all carry /en without a single
+ * template knowing this file exists.
+ *
+ * A post appears in the English edition only when its English fields are
+ * filled in and "Ready" is ticked. Everything else stays Bengali-only, and
+ * /en never shows a Bengali article pretending to be English.
+ *
+ * @package BichitroBiggan
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/** The single path segment the English edition lives under. */
+function bb_en_prefix() {
+	return (string) apply_filters( 'bb_en_prefix', 'en' );
+}
+
+/* -------------------------------------------------------------------------
+ * 1. Which language is this request?
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Read — or set — the language of the request being rendered.
+ *
+ * The REST search endpoint and the language switcher both need to render
+ * something "as" the other language for a moment, so this doubles as a setter.
+ *
+ * @param string|null $set 'en' or 'bn' to switch, null to read.
+ * @return string 'en' or 'bn'.
+ */
+function bb_lang( $set = null ) {
+	static $lang = 'bn';
+
+	if ( null !== $set ) {
+		$lang = ( 'en' === $set ) ? 'en' : 'bn';
+	}
+
+	return $lang;
+}
+
+/** True while the English edition is being rendered. */
+function bb_is_en() {
+	return 'en' === bb_lang();
+}
+
+/**
+ * Run something as if the other language were being served.
+ *
+ * @param string   $lang     'en' or 'bn'.
+ * @param callable $callback What to run.
+ * @return mixed Whatever the callback returned.
+ */
+function bb_en_in_lang( $lang, $callback ) {
+	$previous = bb_lang();
+	bb_lang( $lang );
+
+	try {
+		$result = call_user_func( $callback );
+	} finally {
+		bb_lang( $previous );
+	}
+
+	return $result;
+}
+
+/**
+ * The request path with the /en prefix already taken off, kept so the
+ * hreflang tags and the switcher can rebuild either address.
+ *
+ * @param string|null $set Internal — set during detection.
+ * @return string e.g. "/category/space/page/2/".
+ */
+function bb_en_neutral_uri( $set = null ) {
+	static $uri = '/';
+
+	if ( null !== $set ) {
+		$uri = $set;
+	}
+
+	return $uri;
+}
+
+/**
+ * The path exactly as the reader asked for it, before the prefix was taken
+ * off — the only way to tell /en from /en/ once WordPress has the request.
+ *
+ * @param string|null $set Internal — set during detection.
+ * @return string
+ */
+function bb_en_original_path( $set = null ) {
+	static $path = '/';
+
+	if ( null !== $set ) {
+		$path = $set;
+	}
+
+	return $path;
+}
+
+/**
+ * Spot /en at the front of the request and take it off.
+ *
+ * This runs while functions.php is still being read — before WordPress parses
+ * the request and before the theme's text domain is loaded — because the
+ * locale of the whole page depends on the answer.
+ */
+function bb_en_detect_request() {
+	if ( ( is_admin() && ! wp_doing_ajax() ) || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+		return;
+	}
+
+	$request = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
+	if ( '' === $request ) {
+		return;
+	}
+
+	$path  = (string) wp_parse_url( $request, PHP_URL_PATH );
+	$query = (string) wp_parse_url( $request, PHP_URL_QUERY );
+
+	bb_en_original_path( $path );
+
+	// The install may live in a subdirectory; only what comes after it counts.
+	$home = trim( (string) wp_parse_url( get_option( 'home' ), PHP_URL_PATH ), '/' );
+	$rest = trim( $path, '/' );
+
+	if ( '' !== $home ) {
+		if ( $rest !== $home && 0 !== strpos( $rest, $home . '/' ) ) {
+			return;
+		}
+		$rest = trim( substr( $rest, strlen( $home ) ), '/' );
+	}
+
+	$segments = ( '' === $rest ) ? array() : explode( '/', $rest );
+	$prefix   = bb_en_prefix();
+
+	bb_en_neutral_uri( '/' . ( '' === $rest ? '' : $rest . '/' ) );
+
+	if ( empty( $segments ) || $segments[0] !== $prefix ) {
+		return;
+	}
+
+	array_shift( $segments );
+	bb_lang( 'en' );
+
+	$neutral = empty( $segments ) ? '/' : '/' . implode( '/', $segments ) . '/';
+	bb_en_neutral_uri( $neutral );
+
+	// What WordPress will now parse: the same request, minus the prefix.
+	$rebuilt = ( '' === $home ? '' : '/' . $home ) . $neutral;
+
+	if ( '' !== $query ) {
+		$rebuilt .= '?' . $query;
+	}
+
+	$_SERVER['REQUEST_URI'] = $rebuilt;
+}
+bb_en_detect_request();
+
+/* -------------------------------------------------------------------------
+ * 2. Addresses
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Put /en back into every link the site builds from home_url().
+ *
+ * @param string      $url    The finished URL.
+ * @param string      $path   Path passed to home_url().
+ * @param string|null $scheme Scheme asked for.
+ * @return string
+ */
+function bb_en_home_url( $url, $path = '', $scheme = null ) {
+	if ( ! bb_is_en() ) {
+		return $url;
+	}
+
+	if ( in_array( $scheme, array( 'rest', 'admin', 'login', 'login_post', 'rpc' ), true ) ) {
+		return $url;
+	}
+
+	$parts = wp_parse_url( $url );
+
+	if ( empty( $parts ) ) {
+		return $url;
+	}
+
+	if ( ! isset( $parts['path'] ) ) {
+		$parts['path'] = '/';
+	}
+
+	$home = trim( (string) wp_parse_url( get_option( 'home' ), PHP_URL_PATH ), '/' );
+	$rest = trim( $parts['path'], '/' );
+
+	if ( '' !== $home ) {
+		if ( $rest !== $home && 0 !== strpos( $rest, $home . '/' ) ) {
+			return $url;
+		}
+		$rest = trim( substr( $rest, strlen( $home ) ), '/' );
+	}
+
+	// WordPress's own machinery, never the reader's side of the site.
+	$reserved = array( 'wp-json', 'wp-admin', 'wp-content', 'wp-includes', 'wp-login.php', 'wp-cron.php', 'xmlrpc.php', 'wp-signup.php' );
+	$first    = ( '' === $rest ) ? '' : strtok( $rest, '/' );
+
+	if ( in_array( $first, $reserved, true ) || bb_en_prefix() === $first ) {
+		return $url;
+	}
+
+	$new_path = '/' . ( '' === $home ? '' : $home . '/' ) . bb_en_prefix() . ( '' === $rest ? '/' : '/' . $rest );
+
+	if ( '' !== $rest && '/' === substr( $parts['path'], -1 ) ) {
+		$new_path .= '/';
+	}
+
+	$tail = $new_path
+		. ( isset( $parts['query'] ) ? '?' . $parts['query'] : '' )
+		. ( isset( $parts['fragment'] ) ? '#' . $parts['fragment'] : '' );
+
+	// home_url( $path, 'relative' ) hands us a bare path, with no host to keep.
+	if ( empty( $parts['host'] ) ) {
+		return $tail;
+	}
+
+	return ( isset( $parts['scheme'] ) ? $parts['scheme'] . '://' : '//' )
+		. $parts['host']
+		. ( isset( $parts['port'] ) ? ':' . $parts['port'] : '' )
+		. $tail;
+}
+add_filter( 'home_url', 'bb_en_home_url', 10, 3 );
+
+/** The query string of the current request, "?" included, or "". */
+function bb_en_current_query() {
+	$request = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	$query   = (string) wp_parse_url( $request, PHP_URL_QUERY );
+
+	return ( '' === $query ) ? '' : '?' . $query;
+}
+
+/** The address being served right now, prefix and all. */
+function bb_en_current_url() {
+	return home_url( bb_en_neutral_uri() ) . bb_en_current_query();
+}
+
+/**
+ * This page's address in the language asked for, or '' when there is none.
+ *
+ * @param string $lang 'en' or 'bn'.
+ * @return string
+ */
+function bb_en_url_for( $lang ) {
+	$lang = ( 'en' === $lang ) ? 'en' : 'bn';
+
+	if ( is_singular() && ! is_front_page() ) {
+		$post_id = get_queried_object_id();
+
+		if ( ! $post_id ) {
+			return '';
+		}
+
+		if ( 'en' === $lang && ! bb_en_has( $post_id ) ) {
+			return '';
+		}
+
+		return (string) bb_en_in_lang(
+			$lang,
+			function () use ( $post_id ) {
+				return get_permalink( $post_id );
+			}
+		);
+	}
+
+	$path  = bb_en_neutral_uri();
+	$query = bb_en_current_query();
+
+	$base = (string) bb_en_in_lang(
+		$lang,
+		function () use ( $path ) {
+			return home_url( $path );
+		}
+	);
+
+	return $base . $query;
+}
+
+/* -------------------------------------------------------------------------
+ * 3. The interface language
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Serve the English edition in en_US, which brings the theme's own
+ * translation file and every core string — the comment form, month names,
+ * "Leave a Reply" — across with it.
+ *
+ * @param string $locale Locale WordPress worked out.
+ * @return string
+ */
+function bb_en_locale( $locale ) {
+	if ( bb_is_en() && ! is_admin() ) {
+		return 'en_US';
+	}
+
+	return $locale;
+}
+add_filter( 'locale', 'bb_en_locale' );
+
+/**
+ * Load the theme's English strings by hand.
+ *
+ * The file is languages/en.mo, not en_US.mo, on purpose: WordPress loads
+ * {locale}.mo out of a theme automatically, and on an install already running
+ * in en_US that would turn the Bengali site English too. Named this way it is
+ * loaded here, only while /en is being served, whatever locale WordPress
+ * itself is in.
+ */
+function bb_en_load_translations() {
+	if ( ! bb_is_en() || is_admin() ) {
+		return;
+	}
+
+	$mofile = get_template_directory() . '/languages/en.mo';
+
+	if ( ! is_readable( $mofile ) ) {
+		return;
+	}
+
+	unload_textdomain( 'bichitro-biggan' );
+	load_textdomain( 'bichitro-biggan', $mofile );
+}
+add_action( 'after_setup_theme', 'bb_en_load_translations', 12 );
+
+/**
+ * <html lang> and every schema inLanguage.
+ *
+ * @param string $language Language tag.
+ * @return string
+ */
+function bb_en_content_language( $language ) {
+	return bb_is_en() ? 'en' : $language;
+}
+add_filter( 'bb_content_language', 'bb_en_content_language' );
+
+/**
+ * og:locale.
+ *
+ * @param string $locale Open Graph locale.
+ * @return string
+ */
+function bb_en_og_locale( $locale ) {
+	return bb_is_en() ? 'en_US' : $locale;
+}
+add_filter( 'bb_seo_og_locale', 'bb_en_og_locale' );
+
+/**
+ * A body class, so CSS can reach the English edition if it ever needs to.
+ *
+ * @param string[] $classes Body classes.
+ * @return string[]
+ */
+function bb_en_body_class( $classes ) {
+	if ( bb_is_en() ) {
+		$classes[] = 'bb-lang-en';
+	}
+
+	return $classes;
+}
+add_filter( 'body_class', 'bb_en_body_class' );
+
+/* -------------------------------------------------------------------------
+ * 4. The English fields on a post
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Every English field, with the sanitiser each one is saved through.
+ *
+ * @return array<string, array{label:string,type:string,sanitize:string}>
+ */
+function bb_en_meta_fields() {
+	return array(
+		'bb_en_ready'           => array(
+			'label'    => __( 'Ready — show this post in the English edition', 'bichitro-biggan' ),
+			'type'     => 'checkbox',
+			'sanitize' => 'bb_en_sanitize_flag',
+		),
+		'bb_en_title'           => array(
+			'label'    => __( 'English title', 'bichitro-biggan' ),
+			'type'     => 'text',
+			'sanitize' => 'sanitize_text_field',
+		),
+		'bb_en_slug'            => array(
+			'label'    => __( 'English slug (the /en/… address)', 'bichitro-biggan' ),
+			'type'     => 'text',
+			'sanitize' => 'bb_en_sanitize_slug',
+		),
+		'bb_en_excerpt'         => array(
+			'label'    => __( 'English excerpt', 'bichitro-biggan' ),
+			'type'     => 'textarea',
+			'sanitize' => 'sanitize_textarea_field',
+		),
+		'bb_en_content'         => array(
+			'label'    => __( 'English article', 'bichitro-biggan' ),
+			'type'     => 'editor',
+			'sanitize' => 'wp_kses_post',
+		),
+		'bb_en_seo_title'       => array(
+			'label'    => __( 'English SEO title', 'bichitro-biggan' ),
+			'type'     => 'text',
+			'sanitize' => 'sanitize_text_field',
+		),
+		'bb_en_seo_description' => array(
+			'label'    => __( 'English meta description', 'bichitro-biggan' ),
+			'type'     => 'textarea',
+			'sanitize' => 'sanitize_textarea_field',
+		),
+		'bb_en_focus_keyphrase' => array(
+			'label'    => __( 'English focus keyphrase', 'bichitro-biggan' ),
+			'type'     => 'text',
+			'sanitize' => 'sanitize_text_field',
+		),
+	);
+}
+
+/**
+ * A checkbox saved as '1' or ''.
+ *
+ * @param mixed $value Raw value.
+ * @return string
+ */
+function bb_en_sanitize_flag( $value ) {
+	return ( '1' === (string) $value || 'on' === $value || true === $value ) ? '1' : '';
+}
+
+/**
+ * A slug that stays readable in a URL.
+ *
+ * @param mixed $value Raw value.
+ * @return string
+ */
+function bb_en_sanitize_slug( $value ) {
+	$value = sanitize_title( (string) $value );
+
+	return $value;
+}
+
+/**
+ * One English field.
+ *
+ * @param int    $post_id Post.
+ * @param string $key     Meta key.
+ * @return string
+ */
+function bb_en_get( $post_id, $key ) {
+	$post_id = (int) $post_id;
+
+	if ( ! $post_id ) {
+		return '';
+	}
+
+	return trim( (string) get_post_meta( $post_id, $key, true ) );
+}
+
+/**
+ * Does this post have an English version a reader should be shown?
+ *
+ * @param int $post_id Post.
+ * @return bool
+ */
+function bb_en_has( $post_id ) {
+	$post_id = (int) $post_id;
+
+	if ( ! $post_id ) {
+		return false;
+	}
+
+	if ( '1' !== bb_en_get( $post_id, 'bb_en_ready' ) ) {
+		return false;
+	}
+
+	return ( '' !== bb_en_get( $post_id, 'bb_en_title' ) && '' !== bb_en_get( $post_id, 'bb_en_content' ) );
+}
+
+/**
+ * The English title, falling back to nothing so callers can decide.
+ *
+ * @param int $post_id Post.
+ * @return string
+ */
+function bb_en_title( $post_id ) {
+	return bb_en_get( $post_id, 'bb_en_title' );
+}
+
+/* -------------------------------------------------------------------------
+ * 5. Printing English instead of Bengali
+ * ---------------------------------------------------------------------- */
+
+/**
+ * @param string $title   Post title.
+ * @param int    $post_id Post ID.
+ * @return string
+ */
+function bb_en_filter_title( $title, $post_id = 0 ) {
+	if ( ! bb_is_en() || ! $post_id ) {
+		return $title;
+	}
+
+	$english = bb_en_title( $post_id );
+
+	return ( '' === $english ) ? $title : $english;
+}
+add_filter( 'the_title', 'bb_en_filter_title', 10, 2 );
+
+/**
+ * The article body.
+ *
+ * the_content is applied to plenty of text that is not a post — a term
+ * description, a widget — so the body is only swapped when what came in
+ * really is this post's own content.
+ *
+ * @param string $content Content.
+ * @return string
+ */
+function bb_en_filter_content( $content ) {
+	if ( ! bb_is_en() ) {
+		return $content;
+	}
+
+	$post = get_post();
+
+	if ( ! $post instanceof WP_Post ) {
+		return $content;
+	}
+
+	$english = bb_en_get( $post->ID, 'bb_en_content' );
+
+	if ( '' === $english ) {
+		return $content;
+	}
+
+	$raw   = bb_en_normalize_body( $post->post_content );
+	$given = bb_en_normalize_body( $content );
+
+	// An empty body, the whole body, or the part of it before a <!--more-->.
+	if ( '' !== $given && false === strpos( $raw, $given ) ) {
+		return $content;
+	}
+
+	return $english;
+}
+add_filter( 'the_content', 'bb_en_filter_content', 1 );
+
+/**
+ * Content with the editor's own markers and spacing taken out, so the text
+ * WordPress hands the filter can be recognised as the post's own body even
+ * after a <!--more--> has been cut out of it.
+ *
+ * @param string $text Content.
+ * @return string
+ */
+function bb_en_normalize_body( $text ) {
+	$text = (string) $text;
+	$text = preg_replace( '/<!--\s*more(.*?)?\s*-->/s', '', $text );
+	$text = preg_replace( '/<!--\s*nextpage\s*-->/', '', $text );
+	$text = preg_replace( '/\s+/u', ' ', $text );
+
+	return trim( (string) $text );
+}
+
+/**
+ * @param string  $excerpt Excerpt.
+ * @param WP_Post $post    Post.
+ * @return string
+ */
+function bb_en_filter_excerpt( $excerpt, $post = null ) {
+	if ( ! bb_is_en() ) {
+		return $excerpt;
+	}
+
+	$post = $post ? get_post( $post ) : get_post();
+
+	if ( ! $post instanceof WP_Post ) {
+		return $excerpt;
+	}
+
+	return bb_en_excerpt_text( $post->ID, $excerpt );
+}
+add_filter( 'get_the_excerpt', 'bb_en_filter_excerpt', 1, 2 );
+
+/**
+ * The English excerpt — the field when it is filled in, otherwise the opening
+ * of the English article.
+ *
+ * @param int    $post_id  Post.
+ * @param string $fallback What to return when there is no English version.
+ * @param int    $words    How many words to trim to.
+ * @return string
+ */
+function bb_en_excerpt_text( $post_id, $fallback = '', $words = 22 ) {
+	$excerpt = bb_en_get( $post_id, 'bb_en_excerpt' );
+
+	if ( '' !== $excerpt ) {
+		return $excerpt;
+	}
+
+	$content = bb_en_get( $post_id, 'bb_en_content' );
+
+	if ( '' === $content ) {
+		return $fallback;
+	}
+
+	$text = wp_strip_all_tags( strip_shortcodes( $content ) );
+
+	return wp_trim_words( $text, (int) $words, '…' );
+}
+
+/**
+ * The English slug in the permalink.
+ *
+ * @param string  $permalink Permalink.
+ * @param WP_Post $post      Post.
+ * @return string
+ */
+function bb_en_filter_permalink( $permalink, $post = null ) {
+	if ( ! bb_is_en() || ! $post instanceof WP_Post ) {
+		return $permalink;
+	}
+
+	$slug = bb_en_get( $post->ID, 'bb_en_slug' );
+
+	if ( '' === $slug || $slug === $post->post_name || '' === $post->post_name ) {
+		return $permalink;
+	}
+
+	$encoded = rawurlencode( $post->post_name );
+
+	if ( false !== strpos( $permalink, '/' . $post->post_name ) ) {
+		return preg_replace( '#/' . preg_quote( $post->post_name, '#' ) . '(/|$|\?)#', '/' . $slug . '$1', $permalink, 1 );
+	}
+
+	if ( false !== strpos( $permalink, '/' . $encoded ) ) {
+		return preg_replace( '#/' . preg_quote( $encoded, '#' ) . '(/|$|\?)#', '/' . $slug . '$1', $permalink, 1 );
+	}
+
+	return $permalink;
+}
+add_filter( 'post_link', 'bb_en_filter_permalink', 10, 2 );
+
+/**
+ * Let /en/<english-slug>/ find the post the slug belongs to.
+ *
+ * @param array $vars Query variables WordPress parsed out of the request.
+ * @return array
+ */
+function bb_en_filter_request( $vars ) {
+	if ( ! bb_is_en() || empty( $vars['name'] ) ) {
+		return $vars;
+	}
+
+	$slug = sanitize_title( (string) $vars['name'] );
+
+	if ( '' === $slug ) {
+		return $vars;
+	}
+
+	// A real Bengali slug already resolves; leave it to WordPress.
+	if ( get_page_by_path( $vars['name'], OBJECT, 'post' ) ) {
+		return $vars;
+	}
+
+	$found = get_posts(
+		array(
+			'post_type'        => 'post',
+			'post_status'      => 'publish',
+			'posts_per_page'   => 1,
+			'fields'           => 'ids',
+			'meta_key'         => 'bb_en_slug', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+			'meta_value'       => $slug, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+			'suppress_filters' => true,
+			'no_found_rows'    => true,
+		)
+	);
+
+	if ( empty( $found ) ) {
+		return $vars;
+	}
+
+	unset( $vars['name'], $vars['year'], $vars['monthnum'], $vars['day'], $vars['category_name'] );
+	$vars['p'] = (int) $found[0];
+
+	return $vars;
+}
+add_filter( 'request', 'bb_en_filter_request' );
+
+/* -------------------------------------------------------------------------
+ * 6. Which posts the English edition lists
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Keep untranslated posts out of every English list — the homepage mosaic,
+ * the ticker, categories, search, the feed, the footer columns.
+ *
+ * @param WP_Query $query Query about to run.
+ * @return void
+ */
+function bb_en_filter_queries( $query ) {
+	if ( ! bb_is_en() || is_admin() ) {
+		return;
+	}
+
+	if ( $query->is_singular() || $query->get( 'p' ) || $query->get( 'name' ) || $query->get( 'page_id' ) || $query->get( 'pagename' ) ) {
+		return;
+	}
+
+	$post_type = $query->get( 'post_type' );
+
+	if ( ! empty( $post_type ) ) {
+		$types = (array) $post_type;
+		$known = array_diff( $types, array( 'post', 'page', 'any' ) );
+
+		if ( ! empty( $known ) ) {
+			return;
+		}
+	}
+
+	$meta_query   = (array) $query->get( 'meta_query' );
+	$meta_query[] = array(
+		'key'   => 'bb_en_ready',
+		'value' => '1',
+	);
+
+	$query->set( 'meta_query', $meta_query );
+}
+add_action( 'pre_get_posts', 'bb_en_filter_queries' );
+
+/**
+ * The previous / next article links are built with their own SQL rather than
+ * a WP_Query, so pre_get_posts never sees them. Under /en they join on the
+ * ready flag and skip straight over anything untranslated.
+ *
+ * @param string $join The JOIN clause, where the posts table is aliased "p".
+ * @return string
+ */
+function bb_en_adjacent_post_join( $join ) {
+	global $wpdb;
+
+	if ( ! bb_is_en() ) {
+		return $join;
+	}
+
+	return $join . " INNER JOIN {$wpdb->postmeta} AS bb_en_ready_meta ON ( bb_en_ready_meta.post_id = p.ID AND bb_en_ready_meta.meta_key = 'bb_en_ready' AND bb_en_ready_meta.meta_value = '1' ) ";
+}
+add_filter( 'get_previous_post_join', 'bb_en_adjacent_post_join' );
+add_filter( 'get_next_post_join', 'bb_en_adjacent_post_join' );
+
+/* -------------------------------------------------------------------------
+ * 7. Where an address should really go
+ * ---------------------------------------------------------------------- */
+
+/**
+ * WordPress's own canonical redirect measures the request against a permalink
+ * that now carries /en, and would bounce every English page back and forth.
+ * The English edition does its own canonicalising in bb_en_template_redirect().
+ *
+ * @param string $redirect Where core wants to send the reader.
+ * @return string|false
+ */
+function bb_en_stop_core_canonical( $redirect ) {
+	return bb_is_en() ? false : $redirect;
+}
+add_filter( 'redirect_canonical', 'bb_en_stop_core_canonical' );
+
+/**
+ * Three rules, in order:
+ *
+ * 1. /en with no slash becomes /en/.
+ * 2. An article with no English version sends the reader to the Bengali one.
+ * 3. An article reached by its Bengali slug moves to its English slug.
+ */
+function bb_en_template_redirect() {
+	if ( ! bb_is_en() || is_admin() || wp_doing_ajax() ) {
+		return;
+	}
+
+	$asked = bb_en_original_path();
+
+	if ( '' !== $asked && '/' !== substr( $asked, -1 ) && '/' === bb_en_neutral_uri() && ! is_feed() ) {
+		wp_safe_redirect( home_url( '/' ) . bb_en_current_query(), 301 );
+		exit;
+	}
+
+	/*
+	 * The front page is a Page too, and it has no translation of its own —
+	 * everything on it is built from the posts underneath. It stays put.
+	 */
+	if ( ! is_singular() || is_front_page() || is_preview() || is_embed() ) {
+		return;
+	}
+
+	$post_id = get_queried_object_id();
+
+	if ( ! $post_id ) {
+		return;
+	}
+
+	if ( ! bb_en_has( $post_id ) ) {
+		$bengali = (string) bb_en_in_lang(
+			'bn',
+			function () use ( $post_id ) {
+				return get_permalink( $post_id );
+			}
+		);
+
+		if ( $bengali ) {
+			wp_safe_redirect( $bengali, 302 );
+			exit;
+		}
+
+		return;
+	}
+
+	$canonical = (string) get_permalink( $post_id );
+
+	if ( ! $canonical ) {
+		return;
+	}
+
+	$current = home_url( bb_en_neutral_uri() );
+
+	if ( untrailingslashit( urldecode( $current ) ) !== untrailingslashit( urldecode( $canonical ) ) ) {
+		wp_safe_redirect( $canonical . bb_en_current_query(), 301 );
+		exit;
+	}
+}
+add_action( 'template_redirect', 'bb_en_template_redirect', 5 );
+
+/* -------------------------------------------------------------------------
+ * 8. Categories and tags
+ * ---------------------------------------------------------------------- */
+
+/**
+ * The English name of a term, or '' when it has none.
+ *
+ * @param int|WP_Term $term Term or term ID.
+ * @return string
+ */
+function bb_en_term_name( $term ) {
+	$term_id = ( $term instanceof WP_Term ) ? (int) $term->term_id : (int) $term;
+
+	if ( ! $term_id ) {
+		return '';
+	}
+
+	return trim( (string) get_term_meta( $term_id, 'bb_en_name', true ) );
+}
+
+/**
+ * @param WP_Term|mixed $term Term.
+ * @return WP_Term|mixed
+ */
+function bb_en_swap_term( $term ) {
+	if ( ! bb_is_en() || ! $term instanceof WP_Term ) {
+		return $term;
+	}
+
+	$english = bb_en_term_name( $term );
+
+	if ( '' !== $english ) {
+		$term->name = $english;
+	}
+
+	$description = trim( (string) get_term_meta( $term->term_id, 'bb_en_description', true ) );
+
+	if ( '' !== $description ) {
+		$term->description = $description;
+	}
+
+	return $term;
+}
+add_filter( 'get_term', 'bb_en_swap_term' );
+
+/**
+ * @param array $terms Terms.
+ * @return array
+ */
+function bb_en_swap_terms( $terms ) {
+	if ( ! bb_is_en() || ! is_array( $terms ) ) {
+		return $terms;
+	}
+
+	foreach ( $terms as $index => $term ) {
+		$terms[ $index ] = bb_en_swap_term( $term );
+	}
+
+	return $terms;
+}
+add_filter( 'get_terms', 'bb_en_swap_terms' );
+add_filter( 'wp_get_object_terms', 'bb_en_swap_terms' );
+add_filter( 'get_the_terms', 'bb_en_swap_terms' );
+
+/**
+ * The heading on a category or tag archive.
+ *
+ * @param string $title Title.
+ * @return string
+ */
+function bb_en_term_title( $title ) {
+	if ( ! bb_is_en() ) {
+		return $title;
+	}
+
+	$term = get_queried_object();
+
+	if ( ! $term instanceof WP_Term ) {
+		return $title;
+	}
+
+	$english = bb_en_term_name( $term );
+
+	return ( '' === $english ) ? $title : $english;
+}
+add_filter( 'single_cat_title', 'bb_en_term_title' );
+add_filter( 'single_tag_title', 'bb_en_term_title' );
+add_filter( 'single_term_title', 'bb_en_term_title' );
+
+/* -------------------------------------------------------------------------
+ * 8b. Writers
+ * ---------------------------------------------------------------------- */
+
+/**
+ * A writer's name as it should be spelled in English, or '' when nobody has
+ * said. The byline, the author page and the schema all pass through here.
+ *
+ * @param int $user_id User.
+ * @return string
+ */
+function bb_en_author_name( $user_id ) {
+	$user_id = (int) $user_id;
+
+	if ( ! $user_id ) {
+		return '';
+	}
+
+	return trim( (string) get_user_meta( $user_id, 'bb_en_display_name', true ) );
+}
+
+/**
+ * @param string $name    Display name.
+ * @param int    $user_id User.
+ * @return string
+ */
+function bb_en_filter_author_field( $name, $user_id = 0 ) {
+	if ( ! bb_is_en() ) {
+		return $name;
+	}
+
+	$english = bb_en_author_name( $user_id );
+
+	return ( '' === $english ) ? $name : $english;
+}
+add_filter( 'get_the_author_display_name', 'bb_en_filter_author_field', 10, 2 );
+
+/**
+ * get_the_author() hands the filter nothing but the name, so the writer has
+ * to be read off the global the loop set up.
+ *
+ * @param string $name Display name.
+ * @return string
+ */
+function bb_en_filter_the_author( $name ) {
+	if ( ! bb_is_en() ) {
+		return $name;
+	}
+
+	$author = isset( $GLOBALS['authordata'] ) ? $GLOBALS['authordata'] : null;
+
+	if ( ! $author instanceof WP_User ) {
+		return $name;
+	}
+
+	$english = bb_en_author_name( $author->ID );
+
+	return ( '' === $english ) ? $name : $english;
+}
+add_filter( 'the_author', 'bb_en_filter_the_author' );
+
+/**
+ * @param string $description Biography.
+ * @param int    $user_id     User.
+ * @return string
+ */
+function bb_en_filter_author_bio( $description, $user_id = 0 ) {
+	if ( ! bb_is_en() ) {
+		return $description;
+	}
+
+	$english = trim( (string) get_user_meta( (int) $user_id, 'bb_en_description', true ) );
+
+	return ( '' === $english ) ? $description : $english;
+}
+add_filter( 'get_the_author_description', 'bb_en_filter_author_bio', 10, 2 );
+
+/* -------------------------------------------------------------------------
+ * 9. The English menu
+ * ---------------------------------------------------------------------- */
+
+/** A second menu location, used only by /en. */
+function bb_en_register_menu() {
+	register_nav_menu( 'primary_en', __( 'Primary Menu (English edition)', 'bichitro-biggan' ) );
+}
+add_action( 'after_setup_theme', 'bb_en_register_menu', 11 );
+
+/**
+ * @param array $args wp_nav_menu() arguments.
+ * @return array
+ */
+function bb_en_nav_menu_args( $args ) {
+	if ( ! bb_is_en() ) {
+		return $args;
+	}
+
+	if ( isset( $args['theme_location'] ) && 'primary' === $args['theme_location'] && has_nav_menu( 'primary_en' ) ) {
+		$args['theme_location'] = 'primary_en';
+	}
+
+	return $args;
+}
+add_filter( 'wp_nav_menu_args', 'bb_en_nav_menu_args' );
+
+/* -------------------------------------------------------------------------
+ * 10. The site's own words
+ * ---------------------------------------------------------------------- */
+
+/**
+ * The handful of Customizer texts the English edition needs its own copy of.
+ *
+ * Each one gets an "_en" twin setting; when that is empty the English default
+ * here is used, so /en never falls back to a Bengali heading.
+ *
+ * @return array<string, array{label:string,type:string,default:string}>
+ */
+function bb_en_text_settings() {
+	return array(
+		'bb_tagline_text'      => array(
+			'label'   => __( 'Tagline', 'bichitro-biggan' ),
+			'type'    => 'textarea',
+			'default' => 'The science of life, the wonders of the universe, the stories of space missions, the nature of matter and the lives of the scientists who changed how we see it all — gathered here, on Bichitro Biggan.',
+		),
+		'bb_editor_picks_title' => array(
+			'label'   => __( "Editor's picks heading", 'bichitro-biggan' ),
+			'type'    => 'text',
+			'default' => "Editor's Picks",
+		),
+		'bb_popular_title'     => array(
+			'label'   => __( 'Popular posts heading', 'bichitro-biggan' ),
+			'type'    => 'text',
+			'default' => 'Popular Reads',
+		),
+		'bb_popular_cat_title' => array(
+			'label'   => __( 'Popular categories heading', 'bichitro-biggan' ),
+			'type'    => 'text',
+			'default' => 'Popular Sections',
+		),
+		'bb_about_title'       => array(
+			'label'   => __( 'About heading', 'bichitro-biggan' ),
+			'type'    => 'text',
+			'default' => 'About Us',
+		),
+		'bb_about_text'        => array(
+			'label'   => __( 'About text', 'bichitro-biggan' ),
+			'type'    => 'textarea',
+			'default' => 'Bichitro Biggan is your source for science news, discoveries, and insights. We bring you the latest updates, research breakthroughs, and engaging stories from the world of science and technology.',
+		),
+		'bb_contact_title'     => array(
+			'label'   => __( 'Contact heading', 'bichitro-biggan' ),
+			'type'    => 'text',
+			'default' => 'Contact',
+		),
+		'bb_subscribe_title'   => array(
+			'label'   => __( 'Subscribe heading', 'bichitro-biggan' ),
+			'type'    => 'text',
+			'default' => 'Subscribe',
+		),
+		'bb_youtube_text'      => array(
+			'label'   => __( 'YouTube button text', 'bichitro-biggan' ),
+			'type'    => 'text',
+			'default' => 'Subscribe',
+		),
+		'bb_footer_youtube_text' => array(
+			'label'   => __( 'YouTube button text (footer)', 'bichitro-biggan' ),
+			'type'    => 'text',
+			'default' => 'Subscribe',
+		),
+		'bb_site_name'         => array(
+			'label'   => __( 'Site name', 'bichitro-biggan' ),
+			'type'    => 'text',
+			'default' => 'Bichitro Biggan',
+		),
+	);
+}
+
+/**
+ * The keys alone, without touching a translation function — this runs while
+ * the theme is still being loaded, long before the text domain exists.
+ *
+ * @return string[]
+ */
+function bb_en_text_keys() {
+	return array(
+		'bb_tagline_text',
+		'bb_editor_picks_title',
+		'bb_popular_title',
+		'bb_popular_cat_title',
+		'bb_about_title',
+		'bb_about_text',
+		'bb_contact_title',
+		'bb_subscribe_title',
+		'bb_youtube_text',
+		'bb_footer_youtube_text',
+		'bb_site_name',
+	);
+}
+
+/**
+ * Swap each of those for its English twin while /en is being served.
+ */
+function bb_en_filter_text_settings() {
+	foreach ( bb_en_text_keys() as $key ) {
+		add_filter(
+			'theme_mod_' . $key,
+			function ( $value ) use ( $key ) {
+				return bb_en_text_setting( $key, $value );
+			}
+		);
+	}
+}
+bb_en_filter_text_settings();
+
+/**
+ * @param string $key   Setting key.
+ * @param mixed  $value Bengali value.
+ * @return mixed
+ */
+function bb_en_text_setting( $key, $value ) {
+	if ( ! bb_is_en() ) {
+		return $value;
+	}
+
+	$settings = bb_en_text_settings();
+
+	if ( ! isset( $settings[ $key ] ) ) {
+		return $value;
+	}
+
+	$english = get_theme_mod( $key . '_en', '' );
+	$english = is_string( $english ) ? trim( $english ) : '';
+
+	return ( '' === $english ) ? $settings[ $key ]['default'] : $english;
+}
+
+/**
+ * The site's name in the masthead alt text, the title tag and the schema.
+ *
+ * @param string $name Site name.
+ * @return string
+ */
+function bb_en_site_name( $name ) {
+	if ( ! bb_is_en() ) {
+		return $name;
+	}
+
+	$english = bb_en_text_setting( 'bb_site_name', '' );
+
+	return ( '' === $english ) ? $name : $english;
+}
+add_filter( 'option_blogname', 'bb_en_site_name' );
+
+/**
+ * The site's own tagline, which WordPress stores separately from the
+ * masthead one.
+ *
+ * @param string $description Site description.
+ * @return string
+ */
+function bb_en_site_description( $description ) {
+	if ( ! bb_is_en() ) {
+		return $description;
+	}
+
+	$english = trim( (string) get_theme_mod( 'bb_site_description_en', '' ) );
+
+	return ( '' === $english ) ? 'Science, space and the story of discovery — in Bengali and in English.' : $english;
+}
+add_filter( 'option_blogdescription', 'bb_en_site_description' );
+
+/**
+ * A Customizer section holding the English wording, so none of it has to be
+ * edited in code. Left empty, each field falls back to the English default
+ * above — never to the Bengali text.
+ *
+ * @param WP_Customize_Manager $wp_customize Customizer.
+ * @return void
+ */
+function bb_en_customize_register( $wp_customize ) {
+	$wp_customize->add_section(
+		'bb_english_section',
+		array(
+			'title'       => __( 'English edition (/en)', 'bichitro-biggan' ),
+			'priority'    => 35,
+			'description' => __( 'The wording the site uses under /en. Leave a field empty to use the built-in English text.', 'bichitro-biggan' ),
+		)
+	);
+
+	$fields = bb_en_text_settings();
+
+	$fields['bb_site_description'] = array(
+		'label'   => __( 'Site description (search engines)', 'bichitro-biggan' ),
+		'type'    => 'textarea',
+		'default' => 'Science, space and the story of discovery — in Bengali and in English.',
+	);
+
+	foreach ( $fields as $key => $field ) {
+		$setting = $key . '_en';
+
+		$wp_customize->add_setting(
+			$setting,
+			array(
+				'default'           => '',
+				'sanitize_callback' => ( 'textarea' === $field['type'] ) ? 'wp_kses_post' : 'sanitize_text_field',
+				'transport'         => 'refresh',
+			)
+		);
+
+		$wp_customize->add_control(
+			$setting,
+			array(
+				'label'       => $field['label'],
+				'section'     => 'bb_english_section',
+				'type'        => $field['type'],
+				'description' => sprintf(
+					/* translators: %s: the built-in English wording. */
+					__( 'Default: %s', 'bichitro-biggan' ),
+					$field['default']
+				),
+			)
+		);
+	}
+}
+add_action( 'customize_register', 'bb_en_customize_register', 20 );
+
+/* -------------------------------------------------------------------------
+ * 11. Search
+ * ---------------------------------------------------------------------- */
+
+/*
+ * The live-search endpoint sits at /wp-json/, outside /en, so the script sends
+ * the edition along with the query and inc/live-search.php switches languages
+ * from there.
+ */
+
+/* -------------------------------------------------------------------------
+ * 11b. Comments
+ * ---------------------------------------------------------------------- */
+
+/**
+ * A comment is posted to wp-comments-post.php, which knows nothing about /en
+ * and would send the reader back to the Bengali article. The form says where
+ * it came from.
+ */
+function bb_en_comment_form_field() {
+	if ( ! bb_is_en() ) {
+		return;
+	}
+
+	echo '<input type="hidden" name="bb_lang" value="en" />';
+}
+add_action( 'comment_form', 'bb_en_comment_form_field' );
+
+/**
+ * @param string     $location Where the reader is being sent.
+ * @param WP_Comment $comment  The comment just posted.
+ * @return string
+ */
+function bb_en_comment_redirect( $location, $comment ) {
+	// phpcs:ignore WordPress.Security.NonceVerification.Missing -- wp-comments-post.php has already checked the request; this only picks the language of the address to return to.
+	$lang = isset( $_POST['bb_lang'] ) ? sanitize_key( wp_unslash( $_POST['bb_lang'] ) ) : '';
+
+	if ( 'en' !== $lang || ! $comment instanceof WP_Comment ) {
+		return $location;
+	}
+
+	$post_id = (int) $comment->comment_post_ID;
+
+	$url = (string) bb_en_in_lang(
+		'en',
+		function () use ( $post_id ) {
+			return get_permalink( $post_id );
+		}
+	);
+
+	return $url ? $url . '#comment-' . (int) $comment->comment_ID : $location;
+}
+add_filter( 'comment_post_redirect', 'bb_en_comment_redirect', 10, 2 );
+
+/* -------------------------------------------------------------------------
+ * 12. hreflang
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Tell search engines the two editions are the same page in two languages.
+ */
+function bb_en_hreflang_tags() {
+	if ( is_404() || is_search() ) {
+		return;
+	}
+
+	$bengali = bb_en_url_for( 'bn' );
+	$english = bb_en_url_for( 'en' );
+
+	if ( ! $bengali ) {
+		return;
+	}
+
+	printf( '<link rel="alternate" hreflang="bn" href="%s" />' . "\n", esc_url( $bengali ) );
+
+	if ( $english ) {
+		printf( '<link rel="alternate" hreflang="en" href="%s" />' . "\n", esc_url( $english ) );
+	}
+
+	printf( '<link rel="alternate" hreflang="x-default" href="%s" />' . "\n", esc_url( $bengali ) );
+}
+add_action( 'wp_head', 'bb_en_hreflang_tags', 4 );
+
+/* -------------------------------------------------------------------------
+ * 13. SEO fields
+ * ---------------------------------------------------------------------- */
+
+/**
+ * The English title and description for the page's own <head>.
+ *
+ * @param array $ctx SEO context.
+ * @return array
+ */
+function bb_en_seo_context( $ctx ) {
+	if ( ! bb_is_en() ) {
+		return $ctx;
+	}
+
+	$post = isset( $ctx['post'] ) ? $ctx['post'] : null;
+
+	if ( ! $post instanceof WP_Post ) {
+		return $ctx;
+	}
+
+	$title = bb_en_get( $post->ID, 'bb_en_seo_title' );
+
+	if ( '' === $title ) {
+		$english = bb_en_title( $post->ID );
+
+		if ( '' !== $english ) {
+			$title = $english . ' — ' . get_bloginfo( 'name' );
+		}
+	}
+
+	if ( '' !== $title ) {
+		$ctx['title'] = $title;
+	}
+
+	$description = bb_en_get( $post->ID, 'bb_en_seo_description' );
+
+	if ( '' === $description ) {
+		$description = bb_en_excerpt_text( $post->ID, '', 30 );
+	}
+
+	if ( '' !== $description ) {
+		$ctx['description'] = $description;
+	}
+
+	return $ctx;
+}
+add_filter( 'bb_seo_context', 'bb_en_seo_context' );
+
+/* -------------------------------------------------------------------------
+ * 14. The switcher
+ * ---------------------------------------------------------------------- */
+
+/**
+ * The little EN / বাং button that sits beside the dark-mode switch.
+ *
+ * @param string $class CSS class for the anchor.
+ * @return void
+ */
+function bb_lang_switch( $class = 'bb-topbar__lang' ) {
+	$to_english = ! bb_is_en();
+	$target     = $to_english ? bb_en_url_for( 'en' ) : bb_en_url_for( 'bn' );
+
+	if ( ! $target ) {
+		// No English version of this page — offer the English front page.
+		$target = $to_english
+			? (string) bb_en_in_lang( 'en', 'bb_en_home_link' )
+			: (string) bb_en_in_lang( 'bn', 'bb_en_home_link' );
+	}
+
+	if ( ! $target ) {
+		return;
+	}
+
+	$label = $to_english ? 'EN' : 'বাং';
+	$title = $to_english
+		? __( 'Read this site in English', 'bichitro-biggan' )
+		: __( 'বাংলায় পড়ুন', 'bichitro-biggan' );
+
+	printf(
+		'<a class="%1$s" href="%2$s" hreflang="%3$s" lang="%3$s" title="%4$s" aria-label="%4$s" rel="alternate"><span aria-hidden="true">%5$s</span></a>',
+		esc_attr( $class ),
+		esc_url( $target ),
+		esc_attr( $to_english ? 'en' : 'bn' ),
+		esc_attr( $title ),
+		esc_html( $label )
+	);
+}
+
+/** The front page of whichever edition is current. Used by the switcher. */
+function bb_en_home_link() {
+	return home_url( '/' );
+}
+
+/* -------------------------------------------------------------------------
+ * 15. The English sitemap
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Give Google its own list of the English addresses. Core's sitemap only
+ * knows about the Bengali ones.
+ */
+function bb_en_register_sitemap( $sitemaps ) {
+	if ( ! class_exists( 'WP_Sitemaps_Provider' ) || ! isset( $sitemaps->registry ) ) {
+		return;
+	}
+
+	require_once get_template_directory() . '/inc/class-bb-en-sitemap-provider.php';
+
+	if ( ! class_exists( 'BB_EN_Sitemap_Provider' ) ) {
+		return;
+	}
+
+	$sitemaps->registry->add_provider( 'en', new BB_EN_Sitemap_Provider() );
+}
+add_action( 'wp_sitemaps_init', 'bb_en_register_sitemap' );

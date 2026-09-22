@@ -37,7 +37,7 @@ while ( have_posts() ) :
 		<div class="bb-authorrow">
 			<div>
 				<p class="bb-authorrow__date"><?php echo esc_html( bb_bangla_date() ); ?></p>
-				<p class="bb-authorrow__reading-time">⏱ <?php echo esc_html( bb_reading_time() ); ?> পড়ার সময়</p>
+				<p class="bb-authorrow__reading-time">⏱ <?php echo esc_html( bb_reading_time_label() ); ?></p>
 				<?php
 				/* Most posts here are edited after publication; readers only ever saw the original date. */
 				if ( get_the_modified_date( 'Y-m-d' ) !== get_the_date( 'Y-m-d' ) ) :

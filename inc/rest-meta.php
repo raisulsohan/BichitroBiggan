@@ -31,6 +31,20 @@ function bb_rest_meta_fields() {
 		'bb_seo_title'          => array( 'types' => array( 'post', 'page' ), 'sanitize' => 'sanitize_text_field' ),
 		'bb_seo_description'    => array( 'types' => array( 'post', 'page' ), 'sanitize' => 'sanitize_textarea_field' ),
 		'bb_references'         => array( 'types' => array( 'post' ), 'sanitize' => 'sanitize_textarea_field' ),
+
+		/*
+		 * The English edition. A translation can be delivered by the same kind
+		 * of script that publishes a post — see inc/lang.php for what each of
+		 * these does to /en.
+		 */
+		'bb_en_ready'           => array( 'types' => array( 'post', 'page' ), 'sanitize' => 'bb_en_sanitize_flag' ),
+		'bb_en_title'           => array( 'types' => array( 'post', 'page' ), 'sanitize' => 'sanitize_text_field' ),
+		'bb_en_slug'            => array( 'types' => array( 'post', 'page' ), 'sanitize' => 'bb_en_sanitize_slug' ),
+		'bb_en_excerpt'         => array( 'types' => array( 'post', 'page' ), 'sanitize' => 'sanitize_textarea_field' ),
+		'bb_en_content'         => array( 'types' => array( 'post', 'page' ), 'sanitize' => 'wp_kses_post' ),
+		'bb_en_seo_title'       => array( 'types' => array( 'post', 'page' ), 'sanitize' => 'sanitize_text_field' ),
+		'bb_en_seo_description' => array( 'types' => array( 'post', 'page' ), 'sanitize' => 'sanitize_textarea_field' ),
+		'bb_en_focus_keyphrase' => array( 'types' => array( 'post', 'page' ), 'sanitize' => 'sanitize_text_field' ),
 	);
 }
 

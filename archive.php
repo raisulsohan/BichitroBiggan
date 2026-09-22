@@ -52,11 +52,17 @@ if ( is_category() || is_tag() || is_tax() ) {
 
 		<?php if ( $bb_filter_y > 0 ) : ?>
 			<?php
-			$bb_filter_label = bb_bangla_number( $bb_filter_y ) . ' সালের ';
 			if ( $bb_filter_m > 0 ) {
-				$bb_filter_label = $GLOBALS['wp_locale']->get_month( $bb_filter_m ) . ' ' . $bb_filter_label;
+				/* translators: 1: month name, 2: year. */
+				$bb_filter_label = sprintf(
+					esc_html__( '%1$s %2$s সালের আর্কাইভ', 'bichitro-biggan' ),
+					bb_bangla_month( $bb_filter_m ),
+					bb_bangla_number( $bb_filter_y )
+				);
+			} else {
+				/* translators: %s: year. */
+				$bb_filter_label = sprintf( esc_html__( '%s সালের আর্কাইভ', 'bichitro-biggan' ), bb_bangla_number( $bb_filter_y ) );
 			}
-			$bb_filter_label .= 'আর্কাইভ';
 			$bb_reset_url     = get_category_link( get_queried_object_id() );
 			?>
 			<div class="bb-filter-pill">
