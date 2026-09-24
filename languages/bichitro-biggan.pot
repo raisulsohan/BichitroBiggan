@@ -661,7 +661,7 @@ msgid "Homepage"
 msgstr ""
 
 #: inc/admin-settings.php:236
-#: inc/lang.php:1584
+#: inc/lang.php:1623
 msgid "Default: %s"
 msgstr ""
 
@@ -1238,7 +1238,7 @@ msgstr ""
 
 #: inc/english-meta-box.php:30
 #: inc/english-meta-box.php:264
-#: inc/lang.php:1528
+#: inc/lang.php:1567
 msgid "English edition (/en)"
 msgstr ""
 
@@ -1307,83 +1307,83 @@ msgstr ""
 msgid "Primary Menu (English edition)"
 msgstr ""
 
-#: inc/lang.php:1365
+#: inc/lang.php:1404
 msgid "Tagline"
 msgstr ""
 
-#: inc/lang.php:1370
+#: inc/lang.php:1409
 msgid "Editor's picks heading"
 msgstr ""
 
-#: inc/lang.php:1375
+#: inc/lang.php:1414
 msgid "Popular posts heading"
 msgstr ""
 
-#: inc/lang.php:1380
+#: inc/lang.php:1419
 msgid "Popular categories heading"
 msgstr ""
 
-#: inc/lang.php:1385
+#: inc/lang.php:1424
 msgid "About heading"
 msgstr ""
 
-#: inc/lang.php:1390
+#: inc/lang.php:1429
 msgid "About text"
 msgstr ""
 
-#: inc/lang.php:1395
+#: inc/lang.php:1434
 msgid "Contact heading"
 msgstr ""
 
-#: inc/lang.php:1400
+#: inc/lang.php:1439
 msgid "Subscribe heading"
 msgstr ""
 
-#: inc/lang.php:1405
+#: inc/lang.php:1444
 msgid "YouTube button text"
 msgstr ""
 
-#: inc/lang.php:1410
+#: inc/lang.php:1449
 msgid "YouTube button text (footer)"
 msgstr ""
 
-#: inc/lang.php:1415
+#: inc/lang.php:1454
 msgid "Site name"
 msgstr ""
 
-#: inc/lang.php:1530
+#: inc/lang.php:1569
 msgid "The wording the site uses under /en. Leave a field empty to use the built-in English text."
 msgstr ""
 
-#: inc/lang.php:1548
+#: inc/lang.php:1587
 msgid "Logo for the English edition"
 msgstr ""
 
-#: inc/lang.php:1549
+#: inc/lang.php:1588
 msgid "Shown instead of the site logo under /en. Leave empty to use the same logo as the Bengali site."
 msgstr ""
 
-#: inc/lang.php:1559
+#: inc/lang.php:1598
 msgid "Site description (search engines)"
 msgstr ""
 
-#: inc/lang.php:1878
+#: inc/lang.php:1917
 msgid "#%d is not an image in the media library."
 msgstr ""
 
-#: inc/lang.php:1927
+#: inc/lang.php:1966
 msgid "ইংরেজিতে পড়ুন"
 msgstr ""
 
-#: inc/lang.php:1928
+#: inc/lang.php:1967
 msgid "Read in Bengali"
 msgstr ""
 
-#: inc/lang.php:1985
+#: inc/lang.php:2024
 msgid "এই লেখাটি ইংরেজিতে পড়ুন"
 msgstr ""
 
-#: inc/lang.php:1986
+#: inc/lang.php:2025
 msgid "Read this article in Bangla"
 msgstr ""
 

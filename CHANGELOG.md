@@ -2,6 +2,22 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.21.1
+
+- Home on the English edition was not marked as the page you are on, while
+  every category was. Mine, from 7.19.1: pointing that custom link at /en/
+  fixed where it goes and broke how WordPress recognises it. It decides which
+  custom link is current by comparing the item's address against REQUEST_URI,
+  and under /en the prefix has already been taken off REQUEST_URI by then, so
+  an item reading /en/ never matched the bare / it was held against. The
+  categories were never affected — those are taxonomy items, matched by term.
+  The English Home is marked directly now.
+- The back-to-top button keeps its line with the resume bar on a wide screen.
+  It has always lifted itself clear when that bar appears, which is right on a
+  phone where the bar runs nearly the full width, and pointless on a desktop:
+  measured at 1400px the bar is a centred card with 354 pixels of clear floor
+  beside it. Below 760px the lift stays.
+
 ## 7.21.0
 
 - Category badges and section labels were being drawn in white on pale

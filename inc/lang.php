@@ -1331,6 +1331,45 @@ function bb_en_nav_menu_item( $item ) {
 add_filter( 'wp_setup_nav_menu_item', 'bb_en_nav_menu_item' );
 
 /**
+ * Mark the English edition's Home as the page you are on.
+ *
+ * WordPress works out which custom link is current by comparing the item's
+ * address with REQUEST_URI — and under /en the prefix has already been taken
+ * off REQUEST_URI by the time it looks, so an item now pointing at /en/ never
+ * matched the bare / it was compared against. The categories were never
+ * affected: those are taxonomy items, matched by term, not by address.
+ *
+ * @param array  $classes Classes for this item's <li>.
+ * @param object $item    The menu item.
+ * @return array
+ */
+function bb_en_nav_current_class( $classes, $item ) {
+	if ( ! bb_is_en() || ! isset( $item->type ) || 'custom' !== $item->type ) {
+		return $classes;
+	}
+
+	$classes = (array) $classes;
+
+	if ( untrailingslashit( (string) $item->url ) !== untrailingslashit( home_url( '/' ) ) ) {
+		return $classes;
+	}
+
+	if ( ! is_front_page() ) {
+		// Not the front page, so make sure no stale mark is left on it either.
+		return array_values( array_diff( $classes, array( 'current-menu-item', 'current_page_item' ) ) );
+	}
+
+	foreach ( array( 'current-menu-item', 'current_page_item' ) as $class ) {
+		if ( ! in_array( $class, $classes, true ) ) {
+			$classes[] = $class;
+		}
+	}
+
+	return $classes;
+}
+add_filter( 'nav_menu_css_class', 'bb_en_nav_current_class', 10, 2 );
+
+/**
  * @param array $args wp_nav_menu() arguments.
  * @return array
  */
