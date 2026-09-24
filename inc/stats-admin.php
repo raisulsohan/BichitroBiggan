@@ -143,7 +143,11 @@ function bb_stats_change( $now, $before ) {
 /**
  * The line: reads per hour, or per day.
  *
- * @param array $series Slot => array{hits,visits,label}.
+ * Drawn the way a reader of charts expects one — a scale up the left, lines
+ * across it, and the exact figure under the pointer — but still one inline SVG
+ * and about forty lines of script. No charting library is loaded for it.
+ *
+ * @param array $series Slot => array{hits,visits,label,tip}.
  * @return void
  */
 function bb_stats_chart( array $series ) {
@@ -161,25 +165,51 @@ function bb_stats_chart( array $series ) {
 	}
 
 	$width  = 980;
-	$height = 220;
-	$pad    = 28;
-	$top    = max( 1, max( $hits ) );
+	$height = 260;
+	$left   = 58;   // room for the scale.
+	$right  = 14;
+	$top    = 16;
+	$bottom = 30;
 
-	$x = function ( $i ) use ( $width, $pad, $count ) {
-		return $count > 1 ? $pad + ( ( $width - $pad * 2 ) * $i / ( $count - 1 ) ) : $width / 2;
+	$ceiling = bb_stats_nice_ceiling( max( $hits ) );
+
+	$x = function ( $i ) use ( $width, $left, $right, $count ) {
+		return $count > 1 ? $left + ( ( $width - $left - $right ) * $i / ( $count - 1 ) ) : ( $width + $left ) / 2;
 	};
 
-	$y = function ( $value ) use ( $height, $pad, $top ) {
-		return $height - $pad - ( ( $height - $pad * 2 ) * $value / $top );
+	$y = function ( $value ) use ( $height, $top, $bottom, $ceiling ) {
+		return $height - $bottom - ( ( $height - $top - $bottom ) * $value / $ceiling );
 	};
 
 	$points = array();
+	$data   = array();
 
 	foreach ( $hits as $i => $value ) {
-		$points[] = round( $x( $i ), 1 ) . ',' . round( $y( $value ), 1 );
+		$px = round( $x( $i ), 1 );
+		$py = round( $y( $value ), 1 );
+
+		$points[] = $px . ',' . $py;
+		$data[]   = array(
+			'x' => $px,
+			'y' => $py,
+			'v' => bb_stats_number( $value ),
+			'l' => isset( $rows[ $i ]['tip'] ) ? $rows[ $i ]['tip'] : $rows[ $i ]['label'],
+		);
 	}
 
-	$area = implode( ' ', $points );
+	$line = implode( ' ', $points );
+	$area = $left . ',' . ( $height - $bottom ) . ' ' . $line . ' ' . round( $x( $count - 1 ), 1 ) . ',' . ( $height - $bottom );
+
+	// Four lines across, including the floor, at round numbers.
+	$grid = array();
+
+	for ( $step = 0; $step <= 4; $step++ ) {
+		$value  = $ceiling * $step / 4;
+		$grid[] = array(
+			'y'     => round( $y( $value ), 1 ),
+			'label' => bb_stats_number( (int) round( $value ) ),
+		);
+	}
 
 	// A handful of labels along the bottom, not one per point.
 	$every  = max( 1, (int) ceil( $count / 8 ) );
@@ -191,35 +221,135 @@ function bb_stats_chart( array $series ) {
 		}
 
 		$labels[] = array(
-			'x'    => $x( $i ),
+			'x'    => round( $x( $i ), 1 ),
 			'text' => $row['label'],
 		);
 	}
 	?>
-	<div class="bb-stats-chart">
-		<svg viewBox="0 0 <?php echo (int) $width; ?> <?php echo (int) $height; ?>" preserveAspectRatio="none" role="img"
+	<div class="bb-stats-chart" data-bb-chart="<?php echo esc_attr( wp_json_encode( $data ) ); ?>">
+		<svg viewBox="0 0 <?php echo (int) $width; ?> <?php echo (int) $height; ?>" role="img"
 			aria-label="<?php esc_attr_e( 'Reads over time', 'bichitro-biggan' ); ?>">
-			<polygon fill="rgba(0,128,255,0.12)"
-				points="<?php echo esc_attr( $pad . ',' . ( $height - $pad ) . ' ' . $area . ' ' . ( $width - $pad ) . ',' . ( $height - $pad ) ); ?>" />
-			<polyline fill="none" stroke="#0080ff" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"
-				points="<?php echo esc_attr( $area ); ?>" />
-			<line x1="<?php echo (int) $pad; ?>" y1="<?php echo (int) ( $height - $pad ); ?>"
-				x2="<?php echo (int) ( $width - $pad ); ?>" y2="<?php echo (int) ( $height - $pad ); ?>"
-				stroke="#d1d5db" stroke-width="1" />
-		</svg>
-		<div class="bb-stats-chart__scale">
-			<span><?php echo esc_html( bb_stats_number( $top ) ); ?></span>
-			<span>0</span>
-		</div>
-		<div class="bb-stats-chart__labels">
-			<?php foreach ( $labels as $label ) : ?>
-				<span style="left:<?php echo esc_attr( round( 100 * $label['x'] / $width, 2 ) ); ?>%">
-					<?php echo esc_html( $label['text'] ); ?>
-				</span>
+
+			<?php foreach ( $grid as $index => $row ) : ?>
+				<line x1="<?php echo (int) $left; ?>" y1="<?php echo esc_attr( $row['y'] ); ?>"
+					x2="<?php echo (int) ( $width - $right ); ?>" y2="<?php echo esc_attr( $row['y'] ); ?>"
+					stroke="<?php echo 0 === $index ? '#c3c4c7' : '#eceef0'; ?>" stroke-width="1" />
+				<text x="<?php echo (int) ( $left - 10 ); ?>" y="<?php echo esc_attr( $row['y'] + 4 ); ?>"
+					text-anchor="end" font-size="12" fill="#646970"><?php echo esc_html( $row['label'] ); ?></text>
 			<?php endforeach; ?>
+
+			<polygon fill="rgba(0,128,255,0.10)" points="<?php echo esc_attr( $area ); ?>" />
+			<polyline fill="none" stroke="#0080ff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"
+				points="<?php echo esc_attr( $line ); ?>" />
+
+			<?php foreach ( $labels as $label ) : ?>
+				<text x="<?php echo esc_attr( $label['x'] ); ?>" y="<?php echo (int) ( $height - 8 ); ?>"
+					text-anchor="middle" font-size="12" fill="#646970"><?php echo esc_html( $label['text'] ); ?></text>
+			<?php endforeach; ?>
+
+			<line class="bb-chart-guide" x1="0" y1="<?php echo (int) $top; ?>" x2="0" y2="<?php echo (int) ( $height - $bottom ); ?>"
+				stroke="#8c8f94" stroke-width="1" stroke-dasharray="3 3" opacity="0" />
+			<circle class="bb-chart-dot" r="4.5" fill="#0080ff" stroke="#fff" stroke-width="2" opacity="0" />
+		</svg>
+
+		<div class="bb-stats-chart__tip" hidden>
+			<span class="bb-stats-chart__tip-label"><?php esc_html_e( 'Reads', 'bichitro-biggan' ); ?></span>
+			<strong class="bb-stats-chart__tip-value"></strong>
+			<span class="bb-stats-chart__tip-when"></span>
 		</div>
 	</div>
+
+	<script>
+	/* The pointer reads the figure off the line: a dotted guide, a dot on the
+	   point nearest the pointer, and a small card with the number and the day. */
+	( function () {
+		var charts = document.querySelectorAll( '[data-bb-chart]' );
+
+		Array.prototype.forEach.call( charts, function ( chart ) {
+			var points = JSON.parse( chart.getAttribute( 'data-bb-chart' ) || '[]' );
+			if ( ! points.length ) return;
+
+			var svg = chart.querySelector( 'svg' );
+			var guide = chart.querySelector( '.bb-chart-guide' );
+			var dot = chart.querySelector( '.bb-chart-dot' );
+			var tip = chart.querySelector( '.bb-stats-chart__tip' );
+			var value = chart.querySelector( '.bb-stats-chart__tip-value' );
+			var when = chart.querySelector( '.bb-stats-chart__tip-when' );
+			var viewBox = svg.viewBox.baseVal;
+
+			function show( clientX ) {
+				var box = svg.getBoundingClientRect();
+				if ( ! box.width ) return;
+
+				var inside = ( clientX - box.left ) / box.width * viewBox.width;
+				var nearest = 0;
+
+				for ( var i = 1; i < points.length; i++ ) {
+					if ( Math.abs( points[ i ].x - inside ) < Math.abs( points[ nearest ].x - inside ) ) nearest = i;
+				}
+
+				var point = points[ nearest ];
+
+				guide.setAttribute( 'x1', point.x );
+				guide.setAttribute( 'x2', point.x );
+				guide.setAttribute( 'opacity', '1' );
+				dot.setAttribute( 'cx', point.x );
+				dot.setAttribute( 'cy', point.y );
+				dot.setAttribute( 'opacity', '1' );
+
+				value.textContent = point.v;
+				when.textContent = point.l;
+				tip.hidden = false;
+
+				var scale = box.width / viewBox.width;
+				var left = point.x * scale;
+				var width = tip.offsetWidth;
+
+				tip.style.left = Math.max( 4, Math.min( box.width - width - 4, left - width / 2 ) ) + 'px';
+				tip.style.top = Math.max( 0, point.y * scale - tip.offsetHeight - 14 ) + 'px';
+			}
+
+			function hide() {
+				guide.setAttribute( 'opacity', '0' );
+				dot.setAttribute( 'opacity', '0' );
+				tip.hidden = true;
+			}
+
+			chart.addEventListener( 'mousemove', function ( e ) { show( e.clientX ); } );
+			chart.addEventListener( 'mouseleave', hide );
+			chart.addEventListener( 'touchstart', function ( e ) { if ( e.touches[0] ) show( e.touches[0].clientX ); }, { passive: true } );
+			chart.addEventListener( 'touchmove', function ( e ) { if ( e.touches[0] ) show( e.touches[0].clientX ); }, { passive: true } );
+			chart.addEventListener( 'touchend', hide );
+		} );
+	}() );
+	</script>
 	<?php
+}
+
+/**
+ * A round number to put at the top of the scale — 1, 2 or 5 followed by
+ * zeroes, so the lines across land on figures a person would choose.
+ *
+ * @param int $highest The biggest value in the series.
+ * @return float
+ */
+function bb_stats_nice_ceiling( $highest ) {
+	$highest = max( 1, (int) $highest );
+
+	if ( $highest <= 4 ) {
+		return 4;
+	}
+
+	$magnitude = pow( 10, floor( log10( $highest ) ) );
+	$steps     = array( 1, 1.2, 1.6, 2, 2.5, 4, 5, 8, 10 );
+
+	foreach ( $steps as $step ) {
+		if ( $highest <= $step * $magnitude ) {
+			return $step * $magnitude;
+		}
+	}
+
+	return 10 * $magnitude;
 }
 
 /**
@@ -629,11 +759,12 @@ function bb_stats_page() {
 		.bb-stats-panel h2 { font-size: 15px; }
 		.bb-stats__columns { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: start; }
 		@media (max-width: 1100px) { .bb-stats__columns { grid-template-columns: 1fr; } }
-		.bb-stats-chart { position: relative; padding-bottom: 18px; }
-		.bb-stats-chart svg { width: 100%; height: 220px; display: block; }
-		.bb-stats-chart__scale { position: absolute; top: 18px; left: 0; height: 170px; display: flex; flex-direction: column; justify-content: space-between; font-size: 11px; color: #646970; }
-		.bb-stats-chart__labels { position: relative; height: 16px; }
-		.bb-stats-chart__labels span { position: absolute; transform: translateX(-50%); font-size: 11px; color: #646970; white-space: nowrap; }
+		.bb-stats-chart { position: relative; }
+		.bb-stats-chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+		.bb-stats-chart__tip { position: absolute; z-index: 5; background: #fff; border: 1px solid #dcdcde; border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,.12); padding: 8px 12px; pointer-events: none; white-space: nowrap; }
+		.bb-stats-chart__tip-label { display: block; font-size: 11px; color: #646970; }
+		.bb-stats-chart__tip-value { display: block; font-size: 18px; line-height: 1.2; color: #1d2327; }
+		.bb-stats-chart__tip-when { display: block; font-size: 11px; color: #646970; }
 		.bb-stats-hours { display: flex; align-items: flex-end; gap: 3px; height: 110px; margin: 0 0 24px; }
 		.bb-stats-hours__col { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; position: relative; }
 		.bb-stats-hours__bar { display: block; width: 100%; background: #0080ff; border-radius: 3px 3px 0 0; opacity: .85; }

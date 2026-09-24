@@ -1,7 +1,5 @@
 # English (United States) for the Bichitro Biggan theme.
-# Loaded by inc/lang.php only while /en is being served — never by the Bengali site,
-# whatever locale WordPress itself is running in. The name is deliberately not a
-# locale (en_US.mo would be picked up automatically on an English-locale install).
+# Loaded only by the English edition at /en — the admin keeps its own language.
 #
 # Edit this file (Poedit works), then run: npm run mo
 msgid ""

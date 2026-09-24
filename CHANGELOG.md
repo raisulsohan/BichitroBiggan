@@ -2,6 +2,15 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.16.0
+
+- The chart on the Statistics screen reads like a chart now: a scale up the
+  left at round figures, faint lines across it, the dates along the bottom,
+  and — where it was most missed — the exact number under the pointer, with a
+  dotted guide and a dot on the day it belongs to. It works by touch as well.
+- Still one inline SVG and forty lines of script. No charting library is
+  loaded for it, and the screen makes no request of its own.
+
 ## 7.15.1
 
 - The switch in the top bar and in the sticky menu spells the language out —
