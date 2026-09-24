@@ -2,6 +2,21 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.20.2
+
+- A conversion that failed half way left a file of nothing behind, and the
+  swap, which trusted a twin simply by finding one, served those zero bytes to
+  readers in place of the picture. Two pictures on the front page were blank
+  because of it. Nothing was lost — the originals were never touched — but the
+  page was broken while it lasted.
+- A written file is now checked before it is believed: it must have something
+  in it and must read back as an image, or it is thrown away. An empty twin
+  already on disk is ignored when serving and written again when converting,
+  so re-running the tool repairs what the first run got wrong.
+- The cards on the front page and the archives are built by hand rather than
+  by wp_get_attachment_image(), so nothing was swapping their address. They
+  serve the lighter twin now as well.
+
 ## 7.20.1
 
 - The WebP swap was taking the srcset away with it. A picture's src was being

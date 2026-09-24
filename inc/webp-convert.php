@@ -109,7 +109,12 @@ function bb_webp_swap_url( $url ) {
 	$path     = $uploads['basedir'] . $relative;
 	$twin     = bb_webp_twin_path( $path );
 
-	if ( '' === $twin || ! file_exists( $twin ) ) {
+	/*
+	 * A twin has to exist and have something in it. A conversion that ran out
+	 * of memory part way leaves a file of nothing behind, and trusting the
+	 * name alone served a picture that was zero bytes long.
+	 */
+	if ( '' === $twin || ! file_exists( $twin ) || filesize( $twin ) < 1 ) {
 		return '';
 	}
 
@@ -233,7 +238,12 @@ function bb_webp_convert_file( $path ) {
 	}
 
 	if ( file_exists( $twin ) ) {
-		return 'already';
+		if ( filesize( $twin ) > 0 ) {
+			return 'already';
+		}
+
+		// Nothing in it — a conversion that failed half way. Try again.
+		wp_delete_file( $twin );
 	}
 
 	$size = (int) filesize( $path );
@@ -257,12 +267,28 @@ function bb_webp_convert_file( $path ) {
 	}
 
 	/*
+	 * Saved is not the same as written. A conversion that runs out of memory
+	 * can leave a file of nothing behind and still report success, and because
+	 * the swap trusts a twin by finding it, that empty file then went out to
+	 * readers in place of the picture. Anything that is not a real WebP is
+	 * thrown away here instead.
+	 */
+	$written = (int) filesize( $saved['path'] );
+	$reads   = $written > 0 ? @getimagesize( $saved['path'] ) : false; // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- a broken file is the thing being looked for.
+
+	if ( $written < 1 || empty( $reads[0] ) ) {
+		wp_delete_file( $saved['path'] );
+
+		return 'skipped';
+	}
+
+	/*
 	 * A WebP is not always the smaller file — a flat graphic saved as PNG can
 	 * come out heavier. Keeping it would make the page worse, and because the
 	 * swap above trusts a twin simply by finding it, the answer is to not
 	 * leave one lying there.
 	 */
-	if ( (int) filesize( $saved['path'] ) >= $size ) {
+	if ( $written >= $size ) {
 		wp_delete_file( $saved['path'] );
 
 		return 'bigger';

@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.20.1' );
+define( 'BB_VERSION', '7.20.2' );
 
 /**
  * The built copy of an asset, when there is one and it is not stale.
@@ -1021,8 +1021,17 @@ function bb_thumb_url( $post_id = null, $size = 'bb-card' ) {
 
 	if ( has_post_thumbnail( $post_id ) ) {
 		$url = get_the_post_thumbnail_url( $post_id, $size );
+
 		if ( $url ) {
-			return $url;
+			/*
+			 * The cards are built by hand rather than by wp_get_attachment_image(),
+			 * so nothing downstream swaps this address for the lighter twin. It is
+			 * done here, where it is only ever a src — an address WordPress works
+			 * widths out from must keep the name the library knows.
+			 */
+			$lighter = function_exists( 'bb_webp_swap_url' ) ? bb_webp_swap_url( $url ) : '';
+
+			return '' !== $lighter ? $lighter : $url;
 		}
 	}
 
