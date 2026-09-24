@@ -101,6 +101,10 @@ function bb_webp_page() {
 					<span><?php esc_html_e( 'lighter', 'bichitro-biggan' ); ?></span>
 				</div>
 				<div class="bb-webp__figure">
+					<strong id="bb-webp-failed"><?php echo esc_html( number_format_i18n( $progress['failed'] ) ); ?></strong>
+					<span><?php esc_html_e( 'could not be converted', 'bichitro-biggan' ); ?></span>
+				</div>
+				<div class="bb-webp__figure">
 					<strong id="bb-webp-bigger"><?php echo esc_html( number_format_i18n( $progress['bigger'] ) ); ?></strong>
 					<span><?php esc_html_e( 'left as they were', 'bichitro-biggan' ); ?></span>
 				</div>
@@ -120,7 +124,7 @@ function bb_webp_page() {
 			</p>
 
 			<p class="bb-webp__note">
-				<?php esc_html_e( 'Leave this page open while it runs. It works through a few pictures at a time so the server is never asked for too much at once, so a large library takes a while — closing the page stops it, and opening it again carries on from the same place.', 'bichitro-biggan' ); ?>
+				<?php esc_html_e( 'Leave this page open while it runs. Each pass stops after fifteen seconds so the server is never asked for too much at once — a first run takes a while, a second is quick, because a picture already done is only looked at. Closing the page stops it, and opening it again carries on from the same place.', 'bichitro-biggan' ); ?>
 			</p>
 
 			<script>
@@ -146,6 +150,7 @@ function bb_webp_page() {
 					document.getElementById( 'bb-webp-seen' ).textContent = p.seen.toLocaleString();
 					document.getElementById( 'bb-webp-made' ).textContent = p.made.toLocaleString();
 					document.getElementById( 'bb-webp-bigger' ).textContent = p.bigger.toLocaleString();
+					document.getElementById( 'bb-webp-failed' ).textContent = ( p.failed || 0 ).toLocaleString();
 					document.getElementById( 'bb-webp-saved' ).textContent = ( p.bytes / 1048576 ).toFixed( 1 ) + ' MB';
 					document.getElementById( 'bb-webp-fill' ).style.width =
 						( total ? Math.min( 100, Math.round( 100 * p.seen / total ) ) : 0 ) + '%';

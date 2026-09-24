@@ -217,15 +217,15 @@ msgstr ""
 msgid "এখনো কোনো লেখা প্রকাশ করা হয়নি।"
 msgstr ""
 
-#: functions.php:1249
+#: functions.php:1270
 msgid "এই সময়ের কোনো লেখা পাওয়া যায়নি"
 msgstr ""
 
-#: functions.php:1670
+#: functions.php:1691
 msgid "পেজ নেভিগেশন"
 msgstr ""
 
-#: functions.php:1678
+#: functions.php:1699
 msgid "পৃষ্ঠা %1$s / %2$s"
 msgstr ""
 
@@ -234,17 +234,17 @@ msgstr ""
 msgid "প্রধান মেন্যু"
 msgstr ""
 
-#: functions.php:1745
-#: functions.php:1767
+#: functions.php:1766
+#: functions.php:1788
 #: inc/template-tags.php:416
 msgid "প্রথম পাতা"
 msgstr ""
 
-#: functions.php:1774
+#: functions.php:1795
 msgid "%s সাল"
 msgstr ""
 
-#: functions.php:1780
+#: functions.php:1801
 msgid "সার্চ"
 msgstr ""
 
@@ -368,112 +368,112 @@ msgstr ""
 msgid "ভিডিও বন্ধ করুন"
 msgstr ""
 
-#: functions.php:596
+#: functions.php:608
 msgid "Hero Total Height (মোট উচ্চতা)"
 msgstr ""
 
-#: functions.php:597
+#: functions.php:609
 msgid "Left Main Hero Width (১নং বড় হিরোর প্রস্থ)"
 msgstr ""
 
-#: functions.php:598
+#: functions.php:610
 msgid "Right Top Card Height (২নং ওপরের কার্ডের উচ্চতা)"
 msgstr ""
 
-#: functions.php:599
+#: functions.php:611
 msgid "Bottom Left Card Width (৩নং কার্ডের প্রস্থ অনুপাত)"
 msgstr ""
 
-#: functions.php:602
+#: functions.php:614
 msgid "Featured Column Width"
 msgstr ""
 
-#: functions.php:603
+#: functions.php:615
 msgid "Featured Card Image Height"
 msgstr ""
 
-#: functions.php:604
+#: functions.php:616
 msgid "Side List Thumbnail Width"
 msgstr ""
 
-#: functions.php:605
+#: functions.php:617
 msgid "Side List Thumbnail Height"
 msgstr ""
 
-#: functions.php:606
+#: functions.php:618
 msgid "Right Grid Card Height"
 msgstr ""
 
-#: functions.php:609
+#: functions.php:621
 msgid "Standard Card Image Height"
 msgstr ""
 
-#: functions.php:610
+#: functions.php:622
 msgid "Right Column Big Card Height"
 msgstr ""
 
-#: functions.php:611
+#: functions.php:623
 msgid "Wide Row Thumbnail Width"
 msgstr ""
 
-#: functions.php:612
+#: functions.php:624
 msgid "Wide Row Thumbnail Height"
 msgstr ""
 
-#: functions.php:615
+#: functions.php:627
 msgid "Tall Card Height"
 msgstr ""
 
-#: functions.php:616
+#: functions.php:628
 msgid "Three Column Grid Gap"
 msgstr ""
 
-#: functions.php:619
+#: functions.php:631
 msgid "All Posts Card Image Height"
 msgstr ""
 
-#: functions.php:620
+#: functions.php:632
 msgid "Category Page Card Image Height"
 msgstr ""
 
-#: functions.php:623
+#: functions.php:635
 msgid "Popup Reading Window Max Width"
 msgstr ""
 
-#: functions.php:624
+#: functions.php:636
 msgid "Popup Reading Window Max Height"
 msgstr ""
 
-#: functions.php:666
+#: functions.php:678
 msgid "Sidebar"
 msgstr ""
 
-#: functions.php:668
+#: functions.php:680
 msgid "Right-hand sidebar for homepage and archives (displayed below Archive list)."
 msgstr ""
 
-#: functions.php:877
-#: functions.php:890
+#: functions.php:889
+#: functions.php:902
 msgid "ক্যাটাগরির রঙ"
 msgstr ""
 
-#: functions.php:879
+#: functions.php:891
 msgid "ব্যাজ ও সেকশন হেডিং-এ এই রঙ ব্যবহার হবে। খালি রাখলে ডিফল্ট রঙ বসবে।"
 msgstr ""
 
-#: functions.php:880
+#: functions.php:892
 msgid "লেখার রং ও প্রিভিউ: Theme Settings → ক্যাটাগরির রং।"
 msgstr ""
 
-#: functions.php:894
+#: functions.php:906
 msgid "লেখার রং ও প্রিভিউ দেখুন"
 msgstr ""
 
-#: functions.php:896
+#: functions.php:908
 msgid "ব্যাজ ও সেকশন হেডিং-এ এই রঙ ব্যবহার হবে।"
 msgstr ""
 
-#: functions.php:963
+#: functions.php:975
 msgid "জীবনের বিজ্ঞান, মহাবিশ্বের মহাবিস্ময়, মহাকাশ অভিযানের কাহিনী, পদার্থের স্বরূপ, কালজয়ী বিজ্ঞানীদের গল্প – এসব নানা চমকপ্রদ বিষয়ে বিভিন্ন সময়ে আমার লেখাগুলোকে নিয়ে তৈরি করেছি, ‘বিচিত্র বিজ্ঞান’ নামের এই ওয়েব সাইট।"
 msgstr ""
 
@@ -2076,43 +2076,47 @@ msgid "lighter"
 msgstr ""
 
 #: inc/webp-admin.php:105
+msgid "could not be converted"
+msgstr ""
+
+#: inc/webp-admin.php:109
 msgid "left as they were"
 msgstr ""
 
-#: inc/webp-admin.php:114
-#: inc/webp-admin.php:136
+#: inc/webp-admin.php:118
+#: inc/webp-admin.php:140
 msgid "Carry on"
 msgstr ""
 
-#: inc/webp-admin.php:115
+#: inc/webp-admin.php:119
 msgid "Start converting"
 msgstr ""
 
-#: inc/webp-admin.php:117
+#: inc/webp-admin.php:121
 msgid "Stop"
 msgstr ""
 
-#: inc/webp-admin.php:118
+#: inc/webp-admin.php:122
 msgid "Start from the beginning"
 msgstr ""
 
-#: inc/webp-admin.php:123
-msgid "Leave this page open while it runs. It works through a few pictures at a time so the server is never asked for too much at once, so a large library takes a while — closing the page stops it, and opening it again carries on from the same place."
+#: inc/webp-admin.php:127
+msgid "Leave this page open while it runs. Each pass stops after fifteen seconds so the server is never asked for too much at once — a first run takes a while, a second is quick, because a picture already done is only looked at. Closing the page stops it, and opening it again carries on from the same place."
 msgstr ""
 
-#: inc/webp-admin.php:132
+#: inc/webp-admin.php:136
 msgid "working…"
 msgstr ""
 
-#: inc/webp-admin.php:133
+#: inc/webp-admin.php:137
 msgid "stopped"
 msgstr ""
 
-#: inc/webp-admin.php:134
+#: inc/webp-admin.php:138
 msgid "finished — every picture has been looked at"
 msgstr ""
 
-#: inc/webp-admin.php:135
+#: inc/webp-admin.php:139
 msgid "the server did not answer; press Carry on to try again"
 msgstr ""
 

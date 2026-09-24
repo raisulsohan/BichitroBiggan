@@ -2,6 +2,20 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.20.3
+
+- A pass of the converter now stops at whichever comes first, forty pictures
+  or fifteen seconds. A fixed three at a time was right for a first run, where
+  every file has to be encoded, and painfully slow for a second, where nearly
+  all of them are done and the work is a stat call — which matters, because
+  repairing what an earlier run got wrong means starting from the beginning.
+- A pass cut short by the clock now resumes exactly where it stopped rather
+  than at the end of the batch it was given.
+- The screen says how many could not be converted. Some cannot: a PNG with
+  transparency can defeat the server's WebP encoder, which is what left two
+  files of nothing behind. Those pictures keep their original and the page
+  serves it, so the only cost is that they are not any lighter.
+
 ## 7.20.2
 
 - A conversion that failed half way left a file of nothing behind, and the

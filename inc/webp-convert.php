@@ -23,8 +23,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/** How many attachments one pass through the converter looks at. */
-define( 'BB_WEBP_BATCH', 3 );
+/** The most attachments one pass will look at. */
+define( 'BB_WEBP_BATCH', 40 );
+
+/**
+ * And how long it may spend on them.
+ *
+ * A fixed count cannot suit both jobs. Three at a time was right for a first
+ * pass, where every file has to be encoded, and painfully slow for a second,
+ * where nearly all of them are already done and the work is a stat call. A
+ * pass now stops at whichever comes first: the count, or the clock.
+ */
+define( 'BB_WEBP_SECONDS', 15 );
 
 /** Files larger than this are left alone, so a pass cannot run out of memory. */
 define( 'BB_WEBP_MAX_BYTES', 12 * MB_IN_BYTES );
@@ -228,7 +238,7 @@ function bb_webp_files_for( $id ) {
  * Write the .webp beside one file.
  *
  * @param string $path Absolute path to a .jpg or .png.
- * @return string 'made', 'already', 'bigger', or 'skipped'.
+ * @return string 'made', 'already', 'bigger', 'failed', or 'skipped'.
  */
 function bb_webp_convert_file( $path ) {
 	$twin = bb_webp_twin_path( $path );
@@ -255,7 +265,7 @@ function bb_webp_convert_file( $path ) {
 	$editor = wp_get_image_editor( $path );
 
 	if ( is_wp_error( $editor ) ) {
-		return 'skipped';
+		return 'failed';
 	}
 
 	$editor->set_quality( 80 );
@@ -263,7 +273,7 @@ function bb_webp_convert_file( $path ) {
 	$saved = $editor->save( $twin, 'image/webp' );
 
 	if ( is_wp_error( $saved ) || empty( $saved['path'] ) || ! file_exists( $saved['path'] ) ) {
-		return 'skipped';
+		return 'failed';
 	}
 
 	/*
@@ -279,7 +289,7 @@ function bb_webp_convert_file( $path ) {
 	if ( $written < 1 || empty( $reads[0] ) ) {
 		wp_delete_file( $saved['path'] );
 
-		return 'skipped';
+		return 'failed';
 	}
 
 	/*
@@ -338,6 +348,7 @@ function bb_webp_progress() {
 			'offset' => 0,
 			'made'   => 0,
 			'bigger' => 0,
+			'failed' => 0,
 			'seen'   => 0,
 			'bytes'  => 0,
 		)
@@ -352,6 +363,8 @@ function bb_webp_progress() {
 function bb_webp_run_batch() {
 	$progress = bb_webp_progress();
 	$ids      = bb_webp_candidates( $progress['offset'], BB_WEBP_BATCH );
+	$started  = microtime( true );
+	$handled  = 0;
 
 	foreach ( $ids as $id ) {
 		foreach ( bb_webp_files_for( $id ) as $path ) {
@@ -364,19 +377,27 @@ function bb_webp_run_batch() {
 				$progress['bytes'] += max( 0, $before - (int) filesize( $twin ) );
 			} elseif ( 'bigger' === $result ) {
 				++$progress['bigger'];
+			} elseif ( 'failed' === $result ) {
+				++$progress['failed'];
 			}
 		}
 
 		++$progress['seen'];
+		++$handled;
+
+		if ( microtime( true ) - $started > BB_WEBP_SECONDS ) {
+			break;
+		}
 	}
 
-	$progress['offset'] += count( $ids );
+	// Only what was really got through, so a pass cut short resumes in place.
+	$progress['offset'] += $handled;
 
 	update_option( 'bb_webp_progress', $progress, false );
 
 	return array(
 		'progress' => $progress,
 		'total'    => bb_webp_total(),
-		'done'     => count( $ids ) < BB_WEBP_BATCH,
+		'done'     => $handled >= count( $ids ) && count( $ids ) < BB_WEBP_BATCH,
 	);
 }
