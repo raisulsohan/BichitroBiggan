@@ -505,11 +505,56 @@ function bb_stats_bar( $label, $hits, $max, $total ) {
 }
 
 /**
+ * A stretch of time, said the way a person would.
+ *
+ * @param int $seconds Seconds.
+ * @return string
+ */
+function bb_stats_duration( $seconds ) {
+	$seconds = max( 0, (int) $seconds );
+
+	if ( $seconds < 60 ) {
+		/* translators: %s: a number of seconds. */
+		return sprintf( __( '%ss', 'bichitro-biggan' ), bb_stats_number( $seconds ) );
+	}
+
+	$minutes = (int) floor( $seconds / 60 );
+	$rest    = $seconds % 60;
+
+	/* translators: 1: minutes, 2: seconds. */
+	return sprintf( __( '%1$sm %2$ss', 'bichitro-biggan' ), bb_stats_number( $minutes ), bb_stats_number( $rest ) );
+}
+
+/**
+ * The name of a page in a list, whether it is an article or everything else.
+ *
+ * @param int $post_id Post, or 0.
+ * @return string
+ */
+function bb_stats_page_name( $post_id ) {
+	if ( ! $post_id ) {
+		return __( 'Home page and archives', 'bichitro-biggan' );
+	}
+
+	$title = get_the_title( $post_id );
+
+	return $title ? $title : sprintf( '#%d', (int) $post_id );
+}
+
+/**
  * The screen.
  */
 function bb_stats_page() {
 	if ( ! current_user_can( 'edit_posts' ) ) {
 		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'bichitro-biggan' ) );
+	}
+
+	// Forgetting the addresses that led nowhere, once they have been dealt with.
+	if ( isset( $_POST['bb_stats_clear_404'] ) && check_admin_referer( 'bb_stats_clear_404' ) ) {
+		bb_stats_clear_404();
+		echo '<div class="notice notice-success is-dismissible"><p>'
+			. esc_html__( 'The list of missing addresses has been emptied.', 'bichitro-biggan' )
+			. '</p></div>';
 	}
 
 	$ranges = bb_stats_ranges();
@@ -525,12 +570,21 @@ function bb_stats_page() {
 	$devices  = bb_stats_grouped( 'device', $key );
 	$langs    = bb_stats_grouped( 'lang', $key );
 	$hours     = bb_stats_by_hour( $key );
+	$weekdays  = bb_stats_by_weekday( $key );
 	$countries = bb_stats_grouped( 'country', $key, 12 );
 	$depth     = bb_stats_depth_summary( $key );
+	$per_post  = bb_stats_depth_by_post( $key );
+	$trending  = bb_stats_trending( $key, 8 );
+	$entries   = bb_stats_entry_pages( $key, 8 );
+	$outbound  = bb_stats_events( 'out', $key, 10 );
+	$shares    = bb_stats_events( 'share', $key, 8 );
+	$saves     = bb_stats_events( 'save', $key, 8 );
 	$searches  = bb_stats_top_searches( 12 );
+	$missed    = bb_stats_missed_searches( 12 );
 	$missing   = bb_stats_not_found( 10 );
 	$first     = bb_stats_first_day();
 	$now       = bb_stats_pulse( 30 );
+	$per_visit = $totals['visits'] > 0 ? round( $totals['hits'] / $totals['visits'], 1 ) : 0;
 	?>
 	<div class="wrap bb-stats">
 		<h1><?php esc_html_e( 'Statistics', 'bichitro-biggan' ); ?></h1>
@@ -575,6 +629,15 @@ function bb_stats_page() {
 				<span class="bb-stats-card__label"><?php esc_html_e( 'Visits', 'bichitro-biggan' ); ?></span>
 				<strong class="bb-stats-card__value"><?php echo esc_html( bb_stats_number( $totals['visits'] ) ); ?></strong>
 				<?php bb_stats_change( $totals['visits'], $before['visits'] ); ?>
+				<span class="bb-stats-card__note">
+					<?php
+					printf(
+						/* translators: %s: average number of pages read in one visit. */
+						esc_html__( '%s pages a visit', 'bichitro-biggan' ),
+						esc_html( number_format_i18n( $per_visit, 1 ) )
+					);
+					?>
+				</span>
 			</div>
 			<div class="bb-stats-card">
 				<span class="bb-stats-card__label"><?php esc_html_e( 'Articles read', 'bichitro-biggan' ); ?></span>
@@ -619,10 +682,15 @@ function bb_stats_page() {
 								<th class="bb-stats-table__num"><?php esc_html_e( 'Bengali', 'bichitro-biggan' ); ?></th>
 								<th class="bb-stats-table__num">EN</th>
 								<th class="bb-stats-table__num"><?php esc_html_e( 'Total', 'bichitro-biggan' ); ?></th>
+								<th class="bb-stats-table__num"><?php esc_html_e( 'Read', 'bichitro-biggan' ); ?></th>
+								<th class="bb-stats-table__num"><?php esc_html_e( 'Time', 'bichitro-biggan' ); ?></th>
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach ( $top as $row ) : ?>
+							<?php
+							foreach ( $top as $row ) :
+								$reading = isset( $per_post[ $row['post_id'] ] ) ? $per_post[ $row['post_id'] ] : null;
+								?>
 								<tr>
 									<td>
 										<a href="<?php echo esc_url( get_permalink( $row['post_id'] ) ); ?>" target="_blank" rel="noopener">
@@ -632,15 +700,85 @@ function bb_stats_page() {
 									<td class="bb-stats-table__num"><?php echo esc_html( bb_stats_number( $row['bn'] ) ); ?></td>
 									<td class="bb-stats-table__num"><?php echo esc_html( $row['en'] ? bb_stats_number( $row['en'] ) : '—' ); ?></td>
 									<td class="bb-stats-table__num"><strong><?php echo esc_html( bb_stats_number( $row['hits'] ) ); ?></strong></td>
+									<td class="bb-stats-table__num">
+										<?php echo $reading ? esc_html( bb_stats_number( $reading['depth'] ) . '%' ) : '—'; ?>
+									</td>
+									<td class="bb-stats-table__num">
+										<?php echo $reading && $reading['seconds'] ? esc_html( bb_stats_duration( $reading['seconds'] ) ) : '—'; ?>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+					<p class="bb-stats__hint"><?php esc_html_e( '“Read” is how far down the article a reader got on average, “Time” how long they stayed with it.', 'bichitro-biggan' ); ?></p>
+				<?php endif; ?>
+
+				<h2><?php esc_html_e( 'Climbing', 'bichitro-biggan' ); ?></h2>
+				<p class="bb-stats__hint"><?php esc_html_e( 'Read more in this period than in the one before it. Articles with only a handful of reads are left out — with small numbers every rise looks enormous.', 'bichitro-biggan' ); ?></p>
+				<?php if ( empty( $trending ) ) : ?>
+					<p class="bb-stats__empty"><?php esc_html_e( 'Nothing is climbing in this period.', 'bichitro-biggan' ); ?></p>
+				<?php else : ?>
+					<table class="widefat striped bb-stats-table">
+						<tbody>
+							<?php foreach ( $trending as $row ) : ?>
+								<tr>
+									<td>
+										<a href="<?php echo esc_url( get_permalink( $row['post_id'] ) ); ?>" target="_blank" rel="noopener">
+											<?php echo esc_html( get_the_title( $row['post_id'] ) ); ?>
+										</a>
+									</td>
+									<td class="bb-stats-table__num">
+										<span class="bb-stats-change bb-stats-change--up">▲ <?php echo esc_html( bb_stats_number( $row['change'] ) ); ?>%</span>
+									</td>
+									<td class="bb-stats-table__num">
+										<?php echo esc_html( bb_stats_number( $row['before'] ) . ' → ' . bb_stats_number( $row['now'] ) ); ?>
+									</td>
 								</tr>
 							<?php endforeach; ?>
 						</tbody>
 					</table>
 				<?php endif; ?>
 
+				<h2><?php esc_html_e( 'Where visits begin', 'bichitro-biggan' ); ?></h2>
+				<p class="bb-stats__hint"><?php esc_html_e( 'The first page of a visit — where readers come in, rather than what they read next.', 'bichitro-biggan' ); ?></p>
+				<?php if ( empty( $entries ) ) : ?>
+					<p class="bb-stats__empty"><?php esc_html_e( 'Nothing to show yet.', 'bichitro-biggan' ); ?></p>
+				<?php else : ?>
+					<ul class="bb-stats-bars">
+						<?php
+						$max = (int) $entries[0]['visits'];
+						foreach ( $entries as $row ) {
+							bb_stats_bar( bb_stats_page_name( $row['post_id'] ), $row['visits'], $max, $totals['visits'] );
+						}
+						?>
+					</ul>
+				<?php endif; ?>
+
 				<h2><?php esc_html_e( 'When they read', 'bichitro-biggan' ); ?></h2>
 				<p class="bb-stats__hint"><?php esc_html_e( 'Reads by hour of the day across this whole period, on the site\'s own clock.', 'bichitro-biggan' ); ?></p>
 				<?php bb_stats_hour_pattern( $hours ); ?>
+
+				<h2><?php esc_html_e( 'Which day', 'bichitro-biggan' ); ?></h2>
+				<p class="bb-stats__hint"><?php esc_html_e( 'The days of the week readers turn up on — worth knowing before deciding when to publish.', 'bichitro-biggan' ); ?></p>
+				<?php
+				$weekday_names = array(
+					__( 'Sunday', 'bichitro-biggan' ),
+					__( 'Monday', 'bichitro-biggan' ),
+					__( 'Tuesday', 'bichitro-biggan' ),
+					__( 'Wednesday', 'bichitro-biggan' ),
+					__( 'Thursday', 'bichitro-biggan' ),
+					__( 'Friday', 'bichitro-biggan' ),
+					__( 'Saturday', 'bichitro-biggan' ),
+				);
+				$weekday_top   = max( 1, max( $weekdays ) );
+				?>
+				<ul class="bb-stats-bars">
+					<?php
+					foreach ( $weekdays as $index => $value ) {
+						bb_stats_bar( $weekday_names[ $index ], $value, $weekday_top, max( 1, array_sum( $weekdays ) ) );
+					}
+					?>
+				</ul>
 
 				<h2><?php esc_html_e( 'How far they read', 'bichitro-biggan' ); ?></h2>
 				<p class="bb-stats__hint"><?php esc_html_e( 'Measured as a reader leaves an article — a view says it was opened, this says it was read.', 'bichitro-biggan' ); ?></p>
@@ -669,6 +807,14 @@ function bb_stats_page() {
 							<?php endforeach; ?>
 						</tbody>
 					</table>
+
+					<form method="post" class="bb-stats-clear">
+						<?php wp_nonce_field( 'bb_stats_clear_404' ); ?>
+						<button type="submit" name="bb_stats_clear_404" value="1" class="button button-secondary">
+							<?php esc_html_e( 'Empty this list', 'bichitro-biggan' ); ?>
+						</button>
+						<span class="bb-stats__hint"><?php esc_html_e( 'Once the broken links are fixed, clear it and see what turns up next.', 'bichitro-biggan' ); ?></span>
+					</form>
 				<?php endif; ?>
 			</div>
 
@@ -721,6 +867,74 @@ function bb_stats_page() {
 					}
 					?>
 				</ul>
+
+				<h2><?php esc_html_e( 'Searches that found nothing', 'bichitro-biggan' ); ?></h2>
+				<p class="bb-stats__hint"><?php esc_html_e( 'Readers came wanting these and the site did not have them. The best list there is of what to write next.', 'bichitro-biggan' ); ?></p>
+				<?php if ( empty( $missed ) ) : ?>
+					<p class="bb-stats__empty"><?php esc_html_e( 'Every search so far has found something.', 'bichitro-biggan' ); ?></p>
+				<?php else : ?>
+					<table class="widefat striped bb-stats-table">
+						<tbody>
+							<?php foreach ( $missed as $row ) : ?>
+								<tr>
+									<td>
+										<?php echo esc_html( $row['term'] ); ?>
+										<?php if ( 'en' === $row['lang'] ) : ?>
+											<span class="bb-stats-tag">EN</span>
+										<?php endif; ?>
+									</td>
+									<td class="bb-stats-table__num"><?php echo esc_html( bb_stats_number( $row['miss'] ) ); ?></td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				<?php endif; ?>
+
+				<h2><?php esc_html_e( 'Links they followed out', 'bichitro-biggan' ); ?></h2>
+				<p class="bb-stats__hint"><?php esc_html_e( 'Sources and other links inside articles that readers actually clicked.', 'bichitro-biggan' ); ?></p>
+				<?php if ( empty( $outbound ) ) : ?>
+					<p class="bb-stats__empty"><?php esc_html_e( 'No link out of an article has been followed yet.', 'bichitro-biggan' ); ?></p>
+				<?php else : ?>
+					<ul class="bb-stats-bars">
+						<?php
+						$max   = (int) $outbound[0]['hits'];
+						$total = array_sum( wp_list_pluck( $outbound, 'hits' ) );
+						foreach ( $outbound as $row ) {
+							bb_stats_bar( $row['label'], $row['hits'], $max, $total );
+						}
+						?>
+					</ul>
+				<?php endif; ?>
+
+				<h2><?php esc_html_e( 'How they shared it', 'bichitro-biggan' ); ?></h2>
+				<?php if ( empty( $shares ) ) : ?>
+					<p class="bb-stats__empty"><?php esc_html_e( 'Nothing has been shared from the buttons yet.', 'bichitro-biggan' ); ?></p>
+				<?php else : ?>
+					<ul class="bb-stats-bars">
+						<?php
+						$max   = (int) $shares[0]['hits'];
+						$total = array_sum( wp_list_pluck( $shares, 'hits' ) );
+						foreach ( $shares as $row ) {
+							bb_stats_bar( bb_stats_source_label( $row['label'] ), $row['hits'], $max, $total );
+						}
+						?>
+					</ul>
+				<?php endif; ?>
+
+				<h2><?php esc_html_e( 'Saved to read later', 'bichitro-biggan' ); ?></h2>
+				<?php if ( empty( $saves ) ) : ?>
+					<p class="bb-stats__empty"><?php esc_html_e( 'Nobody has saved an article in this period.', 'bichitro-biggan' ); ?></p>
+				<?php else : ?>
+					<ul class="bb-stats-bars">
+						<?php
+						$max   = (int) $saves[0]['hits'];
+						$total = array_sum( wp_list_pluck( $saves, 'hits' ) );
+						foreach ( $saves as $row ) {
+							bb_stats_bar( bb_stats_page_name( $row['post_id'] ), $row['hits'], $max, $total );
+						}
+						?>
+					</ul>
+				<?php endif; ?>
 
 				<h2><?php esc_html_e( 'What they searched for', 'bichitro-biggan' ); ?></h2>
 				<p class="bb-stats__hint"><?php esc_html_e( 'Typed into the site\'s own search box — all time, most asked first.', 'bichitro-biggan' ); ?></p>
@@ -801,6 +1015,85 @@ function bb_stats_page() {
 		.bb-stats__empty { color: #646970; }
 		.bb-stats-depth__average { margin: 0 0 10px; color: #1d2327; }
 		.bb-stats-table code { font-size: 12px; }
+	</style>
+	<?php
+}
+
+/* -------------------------------------------------------------------------
+ * On the dashboard's own front page
+ * ---------------------------------------------------------------------- */
+
+/**
+ * A small panel on the WordPress dashboard: today at a glance, and the way
+ * through to the whole screen.
+ */
+function bb_stats_dashboard_widget() {
+	if ( ! current_user_can( 'edit_posts' ) ) {
+		return;
+	}
+
+	wp_add_dashboard_widget( 'bb_stats_today', __( 'Statistics — today', 'bichitro-biggan' ), 'bb_stats_dashboard_panel' );
+}
+add_action( 'wp_dashboard_setup', 'bb_stats_dashboard_widget' );
+
+/**
+ * What the widget shows.
+ */
+function bb_stats_dashboard_panel() {
+	$totals = bb_stats_totals( '24h' );
+	$before = bb_stats_totals( '24h', true );
+	$top    = bb_stats_top_posts( '24h', 3 );
+	$now    = bb_stats_pulse( 30 );
+	?>
+	<div class="bb-dash">
+		<div class="bb-dash__figures">
+			<div>
+				<strong><?php echo esc_html( bb_stats_number( $now ) ); ?></strong>
+				<span><?php esc_html_e( 'right now', 'bichitro-biggan' ); ?></span>
+			</div>
+			<div>
+				<strong><?php echo esc_html( bb_stats_number( $totals['hits'] ) ); ?></strong>
+				<span><?php esc_html_e( 'reads today', 'bichitro-biggan' ); ?></span>
+			</div>
+			<div>
+				<strong><?php echo esc_html( bb_stats_number( $totals['visits'] ) ); ?></strong>
+				<span><?php esc_html_e( 'visits', 'bichitro-biggan' ); ?></span>
+			</div>
+		</div>
+
+		<p class="bb-dash__change"><?php bb_stats_change( $totals['hits'], $before['hits'] ); ?></p>
+
+		<?php if ( ! empty( $top ) ) : ?>
+			<ol class="bb-dash__top">
+				<?php foreach ( $top as $row ) : ?>
+					<li>
+						<a href="<?php echo esc_url( get_permalink( $row['post_id'] ) ); ?>" target="_blank" rel="noopener">
+							<?php echo esc_html( get_the_title( $row['post_id'] ) ); ?>
+						</a>
+						<span><?php echo esc_html( bb_stats_number( $row['hits'] ) ); ?></span>
+					</li>
+				<?php endforeach; ?>
+			</ol>
+		<?php else : ?>
+			<p class="bb-dash__empty"><?php esc_html_e( 'No article has been read yet today.', 'bichitro-biggan' ); ?></p>
+		<?php endif; ?>
+
+		<p>
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=bb-stats' ) ); ?>">
+				<?php esc_html_e( 'The whole picture →', 'bichitro-biggan' ); ?>
+			</a>
+		</p>
+	</div>
+
+	<style>
+		.bb-dash__figures { display: flex; gap: 24px; margin: 0 0 6px; }
+		.bb-dash__figures strong { display: block; font-size: 24px; line-height: 1.2; color: #1d2327; }
+		.bb-dash__figures span { font-size: 12px; color: #646970; }
+		.bb-dash__change { margin: 0 0 12px; }
+		.bb-dash__top { margin: 0 0 12px; padding-left: 18px; }
+		.bb-dash__top li { margin: 0 0 4px; }
+		.bb-dash__top span { color: #646970; float: right; }
+		.bb-dash__empty { color: #646970; }
 	</style>
 	<?php
 }

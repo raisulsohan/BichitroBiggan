@@ -20,8 +20,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/** Bump when the table's shape changes. 2 added the hour, 3 the country. */
-define( 'BB_STATS_SCHEMA', 3 );
+/**
+ * Bump when the shape changes. 2 added the hour, 3 the country, 4 the time
+ * spent reading and the table of things readers do.
+ */
+define( 'BB_STATS_SCHEMA', 4 );
 
 /** How many minutes count as "right now". */
 define( 'BB_STATS_PULSE_MINUTES', 30 );
@@ -33,11 +36,18 @@ function bb_stats_table() {
 	return $wpdb->prefix . 'bb_stats';
 }
 
-/** @return string Where how far people read is kept. */
+/** @return string Where how far, and how long, people read is kept. */
 function bb_stats_depth_table() {
 	global $wpdb;
 
 	return $wpdb->prefix . 'bb_depth';
+}
+
+/** @return string Where the things readers do — share, save, follow a link — are counted. */
+function bb_stats_events_table() {
+	global $wpdb;
+
+	return $wpdb->prefix . 'bb_events';
 }
 
 /**
@@ -71,15 +81,34 @@ function bb_stats_install() {
 		) {$collate};"
 	);
 
-	// How far down an article people got, in quarters.
+	// How far down an article people got, in quarters, and how long they stayed.
 	dbDelta(
 		'CREATE TABLE ' . bb_stats_depth_table() . " (
 			day date NOT NULL,
 			post_id bigint(20) unsigned NOT NULL DEFAULT 0,
 			bucket tinyint unsigned NOT NULL DEFAULT 0,
 			n int unsigned NOT NULL DEFAULT 0,
+			secs bigint unsigned NOT NULL DEFAULT 0,
 			PRIMARY KEY  (day,post_id,bucket),
 			KEY day (day)
+		) {$collate};"
+	);
+
+	/*
+	 * The things a reader does rather than merely reads: following a link out,
+	 * sharing a piece, saving it for later. One row per day per kind per label,
+	 * counted up, exactly like the rest.
+	 */
+	dbDelta(
+		'CREATE TABLE ' . bb_stats_events_table() . " (
+			day date NOT NULL,
+			kind varchar(12) NOT NULL DEFAULT '',
+			post_id bigint(20) unsigned NOT NULL DEFAULT 0,
+			label varchar(120) NOT NULL DEFAULT '',
+			n int unsigned NOT NULL DEFAULT 0,
+			PRIMARY KEY  (day,kind,post_id,label),
+			KEY day (day),
+			KEY kind (kind)
 		) {$collate};"
 	);
 
@@ -464,11 +493,15 @@ function bb_stats_pulse( $minutes = 30 ) {
  * What a reader typed into the search box is about the site, not about them —
  * it says which subjects people arrive wanting and do not find easily.
  *
- * @param string $term What was typed.
- * @param string $lang Which edition asked.
+ * A search that found nothing is worth more than one that found something: it
+ * is a reader telling the site what it does not have.
+ *
+ * @param string $term    What was typed.
+ * @param string $lang    Which edition asked.
+ * @param int    $results How many articles came back, or -1 when not known.
  * @return void
  */
-function bb_stats_record_search( $term, $lang = 'bn' ) {
+function bb_stats_record_search( $term, $lang = 'bn', $results = -1 ) {
 	$term = trim( wp_strip_all_tags( (string) $term ) );
 
 	if ( bb_str_len( $term ) < 2 || bb_str_len( $term ) > 60 ) {
@@ -496,6 +529,10 @@ function bb_stats_record_search( $term, $lang = 'bn' ) {
 
 	$searches[ $key ]['n'] = (int) $searches[ $key ]['n'] + 1;
 	$searches[ $key ]['d'] = wp_date( 'Y-m-d' );
+
+	if ( 0 === (int) $results ) {
+		$searches[ $key ]['miss'] = ( isset( $searches[ $key ]['miss'] ) ? (int) $searches[ $key ]['miss'] : 0 ) + 1;
+	}
 
 	// Keep the 400 most asked; the tail is noise and one-offs.
 	if ( count( $searches ) > 400 ) {
@@ -533,11 +570,42 @@ function bb_stats_top_searches( $limit = 12 ) {
 			'lang' => $parts[0],
 			'term' => isset( $parts[1] ) ? $parts[1] : $key,
 			'hits' => (int) $row['n'],
+			'miss' => isset( $row['miss'] ) ? (int) $row['miss'] : 0,
 			'last' => isset( $row['d'] ) ? (string) $row['d'] : '',
 		);
 	}
 
 	return $rows;
+}
+
+/**
+ * The searches that came back with nothing — what readers came wanting and the
+ * site does not have. The most useful list on the whole screen.
+ *
+ * @param int $limit How many.
+ * @return array<int, array{term:string,lang:string,hits:int,miss:int,last:string}>
+ */
+function bb_stats_missed_searches( $limit = 12 ) {
+	$rows = array_filter(
+		bb_stats_top_searches( 400 ),
+		function ( $row ) {
+			return $row['miss'] > 0;
+		}
+	);
+
+	usort(
+		$rows,
+		function ( $a, $b ) {
+			return $b['miss'] <=> $a['miss'];
+		}
+	);
+
+	return array_slice( $rows, 0, max( 1, (int) $limit ) );
+}
+
+/** Forget every address that led nowhere — after they have been fixed. */
+function bb_stats_clear_404() {
+	delete_option( 'bb_stats_404' );
 }
 
 /* -------------------------------------------------------------------------
@@ -553,9 +621,10 @@ function bb_stats_top_searches( $limit = 12 ) {
  *
  * @param int $post_id The article.
  * @param int $percent How far down, 0–100.
+ * @param int $seconds How long they had it open and awake, in seconds.
  * @return void
  */
-function bb_stats_record_depth( $post_id, $percent ) {
+function bb_stats_record_depth( $post_id, $percent, $seconds = 0 ) {
 	global $wpdb;
 
 	$post_id = (int) $post_id;
@@ -582,19 +651,71 @@ function bb_stats_record_depth( $post_id, $percent ) {
 		$bucket = 0;
 	}
 
+	// An hour is generous for the longest piece here; beyond that a tab was
+	// left open rather than read, and the average would be nonsense.
+	$seconds = max( 0, min( 3600, (int) $seconds ) );
+
 	$table = bb_stats_depth_table();
 
 	// phpcs:disable WordPress.DB.DirectDatabaseQuery
 	$wpdb->query(
 		$wpdb->prepare(
-			"INSERT INTO {$table} (day, post_id, bucket, n) VALUES (%s, %d, %d, 1)
-			 ON DUPLICATE KEY UPDATE n = n + 1",
+			"INSERT INTO {$table} (day, post_id, bucket, n, secs) VALUES (%s, %d, %d, 1, %d)
+			 ON DUPLICATE KEY UPDATE n = n + 1, secs = secs + %d",
 			wp_date( 'Y-m-d' ),
 			$post_id,
-			$bucket
+			$bucket,
+			$seconds,
+			$seconds
 		)
 	);
 	// phpcs:enable WordPress.DB.DirectDatabaseQuery
+}
+
+/* -------------------------------------------------------------------------
+ * What readers do
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Count something a reader did: followed a link out, shared a piece, saved it.
+ *
+ * @param string $kind    'out', 'share' or 'save'.
+ * @param int    $post_id The article it happened on, or 0.
+ * @param string $label   Which link, which network — never who.
+ * @return bool Whether it was counted.
+ */
+function bb_stats_record_event( $kind, $post_id = 0, $label = '' ) {
+	global $wpdb;
+
+	$kinds = array( 'out', 'share', 'save' );
+
+	if ( ! in_array( $kind, $kinds, true ) ) {
+		return false;
+	}
+
+	if ( bb_stats_is_bot() || ( is_user_logged_in() && current_user_can( 'edit_posts' ) ) ) {
+		return false;
+	}
+
+	$label = sanitize_text_field( (string) $label );
+	$label = function_exists( 'mb_substr' ) ? mb_substr( $label, 0, 120 ) : substr( $label, 0, 120 );
+
+	$table = bb_stats_events_table();
+
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery
+	$wpdb->query(
+		$wpdb->prepare(
+			"INSERT INTO {$table} (day, kind, post_id, label, n) VALUES (%s, %s, %d, %s, 1)
+			 ON DUPLICATE KEY UPDATE n = n + 1",
+			wp_date( 'Y-m-d' ),
+			$kind,
+			(int) $post_id,
+			$label
+		)
+	);
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery
+
+	return true;
 }
 
 /* -------------------------------------------------------------------------
@@ -755,11 +876,15 @@ function bb_stats_not_found( $limit = 10 ) {
  * reader who presses Enter has told the site the same thing.
  */
 function bb_stats_record_page_search() {
+	global $wp_query;
+
 	if ( ! is_search() || is_admin() ) {
 		return;
 	}
 
-	bb_stats_record_search( get_search_query(), bb_lang() );
+	$found = isset( $wp_query->found_posts ) ? (int) $wp_query->found_posts : -1;
+
+	bb_stats_record_search( get_search_query(), bb_lang(), $found );
 }
 add_action( 'template_redirect', 'bb_stats_record_page_search', 20 );
 
@@ -1101,6 +1226,245 @@ function bb_stats_depth_summary( $key ) {
 		'average' => $total > 0 ? (int) round( $weight / $total ) : 0,
 		'buckets' => $buckets,
 		'total'   => $total,
+	);
+}
+
+/**
+ * The articles climbing fastest — this period against the one before it.
+ *
+ * A piece read 30 times after 3 says something a top-ten list never will, so
+ * anything with fewer than a handful of reads is left out: with small numbers
+ * every rise is a thousand per cent and none of it means anything.
+ *
+ * @param string $key   Window key.
+ * @param int    $limit How many.
+ * @return array<int, array{post_id:int,now:int,before:int,change:int}>
+ */
+function bb_stats_trending( $key, $limit = 8 ) {
+	global $wpdb;
+
+	$table = bb_stats_table();
+	$reads = function ( $previous ) use ( $wpdb, $table, $key ) {
+		list( $where, $params ) = bb_stats_where( $key, $previous );
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT post_id, SUM(hits) AS hits FROM {$table} WHERE {$where} AND post_id > 0 GROUP BY post_id",
+				$params
+			),
+			ARRAY_A
+		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		$out = array();
+
+		foreach ( (array) $rows as $row ) {
+			$out[ (int) $row['post_id'] ] = (int) $row['hits'];
+		}
+
+		return $out;
+	};
+
+	$now    = $reads( false );
+	$before = $reads( true );
+	$rising = array();
+
+	foreach ( $now as $post_id => $hits ) {
+		if ( $hits < 5 ) {
+			continue;
+		}
+
+		$was = isset( $before[ $post_id ] ) ? $before[ $post_id ] : 0;
+
+		if ( $hits <= $was ) {
+			continue;
+		}
+
+		$rising[] = array(
+			'post_id' => $post_id,
+			'now'     => $hits,
+			'before'  => $was,
+			'change'  => $was > 0 ? (int) round( 100 * ( $hits - $was ) / $was ) : 100,
+		);
+	}
+
+	usort(
+		$rising,
+		function ( $a, $b ) {
+			if ( $a['change'] === $b['change'] ) {
+				return $b['now'] <=> $a['now'];
+			}
+
+			return $b['change'] <=> $a['change'];
+		}
+	);
+
+	return array_slice( $rising, 0, max( 1, (int) $limit ) );
+}
+
+/**
+ * Where visits begin — the first page a reader lands on.
+ *
+ * @param string $key   Window key.
+ * @param int    $limit How many.
+ * @return array<int, array{post_id:int,visits:int}>
+ */
+function bb_stats_entry_pages( $key, $limit = 10 ) {
+	global $wpdb;
+
+	list( $where, $params ) = bb_stats_where( $key );
+	$table                  = bb_stats_table();
+
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	$rows = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT post_id, SUM(visits) AS visits FROM {$table}
+			 WHERE {$where} AND visits > 0
+			 GROUP BY post_id ORDER BY visits DESC LIMIT %d",
+			array_merge( $params, array( max( 1, (int) $limit ) ) )
+		),
+		ARRAY_A
+	);
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+	return array_map(
+		function ( $row ) {
+			return array(
+				'post_id' => (int) $row['post_id'],
+				'visits'  => (int) $row['visits'],
+			);
+		},
+		(array) $rows
+	);
+}
+
+/**
+ * Which day of the week people read on.
+ *
+ * @param string $key Window key.
+ * @return array<int, int> 0 = Sunday … 6 = Saturday.
+ */
+function bb_stats_by_weekday( $key ) {
+	global $wpdb;
+
+	list( $where, $params ) = bb_stats_where( $key );
+	$table                  = bb_stats_table();
+
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	$rows = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT DAYOFWEEK(day) AS weekday, SUM(hits) AS hits FROM {$table} WHERE {$where} GROUP BY weekday",
+			$params
+		),
+		ARRAY_A
+	);
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+	$days = array_fill( 0, 7, 0 );
+
+	foreach ( (array) $rows as $row ) {
+		// MySQL counts Sunday as 1.
+		$days[ ( (int) $row['weekday'] + 6 ) % 7 ] = (int) $row['hits'];
+	}
+
+	return $days;
+}
+
+/**
+ * How far, and how long, each article was read — by post, for the table.
+ *
+ * @param string $key Window key.
+ * @return array<int, array{depth:int,seconds:int,n:int}>
+ */
+function bb_stats_depth_by_post( $key ) {
+	global $wpdb;
+
+	list( $where, $params ) = bb_stats_where( $key );
+
+	// The depth table keeps no hour, so an hourly window falls back to its days.
+	$where  = str_replace( "CONCAT(day, ' ', LPAD(hour, 2, '0'))", 'day', $where );
+	$params = array_map(
+		function ( $value ) {
+			return substr( (string) $value, 0, 10 );
+		},
+		$params
+	);
+
+	$table = bb_stats_depth_table();
+
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	$rows = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT post_id, SUM(n) AS n, SUM(bucket * n) AS weight, SUM(secs) AS secs
+			 FROM {$table} WHERE {$where} GROUP BY post_id",
+			$params
+		),
+		ARRAY_A
+	);
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+	$out = array();
+
+	foreach ( (array) $rows as $row ) {
+		$n = max( 1, (int) $row['n'] );
+
+		$out[ (int) $row['post_id'] ] = array(
+			'depth'   => (int) round( (int) $row['weight'] / $n ),
+			'seconds' => (int) round( (int) $row['secs'] / $n ),
+			'n'       => (int) $row['n'],
+		);
+	}
+
+	return $out;
+}
+
+/**
+ * The things readers did, of one kind, biggest first.
+ *
+ * @param string $kind  'out', 'share' or 'save'.
+ * @param string $key   Window key.
+ * @param int    $limit How many.
+ * @return array<int, array{label:string,post_id:int,hits:int}>
+ */
+function bb_stats_events( $kind, $key, $limit = 10 ) {
+	global $wpdb;
+
+	list( $where, $params ) = bb_stats_where( $key );
+
+	$where  = str_replace( "CONCAT(day, ' ', LPAD(hour, 2, '0'))", 'day', $where );
+	$params = array_map(
+		function ( $value ) {
+			return substr( (string) $value, 0, 10 );
+		},
+		$params
+	);
+
+	$table  = bb_stats_events_table();
+	$group  = ( 'save' === $kind ) ? 'post_id' : 'label';
+	$select = ( 'save' === $kind ) ? "'' AS label, post_id" : 'label, 0 AS post_id';
+
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	$rows = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT {$select}, SUM(n) AS n FROM {$table}
+			 WHERE {$where} AND kind = %s
+			 GROUP BY {$group} ORDER BY n DESC LIMIT %d",
+			array_merge( $params, array( $kind, max( 1, (int) $limit ) ) )
+		),
+		ARRAY_A
+	);
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+	return array_map(
+		function ( $row ) {
+			return array(
+				'label'   => (string) $row['label'],
+				'post_id' => (int) $row['post_id'],
+				'hits'    => (int) $row['n'],
+			);
+		},
+		(array) $rows
 	);
 }
 

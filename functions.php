@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.17.0' );
+define( 'BB_VERSION', '7.18.0' );
 
 /**
  * The built copy of an asset, when there is one and it is not stale.
@@ -237,6 +237,7 @@ function bb_enqueue_assets() {
 		'ajaxUrl'    => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
 		'viewUrl'    => esc_url_raw( rest_url( 'bb/v1/view' ) ),
 		'depthUrl'   => esc_url_raw( rest_url( 'bb/v1/depth' ) ),
+		'eventUrl'   => esc_url_raw( rest_url( 'bb/v1/event' ) ),
 		'copiedLink' => __( 'লিংক কপি হয়েছে', 'bichitro-biggan' ),
 		'shareText'  => __( 'শেয়ার করুন', 'bichitro-biggan' ),
 		'tickerStop' => __( 'খবরের স্ক্রল থামান', 'bichitro-biggan' ),

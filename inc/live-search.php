@@ -119,11 +119,6 @@ function bb_rest_search( WP_REST_Request $request ) {
 		) );
 	}
 
-	// What readers look for is worth knowing; who looked is not.
-	if ( function_exists( 'bb_stats_record_search' ) ) {
-		bb_stats_record_search( $term, bb_lang() );
-	}
-
 	$query = new WP_Query( array(
 		'post_type'           => array( 'post', 'page' ),
 		'post_status'         => 'publish',
@@ -155,6 +150,12 @@ function bb_rest_search( WP_REST_Request $request ) {
 	}
 
 	wp_reset_postdata();
+
+	// What readers look for is worth knowing; who looked is not. How many it
+	// found goes with it, because a search that finds nothing is the useful kind.
+	if ( function_exists( 'bb_stats_record_search' ) ) {
+		bb_stats_record_search( $term, bb_lang(), (int) $query->found_posts );
+	}
 
 	return rest_ensure_response( array(
 		'total'   => (int) $query->found_posts,

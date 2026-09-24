@@ -2,6 +2,32 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.18.0
+
+- Twelve more things the Statistics screen can tell you, all of them from the
+  site's own tables and none of them about who a reader is.
+- Climbing: what is being read far more today than over the week before. A
+  piece written two years ago that suddenly moves is the kind of thing a list
+  of totals hides.
+- Where visits begin: the page a reader arrives on, which is rarely the home
+  page and is worth knowing when deciding what the top of an article does.
+- Pages a visit, beside the visit count, and which day of the week draws
+  readers.
+- Most read carries two new columns: how far down that article people get,
+  and how long they stay on it.
+- Searches that found nothing — the clearest list of the articles the site has
+  not written yet.
+- Links they followed out, how they shared it, and what was saved to read
+  later: three things a reader does that the server never sees, counted by the
+  page itself.
+- A small panel on the dashboard's own front page: reading now, reads and
+  visits today, and the three pieces being read.
+- An Empty this list button under the addresses that led nowhere, for clearing
+  out what has already been dealt with.
+- Nothing about the reader is stored for any of it — no address, no cookie, no
+  fingerprint. The new counters begin at this update; the days before it have
+  nothing to show.
+
 ## 7.17.0
 
 - An English article asked for without its prefix is no longer a dead end.

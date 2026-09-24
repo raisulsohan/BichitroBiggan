@@ -2116,6 +2116,8 @@
 				sendDepth();
 				depth.id = current.id;
 				depth.max = 0;
+				clock.total = 0;
+				clock.since = Date.now();
 			}
 
 			var box = current.article.getBoundingClientRect();
@@ -2126,6 +2128,31 @@
 			depth.max = Math.max(depth.max, Math.min(100, Math.max(0, percent)));
 		}
 
+		/* Time with the article actually on screen. A tab left open behind
+		   another one is not reading, so the clock stops when the page hides. */
+		var clock = { since: Date.now(), total: 0 };
+
+		function pauseClock() {
+			if (clock.since) {
+				clock.total += Date.now() - clock.since;
+				clock.since = 0;
+			}
+		}
+
+		function startClock() {
+			if (!clock.since) clock.since = Date.now();
+		}
+
+		function elapsed() {
+			var total = clock.total + (clock.since ? Date.now() - clock.since : 0);
+			return Math.round(total / 1000);
+		}
+
+		document.addEventListener('visibilitychange', function () {
+			if (document.visibilityState === 'hidden') pauseClock();
+			else startClock();
+		});
+
 		function sendDepth() {
 			if (!depth.id || depth.max <= 0 || depth.sent[depth.id]) return;
 			depth.sent[depth.id] = true;
@@ -2133,6 +2160,7 @@
 			var payload = new FormData();
 			payload.append('id', depth.id);
 			payload.append('depth', depth.max);
+			payload.append('secs', elapsed());
 
 			if (navigator.sendBeacon) {
 				navigator.sendBeacon(D.depthUrl, payload);
@@ -2165,6 +2193,70 @@
 		});
 
 		measure();
+
+		/* ---------------------------------------------------------------
+		 * What readers do with an article
+		 *
+		 * Following a source link, sharing the piece, saving it for later —
+		 * three things a reader does that the server never sees, and the only
+		 * evidence of whether any of it is any use.
+		 * ------------------------------------------------------------ */
+		if (!D.eventUrl) return;
+
+		function sendEvent(kind, id, label) {
+			var payload = new FormData();
+			payload.append('kind', kind);
+			payload.append('id', id || 0);
+			payload.append('label', label || '');
+
+			if (navigator.sendBeacon) {
+				navigator.sendBeacon(D.eventUrl, payload);
+			} else {
+				fetch(D.eventUrl, { method: 'POST', body: payload, keepalive: true }).catch(function () {});
+			}
+		}
+
+		function articleId(el) {
+			var article = closestMatch(el, '.bb-single');
+			var match = article ? /post-(\d+)/.exec(article.id || '') : null;
+			return match ? match[1] : 0;
+		}
+
+		document.addEventListener('click', function (e) {
+			var share = closestMatch(e.target, '[data-bb-share]');
+
+			if (share) {
+				sendEvent('share', articleId(share), share.getAttribute('data-bb-share'));
+				return;
+			}
+
+			var save = closestMatch(e.target, '[data-bb-bookmark]');
+
+			if (save && !save.classList.contains('is-bookmarked')) {
+				// Before the click is handled, so this is the one that adds it.
+				sendEvent('save', save.getAttribute('data-bb-bookmark'), '');
+				return;
+			}
+
+			// A link out of the article's own text, and where it goes.
+			var link = closestMatch(e.target, '.bb-content a[href], .bb-references a[href]');
+
+			if (!link) return;
+
+			var href = link.getAttribute('href') || '';
+			if (!/^https?:/i.test(href)) return;
+
+			var host;
+			try {
+				host = new URL(href, location.href).hostname.replace(/^www\./, '');
+			} catch (err) {
+				return;
+			}
+
+			if (host === location.hostname.replace(/^www\./, '')) return;
+
+			sendEvent('out', articleId(link), host);
+		}, true);
 	}
 
 })();

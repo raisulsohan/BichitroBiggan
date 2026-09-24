@@ -451,21 +451,25 @@ function bb_share_buttons() {
 	   and the phone's own share sheet are what this audience actually uses. */
 	$buttons = array(
 		array(
+			'key'  => 'facebook',
 			'name' => __( 'ফেসবুক', 'bichitro-biggan' ),
 			'bg'   => '#1263d2',
 			'url'  => 'https://www.facebook.com/sharer/sharer.php?u=' . $url,
 		),
 		array(
+			'key'  => 'whatsapp',
 			'name' => __( 'হোয়াটসঅ্যাপ', 'bichitro-biggan' ),
 			'bg'   => '#128c7e',
 			'url'  => 'https://api.whatsapp.com/send?text=' . $title . '%20' . $url,
 		),
 		array(
+			'key'  => 'telegram',
 			'name' => __( 'টেলিগ্রাম', 'bichitro-biggan' ),
 			'bg'   => '#1c7fad',
 			'url'  => 'https://t.me/share/url?url=' . $url . '&text=' . $title,
 		),
 		array(
+			'key'  => 'x',
 			'name' => __( 'এক্স', 'bichitro-biggan' ),
 			'bg'   => '#000000',
 			'url'  => 'https://twitter.com/intent/tweet?url=' . $url . '&text=' . $title,
@@ -479,12 +483,13 @@ function bb_share_buttons() {
 				style="background:<?php echo esc_attr( $b['bg'] ); ?>;"
 				href="<?php echo esc_url( $b['url'] ); ?>"
 				target="_blank"
+				data-bb-share="<?php echo esc_attr( $b['key'] ); ?>"
 				rel="noopener noreferrer nofollow"><?php echo esc_html( $b['name'] ); ?></a>
 		<?php endforeach; ?>
 		<button type="button" class="bb-share__btn bb-share__btn--text bb-share__btn--copy"
-			data-bb-copy-link="<?php echo esc_url( $permalink ); ?>"><?php esc_html_e( 'লিংক কপি', 'bichitro-biggan' ); ?></button>
+			data-bb-copy-link="<?php echo esc_url( $permalink ); ?>" data-bb-share="copy"><?php esc_html_e( 'লিংক কপি', 'bichitro-biggan' ); ?></button>
 		<button type="button" class="bb-share__btn bb-share__btn--text bb-share__btn--native"
-			data-bb-native-share="<?php echo esc_url( $permalink ); ?>" hidden><?php esc_html_e( 'শেয়ার করুন', 'bichitro-biggan' ); ?></button>
+			data-bb-native-share="<?php echo esc_url( $permalink ); ?>" data-bb-share="device" hidden><?php esc_html_e( 'শেয়ার করুন', 'bichitro-biggan' ); ?></button>
 	</div>
 	<?php
 }

@@ -92,11 +92,65 @@ function bb_register_depth_route() {
 					'required'          => true,
 					'sanitize_callback' => 'absint',
 				),
+				'secs'  => array(
+					'required'          => false,
+					'sanitize_callback' => 'absint',
+				),
 			),
 		)
 	);
 }
 add_action( 'rest_api_init', 'bb_register_depth_route' );
+
+/**
+ * The things a reader does rather than reads: follows a link out of an
+ * article, shares it, saves it to read later. Each one is a click the page
+ * knows about and the server never would.
+ */
+function bb_register_event_route() {
+	register_rest_route(
+		'bb/v1',
+		'/event',
+		array(
+			'methods'             => 'POST',
+			'callback'            => 'bb_rest_count_event',
+			'permission_callback' => '__return_true',
+			'args'                => array(
+				'kind'  => array(
+					'required'          => true,
+					'sanitize_callback' => 'sanitize_key',
+				),
+				'id'    => array(
+					'required'          => false,
+					'sanitize_callback' => 'absint',
+				),
+				'label' => array(
+					'required'          => false,
+					'sanitize_callback' => 'sanitize_text_field',
+				),
+			),
+		)
+	);
+}
+add_action( 'rest_api_init', 'bb_register_event_route' );
+
+/**
+ * @param WP_REST_Request $request Request.
+ * @return WP_REST_Response
+ */
+function bb_rest_count_event( WP_REST_Request $request ) {
+	if ( ! function_exists( 'bb_stats_record_event' ) ) {
+		return rest_ensure_response( array( 'counted' => false ) );
+	}
+
+	$counted = bb_stats_record_event(
+		(string) $request->get_param( 'kind' ),
+		absint( $request->get_param( 'id' ) ),
+		(string) $request->get_param( 'label' )
+	);
+
+	return rest_ensure_response( array( 'counted' => (bool) $counted ) );
+}
 
 /**
  * @param WP_REST_Request $request Request.
@@ -123,7 +177,7 @@ function bb_rest_count_depth( WP_REST_Request $request ) {
 	set_transient( $once, 1, 6 * HOUR_IN_SECONDS );
 
 	if ( function_exists( 'bb_stats_record_depth' ) ) {
-		bb_stats_record_depth( $post_id, $depth );
+		bb_stats_record_depth( $post_id, $depth, absint( $request->get_param( 'secs' ) ) );
 	}
 
 	return rest_ensure_response( array( 'counted' => true ) );
