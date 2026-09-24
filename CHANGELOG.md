@@ -2,6 +2,29 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.22.0
+
+- XML-RPC is closed. The site does not use it — the publisher talks to the
+  REST API and nothing here wants pingbacks — but the endpoint was answering,
+  and its system.multicall carries a thousand password guesses inside one
+  request, which is why it is the most hammered address on a WordPress site
+  after the login form. Turning off the authenticated methods is not enough on
+  its own, so the method list is emptied too, and the X-Pingback header and
+  the RSD link stop advertising it.
+- Eight wrong passwords from one address and it is made to wait a quarter of
+  an hour. The count is kept against a hash of the address with the site's own
+  salt, never the address itself, the same way the reading statistics treat
+  it. A password that works clears it, and the wait clears itself — a refusal
+  is not counted as another wrong password, so somebody who has locked
+  themselves out sees it end rather than pushing it further away each time
+  they try.
+- REST requests are deliberately left alone. Application passwords are
+  authenticated through the same filter and the publisher makes hundreds of
+  calls in a run; a login form's counter has no business stopping that.
+- Neither of these is a firewall. By the time theme code runs, the request has
+  already cost a connection, a handshake and a full WordPress load. What they
+  stop is a break-in, not a flood.
+
 ## 7.21.2
 
 - Home on the English edition is marked at last. The filter added in 7.21.1

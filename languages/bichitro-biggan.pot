@@ -238,17 +238,17 @@ msgstr ""
 msgid "পৃষ্ঠা %1$s / %2$s"
 msgstr ""
 
-#: functions.php:1809
-#: functions.php:1831
+#: functions.php:1817
+#: functions.php:1839
 #: inc/template-tags.php:422
 msgid "প্রথম পাতা"
 msgstr ""
 
-#: functions.php:1838
+#: functions.php:1846
 msgid "%s সাল"
 msgstr ""
 
-#: functions.php:1844
+#: functions.php:1852
 msgid "সার্চ"
 msgstr ""
 
@@ -1405,6 +1405,10 @@ msgstr ""
 
 #: inc/references-meta-box.php:51
 msgid "Left empty, nothing is printed under the article."
+msgstr ""
+
+#: inc/security.php:151
+msgid "<strong>অনেকবার ভুল হয়েছে।</strong> %d মিনিট পরে আবার চেষ্টা করুন।"
 msgstr ""
 
 #: inc/seo-admin-column.php:105
