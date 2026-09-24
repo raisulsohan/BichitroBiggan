@@ -606,7 +606,7 @@ function bb_stats_page() {
 	$totals    = bb_stats_totals( $key );
 	$before    = bb_stats_totals( $key, true );
 	$series    = bb_stats_series( $key );
-	$top       = bb_stats_top_posts( $key, 10 );
+	$top       = bb_stats_top_posts( $key, 8 );
 	$sources   = bb_stats_grouped( 'source', $key, 8 );
 	$devices   = bb_stats_grouped( 'device', $key );
 	$langs     = bb_stats_grouped( 'lang', $key );
@@ -709,8 +709,8 @@ function bb_stats_page() {
 
 		<?php
 		/*
-		 * Three tiles that earn the whole width: a line across time, the table
-		 * with six columns, and twenty-four hours side by side.
+		 * The one tile that earns the whole width. A line across time is the
+		 * only thing here that reads better the wider it gets.
 		 */
 		?>
 		<div class="bb-stats__full">
@@ -719,6 +719,17 @@ function bb_stats_page() {
 			bb_stats_chart( $series );
 			bb_stats_tile_close();
 			?>
+		</div>
+
+		<?php
+		/*
+		 * Two that want more than a column but nothing like the whole screen:
+		 * a table of six columns stretched across a wide monitor puts half a
+		 * metre between a title and its figures, and twenty-four bars spread
+		 * that far stop looking like a day.
+		 */
+		?>
+		<div class="bb-stats__pair">
 
 			<?php bb_stats_tile_open( __( 'Most read', 'bichitro-biggan' ), __( '“Read” is how far down the article a reader got on average, “Time” how long they stayed with it.', 'bichitro-biggan' ) ); ?>
 				<?php if ( empty( $top ) ) : ?>
@@ -1124,6 +1135,14 @@ function bb_stats_page() {
 		.bb-stats-tile, .bb-stats-figure { box-sizing: border-box; }
 		.bb-stats-tile { background: #fff; border: 1px solid var(--bb-line); border-radius: var(--bb-round); box-shadow: var(--bb-shadow); padding: 13px 15px 15px; }
 		.bb-stats__full .bb-stats-tile { margin: 0 0 var(--bb-gap); }
+		/* The two stand level, and the hours grow into whatever height the table
+		   beside them sets — an empty half-tile would be the very thing the
+		   bento was built to get rid of. */
+		.bb-stats__pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--bb-gap); margin: 0 0 var(--bb-gap); }
+		.bb-stats__pair .bb-stats-tile { display: flex; flex-direction: column; }
+		.bb-stats__pair .bb-stats-tile__body { flex: 1; display: flex; flex-direction: column; }
+		.bb-stats__pair .bb-stats-hours { flex: 1; min-height: 84px; max-height: 220px; }
+		@media (max-width: 1100px) { .bb-stats__pair { grid-template-columns: 1fr; } }
 		.bb-stats__bento { columns: 4 300px; column-gap: var(--bb-gap); }
 		.bb-stats__bento .bb-stats-tile { break-inside: avoid; -webkit-column-break-inside: avoid; page-break-inside: avoid; display: inline-block; vertical-align: top; width: 100%; margin: 0 0 var(--bb-gap); }
 

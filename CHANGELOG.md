@@ -2,6 +2,20 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.18.3
+
+- Most read and When they read no longer take the whole width. On a wide
+  monitor the table put half a metre between an article's title and its
+  figures, and twenty-four bars spread that far stopped looking like a day.
+  They sit side by side now, half the width each.
+- The two stand level, and the hours grow into whatever height the table
+  beside them sets — an empty half-tile would have been the very thing the
+  bento was built to get rid of. The bars are taller for it, and easier to
+  read.
+- Only the line across time keeps the full width. It is the one thing here
+  that reads better the wider it gets.
+- Most read shows eight articles rather than ten.
+
 ## 7.18.2
 
 - The Statistics screen is a bento now: small tiles packed into columns, each
