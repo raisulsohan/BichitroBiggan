@@ -123,39 +123,6 @@ function bb_webp_swap_url( $url ) {
  * ---------------------------------------------------------------------- */
 
 /**
- * Pictures the theme asks for by attachment and size.
- *
- * @param array|false $image Array of url, width, height, is_intermediate.
- * @return array|false
- */
-function bb_webp_filter_image_src( $image, $id = 0, $size = '' ) {
-	unset( $id );
-
-	if ( ! is_array( $image ) || empty( $image[0] ) ) {
-		return $image;
-	}
-
-	/*
-	 * Not the sharing card. bb-og is never downloaded by a reader — it is
-	 * fetched by whatever is drawing the link preview, and WhatsApp in
-	 * particular has been known to give up on a WebP and show nothing. There
-	 * is no page weight to win here and a preview to lose.
-	 */
-	if ( 'bb-og' === $size ) {
-		return $image;
-	}
-
-	$swap = bb_webp_swap_url( $image[0] );
-
-	if ( '' !== $swap ) {
-		$image[0] = $swap;
-	}
-
-	return $image;
-}
-add_filter( 'wp_get_attachment_image_src', 'bb_webp_filter_image_src', 20, 3 );
-
-/**
  * And every width offered alongside it.
  *
  * @param array $sources Width => source.
@@ -183,17 +150,20 @@ function bb_webp_filter_srcset( $sources ) {
 add_filter( 'wp_calculate_image_srcset', 'bb_webp_filter_srcset', 20 );
 
 /**
- * Pictures written into an article years ago.
+ * The src attribute, swapped only once the tag is finished.
  *
- * WordPress rebuilds the srcset of a content image from the library, so those
- * are handled above; the src attribute is whatever was saved into the post and
- * has to be swapped in the finished HTML. The post itself is left as it is.
+ * It cannot be swapped any earlier. WordPress works out a picture's widths by
+ * checking the src it was handed against the sizes recorded in the library —
+ * and the library records a .jpg. Handed a .webp, it finds no match and drops
+ * the srcset altogether, which left a 240px slot downloading the 800px
+ * original. So core is given the names it knows throughout, and the addresses
+ * are changed here, in HTML nothing else will read.
  *
- * @param string $html Rendered content.
+ * @param string $html A finished <img> tag, or a block of content.
  * @return string
  */
-function bb_webp_filter_content( $html ) {
-	if ( false === strpos( $html, '<img' ) ) {
+function bb_webp_filter_html( $html ) {
+	if ( ! is_string( $html ) || false === strpos( $html, '<img' ) ) {
 		return $html;
 	}
 
@@ -207,8 +177,9 @@ function bb_webp_filter_content( $html ) {
 		$html
 	);
 }
-add_filter( 'the_content', 'bb_webp_filter_content', 20 );
-add_filter( 'post_thumbnail_html', 'bb_webp_filter_content', 20 );
+add_filter( 'wp_get_attachment_image', 'bb_webp_filter_html', 20 );
+add_filter( 'the_content', 'bb_webp_filter_html', 20 );
+add_filter( 'post_thumbnail_html', 'bb_webp_filter_html', 20 );
 
 /* -------------------------------------------------------------------------
  * The converter

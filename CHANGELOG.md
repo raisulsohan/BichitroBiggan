@@ -2,6 +2,21 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.20.1
+
+- The WebP swap was taking the srcset away with it. A picture's src was being
+  changed to the .webp before WordPress had worked out its widths, and
+  WordPress works those out by checking the src it was handed against the
+  sizes recorded in the library — which record a .jpg. Finding no match it
+  dropped the srcset and the sizes attribute entirely, so a 240px slot in a
+  card stopped choosing a 300px file and downloaded the 800px original
+  instead. Images on the front page went up, not down.
+- Core is given the names it knows all the way through now. Only the finished
+  HTML is touched: the srcset is rewritten after it has been built, and the
+  src after the tag exists, where nothing reads it again. The preloaded
+  largest image follows its own srcset, so a browser that ignores imagesrcset
+  does not warm up a file the page never asks for.
+
 ## 7.20.0
 
 - Tools → Pictures to WebP. Uploads have been converted on the way in for a

@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.20.0' );
+define( 'BB_VERSION', '7.20.1' );
 
 /**
  * The built copy of an asset, when there is one and it is not stale.
@@ -444,6 +444,18 @@ function bb_preload_lcp_image() {
 	$src = wp_get_attachment_image_url( $thumb_id, $size );
 	if ( ! $src ) {
 		return;
+	}
+
+
+	/*
+	 * The srcset comes back pointing at the lighter twins, so the address in
+	 * href has to as well — otherwise a browser that ignores imagesrcset warms
+	 * up a file the page then never asks for.
+	 */
+	$lighter = function_exists( 'bb_webp_swap_url' ) ? bb_webp_swap_url( $src ) : '';
+
+	if ( '' !== $lighter ) {
+		$src = $lighter;
 	}
 
 	$srcset = wp_get_attachment_image_srcset( $thumb_id, $size );
