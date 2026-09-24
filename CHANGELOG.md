@@ -2,6 +2,28 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.18.2
+
+- The Statistics screen is a bento now: small tiles packed into columns, each
+  one only as tall as what is inside it. Laying them out in rows had made
+  every tile in a row as tall as the tallest one in it, so a tile of four
+  lines beside a tile of twelve left eight lines of nothing — which is what
+  made the screen feel enormous. It is about a third shorter.
+- Three tiles still take the full width, because they earn it: the line across
+  time, the table with six columns, and the twenty-four hours side by side.
+  Everything else packs.
+- Four columns on a wide monitor, down to one on a phone, decided by how much
+  room there is rather than by a breakpoint.
+- Smaller throughout: tighter padding, 12px corners, 13px tile headings,
+  6px bars, a 150px chart and 84px hours where they were 180 and 120.
+- The lists are shorter. Ten most-read articles rather than fifteen, ten
+  countries and searches rather than twelve, eight of the rest. A tile that
+  runs to fifteen rows stops being a tile.
+- The title, the line under it and the five periods share one row instead of
+  three.
+- Came from is gone from the addresses that led nowhere — the address itself
+  was always the part you act on, and the column cost a third of the tile.
+
 ## 7.18.1
 
 - The Statistics screen is laid out properly. Everything on it had been packed
