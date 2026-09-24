@@ -217,22 +217,16 @@ msgstr ""
 msgid "এখনো কোনো লেখা প্রকাশ করা হয়নি।"
 msgstr ""
 
-#: functions.php:1183
+#: functions.php:1249
 msgid "এই সময়ের কোনো লেখা পাওয়া যায়নি"
 msgstr ""
 
-#: functions.php:1604
+#: functions.php:1670
 msgid "পেজ নেভিগেশন"
 msgstr ""
 
-#: functions.php:1612
+#: functions.php:1678
 msgid "পৃষ্ঠা %1$s / %2$s"
-msgstr ""
-
-#: functions.php:1679
-#: functions.php:1701
-#: inc/template-tags.php:416
-msgid "প্রথম পাতা"
 msgstr ""
 
 #: functions.php:170
@@ -240,240 +234,246 @@ msgstr ""
 msgid "প্রধান মেন্যু"
 msgstr ""
 
-#: functions.php:1708
+#: functions.php:1745
+#: functions.php:1767
+#: inc/template-tags.php:416
+msgid "প্রথম পাতা"
+msgstr ""
+
+#: functions.php:1774
 msgid "%s সাল"
 msgstr ""
 
-#: functions.php:1714
+#: functions.php:1780
 msgid "সার্চ"
 msgstr ""
 
-#: functions.php:224
+#: functions.php:217
 msgid "ইমেইল কপি হয়েছে"
 msgstr ""
 
-#: functions.php:227
+#: functions.php:220
 msgid "লোড হচ্ছে…"
 msgstr ""
 
-#: functions.php:228
+#: functions.php:221
 msgid "লেখাটি আনা যায়নি।"
 msgstr ""
 
-#: functions.php:232
+#: functions.php:225
 msgid "খোঁজা হচ্ছে…"
 msgstr ""
 
-#: functions.php:233
+#: functions.php:226
 msgid "কিছু পাওয়া যায়নি"
 msgstr ""
 
-#: functions.php:234
+#: functions.php:227
 msgid "১টি ফলাফল"
 msgstr ""
 
-#: functions.php:235
+#: functions.php:228
 msgid "%s টি ফলাফল"
 msgstr ""
 
-#: functions.php:236
+#: functions.php:229
 msgid "অন্তত দুটি অক্ষর লিখুন"
 msgstr ""
 
-#: functions.php:241
+#: functions.php:234
 msgid "লিংক কপি হয়েছে"
 msgstr ""
 
-#: functions.php:242
+#: functions.php:235
 #: inc/template-tags.php:492
 msgid "শেয়ার করুন"
 msgstr ""
 
-#: functions.php:243
+#: functions.php:236
 #: header.php:233
 msgid "খবরের স্ক্রল থামান"
 msgstr ""
 
-#: functions.php:244
+#: functions.php:237
 msgid "খবরের স্ক্রল চালু করুন"
 msgstr ""
 
-#: functions.php:245
+#: functions.php:238
 #: header.php:53
 #: header.php:121
 msgid "ডার্ক মোড চালু করুন"
 msgstr ""
 
-#: functions.php:246
+#: functions.php:239
 msgid "লাইট মোড চালু করুন"
 msgstr ""
 
-#: functions.php:255
+#: functions.php:248
 msgid "পরে পড়ুন"
 msgstr ""
 
-#: functions.php:256
+#: functions.php:249
 msgid "সংরক্ষিত"
 msgstr ""
 
-#: functions.php:257
+#: functions.php:250
 msgid "কোনো লেখা সংরক্ষিত নেই"
 msgstr ""
 
-#: functions.php:258
+#: functions.php:251
 msgid "যেকোনো লেখার “পরে পড়ুন” বাটনে ক্লিক করে এখানে জমা রাখুন।"
 msgstr ""
 
-#: functions.php:259
+#: functions.php:252
 msgid "সংরক্ষণ থেকে সরান"
 msgstr ""
 
-#: functions.php:260
+#: functions.php:253
 msgid "লেখাটি সংরক্ষণ থেকে সরানো হয়েছে"
 msgstr ""
 
-#: functions.php:261
+#: functions.php:254
 msgid "লেখাটি পরে পড়ার জন্য সংরক্ষিত হয়েছে"
 msgstr ""
 
-#: functions.php:262
+#: functions.php:255
 msgid "সংরক্ষিত সব লেখা মুছে ফেলা হয়েছে"
 msgstr ""
 
-#: functions.php:263
+#: functions.php:256
 msgid "কপি"
 msgstr ""
 
-#: functions.php:264
+#: functions.php:257
 msgid "ফেসবুকে শেয়ার"
 msgstr ""
 
-#: functions.php:265
+#: functions.php:258
 msgid "সূত্র"
 msgstr ""
 
-#: functions.php:267
+#: functions.php:260
 msgid "উক্তি ও %s-এর লিঙ্ক কপি হয়েছে!"
 msgstr ""
 
-#: functions.php:269
+#: functions.php:262
 msgid "কপি করা লেখার সাথে %s-এর লিঙ্ক যুক্ত হয়েছে"
 msgstr ""
 
-#: functions.php:270
+#: functions.php:263
 msgid "ভিডিও"
 msgstr ""
 
-#: functions.php:271
+#: functions.php:264
 msgid "ভিডিও বন্ধ করুন"
 msgstr ""
 
-#: functions.php:530
+#: functions.php:596
 msgid "Hero Total Height (মোট উচ্চতা)"
 msgstr ""
 
-#: functions.php:531
+#: functions.php:597
 msgid "Left Main Hero Width (১নং বড় হিরোর প্রস্থ)"
 msgstr ""
 
-#: functions.php:532
+#: functions.php:598
 msgid "Right Top Card Height (২নং ওপরের কার্ডের উচ্চতা)"
 msgstr ""
 
-#: functions.php:533
+#: functions.php:599
 msgid "Bottom Left Card Width (৩নং কার্ডের প্রস্থ অনুপাত)"
 msgstr ""
 
-#: functions.php:536
+#: functions.php:602
 msgid "Featured Column Width"
 msgstr ""
 
-#: functions.php:537
+#: functions.php:603
 msgid "Featured Card Image Height"
 msgstr ""
 
-#: functions.php:538
+#: functions.php:604
 msgid "Side List Thumbnail Width"
 msgstr ""
 
-#: functions.php:539
+#: functions.php:605
 msgid "Side List Thumbnail Height"
 msgstr ""
 
-#: functions.php:540
+#: functions.php:606
 msgid "Right Grid Card Height"
 msgstr ""
 
-#: functions.php:543
+#: functions.php:609
 msgid "Standard Card Image Height"
 msgstr ""
 
-#: functions.php:544
+#: functions.php:610
 msgid "Right Column Big Card Height"
 msgstr ""
 
-#: functions.php:545
+#: functions.php:611
 msgid "Wide Row Thumbnail Width"
 msgstr ""
 
-#: functions.php:546
+#: functions.php:612
 msgid "Wide Row Thumbnail Height"
 msgstr ""
 
-#: functions.php:549
+#: functions.php:615
 msgid "Tall Card Height"
 msgstr ""
 
-#: functions.php:550
+#: functions.php:616
 msgid "Three Column Grid Gap"
 msgstr ""
 
-#: functions.php:553
+#: functions.php:619
 msgid "All Posts Card Image Height"
 msgstr ""
 
-#: functions.php:554
+#: functions.php:620
 msgid "Category Page Card Image Height"
 msgstr ""
 
-#: functions.php:557
+#: functions.php:623
 msgid "Popup Reading Window Max Width"
 msgstr ""
 
-#: functions.php:558
+#: functions.php:624
 msgid "Popup Reading Window Max Height"
 msgstr ""
 
-#: functions.php:600
+#: functions.php:666
 msgid "Sidebar"
 msgstr ""
 
-#: functions.php:602
+#: functions.php:668
 msgid "Right-hand sidebar for homepage and archives (displayed below Archive list)."
 msgstr ""
 
-#: functions.php:811
-#: functions.php:824
+#: functions.php:877
+#: functions.php:890
 msgid "ক্যাটাগরির রঙ"
 msgstr ""
 
-#: functions.php:813
+#: functions.php:879
 msgid "ব্যাজ ও সেকশন হেডিং-এ এই রঙ ব্যবহার হবে। খালি রাখলে ডিফল্ট রঙ বসবে।"
 msgstr ""
 
-#: functions.php:814
+#: functions.php:880
 msgid "লেখার রং ও প্রিভিউ: Theme Settings → ক্যাটাগরির রং।"
 msgstr ""
 
-#: functions.php:828
+#: functions.php:894
 msgid "লেখার রং ও প্রিভিউ দেখুন"
 msgstr ""
 
-#: functions.php:830
+#: functions.php:896
 msgid "ব্যাজ ও সেকশন হেডিং-এ এই রঙ ব্যবহার হবে।"
 msgstr ""
 
-#: functions.php:897
+#: functions.php:963
 msgid "জীবনের বিজ্ঞান, মহাবিশ্বের মহাবিস্ময়, মহাকাশ অভিযানের কাহিনী, পদার্থের স্বরূপ, কালজয়ী বিজ্ঞানীদের গল্প – এসব নানা চমকপ্রদ বিষয়ে বিভিন্ন সময়ে আমার লেখাগুলোকে নিয়ে তৈরি করেছি, ‘বিচিত্র বিজ্ঞান’ নামের এই ওয়েব সাইট।"
 msgstr ""
 

@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.18.3' );
+define( 'BB_VERSION', '7.19.0' );
 
 /**
  * The built copy of an asset, when there is one and it is not stale.
@@ -192,13 +192,6 @@ add_action( 'after_setup_theme', 'bb_content_width', 0 );
  * ---------------------------------------------------------------------- */
 
 function bb_enqueue_assets() {
-	wp_enqueue_style(
-		'bb-fonts',
-		get_template_directory_uri() . '/assets/css/fonts.css',
-		array(),
-		bb_file_version( get_template_directory() . '/assets/css/fonts.css' )
-	);
-
 	$bb_stylesheet = bb_asset_path( '/style.css' );
 
 	wp_enqueue_style(
@@ -325,10 +318,83 @@ add_action( 'wp_enqueue_scripts', 'bb_enqueue_katex' );
 function bb_preload_fonts() {
 	printf(
 		'<link rel="preload" as="font" type="font/woff2" href="%s" crossorigin>' . "\n",
-		esc_url( get_template_directory_uri() . '/assets/fonts/noto-sans-bengali-400-bengali.woff2' )
+		esc_url( get_template_directory_uri() . '/assets/fonts/noto-sans-bengali-variable-bengali.woff2' )
 	);
 }
 add_action( 'wp_head', 'bb_preload_fonts', 2 );
+
+/**
+ * The @font-face sheet, written into the page rather than fetched.
+ *
+ * It is under a kilobyte over the wire, and it was costing a whole round trip
+ * of its own — on a phone, with a connection and a handshake in front of it,
+ * that was most of half a second before any stylesheet could be read at all.
+ * Inlined, the browser has the font declarations the moment it has the HTML.
+ *
+ * The paths inside are relative to assets/css/, so they are made absolute on
+ * the way in; a relative url() in an inline sheet would resolve against the
+ * page and find nothing.
+ */
+function bb_inline_fonts_css() {
+	static $css = null;
+
+	if ( null === $css ) {
+		$file = get_template_directory() . '/assets/css/fonts.css';
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a file in the theme's own directory.
+		$raw = is_readable( $file ) ? (string) file_get_contents( $file ) : '';
+
+		if ( '' === $raw ) {
+			$css = '';
+		} else {
+			$raw = str_replace( '../fonts/', get_template_directory_uri() . '/assets/fonts/', $raw );
+
+			// Comments and the space between declarations are of no use here.
+			$raw = (string) preg_replace( '#/\*.*?\*/#s', '', $raw );
+			$raw = (string) preg_replace( '/\s*([{}:;,])\s*/', '$1', $raw );
+			$raw = str_replace( ';}', '}', $raw );
+
+			$css = trim( $raw );
+		}
+	}
+
+	if ( '' === $css ) {
+		return;
+	}
+
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- a generated stylesheet from the theme's own directory.
+	echo '<style id="bb-fonts">' . $css . '</style>' . "\n";
+}
+add_action( 'wp_head', 'bb_inline_fonts_css', 3 );
+
+/**
+ * Scripts that have no business holding up the first paint.
+ *
+ * The theme's own script is deferred where it is enqueued. This is for the
+ * ones that arrive from elsewhere without saying so: the consent API sits in
+ * the head with neither defer nor async, and a phone stops parsing the page
+ * to fetch it — a connection, a handshake and a round trip before the first
+ * stylesheet is even read.
+ *
+ * Only handles named here are touched, and nothing on the dashboard is.
+ *
+ * @param string $tag    The script tag.
+ * @param string $handle Registered handle.
+ * @return string
+ */
+function bb_defer_third_party_scripts( $tag, $handle ) {
+	$defer = array( 'wp-consent-api' );
+
+	if ( is_admin() || ! in_array( $handle, $defer, true ) ) {
+		return $tag;
+	}
+
+	if ( false !== strpos( $tag, ' defer' ) || false !== strpos( $tag, ' async' ) ) {
+		return $tag;
+	}
+
+	return str_replace( ' src=', ' defer src=', $tag );
+}
+add_filter( 'script_loader_tag', 'bb_defer_third_party_scripts', 10, 2 );
 
 /**
  * Preload the Largest Contentful Paint (LCP) image in <head> for fast mobile rendering.

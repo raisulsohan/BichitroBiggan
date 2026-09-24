@@ -2,6 +2,27 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.19.0
+
+- A phone was downloading the same 105KB of Bengali three times over. Noto
+  Sans Bengali is a variable font: ask Google for 400, 600 and 700 and it
+  answers with one file, three times, a different weight named on each. The
+  script that fetches them saved three copies under three names, and a browser
+  has no way to tell they are identical. With the Latin subsets too, that was
+  260KB of a 788KB page fetched for nothing.
+- The files are hashed now, identical bytes are written once, and the weights
+  that shared a file are declared as the range they really are —
+  font-weight: 400 700 on a single face. Nothing looks any different; there
+  is simply two thirds less of it.
+- The @font-face sheet is written into the page instead of fetched. It is
+  under a kilobyte over the wire and it was costing a whole round trip of its
+  own — on a phone, behind a connection and a handshake, most of half a second
+  before any stylesheet could be read.
+- The consent API's script is deferred. It sat in the head with neither defer
+  nor async, so a phone stopped parsing to go and get it.
+- Fonts on a Bengali page: 545KB down to about 285KB. One render-blocking
+  request left instead of three.
+
 ## 7.18.3
 
 - Most read and When they read no longer take the whole width. On a wide
