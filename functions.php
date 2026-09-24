@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.21.1' );
+define( 'BB_VERSION', '7.21.2' );
 
 /**
  * The built copy of an asset, when there is one and it is not stale.
@@ -1767,6 +1767,14 @@ class BB_Nav_Walker extends Walker_Nav_Menu {
 		$classes   = empty( $item->classes ) ? array() : (array) $item->classes;
 		$classes[] = 'bb-nav__item';
 		$classes[] = 'menu-item-' . $item->ID;
+
+		/*
+		 * Core's walker hands the classes through this filter and this one did
+		 * not, so anything that adds a class to a menu item was dropped without
+		 * a word — including the English edition marking its own Home as the
+		 * page you are on, which is why that one item never lit up.
+		 */
+		$classes = (array) apply_filters( 'nav_menu_css_class', array_filter( $classes ), $item, $args, $depth );
 
 		$class_names = join( ' ', array_filter( array_map( 'sanitize_html_class', $classes ) ) );
 

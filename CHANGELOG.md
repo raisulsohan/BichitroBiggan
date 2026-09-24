@@ -2,6 +2,18 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.21.2
+
+- Home on the English edition is marked at last. The filter added in 7.21.1
+  was never called: the theme's own BB_Nav_Walker builds each item's classes
+  by hand and left out the nav_menu_css_class filter that core's walker runs,
+  so anything adding a class to a menu item was dropped without a word. The
+  walker runs it now, which is both the fix and one less way for the menu to
+  ignore the rest of WordPress.
+- Category items were never affected because their current mark is written
+  into the item itself before the walker sees it. A custom link's is worked
+  out by comparing addresses, and that comparison is what /en breaks.
+
 ## 7.21.1
 
 - Home on the English edition was not marked as the page you are on, while
