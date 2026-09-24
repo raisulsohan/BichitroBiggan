@@ -636,6 +636,7 @@ msgstr ""
 #: inc/admin-settings.php:158
 #: inc/category-colors-admin.php:105
 #: inc/stats-admin.php:585
+#: inc/webp-admin.php:57
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
@@ -2068,6 +2069,86 @@ msgstr ""
 
 #: inc/video-meta-box.php:48
 msgid "Forces the video popup size. Auto will detect Shorts/Reels."
+msgstr ""
+
+#: inc/webp-admin.php:101
+msgid "lighter"
+msgstr ""
+
+#: inc/webp-admin.php:105
+msgid "left as they were"
+msgstr ""
+
+#: inc/webp-admin.php:114
+#: inc/webp-admin.php:136
+msgid "Carry on"
+msgstr ""
+
+#: inc/webp-admin.php:115
+msgid "Start converting"
+msgstr ""
+
+#: inc/webp-admin.php:117
+msgid "Stop"
+msgstr ""
+
+#: inc/webp-admin.php:118
+msgid "Start from the beginning"
+msgstr ""
+
+#: inc/webp-admin.php:123
+msgid "Leave this page open while it runs. It works through a few pictures at a time so the server is never asked for too much at once, so a large library takes a while — closing the page stops it, and opening it again carries on from the same place."
+msgstr ""
+
+#: inc/webp-admin.php:132
+msgid "working…"
+msgstr ""
+
+#: inc/webp-admin.php:133
+msgid "stopped"
+msgstr ""
+
+#: inc/webp-admin.php:134
+msgid "finished — every picture has been looked at"
+msgstr ""
+
+#: inc/webp-admin.php:135
+msgid "the server did not answer; press Carry on to try again"
+msgstr ""
+
+#: inc/webp-admin.php:19
+#: inc/webp-admin.php:20
+#: inc/webp-admin.php:65
+msgid "Pictures to WebP"
+msgstr ""
+
+#: inc/webp-admin.php:31
+#: inc/webp-admin.php:45
+msgid "Not allowed."
+msgstr ""
+
+#: inc/webp-admin.php:68
+msgid "Everything uploaded since the theme started converting pictures is already WebP. Everything from before it is still a JPEG or a PNG, and on a phone that is the heaviest thing left on the page. This writes a WebP beside each of them — the original file and every size made from it — and the site serves whichever is smaller."
+msgstr ""
+
+#: inc/webp-admin.php:73
+msgid "Nothing is deleted or overwritten."
+msgstr ""
+
+#: inc/webp-admin.php:74
+msgid "The pictures you uploaded stay exactly where they are, and no article is rewritten. A new file is written next to each old one; where WebP comes out larger — a flat graphic sometimes does — it is thrown away and the original is kept. Stopping halfway leaves the site working."
+msgstr ""
+
+#: inc/webp-admin.php:80
+msgid "This server cannot write WebP. Nothing can be converted here."
+msgstr ""
+
+#: inc/webp-admin.php:90
+msgid "of %s pictures looked at"
+msgstr ""
+
+#: inc/webp-admin.php:97
+msgid "files written"
 msgstr ""
 
 #: search.php:23

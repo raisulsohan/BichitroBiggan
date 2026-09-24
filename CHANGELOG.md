@@ -2,6 +2,27 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.20.0
+
+- Tools → Pictures to WebP. Uploads have been converted on the way in for a
+  while; everything from before that is still a JPEG or a PNG, and on the
+  front page that was 372KB of 594KB — the heaviest thing left on a phone.
+- It writes a .webp beside each old file — the original and every size made
+  from it — a few pictures at a time from the browser, because a library of a
+  few thousand will not finish inside one request on shared hosting. Closing
+  the page stops it; opening it again carries on from the same place.
+- Nothing is deleted, overwritten or rewritten. The uploads stay where they
+  are, no article is touched, and where WebP comes out larger — a flat graphic
+  sometimes does — the new file is thrown away and the original kept.
+- A swap at render time serves the lighter twin: a picture whose address in an
+  article still ends .jpg is given the .webp lying next to it. Because stored
+  content is never changed, taking the filters away puts every page back to
+  the file it always named.
+- Only what a reader downloads. The dashboard, the block editor and the REST
+  calls behind them go on seeing the library exactly as it is, and the sharing
+  card keeps its JPEG — WhatsApp has been known to give up on a WebP preview,
+  and there is no page weight to win there.
+
 ## 7.19.1
 
 - Home on the English edition went to the Bengali front page. A category or a

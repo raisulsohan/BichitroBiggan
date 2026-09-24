@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.19.1' );
+define( 'BB_VERSION', '7.20.0' );
 
 /**
  * The built copy of an asset, when there is one and it is not stale.
@@ -1824,6 +1824,7 @@ function bb_comment_callback( $comment, $args, $depth ) {
 require_once get_template_directory() . '/inc/lang.php';
 require_once get_template_directory() . '/inc/formatting.php';
 require_once get_template_directory() . '/inc/images.php';
+require_once get_template_directory() . '/inc/webp-convert.php';
 require_once get_template_directory() . '/inc/views.php';
 require_once get_template_directory() . '/inc/stats.php';
 require_once get_template_directory() . '/inc/google-verification.php';
@@ -1846,6 +1847,7 @@ if ( is_admin() ) {
 	require_once get_template_directory() . '/inc/seo-admin-column.php';
 	require_once get_template_directory() . '/inc/english-meta-box.php';
 	require_once get_template_directory() . '/inc/stats-admin.php';
+	require_once get_template_directory() . '/inc/webp-admin.php';
 }
 
 add_action( 'wp_footer', 'bb_bookmarks_drawer' );
