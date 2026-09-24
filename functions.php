@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.16.2' );
+define( 'BB_VERSION', '7.17.0' );
 
 /**
  * The built copy of an asset, when there is one and it is not stale.

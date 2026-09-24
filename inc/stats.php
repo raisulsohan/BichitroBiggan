@@ -602,6 +602,59 @@ function bb_stats_record_depth( $post_id, $percent ) {
  * ---------------------------------------------------------------------- */
 
 /**
+ * Is this address somebody poking at the site rather than a reader?
+ *
+ * A scanner asking for /graphql or /.env is not a broken link, and a browser
+ * asking for /.well-known/traffic-advice is asking the site a question, not
+ * failing to find a page. Both would otherwise crowd out the addresses on this
+ * list that can actually be fixed.
+ *
+ * @param string $path The address that was asked for.
+ * @return bool
+ */
+function bb_stats_is_probe( $path ) {
+	$path = strtolower( (string) $path );
+
+	$marks = array(
+		'/.well-known/',
+		'/.env',
+		'/.git',
+		'/.aws',
+		'/vendor/',
+		'/wp-config',
+		'/xmlrpc',
+		'/phpmyadmin',
+		'/phpunit',
+		'/autodiscover',
+		'/owa/',
+		'/cgi-bin/',
+		'graphql',
+		'/wp-content/plugins/',
+		'/wp-content/uploads/../',
+		'.php',
+		'.asp',
+		'.env',
+		'.sql',
+		'.zip',
+		'.bak',
+	);
+
+	foreach ( $marks as $mark ) {
+		if ( false !== strpos( $path, $mark ) ) {
+			return true;
+		}
+	}
+
+	/**
+	 * Filter whether an address is a probe rather than a broken link.
+	 *
+	 * @param bool   $is_probe Whether it looks like one.
+	 * @param string $path     The address asked for.
+	 */
+	return (bool) apply_filters( 'bb_stats_is_probe', false, $path );
+}
+
+/**
  * Remember a 404, and where the reader was sent from.
  *
  * A broken link is the one thing on this screen that can actually be fixed, so
@@ -619,9 +672,20 @@ function bb_stats_record_not_found() {
 
 	$request = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	$path    = (string) wp_parse_url( $request, PHP_URL_PATH );
-	$path    = esc_url_raw( $path );
+	$query   = (string) wp_parse_url( $request, PHP_URL_QUERY );
 
-	if ( '' === $path || strlen( $path ) > 190 ) {
+	/*
+	 * The query belongs to the address here. Most 404s at the site root are
+	 * ?p=<id> for a post that no longer exists; without the query every one of
+	 * them piles up under "/" and says nothing about what is actually broken.
+	 */
+	if ( '' !== $query ) {
+		$path .= '?' . $query;
+	}
+
+	$path = esc_url_raw( $path );
+
+	if ( '' === $path || strlen( $path ) > 190 || bb_stats_is_probe( $path ) ) {
 		return;
 	}
 

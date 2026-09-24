@@ -2,6 +2,20 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.17.0
+
+- An English article asked for without its prefix is no longer a dead end.
+  /einstein-bohr-debate-quantum-uncertainty-bell/ is an English slug; on the
+  Bengali side it belonged to nothing and returned a 404, although the article
+  exists one directory along. Such an address now redirects to /en/<slug>/.
+- The 404 list keeps the query string, so the ?p=<id> requests that make up
+  most of a site's dead ends are listed one by one instead of piling up
+  under "/" as a single meaningless line.
+- Scanners are left off that list — /graphql, /.env, /wp-config, anything
+  ending .php — along with /.well-known/ requests, which are browsers asking
+  the site a question rather than failing to find a page. What is left is the
+  addresses a reader really could not reach.
+
 ## 7.16.2
 
 - The figures in the Most read, searches and 404 tables sit under their own

@@ -647,7 +647,7 @@ function bb_stats_page() {
 				<?php bb_stats_depth_bars( $depth ); ?>
 
 				<h2><?php esc_html_e( 'Addresses that led nowhere', 'bichitro-biggan' ); ?></h2>
-				<p class="bb-stats__hint"><?php esc_html_e( 'Pages readers asked for and did not get — a broken link somewhere, and the one thing here you can actually fix.', 'bichitro-biggan' ); ?></p>
+				<p class="bb-stats__hint"><?php esc_html_e( 'Pages readers asked for and did not get — a broken link somewhere, and the one thing here you can actually fix. Scanners poking at /graphql and the like are left out.', 'bichitro-biggan' ); ?></p>
 				<?php if ( empty( $missing ) ) : ?>
 					<p class="bb-stats__empty"><?php esc_html_e( 'Nobody has hit a missing page. Good.', 'bichitro-biggan' ); ?></p>
 				<?php else : ?>

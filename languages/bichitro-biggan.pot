@@ -672,7 +672,7 @@ msgid "Select which category to show in each homepage block. Leave empty to auto
 msgstr ""
 
 #: inc/admin-settings.php:242
-#: inc/lang.php:1498
+#: inc/lang.php:1560
 msgid "Default: %s"
 msgstr ""
 
@@ -1246,7 +1246,7 @@ msgstr ""
 
 #: inc/english-meta-box.php:30
 #: inc/english-meta-box.php:264
-#: inc/lang.php:1442
+#: inc/lang.php:1504
 msgid "English edition (/en)"
 msgstr ""
 
@@ -1311,87 +1311,87 @@ msgstr ""
 msgid "The folder inside the zip could not be renamed to the theme\\'s slug."
 msgstr ""
 
-#: inc/lang.php:1190
+#: inc/lang.php:1252
 msgid "Primary Menu (English edition)"
 msgstr ""
 
-#: inc/lang.php:1279
+#: inc/lang.php:1341
 msgid "Tagline"
 msgstr ""
 
-#: inc/lang.php:1284
+#: inc/lang.php:1346
 msgid "Editor's picks heading"
 msgstr ""
 
-#: inc/lang.php:1289
+#: inc/lang.php:1351
 msgid "Popular posts heading"
 msgstr ""
 
-#: inc/lang.php:1294
+#: inc/lang.php:1356
 msgid "Popular categories heading"
 msgstr ""
 
-#: inc/lang.php:1299
+#: inc/lang.php:1361
 msgid "About heading"
 msgstr ""
 
-#: inc/lang.php:1304
+#: inc/lang.php:1366
 msgid "About text"
 msgstr ""
 
-#: inc/lang.php:1309
+#: inc/lang.php:1371
 msgid "Contact heading"
 msgstr ""
 
-#: inc/lang.php:1314
+#: inc/lang.php:1376
 msgid "Subscribe heading"
 msgstr ""
 
-#: inc/lang.php:1319
+#: inc/lang.php:1381
 msgid "YouTube button text"
 msgstr ""
 
-#: inc/lang.php:1324
+#: inc/lang.php:1386
 msgid "YouTube button text (footer)"
 msgstr ""
 
-#: inc/lang.php:1329
+#: inc/lang.php:1391
 msgid "Site name"
 msgstr ""
 
-#: inc/lang.php:1444
+#: inc/lang.php:1506
 msgid "The wording the site uses under /en. Leave a field empty to use the built-in English text."
 msgstr ""
 
-#: inc/lang.php:1462
+#: inc/lang.php:1524
 msgid "Logo for the English edition"
 msgstr ""
 
-#: inc/lang.php:1463
+#: inc/lang.php:1525
 msgid "Shown instead of the site logo under /en. Leave empty to use the same logo as the Bengali site."
 msgstr ""
 
-#: inc/lang.php:1473
+#: inc/lang.php:1535
 msgid "Site description (search engines)"
 msgstr ""
 
-#: inc/lang.php:1792
+#: inc/lang.php:1854
 msgid "#%d is not an image in the media library."
 msgstr ""
 
-#: inc/lang.php:1841
+#: inc/lang.php:1903
 msgid "ইংরেজিতে পড়ুন"
 msgstr ""
 
-#: inc/lang.php:1842
+#: inc/lang.php:1904
 msgid "Read in Bengali"
 msgstr ""
 
-#: inc/lang.php:1899
+#: inc/lang.php:1961
 msgid "এই লেখাটি ইংরেজিতে পড়ুন"
 msgstr ""
 
-#: inc/lang.php:1900
+#: inc/lang.php:1962
 msgid "Read this article in Bangla"
 msgstr ""
 
@@ -1745,7 +1745,7 @@ msgid "Addresses that led nowhere"
 msgstr ""
 
 #: inc/stats-admin.php:650
-msgid "Pages readers asked for and did not get — a broken link somewhere, and the one thing here you can actually fix."
+msgid "Pages readers asked for and did not get — a broken link somewhere, and the one thing here you can actually fix. Scanners poking at /graphql and the like are left out."
 msgstr ""
 
 #: inc/stats-admin.php:652

@@ -843,6 +843,68 @@ function bb_en_template_redirect() {
 }
 add_action( 'template_redirect', 'bb_en_template_redirect', 5 );
 
+/**
+ * A dead end on the Bengali side that is really an English article.
+ *
+ * An English article lives at /en/<english-slug>/. Strip the prefix — a link
+ * shared by hand, a script checking the slug, a crawler guessing — and the
+ * address lands on the Bengali site, where that slug belongs to nothing and
+ * the reader gets a 404. The article does exist, so they are sent to it.
+ */
+function bb_en_rescue_404() {
+	if ( ! is_404() || bb_is_en() || is_admin() ) {
+		return;
+	}
+
+	$request = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	$path    = trim( (string) wp_parse_url( $request, PHP_URL_PATH ), '/' );
+
+	// One segment, and one that could be a slug at all.
+	if ( '' === $path || false !== strpos( $path, '/' ) ) {
+		return;
+	}
+
+	$slug = sanitize_title( $path );
+
+	if ( '' === $slug ) {
+		return;
+	}
+
+	$found = get_posts(
+		array(
+			'post_type'        => 'post',
+			'post_status'      => 'publish',
+			'posts_per_page'   => 1,
+			'fields'           => 'ids',
+			'meta_key'         => 'bb_en_slug', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+			'meta_value'       => $slug, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+			'suppress_filters' => true,
+			'no_found_rows'    => true,
+		)
+	);
+
+	if ( empty( $found ) || ! bb_en_has( $found[0] ) ) {
+		return;
+	}
+
+	$post_id = (int) $found[0];
+
+	$url = (string) bb_en_in_lang(
+		'en',
+		function () use ( $post_id ) {
+			return get_permalink( $post_id );
+		}
+	);
+
+	if ( ! $url ) {
+		return;
+	}
+
+	wp_safe_redirect( $url, 301 );
+	exit;
+}
+add_action( 'template_redirect', 'bb_en_rescue_404', 8 );
+
 /* -------------------------------------------------------------------------
  * 8. Categories and tags
  * ---------------------------------------------------------------------- */
