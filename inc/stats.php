@@ -856,8 +856,8 @@ function bb_stats_series( $key ) {
 			'hits'   => isset( $found[ $slot ] ) ? $found[ $slot ]['hits'] : 0,
 			'visits' => isset( $found[ $slot ] ) ? $found[ $slot ]['visits'] : 0,
 			// Short for the axis, longer for what the pointer reveals.
-			'label'  => $hourly ? wp_date( 'H:00', $time ) : wp_date( 'j M', $time ),
-			'tip'    => $hourly ? wp_date( 'j M, H:00', $time ) : wp_date( 'j M Y', $time ),
+			'label'  => $hourly ? wp_date( 'g a', $time ) : wp_date( 'j M', $time ),
+			'tip'    => $hourly ? wp_date( 'j M, g:00 a', $time ) : wp_date( 'j M Y', $time ),
 		);
 	}
 

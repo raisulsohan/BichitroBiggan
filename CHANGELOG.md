@@ -2,6 +2,16 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.16.1
+
+- Hours read in am and pm, on the chart, in what the pointer reveals and under
+  the hour-of-day columns: 2 pm rather than 14:00.
+- The chart is a third of the height it was. It had been drawn to keep its
+  proportions, so a wide monitor made it nearly 500 pixels tall and the screen
+  was mostly chart. The plot is a fixed 180 pixels now (150 on a small screen)
+  whatever the window does — the scale, the dates, the guide and the dot are
+  laid over it as ordinary HTML, so nothing stretches with it.
+
 ## 7.16.0
 
 - The chart on the Statistics screen reads like a chart now: a scale up the

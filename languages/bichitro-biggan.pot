@@ -643,7 +643,7 @@ msgstr ""
 
 #: inc/admin-settings.php:164
 #: inc/category-colors-admin.php:105
-#: inc/stats-admin.php:505
+#: inc/stats-admin.php:512
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
@@ -864,7 +864,7 @@ msgid "Author page address"
 msgstr ""
 
 #: inc/author-slug.php:214
-#: inc/stats-admin.php:650
+#: inc/stats-admin.php:657
 msgid "Address"
 msgstr ""
 
@@ -1601,199 +1601,199 @@ msgstr ""
 msgid "Last year"
 msgstr ""
 
-#: inc/stats-admin.php:231
+#: inc/stats-admin.php:235
 msgid "Reads over time"
 msgstr ""
 
-#: inc/stats-admin.php:256
-#: inc/stats-admin.php:563
+#: inc/stats-admin.php:258
+#: inc/stats-admin.php:570
 msgid "Reads"
 msgstr ""
 
 #: inc/stats-admin.php:29
 #: inc/stats-admin.php:30
-#: inc/stats-admin.php:529
+#: inc/stats-admin.php:536
 msgid "Statistics"
 msgstr ""
 
-#: inc/stats-admin.php:369
+#: inc/stats-admin.php:376
 msgid "%1$s — %2$s reads"
 msgstr ""
 
-#: inc/stats-admin.php:398
+#: inc/stats-admin.php:405
 msgid "Unknown"
 msgstr ""
 
-#: inc/stats-admin.php:442
+#: inc/stats-admin.php:449
 msgid "Not measured yet — it is recorded as a reader leaves an article."
 msgstr ""
 
-#: inc/stats-admin.php:448
+#: inc/stats-admin.php:455
 msgid "Read to the end"
 msgstr ""
 
-#: inc/stats-admin.php:449
+#: inc/stats-admin.php:456
 msgid "Three quarters"
 msgstr ""
 
-#: inc/stats-admin.php:450
+#: inc/stats-admin.php:457
 msgid "Half"
 msgstr ""
 
-#: inc/stats-admin.php:451
+#: inc/stats-admin.php:458
 msgid "A quarter"
 msgstr ""
 
-#: inc/stats-admin.php:452
+#: inc/stats-admin.php:459
 msgid "Barely started"
 msgstr ""
 
-#: inc/stats-admin.php:459
+#: inc/stats-admin.php:466
 msgid "On average a reader gets %s of the way down."
 msgstr ""
 
-#: inc/stats-admin.php:532
+#: inc/stats-admin.php:539
 msgid "The site\\'s own count — no outside service, no account, no permission that can be withdrawn. Nothing that identifies a reader is stored, and visits by the people who run the site are left out."
 msgstr ""
 
-#: inc/stats-admin.php:547
+#: inc/stats-admin.php:554
 msgid "Counting has started."
 msgstr ""
 
-#: inc/stats-admin.php:548
+#: inc/stats-admin.php:555
 msgid "Nothing has been counted yet — it will appear here as soon as somebody visits. To see your own visit, open the site logged out, or in another browser."
 msgstr ""
 
-#: inc/stats-admin.php:557
+#: inc/stats-admin.php:564
 msgid "Right now"
 msgstr ""
 
-#: inc/stats-admin.php:560
+#: inc/stats-admin.php:567
 msgid "reads in the last 30 minutes"
 msgstr ""
 
-#: inc/stats-admin.php:568
+#: inc/stats-admin.php:575
 msgid "Visits"
-msgstr ""
-
-#: inc/stats-admin.php:573
-msgid "Articles read"
-msgstr ""
-
-#: inc/stats-admin.php:579
-msgid "%1$s article reads, %2$s elsewhere"
 msgstr ""
 
 #: inc/stats-admin.php:58
 msgid "Direct / bookmark"
 msgstr ""
 
-#: inc/stats-admin.php:587
-msgid "Counting since"
+#: inc/stats-admin.php:580
+msgid "Articles read"
+msgstr ""
+
+#: inc/stats-admin.php:586
+msgid "%1$s article reads, %2$s elsewhere"
 msgstr ""
 
 #: inc/stats-admin.php:59
 msgid "From this site"
 msgstr ""
 
-#: inc/stats-admin.php:591
+#: inc/stats-admin.php:594
+msgid "Counting since"
+msgstr ""
+
+#: inc/stats-admin.php:598
 msgid "nothing from before this is here"
 msgstr ""
 
-#: inc/stats-admin.php:597
+#: inc/stats-admin.php:604
 msgid "Reads by the hour"
 msgstr ""
 
-#: inc/stats-admin.php:597
+#: inc/stats-admin.php:604
 msgid "Reads per day"
 msgstr ""
 
-#: inc/stats-admin.php:604
+#: inc/stats-admin.php:611
 msgid "Most read"
 msgstr ""
 
-#: inc/stats-admin.php:606
+#: inc/stats-admin.php:613
 msgid "No article was read in this period."
 msgstr ""
 
-#: inc/stats-admin.php:611
+#: inc/stats-admin.php:618
 msgid "Article"
 msgstr ""
 
-#: inc/stats-admin.php:614
+#: inc/stats-admin.php:621
 msgid "Total"
 msgstr ""
 
-#: inc/stats-admin.php:634
+#: inc/stats-admin.php:641
 msgid "When they read"
 msgstr ""
 
-#: inc/stats-admin.php:635
+#: inc/stats-admin.php:642
 msgid "Reads by hour of the day across this whole period, on the site\\'s own clock."
 msgstr ""
 
-#: inc/stats-admin.php:638
+#: inc/stats-admin.php:645
 msgid "How far they read"
 msgstr ""
 
-#: inc/stats-admin.php:639
+#: inc/stats-admin.php:646
 msgid "Measured as a reader leaves an article — a view says it was opened, this says it was read."
 msgstr ""
 
-#: inc/stats-admin.php:642
+#: inc/stats-admin.php:649
 msgid "Addresses that led nowhere"
 msgstr ""
 
-#: inc/stats-admin.php:643
+#: inc/stats-admin.php:650
 msgid "Pages readers asked for and did not get — a broken link somewhere, and the one thing here you can actually fix."
 msgstr ""
 
-#: inc/stats-admin.php:645
+#: inc/stats-admin.php:652
 msgid "Nobody has hit a missing page. Good."
 msgstr ""
 
-#: inc/stats-admin.php:651
+#: inc/stats-admin.php:658
 msgid "Came from"
 msgstr ""
 
-#: inc/stats-admin.php:652
+#: inc/stats-admin.php:659
 msgid "Times"
 msgstr ""
 
-#: inc/stats-admin.php:669
+#: inc/stats-admin.php:676
 msgid "Where readers come from"
 msgstr ""
 
-#: inc/stats-admin.php:671
-#: inc/stats-admin.php:686
+#: inc/stats-admin.php:678
+#: inc/stats-admin.php:693
 msgid "Nothing to show yet."
 msgstr ""
 
-#: inc/stats-admin.php:683
+#: inc/stats-admin.php:690
 msgid "Where in the world"
 msgstr ""
 
-#: inc/stats-admin.php:684
+#: inc/stats-admin.php:691
 msgid "From the browser\\'s own time zone, never from an address — nothing is sent anywhere to work this out."
 msgstr ""
 
-#: inc/stats-admin.php:698
+#: inc/stats-admin.php:705
 msgid "What they read on"
 msgstr ""
 
-#: inc/stats-admin.php:708
+#: inc/stats-admin.php:715
 msgid "Which edition"
 msgstr ""
 
-#: inc/stats-admin.php:718
+#: inc/stats-admin.php:725
 msgid "What they searched for"
 msgstr ""
 
-#: inc/stats-admin.php:719
+#: inc/stats-admin.php:726
 msgid "Typed into the site\\'s own search box — all time, most asked first."
 msgstr ""
 
-#: inc/stats-admin.php:721
+#: inc/stats-admin.php:728
 msgid "Nobody has searched yet."
 msgstr ""
 
@@ -1810,7 +1810,7 @@ msgid "Computer"
 msgstr ""
 
 #: inc/stats-admin.php:87
-#: inc/stats-admin.php:612
+#: inc/stats-admin.php:619
 msgid "Bengali"
 msgstr ""
 
