@@ -2,6 +2,14 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.16.2
+
+- The figures in the Most read, searches and 404 tables sit under their own
+  headings again. WordPress aligns every table heading left with a selector
+  that outweighed the theme's, so Bengali, EN and Total stood at the left of
+  columns whose numbers were at the right. The digits are tabular now as well,
+  so they line up with each other down the column.
+
 ## 7.16.1
 
 - Hours read in am and pm, on the chart, in what the pointer reveals and under

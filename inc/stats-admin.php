@@ -785,7 +785,11 @@ function bb_stats_page() {
 		.bb-stats-hours__bar { display: block; width: 100%; background: #0080ff; border-radius: 3px 3px 0 0; opacity: .85; }
 		.bb-stats-hours__col:hover .bb-stats-hours__bar { opacity: 1; }
 		.bb-stats-hours__tick { position: absolute; bottom: -16px; font-size: 10px; color: #646970; white-space: nowrap; }
-		.bb-stats-table__num { text-align: right; width: 80px; }
+		/* WordPress's own table styles align every th left, and .widefat thead th
+		   outweighs a single class — so the heading and the figures under it have to
+		   be claimed together, by a selector heavy enough to win. */
+		.bb-stats-table th.bb-stats-table__num,
+		.bb-stats-table td.bb-stats-table__num { text-align: right; width: 84px; font-variant-numeric: tabular-nums; }
 		.bb-stats-tag { background: #edf4ff; color: #0073aa; border-radius: 3px; font-size: 10px; padding: 1px 5px; margin-left: 6px; vertical-align: 1px; }
 		.bb-stats-bars { margin: 0 0 18px; }
 		.bb-stats-bar { display: grid; grid-template-columns: 1fr 120px 92px; align-items: center; gap: 10px; margin: 0 0 8px; }
