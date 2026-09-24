@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Inter', 'Hind Siliguri', sans-serif;
+      font-family: 'Inter', 'Noto Sans Bengali', sans-serif;
     }
     .font-mono {
       font-family: 'JetBrains Mono', monospace;

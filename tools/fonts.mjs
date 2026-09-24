@@ -11,7 +11,7 @@ import crypto from 'crypto';
 
 const ROOT = './';
 const FONT_DIR = ROOT + 'assets/fonts/';
-const CSS_URL = 'https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Noto+Sans+Bengali:wght@400;600;700&display=swap';
+const CSS_URL = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap';
 
 // Without a modern browser's user agent, Google answers with TTF instead of WOFF2.
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';

@@ -2,6 +2,26 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.19.1
+
+- Home on the English edition went to the Bengali front page. A category or a
+  page in the menu gets its address from get_term_link() or get_permalink(),
+  and both are filtered, so they arrived under /en already; a custom link does
+  not — whatever was typed on the menu screen is what is stored. Custom links
+  that point at this site are put through the same filter now. Links to
+  anywhere else are left alone, and the Bengali switcher, which says what it is
+  with hreflang=bn, still goes where it should.
+- Hind Siliguri is gone. Three static weights, 215KB, to carry nine per cent
+  of the text on an article and about forty elements on the front page —
+  badges, section labels, the breadcrumb, the modal and footer chrome. Those
+  are set in Noto Sans Bengali now, which every page was loading anyway.
+- The Google tag is gone with it: a third-party connection and 72KB of unused
+  JavaScript for figures the site's own Statistics already keeps, in more
+  detail and without telling anybody who is reading. Search Console is
+  unaffected — this site is verified by its HTML file, not by the tag.
+- Fonts on a Bengali page: 545KB before this pair of releases, 130KB now.
+  One file, not twelve.
+
 ## 7.19.0
 
 - A phone was downloading the same 105KB of Bengali three times over. Noto

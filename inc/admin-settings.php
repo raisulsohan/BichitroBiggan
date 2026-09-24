@@ -135,12 +135,6 @@ function bb_settings_schema() {
 					'label' => __( 'Google Search Console verification file', 'bichitro-biggan' ),
 					'desc'  => __( 'Only for the "HTML file" verification method — enter the file name Google gives you, e.g. google1234abcd5678.html. Leave empty if you verify through Site Kit or DNS.', 'bichitro-biggan' ),
 				),
-				'bb_google_tag_id'      => array(
-					'type'        => 'text',
-					'label'       => __( 'Google tag (GA4 Measurement ID)', 'bichitro-biggan' ),
-					'placeholder' => 'G-XXXXXXXXXX',
-					'desc'        => __( 'The ID from Google Analytics → Admin → Data streams. Entered here, the Google tag is printed on every page of the site, including /en — nothing else has to be installed, and Google\'s own "Test / Verify installation" button will then find it.', 'bichitro-biggan' ),
-				),
 			),
 		),
 	);

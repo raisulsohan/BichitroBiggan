@@ -627,39 +627,31 @@ msgstr ""
 msgid "Only for the \"HTML file\" verification method — enter the file name Google gives you, e.g. google1234abcd5678.html. Leave empty if you verify through Site Kit or DNS."
 msgstr ""
 
-#: inc/admin-settings.php:140
-msgid "Google tag (GA4 Measurement ID)"
-msgstr ""
-
-#: inc/admin-settings.php:142
-msgid "The ID from Google Analytics → Admin → Data streams. Entered here, the Google tag is printed on every page of the site, including /en — nothing else has to be installed, and Google\\'s own \"Test / Verify installation\" button will then find it."
-msgstr ""
-
-#: inc/admin-settings.php:151
-#: inc/admin-settings.php:152
-#: inc/admin-settings.php:432
+#: inc/admin-settings.php:145
+#: inc/admin-settings.php:146
+#: inc/admin-settings.php:426
 msgid "Theme Settings"
 msgstr ""
 
-#: inc/admin-settings.php:164
+#: inc/admin-settings.php:158
 #: inc/category-colors-admin.php:105
 #: inc/stats-admin.php:585
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
-#: inc/admin-settings.php:183
+#: inc/admin-settings.php:177
 msgid "Bichitro Biggan — Theme Settings"
 msgstr ""
 
-#: inc/admin-settings.php:186
+#: inc/admin-settings.php:180
 msgid "Settings saved."
 msgstr ""
 
-#: inc/admin-settings.php:197
+#: inc/admin-settings.php:191
 msgid "Logo & Tagline (Customizer)"
 msgstr ""
 
-#: inc/admin-settings.php:218
+#: inc/admin-settings.php:212
 msgid "Save Settings"
 msgstr ""
 
@@ -667,17 +659,21 @@ msgstr ""
 msgid "Homepage"
 msgstr ""
 
+#: inc/admin-settings.php:236
+#: inc/lang.php:1584
+msgid "Default: %s"
+msgstr ""
+
 #: inc/admin-settings.php:24
 msgid "Select which category to show in each homepage block. Leave empty to automatically detect categories. For block sizes & layout adjustments, go to: Appearance → Customize → Homepage Layout."
 msgstr ""
 
-#: inc/admin-settings.php:242
-#: inc/lang.php:1560
-msgid "Default: %s"
-msgstr ""
-
 #: inc/admin-settings.php:26
 msgid "Hero Slot 1 — Filter by Category"
+msgstr ""
+
+#: inc/admin-settings.php:264
+msgid "— None —"
 msgstr ""
 
 #: inc/admin-settings.php:27
@@ -692,10 +688,6 @@ msgstr ""
 msgid "Select specific post or leave as Auto."
 msgstr ""
 
-#: inc/admin-settings.php:270
-msgid "— None —"
-msgstr ""
-
 #: inc/admin-settings.php:28
 msgid "Hero Slot 2 — Filter by Category"
 msgstr ""
@@ -705,12 +697,12 @@ msgstr ""
 msgid "Hero Slot 2 — Top Right Post"
 msgstr ""
 
-#: inc/admin-settings.php:30
-msgid "Hero Slot 3 — Filter by Category"
+#: inc/admin-settings.php:294
+msgid "Enabled"
 msgstr ""
 
-#: inc/admin-settings.php:300
-msgid "Enabled"
+#: inc/admin-settings.php:30
+msgid "Hero Slot 3 — Filter by Category"
 msgstr ""
 
 #: inc/admin-settings.php:31
@@ -1245,7 +1237,7 @@ msgstr ""
 
 #: inc/english-meta-box.php:30
 #: inc/english-meta-box.php:264
-#: inc/lang.php:1504
+#: inc/lang.php:1528
 msgid "English edition (/en)"
 msgstr ""
 
@@ -1314,83 +1306,83 @@ msgstr ""
 msgid "Primary Menu (English edition)"
 msgstr ""
 
-#: inc/lang.php:1341
+#: inc/lang.php:1365
 msgid "Tagline"
 msgstr ""
 
-#: inc/lang.php:1346
+#: inc/lang.php:1370
 msgid "Editor's picks heading"
 msgstr ""
 
-#: inc/lang.php:1351
+#: inc/lang.php:1375
 msgid "Popular posts heading"
 msgstr ""
 
-#: inc/lang.php:1356
+#: inc/lang.php:1380
 msgid "Popular categories heading"
 msgstr ""
 
-#: inc/lang.php:1361
+#: inc/lang.php:1385
 msgid "About heading"
 msgstr ""
 
-#: inc/lang.php:1366
+#: inc/lang.php:1390
 msgid "About text"
 msgstr ""
 
-#: inc/lang.php:1371
+#: inc/lang.php:1395
 msgid "Contact heading"
 msgstr ""
 
-#: inc/lang.php:1376
+#: inc/lang.php:1400
 msgid "Subscribe heading"
 msgstr ""
 
-#: inc/lang.php:1381
+#: inc/lang.php:1405
 msgid "YouTube button text"
 msgstr ""
 
-#: inc/lang.php:1386
+#: inc/lang.php:1410
 msgid "YouTube button text (footer)"
 msgstr ""
 
-#: inc/lang.php:1391
+#: inc/lang.php:1415
 msgid "Site name"
 msgstr ""
 
-#: inc/lang.php:1506
+#: inc/lang.php:1530
 msgid "The wording the site uses under /en. Leave a field empty to use the built-in English text."
 msgstr ""
 
-#: inc/lang.php:1524
+#: inc/lang.php:1548
 msgid "Logo for the English edition"
 msgstr ""
 
-#: inc/lang.php:1525
+#: inc/lang.php:1549
 msgid "Shown instead of the site logo under /en. Leave empty to use the same logo as the Bengali site."
 msgstr ""
 
-#: inc/lang.php:1535
+#: inc/lang.php:1559
 msgid "Site description (search engines)"
 msgstr ""
 
-#: inc/lang.php:1854
+#: inc/lang.php:1878
 msgid "#%d is not an image in the media library."
 msgstr ""
 
-#: inc/lang.php:1903
+#: inc/lang.php:1927
 msgid "ইংরেজিতে পড়ুন"
 msgstr ""
 
-#: inc/lang.php:1904
+#: inc/lang.php:1928
 msgid "Read in Bengali"
 msgstr ""
 
-#: inc/lang.php:1961
+#: inc/lang.php:1985
 msgid "এই লেখাটি ইংরেজিতে পড়ুন"
 msgstr ""
 
-#: inc/lang.php:1962
+#: inc/lang.php:1986
 msgid "Read this article in Bangla"
 msgstr ""
 

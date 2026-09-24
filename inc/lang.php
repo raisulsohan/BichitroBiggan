@@ -1266,7 +1266,31 @@ add_action( 'after_setup_theme', 'bb_en_register_menu', 11 );
  * @return object
  */
 function bb_en_nav_menu_item( $item ) {
-	if ( ! bb_is_en() || ! isset( $item->title ) ) {
+	if ( ! bb_is_en() ) {
+		return $item;
+	}
+
+	/*
+	 * A category or a page in the menu gets its address from get_term_link()
+	 * or get_permalink(), and those are filtered — they arrive already under
+	 * /en. A custom link does not: whatever was typed into the menu screen is
+	 * what is stored, so "Home" pointing at the site root sent a reader on the
+	 * English edition straight back to the Bengali front page.
+	 *
+	 * Only addresses on this site are touched. bb_en_home_url() leaves
+	 * WordPress's own paths alone and will not prefix one twice, but it knows
+	 * nothing of hosts, so a link to YouTube has to be ruled out here.
+	 */
+	if ( isset( $item->url ) && '' !== $item->url && ( ! isset( $item->type ) || 'custom' === $item->type ) ) {
+		$host = wp_parse_url( $item->url, PHP_URL_HOST );
+		$site = wp_parse_url( get_option( 'home' ), PHP_URL_HOST );
+
+		if ( ! $host || strtolower( (string) $host ) === strtolower( (string) $site ) ) {
+			$item->url = bb_en_home_url( $item->url );
+		}
+	}
+
+	if ( ! isset( $item->title ) ) {
 		return $item;
 	}
 

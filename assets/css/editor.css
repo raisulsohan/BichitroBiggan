@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap');
 
 .editor-styles-wrapper {
-  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  font-family: 'Noto Sans Bengali', sans-serif;
   color: #374151;
   background: #fff;
 }
@@ -24,7 +24,7 @@ p { font-size: 14px; line-height: 1.75; text-align: justify !important; }
 .editor-styles-wrapper h2,
 .editor-styles-wrapper h3,
 .editor-styles-wrapper h4 {
-  font-family: 'Noto Sans Bengali', 'Hind Siliguri', sans-serif;
+  font-family: 'Noto Sans Bengali', sans-serif;
   color: #111827;
   font-weight: 700;
 }
