@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.20.4' );
+define( 'BB_VERSION', '7.21.0' );
 
 /**
  * The built copy of an asset, when there is one and it is not stale.
@@ -827,6 +827,48 @@ function bb_contrast_color( $hex ) {
 }
 
 /**
+ * How far apart two colours are, the way WCAG counts it.
+ *
+ * @param string $one Colour.
+ * @param string $two Colour.
+ * @return float The ratio, 1 for identical and 21 for black against white.
+ */
+function bb_contrast_ratio( $one, $two ) {
+	$a = bb_relative_luminance( $one );
+	$b = bb_relative_luminance( $two );
+
+	if ( null === $a || null === $b ) {
+		return 0.0;
+	}
+
+	$light = max( $a, $b );
+	$dark  = min( $a, $b );
+
+	return ( $light + 0.05 ) / ( $dark + 0.05 );
+}
+
+/**
+ * A text colour that can actually be read on this background.
+ *
+ * The category colours screen lets a text colour be chosen by hand, and white
+ * on a pale blue or a sand is a choice it happily saved: the badges came out
+ * at 2.4 and 2.9 against the 4.5 a small letter needs. A preference is kept
+ * when it is legible and quietly corrected when it is not — nobody picks a
+ * colour meaning to make the words disappear.
+ *
+ * @param string $background The colour behind the text.
+ * @param string $preferred  A colour asked for, or ''.
+ * @return string
+ */
+function bb_readable_on( $background, $preferred = '' ) {
+	if ( '' !== $preferred && bb_contrast_ratio( $preferred, $background ) >= 4.5 ) {
+		return $preferred;
+	}
+
+	return bb_contrast_color( $background );
+}
+
+/**
  * The text colour for a category's badge.
  *
  * Measuring which of black or white is more legible gets it right more often
@@ -847,12 +889,13 @@ function bb_term_text_color( $term ) {
 	}
 
 	$choice = get_term_meta( $term->term_id, 'bb_text_color', true );
+	$colour = bb_term_color( $term );
 
 	if ( in_array( $choice, array( '#ffffff', '#1a1a1a' ), true ) ) {
-		return $choice;
+		return bb_readable_on( $colour, $choice );
 	}
 
-	return bb_contrast_color( bb_term_color( $term ) );
+	return bb_contrast_color( $colour );
 }
 
 /**

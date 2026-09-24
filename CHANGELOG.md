@@ -2,6 +2,30 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.21.0
+
+- Category badges and section labels were being drawn in white on pale
+  backgrounds: 2.4 against a sand, 2.9 against a pale blue, where a small
+  letter needs 4.5. The category colours screen lets a text colour be chosen
+  by hand and saved white without complaint. A choice is kept when it can be
+  read and quietly corrected when it cannot — those two now come out at 7.4
+  and 5.9 in near-black. Nobody picks a colour meaning to make the words
+  disappear.
+- The saved-articles drawer was hidden from a screen reader and still reachable
+  by Tab, so the keyboard went somewhere the page said was not there. It is
+  inert while closed now, which takes it out of both at once.
+- The top bar and the ticker sat outside every landmark, leaving the date, the
+  language link and the latest headlines in a part of the page a screen reader
+  cannot navigate to by region. One banner wraps the lot, and the masthead
+  inside it is a plain box — a page has only one banner.
+- The lead story on the front page is an h2. It was an h3 straight after the
+  site name's h1, which left a level out.
+- The slider arrows, the moon, the envelope and the drawer's cross were all
+  under the 24 pixels a fingertip is measured against. The icons are the size
+  they were; the box you can hit is bigger.
+- The sidebar no longer claims a complementary role it is not allowed to hold
+  inside the main content.
+
 ## 7.20.4
 
 - Every PNG on the site failed to convert — 46 pictures, some five hundred

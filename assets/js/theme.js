@@ -1489,6 +1489,7 @@
 			if (drawer) {
 				drawer.classList.add('is-open');
 				drawer.setAttribute('aria-hidden', 'false');
+				drawer.removeAttribute('inert');
 				drawerTrap = trapFocus(drawer);
 				var closeBtn = drawer.querySelector('#bb-bookmarks-close');
 				if (closeBtn) closeBtn.focus({ preventScroll: true });
@@ -1516,6 +1517,8 @@
 			if (drawer) {
 				drawer.classList.remove('is-open');
 				drawer.setAttribute('aria-hidden', 'true');
+				// Hidden from a screen reader and out of the tab order together.
+				drawer.setAttribute('inert', '');
 			}
 			if (overlay) {
 				overlay.classList.remove('is-open');

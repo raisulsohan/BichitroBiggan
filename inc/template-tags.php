@@ -127,7 +127,7 @@ function bb_badge( $term = null, $extra_class = '', $link = false ) {
  * @param string $text_color Text colour; measured from the background when empty.
  */
 function bb_section_heading( $label, $color = '#1a1a1a', $upper = false, $url = '', $text_color = '' ) {
-	$text_color = $text_color ? $text_color : bb_contrast_color( $color );
+	$text_color = bb_readable_on( $color, $text_color );
 	$class      = 'bb-sechead__label' . ( $upper ? ' bb-sechead__label--upper' : '' );
 	?>
 	<div class="bb-sechead">
@@ -181,6 +181,7 @@ function bb_card( $args = array() ) {
 		'image_size'   => 'bb-card',
 		'height_class' => 'bb-ratio-44',
 		'title_class'  => 'bb-card__title--md',
+		'title_tag'    => 'h3',
 		'excerpt'      => false,
 		'excerpt_len'  => 22,
 		'clamp'        => 'bb-clamp-3',
@@ -192,9 +193,14 @@ function bb_card( $args = array() ) {
 			<img src="<?php echo esc_url( bb_thumb_url( get_the_ID(), $args['image_size'] ) ); ?>" alt="<?php the_title_attribute(); ?>"<?php bb_img_attrs( get_the_ID(), $args['image_size'] ); ?> />
 			<span class="bb-thumb__badge"><?php bb_badge(); ?></span>
 		</a>
-		<h3 class="bb-card__title <?php echo esc_attr( $args['title_class'] ); ?>">
+		<?php
+		/* The lead story is the page's first heading after the site name, so an
+		   h3 there stepped straight down from h1 and left a level out. */
+		$bb_tag = in_array( $args['title_tag'], array( 'h2', 'h3', 'h4' ), true ) ? $args['title_tag'] : 'h3';
+		?>
+		<<?php echo esc_html( $bb_tag ); ?> class="bb-card__title <?php echo esc_attr( $args['title_class'] ); ?>">
 			<a href="<?php the_permalink(); ?>"<?php bb_article_attr(); ?>><?php the_title(); ?></a>
-		</h3>
+		</<?php echo esc_html( $bb_tag ); ?>>
 		<?php if ( $args['meta'] ) : ?>
 			<div class="bb-card__meta">
 				<?php bb_byline( true ); ?>
@@ -761,7 +767,7 @@ function bb_bookmark_btn( $post_id = null, $extra_class = '' ) {
 function bb_bookmarks_drawer() {
 	?>
 	<div class="bb-drawer-overlay" id="bb-bookmarks-overlay" aria-hidden="true"></div>
-	<div class="bb-drawer" id="bb-bookmarks-drawer" role="dialog" aria-labelledby="bb-bookmarks-title" aria-modal="true" aria-hidden="true">
+	<div class="bb-drawer" id="bb-bookmarks-drawer" role="dialog" aria-labelledby="bb-bookmarks-title" aria-modal="true" aria-hidden="true" inert>
 		<div class="bb-drawer__header">
 			<div class="bb-drawer__title-wrap">
 				<span class="bb-drawer__icon">🔖</span>

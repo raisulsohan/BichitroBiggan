@@ -84,8 +84,8 @@ msgstr ""
 
 #: footer.php:111
 #: footer.php:111
-#: header.php:56
-#: header.php:56
+#: header.php:61
+#: header.php:61
 msgid "ইমেইল কপি করুন"
 msgstr ""
 
@@ -98,8 +98,8 @@ msgid "ডেভেলপার"
 msgstr ""
 
 #: footer.php:157
-#: header.php:139
-#: header.php:139
+#: header.php:144
+#: header.php:144
 #: searchform.php:14
 #: searchform.php:23
 msgid "খুঁজুন"
@@ -117,7 +117,7 @@ msgstr ""
 #: footer.php:171
 #: footer.php:183
 #: footer.php:198
-#: inc/template-tags.php:771
+#: inc/template-tags.php:777
 msgid "বন্ধ করুন"
 msgstr ""
 
@@ -166,85 +166,89 @@ msgstr ""
 msgid "নোবেল পুরষ্কার"
 msgstr ""
 
-#: front-page.php:278
+#: front-page.php:279
 msgid "জীবনের বিজ্ঞান"
 msgstr ""
 
-#: front-page.php:279
+#: front-page.php:280
 msgid "পদার্থ বিজ্ঞান"
 msgstr ""
 
-#: front-page.php:373
+#: front-page.php:374
 msgid "বিবিধ বিজ্ঞান"
 msgstr ""
 
-#: front-page.php:374
+#: front-page.php:375
 msgid "সাম্প্রতিক বিজ্ঞান"
 msgstr ""
 
-#: front-page.php:437
+#: front-page.php:438
 msgid "মহাকাশ বিজ্ঞান"
 msgstr ""
 
-#: front-page.php:438
+#: front-page.php:439
 msgid "বিজ্ঞানীদের কথা"
 msgstr ""
 
-#: front-page.php:478
+#: front-page.php:479
 msgid "আরও পড়ুন"
 msgstr ""
 
-#: front-page.php:499
+#: front-page.php:500
 msgid "মহাবিশ্বের মহাবিস্ময়"
 msgstr ""
 
-#: front-page.php:500
+#: front-page.php:501
 msgid "প্রকৃতি ও পরিবেশ"
 msgstr ""
 
-#: front-page.php:501
+#: front-page.php:502
 msgid "বিজ্ঞান ও প্রযুক্তি"
 msgstr ""
 
-#: front-page.php:569
+#: front-page.php:570
 #: home.php:24
 #: index.php:22
 #: template-posts.php:32
 msgid "সকল লেখা"
 msgstr ""
 
-#: front-page.php:587
+#: front-page.php:588
 msgid "এখনো কোনো লেখা প্রকাশ করা হয়নি।"
 msgstr ""
 
-#: functions.php:1270
+#: functions.php:1018
+msgid "জীবনের বিজ্ঞান, মহাবিশ্বের মহাবিস্ময়, মহাকাশ অভিযানের কাহিনী, পদার্থের স্বরূপ, কালজয়ী বিজ্ঞানীদের গল্প – এসব নানা চমকপ্রদ বিষয়ে বিভিন্ন সময়ে আমার লেখাগুলোকে নিয়ে তৈরি করেছি, ‘বিচিত্র বিজ্ঞান’ নামের এই ওয়েব সাইট।"
+msgstr ""
+
+#: functions.php:1313
 msgid "এই সময়ের কোনো লেখা পাওয়া যায়নি"
 msgstr ""
 
-#: functions.php:1691
-msgid "পেজ নেভিগেশন"
-msgstr ""
-
-#: functions.php:1699
-msgid "পৃষ্ঠা %1$s / %2$s"
-msgstr ""
-
 #: functions.php:170
-#: header.php:109
+#: header.php:114
 msgid "প্রধান মেন্যু"
 msgstr ""
 
-#: functions.php:1766
-#: functions.php:1788
-#: inc/template-tags.php:416
+#: functions.php:1734
+msgid "পেজ নেভিগেশন"
+msgstr ""
+
+#: functions.php:1742
+msgid "পৃষ্ঠা %1$s / %2$s"
+msgstr ""
+
+#: functions.php:1809
+#: functions.php:1831
+#: inc/template-tags.php:422
 msgid "প্রথম পাতা"
 msgstr ""
 
-#: functions.php:1795
+#: functions.php:1838
 msgid "%s সাল"
 msgstr ""
 
-#: functions.php:1801
+#: functions.php:1844
 msgid "সার্চ"
 msgstr ""
 
@@ -285,12 +289,12 @@ msgid "লিংক কপি হয়েছে"
 msgstr ""
 
 #: functions.php:235
-#: inc/template-tags.php:492
+#: inc/template-tags.php:498
 msgid "শেয়ার করুন"
 msgstr ""
 
 #: functions.php:236
-#: header.php:233
+#: header.php:238
 msgid "খবরের স্ক্রল থামান"
 msgstr ""
 
@@ -299,8 +303,8 @@ msgid "খবরের স্ক্রল চালু করুন"
 msgstr ""
 
 #: functions.php:238
-#: header.php:53
-#: header.php:121
+#: header.php:58
+#: header.php:126
 msgid "ডার্ক মোড চালু করুন"
 msgstr ""
 
@@ -452,53 +456,49 @@ msgstr ""
 msgid "Right-hand sidebar for homepage and archives (displayed below Archive list)."
 msgstr ""
 
-#: functions.php:889
-#: functions.php:902
+#: functions.php:932
+#: functions.php:945
 msgid "ক্যাটাগরির রঙ"
 msgstr ""
 
-#: functions.php:891
+#: functions.php:934
 msgid "ব্যাজ ও সেকশন হেডিং-এ এই রঙ ব্যবহার হবে। খালি রাখলে ডিফল্ট রঙ বসবে।"
 msgstr ""
 
-#: functions.php:892
+#: functions.php:935
 msgid "লেখার রং ও প্রিভিউ: Theme Settings → ক্যাটাগরির রং।"
 msgstr ""
 
-#: functions.php:906
+#: functions.php:949
 msgid "লেখার রং ও প্রিভিউ দেখুন"
 msgstr ""
 
-#: functions.php:908
+#: functions.php:951
 msgid "ব্যাজ ও সেকশন হেডিং-এ এই রঙ ব্যবহার হবে।"
 msgstr ""
 
-#: functions.php:975
-msgid "জীবনের বিজ্ঞান, মহাবিশ্বের মহাবিস্ময়, মহাকাশ অভিযানের কাহিনী, পদার্থের স্বরূপ, কালজয়ী বিজ্ঞানীদের গল্প – এসব নানা চমকপ্রদ বিষয়ে বিভিন্ন সময়ে আমার লেখাগুলোকে নিয়ে তৈরি করেছি, ‘বিচিত্র বিজ্ঞান’ নামের এই ওয়েব সাইট।"
-msgstr ""
-
-#: header.php:144
-#: header.php:180
+#: header.php:149
+#: header.php:185
 msgid "মেন্যু"
 msgstr ""
 
-#: header.php:152
+#: header.php:157
 msgid "আগের বিভাগগুলো"
 msgstr ""
 
-#: header.php:170
+#: header.php:175
 msgid "পরের বিভাগগুলো"
 msgstr ""
 
-#: header.php:212
+#: header.php:217
 msgid "নতুন লেখা"
 msgstr ""
 
-#: header.php:231
+#: header.php:236
 msgid "আগের লেখা"
 msgstr ""
 
-#: header.php:232
+#: header.php:237
 msgid "পরের লেখা"
 msgstr ""
 
@@ -506,28 +506,28 @@ msgstr ""
 msgid "মূল কন্টেন্টে যান"
 msgstr ""
 
-#: header.php:47
-#: header.php:47
-#: header.php:124
-#: header.php:124
-#: header.php:176
-#: header.php:176
+#: header.php:52
+#: header.php:52
+#: header.php:129
+#: header.php:129
+#: header.php:181
+#: header.php:181
 msgid "সংরক্ষিত লেখাগুলো দেখুন"
 msgstr ""
 
-#: header.php:49
-#: inc/template-tags.php:753
+#: header.php:54
+#: inc/template-tags.php:759
 msgid "পরে পড়ুন"
 msgstr ""
 
-#: header.php:54
-#: header.php:122
+#: header.php:59
+#: header.php:127
 msgid "ডার্ক মোড"
 msgstr ""
 
-#: header.php:94
-#: header.php:132
-#: header.php:132
+#: header.php:99
+#: header.php:137
+#: header.php:137
 msgid "ইউটিউব চ্যানেল"
 msgstr ""
 
@@ -1965,31 +1965,31 @@ msgstr ""
 msgid "Nobody has searched yet."
 msgstr ""
 
-#: inc/template-tags.php:344
+#: inc/template-tags.php:350
 msgid "পডকাস্ট"
 msgstr ""
 
-#: inc/template-tags.php:455
+#: inc/template-tags.php:461
 msgid "ফেসবুক"
 msgstr ""
 
-#: inc/template-tags.php:461
+#: inc/template-tags.php:467
 msgid "হোয়াটসঅ্যাপ"
 msgstr ""
 
-#: inc/template-tags.php:467
+#: inc/template-tags.php:473
 msgid "টেলিগ্রাম"
 msgstr ""
 
-#: inc/template-tags.php:473
+#: inc/template-tags.php:479
 msgid "এক্স"
 msgstr ""
 
-#: inc/template-tags.php:480
+#: inc/template-tags.php:486
 msgid "শেয়ার"
 msgstr ""
 
-#: inc/template-tags.php:490
+#: inc/template-tags.php:496
 msgid "লিংক কপি"
 msgstr ""
 
@@ -2006,20 +2006,20 @@ msgstr ""
 msgid "প্রথম স্লাইডে ফিরে যান"
 msgstr ""
 
-#: inc/template-tags.php:569
+#: inc/template-tags.php:575
 msgid "— Auto (Latest Post) —"
 msgstr ""
 
-#: inc/template-tags.php:750
-#: inc/template-tags.php:751
+#: inc/template-tags.php:756
+#: inc/template-tags.php:757
 msgid "পরে পড়ার জন্য সংরক্ষণ করুন"
 msgstr ""
 
-#: inc/template-tags.php:768
+#: inc/template-tags.php:774
 msgid "সংরক্ষিত লেখাগুলো"
 msgstr ""
 
-#: inc/template-tags.php:778
+#: inc/template-tags.php:784
 msgid "সব মুছে ফেলুন"
 msgstr ""
 

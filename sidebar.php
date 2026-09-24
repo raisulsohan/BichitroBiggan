@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
-<aside class="bb-col-side bb-col-side--sidebar" role="complementary">
+<aside class="bb-col-side bb-col-side--sidebar">
 
 	<?php
 	$bb_tree = bb_get_archive_tree();

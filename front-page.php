@@ -206,6 +206,7 @@ if ( $bb_b1l->have_posts() || $bb_b1r->have_posts() ) :
 											'image_size'   => 'bb-card',
 											'height_class' => 'bb-ratio-44',
 											'title_class'  => 'bb-card__title--md',
+											'title_tag'    => 'h2',
 											'excerpt'      => true,
 											'excerpt_len'  => 20,
 											'clamp'        => 'bb-clamp-4',

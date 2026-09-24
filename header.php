@@ -39,6 +39,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <div id="bb-page">
 
+	<?php /* One banner around the lot: the date, the language link and the ticker
+	   sat outside every landmark, which leaves a screen reader no way to reach
+	   them by region. */ ?>
+	<header class="bb-site-header">
+
 	<!-- Top bar -->
 	<div class="bb-topbar">
 		<div class="bb-topbar__inner">
@@ -59,7 +64,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</div>
 
 	<!-- Masthead -->
-	<header class="bb-masthead">
+	<div class="bb-masthead">
 		<div class="bb-masthead__inner">
 			<div class="bb-masthead__logo">
 				<?php if ( has_custom_logo() ) : ?>
@@ -103,7 +108,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div>
 			<?php endif; ?>
 		</div>
-	</header>
+	</div>
 
 	<!-- Navigation -->
 	<nav class="bb-nav" id="bb-nav" aria-label="<?php esc_attr_e( 'প্রধান মেন্যু', 'bichitro-biggan' ); ?>">
@@ -270,5 +275,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		endif;
 	endif;
 	?>
+
+	</header>
 
 	<main id="bb-main">
