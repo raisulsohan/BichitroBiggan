@@ -2,6 +2,30 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.18.1
+
+- The Statistics screen is laid out properly. Everything on it had been packed
+  into two enormous boxes — heading, table, note, next heading — with nothing
+  between them, so the line under Most read sat welded to the bottom edge of
+  the table. It had a negative top margin, written for a note that follows a
+  heading rather than a table.
+- Each section is now its own card: a title, the line that explains it, and
+  the figures, with space of its own around them. Cards sit two to a row, and
+  the ones that need the width — the chart, Most read, the hours of the day,
+  the addresses that led nowhere — take the whole of it.
+- The five periods are a single segmented control rather than five tabs welded
+  to the top of a box that is no longer there.
+- A rise or fall is a tinted chip now instead of a line of small text, so it
+  reads at a glance in a card and in the Climbing table alike.
+- The tables are the theme's own rather than WordPress's list tables with a
+  class fighting them, which is what had pushed the figures out of line in the
+  first place: quiet uppercase headings, hairline rules, a tint on the row
+  under the pointer, figures in tabular numerals.
+- Softer shadows, one palette declared once at the top instead of fifteen
+  hex codes spread through the file, gradient bars, and a dark tooltip on the
+  chart. On a phone the bars drop their track and keep the figures.
+- The dashboard panel matches.
+
 ## 7.18.0
 
 - Twelve more things the Statistics screen can tell you, all of them from the

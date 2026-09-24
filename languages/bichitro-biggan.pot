@@ -643,7 +643,7 @@ msgstr ""
 
 #: inc/admin-settings.php:164
 #: inc/category-colors-admin.php:105
-#: inc/stats-admin.php:549
+#: inc/stats-admin.php:587
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
@@ -864,7 +864,7 @@ msgid "Author page address"
 msgstr ""
 
 #: inc/author-slug.php:214
-#: inc/stats-admin.php:795
+#: inc/stats-admin.php:1040
 msgid "Address"
 msgstr ""
 
@@ -1569,39 +1569,75 @@ msgstr ""
 msgid "%d posts and pages still hold Yoast SEO data that has not been copied into the theme\\'s own fields. Copy it all in one click — nothing of Yoast\\'s is deleted."
 msgstr ""
 
+#: inc/stats-admin.php:1011
+msgid "Saved to read later"
+msgstr ""
+
+#: inc/stats-admin.php:1013
+msgid "Nobody has saved an article in this period."
+msgstr ""
+
+#: inc/stats-admin.php:1029
+msgid "Addresses that led nowhere"
+msgstr ""
+
+#: inc/stats-admin.php:1030
+msgid "Pages readers asked for and did not get — a broken link somewhere, and the one thing here you can actually fix. Scanners poking at /graphql and the like are left out."
+msgstr ""
+
 #: inc/stats-admin.php:1035
-msgid "Statistics — today"
+msgid "Nobody has hit a missing page. Good."
 msgstr ""
 
-#: inc/stats-admin.php:1052
-msgid "right now"
+#: inc/stats-admin.php:1041
+msgid "Came from"
 msgstr ""
 
-#: inc/stats-admin.php:1056
-msgid "reads today"
+#: inc/stats-admin.php:1042
+msgid "Times"
 msgstr ""
 
-#: inc/stats-admin.php:1060
-msgid "visits"
+#: inc/stats-admin.php:1059
+msgid "Empty this list"
 msgstr ""
 
-#: inc/stats-admin.php:1078
-msgid "No article has been read yet today."
-msgstr ""
-
-#: inc/stats-admin.php:1083
-msgid "The whole picture →"
+#: inc/stats-admin.php:1061
+msgid "Once the broken links are fixed, clear it and see what turns up next."
 msgstr ""
 
 #: inc/stats-admin.php:119
 msgid "first of its kind"
 msgstr ""
 
+#: inc/stats-admin.php:1199
+msgid "Statistics — today"
+msgstr ""
+
+#: inc/stats-admin.php:1216
+msgid "right now"
+msgstr ""
+
+#: inc/stats-admin.php:1220
+msgid "reads today"
+msgstr ""
+
+#: inc/stats-admin.php:1224
+msgid "visits"
+msgstr ""
+
+#: inc/stats-admin.php:1242
+msgid "No article has been read yet today."
+msgstr ""
+
+#: inc/stats-admin.php:1247
+msgid "The whole picture"
+msgstr ""
+
 #: inc/stats-admin.php:128
 msgid "level with the period before"
 msgstr ""
 
-#: inc/stats-admin.php:138
+#: inc/stats-admin.php:139
 msgid "vs the period before"
 msgstr ""
 
@@ -1630,13 +1666,13 @@ msgid "Reads over time"
 msgstr ""
 
 #: inc/stats-admin.php:258
-#: inc/stats-admin.php:624
+#: inc/stats-admin.php:663
 msgid "Reads"
 msgstr ""
 
 #: inc/stats-admin.php:29
 #: inc/stats-admin.php:30
-#: inc/stats-admin.php:590
+#: inc/stats-admin.php:628
 msgid "Statistics"
 msgstr ""
 
@@ -1688,10 +1724,6 @@ msgstr ""
 msgid "Home page and archives"
 msgstr ""
 
-#: inc/stats-admin.php:556
-msgid "The list of missing addresses has been emptied."
-msgstr ""
-
 #: inc/stats-admin.php:58
 msgid "Direct / bookmark"
 msgstr ""
@@ -1700,283 +1732,257 @@ msgstr ""
 msgid "From this site"
 msgstr ""
 
-#: inc/stats-admin.php:593
+#: inc/stats-admin.php:594
+msgid "The list of missing addresses has been emptied."
+msgstr ""
+
+#: inc/stats-admin.php:631
 msgid "The site\\'s own count — no outside service, no account, no permission that can be withdrawn. Nothing that identifies a reader is stored, and visits by the people who run the site are left out."
 msgstr ""
 
-#: inc/stats-admin.php:608
+#: inc/stats-admin.php:634
+msgid "How far back to look"
+msgstr ""
+
+#: inc/stats-admin.php:647
 msgid "Counting has started."
 msgstr ""
 
-#: inc/stats-admin.php:609
+#: inc/stats-admin.php:648
 msgid "Nothing has been counted yet — it will appear here as soon as somebody visits. To see your own visit, open the site logged out, or in another browser."
 msgstr ""
 
-#: inc/stats-admin.php:618
+#: inc/stats-admin.php:657
 msgid "Right now"
 msgstr ""
 
-#: inc/stats-admin.php:621
+#: inc/stats-admin.php:660
 msgid "reads in the last 30 minutes"
 msgstr ""
 
-#: inc/stats-admin.php:629
+#: inc/stats-admin.php:668
 msgid "Visits"
 msgstr ""
 
-#: inc/stats-admin.php:636
+#: inc/stats-admin.php:675
 msgid "%s pages a visit"
 msgstr ""
 
-#: inc/stats-admin.php:643
+#: inc/stats-admin.php:682
 msgid "Articles read"
 msgstr ""
 
-#: inc/stats-admin.php:649
+#: inc/stats-admin.php:688
 msgid "%1$s article reads, %2$s elsewhere"
 msgstr ""
 
-#: inc/stats-admin.php:657
+#: inc/stats-admin.php:696
 msgid "Counting since"
 msgstr ""
 
-#: inc/stats-admin.php:661
+#: inc/stats-admin.php:700
 msgid "nothing from before this is here"
 msgstr ""
 
-#: inc/stats-admin.php:667
+#: inc/stats-admin.php:708
 msgid "Reads by the hour"
 msgstr ""
 
-#: inc/stats-admin.php:667
+#: inc/stats-admin.php:708
 msgid "Reads per day"
 msgstr ""
 
-#: inc/stats-admin.php:674
+#: inc/stats-admin.php:716
 msgid "Most read"
 msgstr ""
 
-#: inc/stats-admin.php:676
+#: inc/stats-admin.php:718
 msgid "No article was read in this period."
 msgstr ""
 
-#: inc/stats-admin.php:681
+#: inc/stats-admin.php:723
 msgid "Article"
 msgstr ""
 
-#: inc/stats-admin.php:684
+#: inc/stats-admin.php:726
 msgid "Total"
 msgstr ""
 
-#: inc/stats-admin.php:685
+#: inc/stats-admin.php:727
 msgid "Read"
 msgstr ""
 
-#: inc/stats-admin.php:686
+#: inc/stats-admin.php:728
 msgid "Time"
 msgstr ""
 
-#: inc/stats-admin.php:713
+#: inc/stats-admin.php:755
 msgid "“Read” is how far down the article a reader got on average, “Time” how long they stayed with it."
 msgstr ""
 
-#: inc/stats-admin.php:716
+#: inc/stats-admin.php:761
 msgid "Climbing"
 msgstr ""
 
-#: inc/stats-admin.php:717
+#: inc/stats-admin.php:762
 msgid "Read more in this period than in the one before it. Articles with only a handful of reads are left out — with small numbers every rise looks enormous."
 msgstr ""
 
-#: inc/stats-admin.php:719
+#: inc/stats-admin.php:766
 msgid "Nothing is climbing in this period."
 msgstr ""
 
-#: inc/stats-admin.php:742
+#: inc/stats-admin.php:792
 msgid "Where visits begin"
 msgstr ""
 
-#: inc/stats-admin.php:743
+#: inc/stats-admin.php:793
 msgid "The first page of a visit — where readers come in, rather than what they read next."
 msgstr ""
 
-#: inc/stats-admin.php:745
-#: inc/stats-admin.php:824
-#: inc/stats-admin.php:839
+#: inc/stats-admin.php:797
+#: inc/stats-admin.php:857
+#: inc/stats-admin.php:877
+#: inc/stats-admin.php:892
+#: inc/stats-admin.php:907
 msgid "Nothing to show yet."
 msgstr ""
 
-#: inc/stats-admin.php:757
+#: inc/stats-admin.php:812
 msgid "When they read"
 msgstr ""
 
-#: inc/stats-admin.php:758
+#: inc/stats-admin.php:813
 msgid "Reads by hour of the day across this whole period, on the site\\'s own clock."
 msgstr ""
 
-#: inc/stats-admin.php:761
+#: inc/stats-admin.php:822
 msgid "Which day"
 msgstr ""
 
-#: inc/stats-admin.php:762
+#: inc/stats-admin.php:823
 msgid "The days of the week readers turn up on — worth knowing before deciding when to publish."
 msgstr ""
 
-#: inc/stats-admin.php:765
+#: inc/stats-admin.php:827
 msgid "Sunday"
 msgstr ""
 
-#: inc/stats-admin.php:766
+#: inc/stats-admin.php:828
 msgid "Monday"
 msgstr ""
 
-#: inc/stats-admin.php:767
+#: inc/stats-admin.php:829
 msgid "Tuesday"
 msgstr ""
 
-#: inc/stats-admin.php:768
+#: inc/stats-admin.php:830
 msgid "Wednesday"
 msgstr ""
 
-#: inc/stats-admin.php:769
+#: inc/stats-admin.php:831
 msgid "Thursday"
 msgstr ""
 
-#: inc/stats-admin.php:770
+#: inc/stats-admin.php:832
 msgid "Friday"
 msgstr ""
 
-#: inc/stats-admin.php:771
+#: inc/stats-admin.php:833
 msgid "Saturday"
-msgstr ""
-
-#: inc/stats-admin.php:783
-msgid "How far they read"
-msgstr ""
-
-#: inc/stats-admin.php:784
-msgid "Measured as a reader leaves an article — a view says it was opened, this says it was read."
-msgstr ""
-
-#: inc/stats-admin.php:787
-msgid "Addresses that led nowhere"
-msgstr ""
-
-#: inc/stats-admin.php:788
-msgid "Pages readers asked for and did not get — a broken link somewhere, and the one thing here you can actually fix. Scanners poking at /graphql and the like are left out."
-msgstr ""
-
-#: inc/stats-admin.php:790
-msgid "Nobody has hit a missing page. Good."
-msgstr ""
-
-#: inc/stats-admin.php:796
-msgid "Came from"
-msgstr ""
-
-#: inc/stats-admin.php:797
-msgid "Times"
-msgstr ""
-
-#: inc/stats-admin.php:814
-msgid "Empty this list"
-msgstr ""
-
-#: inc/stats-admin.php:816
-msgid "Once the broken links are fixed, clear it and see what turns up next."
-msgstr ""
-
-#: inc/stats-admin.php:822
-msgid "Where readers come from"
-msgstr ""
-
-#: inc/stats-admin.php:836
-msgid "Where in the world"
-msgstr ""
-
-#: inc/stats-admin.php:837
-msgid "From the browser\\'s own time zone, never from an address — nothing is sent anywhere to work this out."
 msgstr ""
 
 #: inc/stats-admin.php:84
 msgid "Phone"
 msgstr ""
 
+#: inc/stats-admin.php:848
+msgid "How far they read"
+msgstr ""
+
+#: inc/stats-admin.php:849
+msgid "Measured as a reader leaves an article — a view says it was opened, this says it was read."
+msgstr ""
+
 #: inc/stats-admin.php:85
 msgid "Tablet"
 msgstr ""
 
-#: inc/stats-admin.php:851
-msgid "What they read on"
+#: inc/stats-admin.php:855
+msgid "Where readers come from"
 msgstr ""
 
 #: inc/stats-admin.php:86
 msgid "Computer"
 msgstr ""
 
-#: inc/stats-admin.php:861
-msgid "Which edition"
-msgstr ""
-
 #: inc/stats-admin.php:87
-#: inc/stats-admin.php:682
+#: inc/stats-admin.php:724
 msgid "Bengali"
 msgstr ""
 
-#: inc/stats-admin.php:871
-msgid "Searches that found nothing"
-msgstr ""
-
 #: inc/stats-admin.php:872
-msgid "Readers came wanting these and the site did not have them. The best list there is of what to write next."
+msgid "Where in the world"
 msgstr ""
 
-#: inc/stats-admin.php:874
-msgid "Every search so far has found something."
+#: inc/stats-admin.php:873
+msgid "From the browser\\'s own time zone, never from an address — nothing is sent anywhere to work this out."
 msgstr ""
 
 #: inc/stats-admin.php:88
 msgid "English (/en)"
 msgstr ""
 
-#: inc/stats-admin.php:893
-msgid "Links they followed out"
+#: inc/stats-admin.php:890
+msgid "What they read on"
 msgstr ""
 
-#: inc/stats-admin.php:894
-msgid "Sources and other links inside articles that readers actually clicked."
+#: inc/stats-admin.php:905
+msgid "Which edition"
 msgstr ""
 
-#: inc/stats-admin.php:896
-msgid "No link out of an article has been followed yet."
+#: inc/stats-admin.php:922
+msgid "Searches that found nothing"
 msgstr ""
 
-#: inc/stats-admin.php:909
-msgid "How they shared it"
+#: inc/stats-admin.php:923
+msgid "Readers came wanting these and the site did not have them. The best list there is of what to write next."
 msgstr ""
 
-#: inc/stats-admin.php:911
-msgid "Nothing has been shared from the buttons yet."
+#: inc/stats-admin.php:927
+msgid "Every search so far has found something."
 msgstr ""
 
-#: inc/stats-admin.php:924
-msgid "Saved to read later"
-msgstr ""
-
-#: inc/stats-admin.php:926
-msgid "Nobody has saved an article in this period."
-msgstr ""
-
-#: inc/stats-admin.php:939
+#: inc/stats-admin.php:949
 msgid "What they searched for"
 msgstr ""
 
-#: inc/stats-admin.php:940
+#: inc/stats-admin.php:950
 msgid "Typed into the site\\'s own search box — all time, most asked first."
 msgstr ""
 
-#: inc/stats-admin.php:942
+#: inc/stats-admin.php:954
 msgid "Nobody has searched yet."
+msgstr ""
+
+#: inc/stats-admin.php:976
+msgid "Links they followed out"
+msgstr ""
+
+#: inc/stats-admin.php:977
+msgid "Sources and other links inside articles that readers actually clicked."
+msgstr ""
+
+#: inc/stats-admin.php:981
+msgid "No link out of an article has been followed yet."
+msgstr ""
+
+#: inc/stats-admin.php:995
+msgid "How they shared it"
+msgstr ""
+
+#: inc/stats-admin.php:997
+msgid "Nothing has been shared from the buttons yet."
 msgstr ""
 
 #: inc/template-tags.php:344

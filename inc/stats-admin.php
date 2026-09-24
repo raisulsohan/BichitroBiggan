@@ -135,8 +135,8 @@ function bb_stats_change( $now, $before ) {
 	<span class="bb-stats-change <?php echo $up ? 'bb-stats-change--up' : 'bb-stats-change--down'; ?>">
 		<?php echo $up ? '▲' : '▼'; ?>
 		<?php echo esc_html( bb_stats_number( abs( $change ) ) ); ?>%
-		<small><?php esc_html_e( 'vs the period before', 'bichitro-biggan' ); ?></small>
 	</span>
+	<span class="bb-stats-card__against"><?php esc_html_e( 'vs the period before', 'bichitro-biggan' ); ?></span>
 	<?php
 }
 
@@ -542,6 +542,44 @@ function bb_stats_page_name( $post_id ) {
 }
 
 /**
+ * One panel on the screen: a heading, a line explaining it, and whatever the
+ * section shows.
+ *
+ * Everything used to sit inside two enormous boxes, headings and tables and
+ * notes running into one another with nothing between them. A section is its
+ * own card now, so the space around a thing belongs to the thing.
+ *
+ * @param string $title Heading.
+ * @param string $hint  A line under it, or ''.
+ * @param bool   $wide  Span the whole width rather than one column.
+ * @return void
+ */
+function bb_stats_section_open( $title, $hint = '', $wide = false ) {
+	?>
+	<section class="bb-stats-section<?php echo $wide ? ' bb-stats-section--wide' : ''; ?>">
+		<div class="bb-stats-section__head">
+			<h2 class="bb-stats-section__title"><?php echo esc_html( $title ); ?></h2>
+			<?php if ( '' !== $hint ) : ?>
+				<p class="bb-stats-section__hint"><?php echo esc_html( $hint ); ?></p>
+			<?php endif; ?>
+		</div>
+		<div class="bb-stats-section__body">
+	<?php
+}
+
+/**
+ * Close what bb_stats_section_open() opened.
+ *
+ * @return void
+ */
+function bb_stats_section_close() {
+	?>
+		</div>
+	</section>
+	<?php
+}
+
+/**
  * The screen.
  */
 function bb_stats_page() {
@@ -562,13 +600,13 @@ function bb_stats_page() {
 	$key = isset( $_GET['range'] ) ? sanitize_key( wp_unslash( $_GET['range'] ) ) : '24h';
 	$key = isset( $ranges[ $key ] ) ? $key : '24h';
 
-	$totals   = bb_stats_totals( $key );
-	$before   = bb_stats_totals( $key, true );
-	$series   = bb_stats_series( $key );
-	$top      = bb_stats_top_posts( $key, 15 );
-	$sources  = bb_stats_grouped( 'source', $key );
-	$devices  = bb_stats_grouped( 'device', $key );
-	$langs    = bb_stats_grouped( 'lang', $key );
+	$totals    = bb_stats_totals( $key );
+	$before    = bb_stats_totals( $key, true );
+	$series    = bb_stats_series( $key );
+	$top       = bb_stats_top_posts( $key, 15 );
+	$sources   = bb_stats_grouped( 'source', $key );
+	$devices   = bb_stats_grouped( 'device', $key );
+	$langs     = bb_stats_grouped( 'lang', $key );
 	$hours     = bb_stats_by_hour( $key );
 	$weekdays  = bb_stats_by_weekday( $key );
 	$countries = bb_stats_grouped( 'country', $key, 12 );
@@ -587,20 +625,21 @@ function bb_stats_page() {
 	$per_visit = $totals['visits'] > 0 ? round( $totals['hits'] / $totals['visits'], 1 ) : 0;
 	?>
 	<div class="wrap bb-stats">
-		<h1><?php esc_html_e( 'Statistics', 'bichitro-biggan' ); ?></h1>
+		<h1 class="bb-stats__title"><?php esc_html_e( 'Statistics', 'bichitro-biggan' ); ?></h1>
 
 		<p class="bb-stats__lede">
 			<?php esc_html_e( 'The site\'s own count — no outside service, no account, no permission that can be withdrawn. Nothing that identifies a reader is stored, and visits by the people who run the site are left out.', 'bichitro-biggan' ); ?>
 		</p>
 
-		<h2 class="nav-tab-wrapper">
+		<nav class="bb-stats__range" aria-label="<?php esc_attr_e( 'How far back to look', 'bichitro-biggan' ); ?>">
 			<?php foreach ( $ranges as $value => $label ) : ?>
-				<a class="nav-tab <?php echo ( $value === $key ) ? 'nav-tab-active' : ''; ?>"
+				<a class="bb-stats__range-tab<?php echo ( $value === $key ) ? ' is-on' : ''; ?>"
+					<?php echo ( $value === $key ) ? 'aria-current="page"' : ''; ?>
 					href="<?php echo esc_url( admin_url( 'admin.php?page=bb-stats&range=' . rawurlencode( $value ) ) ); ?>">
 					<?php echo esc_html( $label ); ?>
 				</a>
 			<?php endforeach; ?>
-		</h2>
+		</nav>
 
 		<?php if ( ! $first ) : ?>
 			<div class="notice notice-info inline">
@@ -662,20 +701,23 @@ function bb_stats_page() {
 			</div>
 		</div>
 
-		<div class="bb-stats-panel">
-			<h2>
-				<?php echo esc_html( '24h' === $key ? __( 'Reads by the hour', 'bichitro-biggan' ) : __( 'Reads per day', 'bichitro-biggan' ) ); ?>
-			</h2>
-			<?php bb_stats_chart( $series ); ?>
-		</div>
+		<div class="bb-stats__grid">
 
-		<div class="bb-stats__columns">
-			<div class="bb-stats-panel">
-				<h2><?php esc_html_e( 'Most read', 'bichitro-biggan' ); ?></h2>
+			<?php
+			bb_stats_section_open(
+				'24h' === $key ? __( 'Reads by the hour', 'bichitro-biggan' ) : __( 'Reads per day', 'bichitro-biggan' ),
+				'',
+				true
+			);
+			bb_stats_chart( $series );
+			bb_stats_section_close();
+			?>
+
+			<?php bb_stats_section_open( __( 'Most read', 'bichitro-biggan' ), '', true ); ?>
 				<?php if ( empty( $top ) ) : ?>
 					<p class="bb-stats__empty"><?php esc_html_e( 'No article was read in this period.', 'bichitro-biggan' ); ?></p>
 				<?php else : ?>
-					<table class="widefat striped bb-stats-table">
+					<table class="bb-stats-table">
 						<thead>
 							<tr>
 								<th><?php esc_html_e( 'Article', 'bichitro-biggan' ); ?></th>
@@ -710,15 +752,20 @@ function bb_stats_page() {
 							<?php endforeach; ?>
 						</tbody>
 					</table>
-					<p class="bb-stats__hint"><?php esc_html_e( '“Read” is how far down the article a reader got on average, “Time” how long they stayed with it.', 'bichitro-biggan' ); ?></p>
+					<p class="bb-stats__foot"><?php esc_html_e( '“Read” is how far down the article a reader got on average, “Time” how long they stayed with it.', 'bichitro-biggan' ); ?></p>
 				<?php endif; ?>
+			<?php bb_stats_section_close(); ?>
 
-				<h2><?php esc_html_e( 'Climbing', 'bichitro-biggan' ); ?></h2>
-				<p class="bb-stats__hint"><?php esc_html_e( 'Read more in this period than in the one before it. Articles with only a handful of reads are left out — with small numbers every rise looks enormous.', 'bichitro-biggan' ); ?></p>
+			<?php
+			bb_stats_section_open(
+				__( 'Climbing', 'bichitro-biggan' ),
+				__( 'Read more in this period than in the one before it. Articles with only a handful of reads are left out — with small numbers every rise looks enormous.', 'bichitro-biggan' )
+			);
+			?>
 				<?php if ( empty( $trending ) ) : ?>
 					<p class="bb-stats__empty"><?php esc_html_e( 'Nothing is climbing in this period.', 'bichitro-biggan' ); ?></p>
 				<?php else : ?>
-					<table class="widefat striped bb-stats-table">
+					<table class="bb-stats-table">
 						<tbody>
 							<?php foreach ( $trending as $row ) : ?>
 								<tr>
@@ -738,9 +785,14 @@ function bb_stats_page() {
 						</tbody>
 					</table>
 				<?php endif; ?>
+			<?php bb_stats_section_close(); ?>
 
-				<h2><?php esc_html_e( 'Where visits begin', 'bichitro-biggan' ); ?></h2>
-				<p class="bb-stats__hint"><?php esc_html_e( 'The first page of a visit — where readers come in, rather than what they read next.', 'bichitro-biggan' ); ?></p>
+			<?php
+			bb_stats_section_open(
+				__( 'Where visits begin', 'bichitro-biggan' ),
+				__( 'The first page of a visit — where readers come in, rather than what they read next.', 'bichitro-biggan' )
+			);
+			?>
 				<?php if ( empty( $entries ) ) : ?>
 					<p class="bb-stats__empty"><?php esc_html_e( 'Nothing to show yet.', 'bichitro-biggan' ); ?></p>
 				<?php else : ?>
@@ -753,25 +805,35 @@ function bb_stats_page() {
 						?>
 					</ul>
 				<?php endif; ?>
+			<?php bb_stats_section_close(); ?>
 
-				<h2><?php esc_html_e( 'When they read', 'bichitro-biggan' ); ?></h2>
-				<p class="bb-stats__hint"><?php esc_html_e( 'Reads by hour of the day across this whole period, on the site\'s own clock.', 'bichitro-biggan' ); ?></p>
-				<?php bb_stats_hour_pattern( $hours ); ?>
+			<?php
+			bb_stats_section_open(
+				__( 'When they read', 'bichitro-biggan' ),
+				__( 'Reads by hour of the day across this whole period, on the site\'s own clock.', 'bichitro-biggan' ),
+				true
+			);
+			bb_stats_hour_pattern( $hours );
+			bb_stats_section_close();
+			?>
 
-				<h2><?php esc_html_e( 'Which day', 'bichitro-biggan' ); ?></h2>
-				<p class="bb-stats__hint"><?php esc_html_e( 'The days of the week readers turn up on — worth knowing before deciding when to publish.', 'bichitro-biggan' ); ?></p>
-				<?php
-				$weekday_names = array(
-					__( 'Sunday', 'bichitro-biggan' ),
-					__( 'Monday', 'bichitro-biggan' ),
-					__( 'Tuesday', 'bichitro-biggan' ),
-					__( 'Wednesday', 'bichitro-biggan' ),
-					__( 'Thursday', 'bichitro-biggan' ),
-					__( 'Friday', 'bichitro-biggan' ),
-					__( 'Saturday', 'bichitro-biggan' ),
-				);
-				$weekday_top   = max( 1, max( $weekdays ) );
-				?>
+			<?php
+			bb_stats_section_open(
+				__( 'Which day', 'bichitro-biggan' ),
+				__( 'The days of the week readers turn up on — worth knowing before deciding when to publish.', 'bichitro-biggan' )
+			);
+
+			$weekday_names = array(
+				__( 'Sunday', 'bichitro-biggan' ),
+				__( 'Monday', 'bichitro-biggan' ),
+				__( 'Tuesday', 'bichitro-biggan' ),
+				__( 'Wednesday', 'bichitro-biggan' ),
+				__( 'Thursday', 'bichitro-biggan' ),
+				__( 'Friday', 'bichitro-biggan' ),
+				__( 'Saturday', 'bichitro-biggan' ),
+			);
+			$weekday_top   = max( 1, max( $weekdays ) );
+			?>
 				<ul class="bb-stats-bars">
 					<?php
 					foreach ( $weekdays as $index => $value ) {
@@ -779,17 +841,200 @@ function bb_stats_page() {
 					}
 					?>
 				</ul>
+			<?php bb_stats_section_close(); ?>
 
-				<h2><?php esc_html_e( 'How far they read', 'bichitro-biggan' ); ?></h2>
-				<p class="bb-stats__hint"><?php esc_html_e( 'Measured as a reader leaves an article — a view says it was opened, this says it was read.', 'bichitro-biggan' ); ?></p>
-				<?php bb_stats_depth_bars( $depth ); ?>
+			<?php
+			bb_stats_section_open(
+				__( 'How far they read', 'bichitro-biggan' ),
+				__( 'Measured as a reader leaves an article — a view says it was opened, this says it was read.', 'bichitro-biggan' )
+			);
+			bb_stats_depth_bars( $depth );
+			bb_stats_section_close();
+			?>
 
-				<h2><?php esc_html_e( 'Addresses that led nowhere', 'bichitro-biggan' ); ?></h2>
-				<p class="bb-stats__hint"><?php esc_html_e( 'Pages readers asked for and did not get — a broken link somewhere, and the one thing here you can actually fix. Scanners poking at /graphql and the like are left out.', 'bichitro-biggan' ); ?></p>
+			<?php bb_stats_section_open( __( 'Where readers come from', 'bichitro-biggan' ) ); ?>
+				<?php if ( empty( $sources ) ) : ?>
+					<p class="bb-stats__empty"><?php esc_html_e( 'Nothing to show yet.', 'bichitro-biggan' ); ?></p>
+				<?php else : ?>
+					<ul class="bb-stats-bars">
+						<?php
+						$max = (int) $sources[0]['hits'];
+						foreach ( $sources as $row ) {
+							bb_stats_bar( bb_stats_source_label( $row['label'] ), $row['hits'], $max, $totals['hits'] );
+						}
+						?>
+					</ul>
+				<?php endif; ?>
+			<?php bb_stats_section_close(); ?>
+
+			<?php
+			bb_stats_section_open(
+				__( 'Where in the world', 'bichitro-biggan' ),
+				__( 'From the browser\'s own time zone, never from an address — nothing is sent anywhere to work this out.', 'bichitro-biggan' )
+			);
+			?>
+				<?php if ( empty( $countries ) ) : ?>
+					<p class="bb-stats__empty"><?php esc_html_e( 'Nothing to show yet.', 'bichitro-biggan' ); ?></p>
+				<?php else : ?>
+					<ul class="bb-stats-bars">
+						<?php
+						$max = (int) $countries[0]['hits'];
+						foreach ( $countries as $row ) {
+							bb_stats_bar( bb_stats_country_label( $row['label'] ), $row['hits'], $max, $totals['hits'] );
+						}
+						?>
+					</ul>
+				<?php endif; ?>
+			<?php bb_stats_section_close(); ?>
+
+			<?php bb_stats_section_open( __( 'What they read on', 'bichitro-biggan' ) ); ?>
+				<?php if ( empty( $devices ) ) : ?>
+					<p class="bb-stats__empty"><?php esc_html_e( 'Nothing to show yet.', 'bichitro-biggan' ); ?></p>
+				<?php else : ?>
+					<ul class="bb-stats-bars">
+						<?php
+						$max = (int) $devices[0]['hits'];
+						foreach ( $devices as $row ) {
+							bb_stats_bar( bb_stats_plain_label( $row['label'] ), $row['hits'], $max, $totals['hits'] );
+						}
+						?>
+					</ul>
+				<?php endif; ?>
+			<?php bb_stats_section_close(); ?>
+
+			<?php bb_stats_section_open( __( 'Which edition', 'bichitro-biggan' ) ); ?>
+				<?php if ( empty( $langs ) ) : ?>
+					<p class="bb-stats__empty"><?php esc_html_e( 'Nothing to show yet.', 'bichitro-biggan' ); ?></p>
+				<?php else : ?>
+					<ul class="bb-stats-bars">
+						<?php
+						$max = (int) $langs[0]['hits'];
+						foreach ( $langs as $row ) {
+							bb_stats_bar( bb_stats_plain_label( $row['label'] ), $row['hits'], $max, $totals['hits'] );
+						}
+						?>
+					</ul>
+				<?php endif; ?>
+			<?php bb_stats_section_close(); ?>
+
+			<?php
+			bb_stats_section_open(
+				__( 'Searches that found nothing', 'bichitro-biggan' ),
+				__( 'Readers came wanting these and the site did not have them. The best list there is of what to write next.', 'bichitro-biggan' )
+			);
+			?>
+				<?php if ( empty( $missed ) ) : ?>
+					<p class="bb-stats__empty"><?php esc_html_e( 'Every search so far has found something.', 'bichitro-biggan' ); ?></p>
+				<?php else : ?>
+					<table class="bb-stats-table">
+						<tbody>
+							<?php foreach ( $missed as $row ) : ?>
+								<tr>
+									<td>
+										<?php echo esc_html( $row['term'] ); ?>
+										<?php if ( 'en' === $row['lang'] ) : ?>
+											<span class="bb-stats-tag">EN</span>
+										<?php endif; ?>
+									</td>
+									<td class="bb-stats-table__num"><?php echo esc_html( bb_stats_number( $row['miss'] ) ); ?></td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				<?php endif; ?>
+			<?php bb_stats_section_close(); ?>
+
+			<?php
+			bb_stats_section_open(
+				__( 'What they searched for', 'bichitro-biggan' ),
+				__( 'Typed into the site\'s own search box — all time, most asked first.', 'bichitro-biggan' )
+			);
+			?>
+				<?php if ( empty( $searches ) ) : ?>
+					<p class="bb-stats__empty"><?php esc_html_e( 'Nobody has searched yet.', 'bichitro-biggan' ); ?></p>
+				<?php else : ?>
+					<table class="bb-stats-table">
+						<tbody>
+							<?php foreach ( $searches as $row ) : ?>
+								<tr>
+									<td>
+										<?php echo esc_html( $row['term'] ); ?>
+										<?php if ( 'en' === $row['lang'] ) : ?>
+											<span class="bb-stats-tag">EN</span>
+										<?php endif; ?>
+									</td>
+									<td class="bb-stats-table__num"><?php echo esc_html( bb_stats_number( $row['hits'] ) ); ?></td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				<?php endif; ?>
+			<?php bb_stats_section_close(); ?>
+
+			<?php
+			bb_stats_section_open(
+				__( 'Links they followed out', 'bichitro-biggan' ),
+				__( 'Sources and other links inside articles that readers actually clicked.', 'bichitro-biggan' )
+			);
+			?>
+				<?php if ( empty( $outbound ) ) : ?>
+					<p class="bb-stats__empty"><?php esc_html_e( 'No link out of an article has been followed yet.', 'bichitro-biggan' ); ?></p>
+				<?php else : ?>
+					<ul class="bb-stats-bars">
+						<?php
+						$max   = (int) $outbound[0]['hits'];
+						$total = array_sum( wp_list_pluck( $outbound, 'hits' ) );
+						foreach ( $outbound as $row ) {
+							bb_stats_bar( $row['label'], $row['hits'], $max, $total );
+						}
+						?>
+					</ul>
+				<?php endif; ?>
+			<?php bb_stats_section_close(); ?>
+
+			<?php bb_stats_section_open( __( 'How they shared it', 'bichitro-biggan' ) ); ?>
+				<?php if ( empty( $shares ) ) : ?>
+					<p class="bb-stats__empty"><?php esc_html_e( 'Nothing has been shared from the buttons yet.', 'bichitro-biggan' ); ?></p>
+				<?php else : ?>
+					<ul class="bb-stats-bars">
+						<?php
+						$max   = (int) $shares[0]['hits'];
+						$total = array_sum( wp_list_pluck( $shares, 'hits' ) );
+						foreach ( $shares as $row ) {
+							bb_stats_bar( bb_stats_source_label( $row['label'] ), $row['hits'], $max, $total );
+						}
+						?>
+					</ul>
+				<?php endif; ?>
+			<?php bb_stats_section_close(); ?>
+
+			<?php bb_stats_section_open( __( 'Saved to read later', 'bichitro-biggan' ) ); ?>
+				<?php if ( empty( $saves ) ) : ?>
+					<p class="bb-stats__empty"><?php esc_html_e( 'Nobody has saved an article in this period.', 'bichitro-biggan' ); ?></p>
+				<?php else : ?>
+					<ul class="bb-stats-bars">
+						<?php
+						$max   = (int) $saves[0]['hits'];
+						$total = array_sum( wp_list_pluck( $saves, 'hits' ) );
+						foreach ( $saves as $row ) {
+							bb_stats_bar( bb_stats_page_name( $row['post_id'] ), $row['hits'], $max, $total );
+						}
+						?>
+					</ul>
+				<?php endif; ?>
+			<?php bb_stats_section_close(); ?>
+
+			<?php
+			bb_stats_section_open(
+				__( 'Addresses that led nowhere', 'bichitro-biggan' ),
+				__( 'Pages readers asked for and did not get — a broken link somewhere, and the one thing here you can actually fix. Scanners poking at /graphql and the like are left out.', 'bichitro-biggan' ),
+				true
+			);
+			?>
 				<?php if ( empty( $missing ) ) : ?>
 					<p class="bb-stats__empty"><?php esc_html_e( 'Nobody has hit a missing page. Good.', 'bichitro-biggan' ); ?></p>
 				<?php else : ?>
-					<table class="widefat striped bb-stats-table">
+					<table class="bb-stats-table">
 						<thead>
 							<tr>
 								<th><?php esc_html_e( 'Address', 'bichitro-biggan' ); ?></th>
@@ -813,208 +1058,127 @@ function bb_stats_page() {
 						<button type="submit" name="bb_stats_clear_404" value="1" class="button button-secondary">
 							<?php esc_html_e( 'Empty this list', 'bichitro-biggan' ); ?>
 						</button>
-						<span class="bb-stats__hint"><?php esc_html_e( 'Once the broken links are fixed, clear it and see what turns up next.', 'bichitro-biggan' ); ?></span>
+						<span class="bb-stats__foot"><?php esc_html_e( 'Once the broken links are fixed, clear it and see what turns up next.', 'bichitro-biggan' ); ?></span>
 					</form>
 				<?php endif; ?>
-			</div>
+			<?php bb_stats_section_close(); ?>
 
-			<div class="bb-stats-panel">
-				<h2><?php esc_html_e( 'Where readers come from', 'bichitro-biggan' ); ?></h2>
-				<?php if ( empty( $sources ) ) : ?>
-					<p class="bb-stats__empty"><?php esc_html_e( 'Nothing to show yet.', 'bichitro-biggan' ); ?></p>
-				<?php else : ?>
-					<ul class="bb-stats-bars">
-						<?php
-						$max = (int) $sources[0]['hits'];
-						foreach ( $sources as $row ) {
-							bb_stats_bar( bb_stats_source_label( $row['label'] ), $row['hits'], $max, $totals['hits'] );
-						}
-						?>
-					</ul>
-				<?php endif; ?>
-
-				<h2><?php esc_html_e( 'Where in the world', 'bichitro-biggan' ); ?></h2>
-				<p class="bb-stats__hint"><?php esc_html_e( 'From the browser\'s own time zone, never from an address — nothing is sent anywhere to work this out.', 'bichitro-biggan' ); ?></p>
-				<?php if ( empty( $countries ) ) : ?>
-					<p class="bb-stats__empty"><?php esc_html_e( 'Nothing to show yet.', 'bichitro-biggan' ); ?></p>
-				<?php else : ?>
-					<ul class="bb-stats-bars">
-						<?php
-						$max = (int) $countries[0]['hits'];
-						foreach ( $countries as $row ) {
-							bb_stats_bar( bb_stats_country_label( $row['label'] ), $row['hits'], $max, $totals['hits'] );
-						}
-						?>
-					</ul>
-				<?php endif; ?>
-
-				<h2><?php esc_html_e( 'What they read on', 'bichitro-biggan' ); ?></h2>
-				<ul class="bb-stats-bars">
-					<?php
-					$max = ! empty( $devices ) ? (int) $devices[0]['hits'] : 0;
-					foreach ( $devices as $row ) {
-						bb_stats_bar( bb_stats_plain_label( $row['label'] ), $row['hits'], $max, $totals['hits'] );
-					}
-					?>
-				</ul>
-
-				<h2><?php esc_html_e( 'Which edition', 'bichitro-biggan' ); ?></h2>
-				<ul class="bb-stats-bars">
-					<?php
-					$max = ! empty( $langs ) ? (int) $langs[0]['hits'] : 0;
-					foreach ( $langs as $row ) {
-						bb_stats_bar( bb_stats_plain_label( $row['label'] ), $row['hits'], $max, $totals['hits'] );
-					}
-					?>
-				</ul>
-
-				<h2><?php esc_html_e( 'Searches that found nothing', 'bichitro-biggan' ); ?></h2>
-				<p class="bb-stats__hint"><?php esc_html_e( 'Readers came wanting these and the site did not have them. The best list there is of what to write next.', 'bichitro-biggan' ); ?></p>
-				<?php if ( empty( $missed ) ) : ?>
-					<p class="bb-stats__empty"><?php esc_html_e( 'Every search so far has found something.', 'bichitro-biggan' ); ?></p>
-				<?php else : ?>
-					<table class="widefat striped bb-stats-table">
-						<tbody>
-							<?php foreach ( $missed as $row ) : ?>
-								<tr>
-									<td>
-										<?php echo esc_html( $row['term'] ); ?>
-										<?php if ( 'en' === $row['lang'] ) : ?>
-											<span class="bb-stats-tag">EN</span>
-										<?php endif; ?>
-									</td>
-									<td class="bb-stats-table__num"><?php echo esc_html( bb_stats_number( $row['miss'] ) ); ?></td>
-								</tr>
-							<?php endforeach; ?>
-						</tbody>
-					</table>
-				<?php endif; ?>
-
-				<h2><?php esc_html_e( 'Links they followed out', 'bichitro-biggan' ); ?></h2>
-				<p class="bb-stats__hint"><?php esc_html_e( 'Sources and other links inside articles that readers actually clicked.', 'bichitro-biggan' ); ?></p>
-				<?php if ( empty( $outbound ) ) : ?>
-					<p class="bb-stats__empty"><?php esc_html_e( 'No link out of an article has been followed yet.', 'bichitro-biggan' ); ?></p>
-				<?php else : ?>
-					<ul class="bb-stats-bars">
-						<?php
-						$max   = (int) $outbound[0]['hits'];
-						$total = array_sum( wp_list_pluck( $outbound, 'hits' ) );
-						foreach ( $outbound as $row ) {
-							bb_stats_bar( $row['label'], $row['hits'], $max, $total );
-						}
-						?>
-					</ul>
-				<?php endif; ?>
-
-				<h2><?php esc_html_e( 'How they shared it', 'bichitro-biggan' ); ?></h2>
-				<?php if ( empty( $shares ) ) : ?>
-					<p class="bb-stats__empty"><?php esc_html_e( 'Nothing has been shared from the buttons yet.', 'bichitro-biggan' ); ?></p>
-				<?php else : ?>
-					<ul class="bb-stats-bars">
-						<?php
-						$max   = (int) $shares[0]['hits'];
-						$total = array_sum( wp_list_pluck( $shares, 'hits' ) );
-						foreach ( $shares as $row ) {
-							bb_stats_bar( bb_stats_source_label( $row['label'] ), $row['hits'], $max, $total );
-						}
-						?>
-					</ul>
-				<?php endif; ?>
-
-				<h2><?php esc_html_e( 'Saved to read later', 'bichitro-biggan' ); ?></h2>
-				<?php if ( empty( $saves ) ) : ?>
-					<p class="bb-stats__empty"><?php esc_html_e( 'Nobody has saved an article in this period.', 'bichitro-biggan' ); ?></p>
-				<?php else : ?>
-					<ul class="bb-stats-bars">
-						<?php
-						$max   = (int) $saves[0]['hits'];
-						$total = array_sum( wp_list_pluck( $saves, 'hits' ) );
-						foreach ( $saves as $row ) {
-							bb_stats_bar( bb_stats_page_name( $row['post_id'] ), $row['hits'], $max, $total );
-						}
-						?>
-					</ul>
-				<?php endif; ?>
-
-				<h2><?php esc_html_e( 'What they searched for', 'bichitro-biggan' ); ?></h2>
-				<p class="bb-stats__hint"><?php esc_html_e( 'Typed into the site\'s own search box — all time, most asked first.', 'bichitro-biggan' ); ?></p>
-				<?php if ( empty( $searches ) ) : ?>
-					<p class="bb-stats__empty"><?php esc_html_e( 'Nobody has searched yet.', 'bichitro-biggan' ); ?></p>
-				<?php else : ?>
-					<table class="widefat striped bb-stats-table">
-						<tbody>
-							<?php foreach ( $searches as $row ) : ?>
-								<tr>
-									<td>
-										<?php echo esc_html( $row['term'] ); ?>
-										<?php if ( 'en' === $row['lang'] ) : ?>
-											<span class="bb-stats-tag">EN</span>
-										<?php endif; ?>
-									</td>
-									<td class="bb-stats-table__num"><?php echo esc_html( bb_stats_number( $row['hits'] ) ); ?></td>
-								</tr>
-							<?php endforeach; ?>
-						</tbody>
-					</table>
-				<?php endif; ?>
-			</div>
 		</div>
 	</div>
 
 	<style>
-		.bb-stats__lede { max-width: 820px; color: #50575e; }
-		.bb-stats__hint { color: #646970; margin: -6px 0 10px; font-size: 12px; }
-		.bb-stats__cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin: 20px 0; }
-		.bb-stats-card { background: #fff; border: 1px solid #dcdcde; border-radius: 8px; padding: 16px 18px; }
-		.bb-stats-card--now { border-color: #b7e3c0; background: #f4fbf5; }
-		.bb-stats-card__label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #646970; }
-		.bb-stats-card__value { display: block; font-size: 30px; line-height: 1.2; margin: 6px 0 2px; color: #1d2327; }
-		.bb-stats-card__value--small { font-size: 17px; }
-		.bb-stats-card__note { font-size: 12px; color: #646970; }
-		.bb-stats-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #00a32a; margin-right: 5px; vertical-align: 1px; }
-		.bb-stats-change { display: block; font-size: 12px; color: #646970; }
-		.bb-stats-change--up { color: #00733c; }
-		.bb-stats-change--down { color: #b32d2e; }
-		.bb-stats-change small { color: #646970; font-size: 11px; }
-		.bb-stats-panel { background: #fff; border: 1px solid #dcdcde; border-radius: 8px; padding: 6px 20px 18px; margin: 0 0 20px; }
-		.bb-stats-panel h2 { font-size: 15px; }
-		.bb-stats__columns { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: start; }
-		@media (max-width: 1100px) { .bb-stats__columns { grid-template-columns: 1fr; } }
-		.bb-stats-chart { position: relative; padding: 6px 0 22px 46px; }
+		/* The screen's own palette, so a colour is named once and not guessed at
+		   again fifteen declarations later. */
+		.bb-stats {
+			--bb-ink: #0f1419;
+			--bb-body: #3c434a;
+			--bb-mute: #6a7581;
+			--bb-line: #e3e6ea;
+			--bb-hair: #eef0f3;
+			--bb-soft: #f7f9fb;
+			--bb-accent: #0080ff;
+			--bb-accent-soft: #e9f3ff;
+			--bb-up: #0a7c42;
+			--bb-up-soft: #e8f7ee;
+			--bb-down: #b83b36;
+			--bb-down-soft: #fdeceb;
+			--bb-round: 14px;
+			--bb-shadow: 0 1px 2px rgba(15,20,25,.05), 0 10px 26px -20px rgba(15,20,25,.45);
+		}
+
+		.bb-stats .bb-stats__title { font-size: 23px; font-weight: 600; letter-spacing: -.01em; color: var(--bb-ink); margin: 0 0 4px; padding: 0; }
+		.bb-stats__lede { max-width: 820px; margin: 0 0 16px; color: var(--bb-mute); font-size: 13px; line-height: 1.6; }
+
+		/* One control, five settings — a segmented switch rather than five tabs
+		   welded to the top of a box that is no longer there. */
+		.bb-stats__range { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; margin: 0 0 22px; background: #eef0f3; border-radius: 999px; }
+		.bb-stats__range-tab { padding: 6px 15px; border-radius: 999px; font-size: 13px; line-height: 1.4; color: var(--bb-mute); text-decoration: none; transition: background .15s, color .15s; }
+		.bb-stats__range-tab:hover { color: var(--bb-ink); }
+		.bb-stats__range-tab:focus { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--bb-accent); outline: 0; }
+		.bb-stats__range-tab.is-on { background: #fff; color: var(--bb-ink); font-weight: 600; box-shadow: 0 1px 2px rgba(15,20,25,.12); }
+
+		.bb-stats__cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; margin: 0 0 20px; }
+		.bb-stats-card { background: #fff; border: 1px solid var(--bb-line); border-radius: var(--bb-round); box-shadow: var(--bb-shadow); padding: 16px 18px 17px; }
+		.bb-stats-card--now { border-color: #bfe6cb; background: linear-gradient(180deg, #f3fbf6 0%, #fff 60%); }
+		.bb-stats-card__label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--bb-mute); }
+		.bb-stats-card__value { display: block; font-size: 32px; font-weight: 600; line-height: 1.15; letter-spacing: -.02em; margin: 8px 0 6px; color: var(--bb-ink); font-variant-numeric: tabular-nums; }
+		.bb-stats-card__value--small { font-size: 17px; font-weight: 600; letter-spacing: 0; }
+		.bb-stats-card__note { display: block; font-size: 12px; line-height: 1.5; color: var(--bb-mute); }
+		.bb-stats-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #00a32a; margin-right: 6px; vertical-align: 1px; box-shadow: 0 0 0 3px rgba(0,163,42,.15); }
+
+		/* The rise or fall, as a chip rather than a line of text. */
+		.bb-stats-change { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 999px; background: #f0f2f4; color: var(--bb-mute); font-size: 11px; font-weight: 600; line-height: 1.7; white-space: nowrap; font-variant-numeric: tabular-nums; }
+		.bb-stats-change--up { background: var(--bb-up-soft); color: var(--bb-up); }
+		.bb-stats-change--down { background: var(--bb-down-soft); color: var(--bb-down); }
+		.bb-stats-card__against { display: block; margin-top: 6px; font-size: 11px; color: var(--bb-mute); }
+
+		/* Each section is a card of its own, and a card is two columns wide when
+		   what is inside it needs the room. */
+		.bb-stats__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
+		.bb-stats-section { background: #fff; border: 1px solid var(--bb-line); border-radius: var(--bb-round); box-shadow: var(--bb-shadow); padding: 18px 20px 20px; min-width: 0; }
+		.bb-stats-section--wide { grid-column: 1 / -1; }
+		@media (max-width: 1100px) { .bb-stats__grid { grid-template-columns: 1fr; } }
+
+		.bb-stats-section__head { margin: 0 0 14px; }
+		.bb-stats .bb-stats-section__title { margin: 0; padding: 0; font-size: 15px; font-weight: 600; line-height: 1.3; color: var(--bb-ink); }
+		.bb-stats-section__hint { margin: 5px 0 0; font-size: 12px; line-height: 1.55; color: var(--bb-mute); }
+		.bb-stats-section__body > :first-child { margin-top: 0; }
+		.bb-stats-section__body > :last-child { margin-bottom: 0; }
+
+		/* A note that belongs under a thing rather than over it — the old one had
+		   a negative top margin, which glued it to the table above. */
+		.bb-stats__foot { margin: 12px 0 0; font-size: 12px; line-height: 1.55; color: var(--bb-mute); }
+		.bb-stats__empty { margin: 0; color: var(--bb-mute); font-size: 13px; }
+
+		.bb-stats-chart { position: relative; padding: 4px 0 22px 46px; }
 		.bb-stats-chart__plot { position: relative; height: 180px; }
 		.bb-stats-chart__plot svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-		.bb-stats-chart__scale { position: absolute; top: 6px; left: 0; width: 40px; height: 180px; }
-		.bb-stats-chart__scale span { position: absolute; right: 0; transform: translateY(-50%); font-size: 11px; color: #646970; white-space: nowrap; }
-		.bb-stats-chart__labels { position: relative; height: 18px; margin-top: 6px; }
-		.bb-stats-chart__labels span { position: absolute; transform: translateX(-50%); font-size: 11px; color: #646970; white-space: nowrap; }
-		.bb-stats-chart__guide { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px dashed #8c8f94; pointer-events: none; }
-		.bb-stats-chart__dot { position: absolute; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 50%; background: #0080ff; box-shadow: 0 0 0 2px #fff; pointer-events: none; }
-		.bb-stats-chart__tip { position: absolute; z-index: 5; background: #fff; border: 1px solid #dcdcde; border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,.12); padding: 7px 11px; pointer-events: none; white-space: nowrap; }
-		.bb-stats-chart__tip-label { display: block; font-size: 11px; color: #646970; }
-		.bb-stats-chart__tip-value { display: block; font-size: 17px; line-height: 1.2; color: #1d2327; }
-		.bb-stats-chart__tip-when { display: block; font-size: 11px; color: #646970; }
+		.bb-stats-chart__scale { position: absolute; top: 4px; left: 0; width: 40px; height: 180px; }
+		.bb-stats-chart__scale span { position: absolute; right: 0; transform: translateY(-50%); font-size: 11px; color: var(--bb-mute); white-space: nowrap; font-variant-numeric: tabular-nums; }
+		.bb-stats-chart__labels { position: relative; height: 18px; margin-top: 8px; }
+		.bb-stats-chart__labels span { position: absolute; transform: translateX(-50%); font-size: 11px; color: var(--bb-mute); white-space: nowrap; }
+		.bb-stats-chart__guide { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px dashed #b5bbc2; pointer-events: none; }
+		.bb-stats-chart__dot { position: absolute; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 50%; background: var(--bb-accent); box-shadow: 0 0 0 3px #fff, 0 0 0 5px rgba(0,128,255,.2); pointer-events: none; }
+		.bb-stats-chart__tip { position: absolute; z-index: 5; background: var(--bb-ink); border-radius: 10px; box-shadow: 0 8px 24px rgba(15,20,25,.22); padding: 8px 12px; pointer-events: none; white-space: nowrap; }
+		.bb-stats-chart__tip-label { display: block; font-size: 11px; color: #a7b0b9; }
+		.bb-stats-chart__tip-value { display: block; font-size: 17px; font-weight: 600; line-height: 1.3; color: #fff; font-variant-numeric: tabular-nums; }
+		.bb-stats-chart__tip-when { display: block; font-size: 11px; color: #a7b0b9; }
 		@media (max-width: 782px) { .bb-stats-chart__plot { height: 150px; } .bb-stats-chart__scale { height: 150px; } }
-		.bb-stats-hours { display: flex; align-items: flex-end; gap: 3px; height: 110px; margin: 0 0 24px; }
+
+		.bb-stats-hours { display: flex; align-items: flex-end; gap: 4px; height: 120px; margin: 0 0 22px; }
 		.bb-stats-hours__col { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; position: relative; }
-		.bb-stats-hours__bar { display: block; width: 100%; background: #0080ff; border-radius: 3px 3px 0 0; opacity: .85; }
-		.bb-stats-hours__col:hover .bb-stats-hours__bar { opacity: 1; }
-		.bb-stats-hours__tick { position: absolute; bottom: -16px; font-size: 10px; color: #646970; white-space: nowrap; }
-		/* WordPress's own table styles align every th left, and .widefat thead th
-		   outweighs a single class — so the heading and the figures under it have to
-		   be claimed together, by a selector heavy enough to win. */
-		.bb-stats-table th.bb-stats-table__num,
-		.bb-stats-table td.bb-stats-table__num { text-align: right; width: 84px; font-variant-numeric: tabular-nums; }
-		.bb-stats-tag { background: #edf4ff; color: #0073aa; border-radius: 3px; font-size: 10px; padding: 1px 5px; margin-left: 6px; vertical-align: 1px; }
-		.bb-stats-bars { margin: 0 0 18px; }
-		.bb-stats-bar { display: grid; grid-template-columns: 1fr 120px 92px; align-items: center; gap: 10px; margin: 0 0 8px; }
-		.bb-stats-bar__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-		.bb-stats-bar__track { background: #f0f0f1; border-radius: 999px; height: 8px; overflow: hidden; }
-		.bb-stats-bar__fill { display: block; height: 8px; background: #0080ff; border-radius: 999px; }
-		.bb-stats-bar__value { text-align: right; font-variant-numeric: tabular-nums; }
-		.bb-stats-bar__value small { color: #646970; margin-left: 4px; }
-		.bb-stats__empty { color: #646970; }
-		.bb-stats-depth__average { margin: 0 0 10px; color: #1d2327; }
-		.bb-stats-table code { font-size: 12px; }
+		.bb-stats-hours__bar { display: block; width: 100%; background: linear-gradient(180deg, #4da6ff 0%, var(--bb-accent) 100%); border-radius: 4px 4px 2px 2px; transition: filter .15s; }
+		.bb-stats-hours__col:hover .bb-stats-hours__bar { filter: brightness(.9); }
+		.bb-stats-hours__tick { position: absolute; bottom: -18px; font-size: 10px; color: var(--bb-mute); white-space: nowrap; }
+
+		/* The tables are the theme's own now, not WordPress's list tables with a
+		   class fighting them — which is what pushed the figures out of line. */
+		.bb-stats-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+		.bb-stats-table th { text-align: left; padding: 0 12px 9px 0; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--bb-mute); border-bottom: 1px solid var(--bb-line); }
+		.bb-stats-table td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--bb-hair); color: var(--bb-body); vertical-align: middle; }
+		.bb-stats-table tbody tr:last-child td { border-bottom: 0; }
+		.bb-stats-table tbody tr:hover td { background: var(--bb-soft); }
+		.bb-stats-table th:last-child, .bb-stats-table td:last-child { padding-right: 0; }
+		.bb-stats-table th.bb-stats-table__num, .bb-stats-table td.bb-stats-table__num { text-align: right; width: 78px; font-variant-numeric: tabular-nums; }
+		.bb-stats-table td strong { color: var(--bb-ink); font-weight: 600; }
+		.bb-stats-table a { color: var(--bb-ink); font-weight: 500; text-decoration: none; }
+		.bb-stats-table a:hover { color: var(--bb-accent); text-decoration: underline; }
+		.bb-stats-table code { font-size: 12px; background: var(--bb-soft); border-radius: 4px; padding: 2px 6px; color: var(--bb-body); }
+		.bb-stats-tag { display: inline-block; background: var(--bb-accent-soft); color: #0067cc; border-radius: 4px; font-size: 10px; font-weight: 600; padding: 1px 5px; margin-left: 6px; vertical-align: 1px; }
+
+		.bb-stats-bars { margin: 0; padding: 0; list-style: none; }
+		.bb-stats-bar { display: grid; grid-template-columns: minmax(0, 1fr) 110px 86px; align-items: center; gap: 12px; margin: 0 0 10px; font-size: 13px; }
+		.bb-stats-bar:last-child { margin-bottom: 0; }
+		.bb-stats-bar__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--bb-body); }
+		.bb-stats-bar__track { background: #eef0f3; border-radius: 999px; height: 8px; overflow: hidden; }
+		.bb-stats-bar__fill { display: block; height: 8px; background: linear-gradient(90deg, var(--bb-accent) 0%, #5cb0ff 100%); border-radius: 999px; }
+		.bb-stats-bar__value { text-align: right; font-variant-numeric: tabular-nums; color: var(--bb-ink); font-weight: 500; }
+		.bb-stats-bar__value small { color: var(--bb-mute); font-weight: 400; margin-left: 5px; }
+		@media (max-width: 600px) { .bb-stats-bar { grid-template-columns: minmax(0, 1fr) 70px; } .bb-stats-bar__track { display: none; } }
+
+		.bb-stats-depth__average { margin: 0 0 12px; font-size: 13px; color: var(--bb-body); }
+		.bb-stats-clear { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 16px 0 0; padding-top: 14px; border-top: 1px solid var(--bb-hair); }
+		.bb-stats-clear .bb-stats__foot { margin: 0; }
 	</style>
 	<?php
 }
@@ -1047,15 +1211,15 @@ function bb_stats_dashboard_panel() {
 	?>
 	<div class="bb-dash">
 		<div class="bb-dash__figures">
-			<div>
-				<strong><?php echo esc_html( bb_stats_number( $now ) ); ?></strong>
+			<div class="bb-dash__figure">
+				<strong><span class="bb-dash__dot" aria-hidden="true"></span><?php echo esc_html( bb_stats_number( $now ) ); ?></strong>
 				<span><?php esc_html_e( 'right now', 'bichitro-biggan' ); ?></span>
 			</div>
-			<div>
+			<div class="bb-dash__figure">
 				<strong><?php echo esc_html( bb_stats_number( $totals['hits'] ) ); ?></strong>
 				<span><?php esc_html_e( 'reads today', 'bichitro-biggan' ); ?></span>
 			</div>
-			<div>
+			<div class="bb-dash__figure">
 				<strong><?php echo esc_html( bb_stats_number( $totals['visits'] ) ); ?></strong>
 				<span><?php esc_html_e( 'visits', 'bichitro-biggan' ); ?></span>
 			</div>
@@ -1064,7 +1228,7 @@ function bb_stats_dashboard_panel() {
 		<p class="bb-dash__change"><?php bb_stats_change( $totals['hits'], $before['hits'] ); ?></p>
 
 		<?php if ( ! empty( $top ) ) : ?>
-			<ol class="bb-dash__top">
+			<ul class="bb-dash__top">
 				<?php foreach ( $top as $row ) : ?>
 					<li>
 						<a href="<?php echo esc_url( get_permalink( $row['post_id'] ) ); ?>" target="_blank" rel="noopener">
@@ -1073,27 +1237,38 @@ function bb_stats_dashboard_panel() {
 						<span><?php echo esc_html( bb_stats_number( $row['hits'] ) ); ?></span>
 					</li>
 				<?php endforeach; ?>
-			</ol>
+			</ul>
 		<?php else : ?>
 			<p class="bb-dash__empty"><?php esc_html_e( 'No article has been read yet today.', 'bichitro-biggan' ); ?></p>
 		<?php endif; ?>
 
-		<p>
+		<p class="bb-dash__more">
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=bb-stats' ) ); ?>">
-				<?php esc_html_e( 'The whole picture →', 'bichitro-biggan' ); ?>
+				<?php esc_html_e( 'The whole picture', 'bichitro-biggan' ); ?> &rarr;
 			</a>
 		</p>
 	</div>
 
 	<style>
-		.bb-dash__figures { display: flex; gap: 24px; margin: 0 0 6px; }
-		.bb-dash__figures strong { display: block; font-size: 24px; line-height: 1.2; color: #1d2327; }
-		.bb-dash__figures span { font-size: 12px; color: #646970; }
-		.bb-dash__change { margin: 0 0 12px; }
-		.bb-dash__top { margin: 0 0 12px; padding-left: 18px; }
-		.bb-dash__top li { margin: 0 0 4px; }
-		.bb-dash__top span { color: #646970; float: right; }
-		.bb-dash__empty { color: #646970; }
+		.bb-dash__figures { display: flex; gap: 26px; margin: 0 0 8px; }
+		.bb-dash__figure strong { display: block; font-size: 26px; font-weight: 600; line-height: 1.15; letter-spacing: -.02em; color: #0f1419; font-variant-numeric: tabular-nums; }
+		.bb-dash__figure span { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: #6a7581; }
+		.bb-dash__dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #00a32a; margin-right: 7px; vertical-align: 4px; box-shadow: 0 0 0 3px rgba(0,163,42,.15); }
+		/* The chip has to be described here as well — the statistics screen's own
+		   stylesheet is not on the dashboard. */
+		.bb-dash .bb-stats-change { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 999px; background: #f0f2f4; color: #6a7581; font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; }
+		.bb-dash .bb-stats-change--up { background: #e8f7ee; color: #0a7c42; }
+		.bb-dash .bb-stats-change--down { background: #fdeceb; color: #b83b36; }
+		.bb-dash .bb-stats-card__against { font-size: 11px; color: #6a7581; margin-left: 6px; }
+		.bb-dash__change { margin: 0 0 14px; }
+		.bb-dash__top { margin: 0 0 12px; padding: 0; list-style: none; border-top: 1px solid #eef0f3; }
+		.bb-dash__top li { display: flex; justify-content: space-between; gap: 12px; margin: 0; padding: 8px 0; border-bottom: 1px solid #eef0f3; font-size: 13px; }
+		.bb-dash__top a { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: none; color: #0f1419; }
+		.bb-dash__top a:hover { color: #0080ff; }
+		.bb-dash__top span { color: #6a7581; font-variant-numeric: tabular-nums; }
+		.bb-dash__empty { color: #6a7581; }
+		.bb-dash__more { margin: 0; }
+		.bb-dash__more a { text-decoration: none; font-weight: 500; }
 	</style>
 	<?php
 }
