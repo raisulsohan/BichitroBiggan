@@ -235,6 +235,73 @@ function bb_webp_files_for( $id ) {
 }
 
 /**
+ * Encode one file as WebP with a named image library, or with whichever
+ * WordPress would pick.
+ *
+ * @param string $path   Source file.
+ * @param string $twin   Where the WebP goes.
+ * @param string $forced A WP_Image_Editor class name, or '' for the usual choice.
+ * @return string 'made', 'bigger' or 'failed'.
+ */
+function bb_webp_encode( $path, $twin, $forced = '' ) {
+	$only = null;
+
+	if ( '' !== $forced ) {
+		$only = function () use ( $forced ) {
+			return array( $forced );
+		};
+
+		add_filter( 'wp_image_editors', $only, 99 );
+	}
+
+	$editor = wp_get_image_editor( $path );
+	$saved  = is_wp_error( $editor ) ? $editor : null;
+
+	if ( ! is_wp_error( $editor ) ) {
+		$editor->set_quality( 80 );
+		$saved = $editor->save( $twin, 'image/webp' );
+	}
+
+	if ( $only ) {
+		remove_filter( 'wp_image_editors', $only, 99 );
+	}
+
+	if ( is_wp_error( $saved ) || empty( $saved['path'] ) || ! file_exists( $saved['path'] ) ) {
+		return 'failed';
+	}
+
+	/*
+	 * Saved is not the same as written. An encoder that cannot manage a file —
+	 * a PNG carrying transparency defeats some builds — can leave a file of
+	 * nothing behind and still report success, and because the swap trusts a
+	 * twin by finding it, that empty file went out to readers in place of the
+	 * picture. Anything that is not a real image is thrown away here.
+	 */
+	$written = (int) filesize( $saved['path'] );
+	// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- a broken file is the thing being looked for.
+	$reads = $written > 0 ? @getimagesize( $saved['path'] ) : false;
+
+	if ( $written < 1 || empty( $reads[0] ) ) {
+		wp_delete_file( $saved['path'] );
+
+		return 'failed';
+	}
+
+	/*
+	 * A WebP is not always the smaller file — a flat graphic saved as PNG can
+	 * come out heavier. Keeping it would make the page worse, and the swap
+	 * trusts a twin simply by finding it, so it must not be left lying there.
+	 */
+	if ( $written >= (int) filesize( $path ) ) {
+		wp_delete_file( $saved['path'] );
+
+		return 'bigger';
+	}
+
+	return 'made';
+}
+
+/**
  * Write the .webp beside one file.
  *
  * @param string $path Absolute path to a .jpg or .png.
@@ -262,49 +329,22 @@ function bb_webp_convert_file( $path ) {
 		return 'skipped';
 	}
 
-	$editor = wp_get_image_editor( $path );
-
-	if ( is_wp_error( $editor ) ) {
-		return 'failed';
-	}
-
-	$editor->set_quality( 80 );
-
-	$saved = $editor->save( $twin, 'image/webp' );
-
-	if ( is_wp_error( $saved ) || empty( $saved['path'] ) || ! file_exists( $saved['path'] ) ) {
-		return 'failed';
-	}
-
 	/*
-	 * Saved is not the same as written. A conversion that runs out of memory
-	 * can leave a file of nothing behind and still report success, and because
-	 * the swap trusts a twin by finding it, that empty file then went out to
-	 * readers in place of the picture. Anything that is not a real WebP is
-	 * thrown away here instead.
+	 * Whichever library WordPress prefers, then the other one. Every PNG on
+	 * this site failed at the first attempt — 46 pictures, some five hundred
+	 * files with their sizes — and an encoder that cannot manage a format is
+	 * not always the only encoder installed. Imagick and GD disagree about
+	 * PNG often enough to be worth the second try.
 	 */
-	$written = (int) filesize( $saved['path'] );
-	$reads   = $written > 0 ? @getimagesize( $saved['path'] ) : false; // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- a broken file is the thing being looked for.
+	foreach ( array( '', 'WP_Image_Editor_Imagick', 'WP_Image_Editor_GD' ) as $library ) {
+		$result = bb_webp_encode( $path, $twin, $library );
 
-	if ( $written < 1 || empty( $reads[0] ) ) {
-		wp_delete_file( $saved['path'] );
-
-		return 'failed';
+		if ( 'failed' !== $result ) {
+			return $result;
+		}
 	}
 
-	/*
-	 * A WebP is not always the smaller file — a flat graphic saved as PNG can
-	 * come out heavier. Keeping it would make the page worse, and because the
-	 * swap above trusts a twin simply by finding it, the answer is to not
-	 * leave one lying there.
-	 */
-	if ( $written >= $size ) {
-		wp_delete_file( $saved['path'] );
-
-		return 'bigger';
-	}
-
-	return 'made';
+	return 'failed';
 }
 
 /**
@@ -349,6 +389,7 @@ function bb_webp_progress() {
 			'made'   => 0,
 			'bigger' => 0,
 			'failed' => 0,
+			'ready'  => 0,
 			'seen'   => 0,
 			'bytes'  => 0,
 		)
@@ -379,6 +420,8 @@ function bb_webp_run_batch() {
 				++$progress['bigger'];
 			} elseif ( 'failed' === $result ) {
 				++$progress['failed'];
+			} elseif ( 'already' === $result ) {
+				++$progress['ready'];
 			}
 		}
 

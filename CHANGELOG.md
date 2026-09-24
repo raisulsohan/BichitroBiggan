@@ -2,6 +2,19 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.20.4
+
+- Every PNG on the site failed to convert — 46 pictures, some five hundred
+  files counting their sizes — while all 388 JPEGs went through. An encoder
+  that cannot manage a format is not always the only one installed, so a file
+  that fails is now tried again with Imagick, and then with GD. They disagree
+  about PNG often enough to be worth the second attempt. Each attempt is
+  verified as before, so a broken write is thrown away rather than served.
+- The screen explains itself on a second run. Nought files written and nought
+  megabytes lighter read like complete failure when they meant there was
+  nothing left to do, so there is now a count of the files that already had a
+  WebP beside them, and the other two figures say "this time".
+
 ## 7.20.3
 
 - A pass of the converter now stops at whichever comes first, forty pictures

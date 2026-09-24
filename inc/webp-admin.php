@@ -93,12 +93,16 @@ function bb_webp_page() {
 					?></span>
 				</div>
 				<div class="bb-webp__figure">
+					<strong id="bb-webp-ready"><?php echo esc_html( number_format_i18n( $progress['ready'] ) ); ?></strong>
+					<span><?php esc_html_e( 'already had one', 'bichitro-biggan' ); ?></span>
+				</div>
+				<div class="bb-webp__figure">
 					<strong id="bb-webp-made"><?php echo esc_html( number_format_i18n( $progress['made'] ) ); ?></strong>
-					<span><?php esc_html_e( 'files written', 'bichitro-biggan' ); ?></span>
+					<span><?php esc_html_e( 'written this time', 'bichitro-biggan' ); ?></span>
 				</div>
 				<div class="bb-webp__figure">
 					<strong id="bb-webp-saved"><?php echo esc_html( size_format( $progress['bytes'], 1 ) ); ?></strong>
-					<span><?php esc_html_e( 'lighter', 'bichitro-biggan' ); ?></span>
+					<span><?php esc_html_e( 'lighter this time', 'bichitro-biggan' ); ?></span>
 				</div>
 				<div class="bb-webp__figure">
 					<strong id="bb-webp-failed"><?php echo esc_html( number_format_i18n( $progress['failed'] ) ); ?></strong>
@@ -149,6 +153,7 @@ function bb_webp_page() {
 				function show( p ) {
 					document.getElementById( 'bb-webp-seen' ).textContent = p.seen.toLocaleString();
 					document.getElementById( 'bb-webp-made' ).textContent = p.made.toLocaleString();
+					document.getElementById( 'bb-webp-ready' ).textContent = ( p.ready || 0 ).toLocaleString();
 					document.getElementById( 'bb-webp-bigger' ).textContent = p.bigger.toLocaleString();
 					document.getElementById( 'bb-webp-failed' ).textContent = ( p.failed || 0 ).toLocaleString();
 					document.getElementById( 'bb-webp-saved' ).textContent = ( p.bytes / 1048576 ).toFixed( 1 ) + ' MB';

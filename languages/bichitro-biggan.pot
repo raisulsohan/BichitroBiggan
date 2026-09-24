@@ -2072,51 +2072,55 @@ msgid "Forces the video popup size. Auto will detect Shorts/Reels."
 msgstr ""
 
 #: inc/webp-admin.php:101
-msgid "lighter"
+msgid "written this time"
 msgstr ""
 
 #: inc/webp-admin.php:105
-msgid "could not be converted"
+msgid "lighter this time"
 msgstr ""
 
 #: inc/webp-admin.php:109
+msgid "could not be converted"
+msgstr ""
+
+#: inc/webp-admin.php:113
 msgid "left as they were"
 msgstr ""
 
-#: inc/webp-admin.php:118
-#: inc/webp-admin.php:140
+#: inc/webp-admin.php:122
+#: inc/webp-admin.php:144
 msgid "Carry on"
 msgstr ""
 
-#: inc/webp-admin.php:119
+#: inc/webp-admin.php:123
 msgid "Start converting"
 msgstr ""
 
-#: inc/webp-admin.php:121
+#: inc/webp-admin.php:125
 msgid "Stop"
 msgstr ""
 
-#: inc/webp-admin.php:122
+#: inc/webp-admin.php:126
 msgid "Start from the beginning"
 msgstr ""
 
-#: inc/webp-admin.php:127
+#: inc/webp-admin.php:131
 msgid "Leave this page open while it runs. Each pass stops after fifteen seconds so the server is never asked for too much at once — a first run takes a while, a second is quick, because a picture already done is only looked at. Closing the page stops it, and opening it again carries on from the same place."
 msgstr ""
 
-#: inc/webp-admin.php:136
+#: inc/webp-admin.php:140
 msgid "working…"
 msgstr ""
 
-#: inc/webp-admin.php:137
+#: inc/webp-admin.php:141
 msgid "stopped"
 msgstr ""
 
-#: inc/webp-admin.php:138
+#: inc/webp-admin.php:142
 msgid "finished — every picture has been looked at"
 msgstr ""
 
-#: inc/webp-admin.php:139
+#: inc/webp-admin.php:143
 msgid "the server did not answer; press Carry on to try again"
 msgstr ""
 
@@ -2152,7 +2156,7 @@ msgid "of %s pictures looked at"
 msgstr ""
 
 #: inc/webp-admin.php:97
-msgid "files written"
+msgid "already had one"
 msgstr ""
 
 #: search.php:23
