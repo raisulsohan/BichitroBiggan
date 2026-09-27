@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.22.0' );
+define( 'BB_VERSION', '7.23.0' );
 
 /**
  * The built copy of an asset, when there is one and it is not stale.
@@ -1921,6 +1921,7 @@ if ( is_admin() ) {
 	require_once get_template_directory() . '/inc/english-meta-box.php';
 	require_once get_template_directory() . '/inc/stats-admin.php';
 	require_once get_template_directory() . '/inc/webp-admin.php';
+	require_once get_template_directory() . '/inc/heartbeat.php';
 }
 
 add_action( 'wp_footer', 'bb_bookmarks_drawer' );

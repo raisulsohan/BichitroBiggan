@@ -2,6 +2,21 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.23.0
+
+- The dashboard sends far fewer background requests. The host answers 429 Too
+  Many Requests when one address sends a burst, and then shuts that address
+  out for a few minutes; an open dashboard was a steady source of such
+  requests, because every admin screen ran the Heartbeat API — a post to
+  admin-ajax.php every fifteen to sixty seconds for post locks, the "session
+  expired" prompt and autosave notices. Two or three tabs plus the publisher
+  working beside them was enough to be shut out mid-task. Heartbeat now runs
+  only in the post editor and the Customizer, where the post lock and the
+  changeset lock need it, and there at its longest allowed interval, two
+  minutes. Nothing changes for readers: the front of the site never loaded
+  Heartbeat, and the editor's own autosave runs over REST on its own clock,
+  only when something has changed.
+
 ## 7.22.0
 
 - XML-RPC is closed. The site does not use it — the publisher talks to the
