@@ -2,6 +2,14 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.25.0
+
+- The switch to the other language now sits in the floating bar beside
+  সূচিপত্র and পরে পড়ুন, on the article page and in the reading popup alike,
+  so it stays within reach the whole way down instead of scrolling away with
+  the top line. It takes the shape of the two buttons beside it, and as before
+  it is only there when the other language exists.
+
 ## 7.24.0
 
 - The visitor's address is read through Cloudflare when the site is behind

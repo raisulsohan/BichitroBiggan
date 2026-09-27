@@ -1993,9 +1993,10 @@ function bb_en_home_link() {
  * the article they were reading is worse than no button.
  *
  * @param int|null $post_id Post, or the current one.
+ * @param string   $class   Classes for the link. The floating bar passes its own.
  * @return void
  */
-function bb_post_lang_switch( $post_id = null ) {
+function bb_post_lang_switch( $post_id = null, $class = 'bb-lang-pill' ) {
 	$post_id = $post_id ? (int) $post_id : (int) get_the_ID();
 
 	if ( ! $post_id || 'post' !== get_post_type( $post_id ) ) {
@@ -2025,14 +2026,15 @@ function bb_post_lang_switch( $post_id = null ) {
 		: __( 'Read this article in Bangla', 'bichitro-biggan' );
 
 	printf(
-		'<a class="bb-lang-pill" href="%1$s" data-bb-lang-link hreflang="%2$s" lang="%2$s" rel="alternate" title="%3$s" aria-label="%3$s">'
+		'<a class="%5$s" href="%1$s" data-bb-lang-link hreflang="%2$s" lang="%2$s" rel="alternate" title="%3$s" aria-label="%3$s">'
 			. '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">'
 			. '<circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"></path>'
 			. '</svg><span>%4$s</span></a>',
 		esc_url( $url ),
 		esc_attr( $to_english ? 'en' : 'bn' ),
 		esc_attr( $title ),
-		esc_html( $label )
+		esc_html( $label ),
+		esc_attr( $class )
 	);
 }
 

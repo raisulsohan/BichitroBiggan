@@ -32,12 +32,6 @@ while ( have_posts() ) :
 			<?php if ( $bb_cat ) : ?>
 				<div class="bb-single__badge"><?php bb_badge( $bb_cat, '', true ); ?></div>
 			<?php endif; ?>
-			<?php
-			/* The same article in the other language — nothing when there is none. */
-			if ( function_exists( 'bb_post_lang_switch' ) ) {
-				bb_post_lang_switch();
-			}
-			?>
 		</div>
 
 		<h1 class="bb-single__title"><?php the_title(); ?></h1>
@@ -77,7 +71,7 @@ while ( have_posts() ) :
 
 		<?php bb_share_buttons(); ?>
 
-		<!-- Sticky Floating Actions Bar (TOC + Read Later Bookmark) -->
+		<!-- Sticky Floating Actions Bar (TOC + Read Later Bookmark + Other language) -->
 		<div class="bb-floating-bar">
 			<?php if ( ! empty( $bb_parsed['toc'] ) ) : ?>
 				<div class="bb-toc-container">
@@ -100,6 +94,13 @@ while ( have_posts() ) :
 			<?php endif; ?>
 
 			<?php bb_bookmark_btn( get_the_ID(), 'bb-floating-bookmark-btn' ); ?>
+
+			<?php
+			/* The same article in the other language, within reach the whole way down — nothing when there is none. */
+			if ( function_exists( 'bb_post_lang_switch' ) ) {
+				bb_post_lang_switch( null, 'bb-lang-pill bb-floating-lang-btn' );
+			}
+			?>
 		</div>
 
 		<div class="bb-content">

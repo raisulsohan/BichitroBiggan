@@ -3,7 +3,7 @@ Theme Name: Bichitro Biggan
 Theme URI: https://bichitrobiggan.com
 Author: Raisul Sohan
 Description: Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic WordPress theme built for a Bengali science magazine and digital publication. Custom-made and developed from scratch by Raisul Sohan, it is designed with a world-class reading experience, built-in SEO, live search, and comprehensive customizer controls.
-Version: 7.24.0
+Version: 7.25.0
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
@@ -1929,6 +1929,7 @@ a.bb-badge:hover {
 /* Sticky Floating Actions Bar (TOC + Read Later Bookmark) */
 .bb-floating-bar {
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   margin-bottom: 20px;
@@ -1981,6 +1982,35 @@ body.bb-nav-stuck .bb-floating-bar,
   background: #fef3c7;
   color: #92400e;
   border-color: #fde68a;
+}
+
+/* The other-language switch, third in the bar. The pill's own look is set
+   aside for the shape of the two buttons beside it. */
+.bb-floating-lang-btn {
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: rgba(243, 244, 246, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #1f2937;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+.bb-floating-lang-btn svg { color: #4b5563; opacity: 1; }
+.bb-floating-lang-btn:hover,
+.bb-floating-lang-btn:focus-visible {
+  background: #ffffff;
+  border-color: #e5e7eb;
+  color: #111827;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
 }
 
 
@@ -4665,6 +4695,22 @@ textarea:focus-visible,
 
 [data-theme="dark"] .bb-floating-bookmark-btn.is-bookmarked {
   background: #2e2612;
+}
+
+[data-theme="dark"] .bb-floating-lang-btn {
+  background: rgba(29, 34, 42, 0.95);
+  color: #dde1e7;
+  border: 1px solid #272d36;
+}
+
+[data-theme="dark"] .bb-floating-lang-btn:hover,
+[data-theme="dark"] .bb-floating-lang-btn:focus-visible {
+  background: #171b21;
+  color: #eceef2;
+}
+
+[data-theme="dark"] .bb-floating-lang-btn svg {
+  color: #b7bfca;
 }
 
 [data-theme="dark"] .bb-toc-toggle {
