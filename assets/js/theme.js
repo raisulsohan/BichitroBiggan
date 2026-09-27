@@ -604,6 +604,11 @@
 			}
 			stuck = shouldStick;
 
+			/* The article's floating bar (style.css) reads this from <html>:
+			   the menu is fixed inside the header, so no selector in the
+			   article can see its state. */
+			document.documentElement.classList.toggle('bb-nav-stuck', stuck);
+
 			if (stuck) {
 				spacer.style.height = nav.offsetHeight + 'px';
 				nav.classList.add('is-stuck');

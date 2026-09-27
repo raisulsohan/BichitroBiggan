@@ -2,6 +2,15 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.25.1
+
+- The floating bar now actually floats on an article's own page. Its offset
+  under the stuck menu was keyed to a body class the script never set and to
+  a sibling selector that cannot reach across from the header, so once the
+  menu stuck the bar sat behind it and vanished; only the reading popup,
+  which scrolls by itself, ever showed it. The script now marks <html> while
+  the menu is stuck, and the popup keeps its own short offset.
+
 ## 7.25.0
 
 - The switch to the other language now sits in the floating bar beside
