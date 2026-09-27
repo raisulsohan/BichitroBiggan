@@ -188,7 +188,7 @@ function bb_rest_count_depth( WP_REST_Request $request ) {
  * site's own salt and never stored.
  */
 function bb_visitor_key() {
-	$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+	$ip = bb_client_ip();
 	$ua = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
 
 	return wp_hash( $ip . '|' . $ua );

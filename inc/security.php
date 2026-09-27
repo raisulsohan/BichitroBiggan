@@ -79,7 +79,7 @@ if ( ! defined( 'BB_LOGIN_WINDOW' ) ) {
  * @return string Transient name.
  */
 function bb_login_key() {
-	$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+	$ip = bb_client_ip();
 
 	return 'bb_login_' . substr( md5( wp_hash( $ip ) ), 0, 20 );
 }

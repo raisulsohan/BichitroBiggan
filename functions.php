@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BB_VERSION', '7.23.0' );
+define( 'BB_VERSION', '7.24.0' );
 
 /**
  * The built copy of an asset, when there is one and it is not stale.
@@ -1895,6 +1895,7 @@ function bb_comment_callback( $comment, $args, $depth ) {
 
 require_once get_template_directory() . '/inc/lang.php';
 require_once get_template_directory() . '/inc/formatting.php';
+require_once get_template_directory() . '/inc/client-ip.php';
 require_once get_template_directory() . '/inc/security.php';
 require_once get_template_directory() . '/inc/images.php';
 require_once get_template_directory() . '/inc/webp-convert.php';

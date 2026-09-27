@@ -2,6 +2,19 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.24.0
+
+- The visitor's address is read through Cloudflare when the site is behind
+  it. Behind a proxy the address a request arrives from is the proxy's, and
+  the two things the theme keys on an address — the login limiter, and the
+  reader and depth counts — would lump every visitor coming through one
+  Cloudflare edge together: readers undercounted, and one password-guessing
+  bot locking the login for everybody behind that edge, editors included.
+  Cloudflare passes the real address in a header; it is believed only when
+  the connection itself comes from one of Cloudflare's published ranges,
+  since anybody can send a header. Without Cloudflare in front nothing
+  changes.
+
 ## 7.23.0
 
 - The dashboard sends far fewer background requests. The host answers 429 Too
