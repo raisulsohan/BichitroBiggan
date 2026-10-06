@@ -2,6 +2,17 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.26.0
+
+- A YouTube post saved without a featured image now gets the video's still
+  as one. The cards, the share preview and the schema all read the featured
+  image, so a video published with only its link showed the theme's
+  placeholder everywhere: on the home page, in ভিডিও and in a shared link.
+  On save, from the editor or the REST API, the largest still YouTube has is
+  brought into the library and set, with the title as its alt text. Video
+  posts already published without one get theirs once, in the background,
+  the first time the dashboard is opened after the update.
+
 ## 7.25.1
 
 - The floating bar now actually floats on an article's own page. Its offset

@@ -72,3 +72,130 @@ function bb_video_save_meta_box( $post_id ) {
 	}
 }
 add_action( 'save_post', 'bb_video_save_meta_box' );
+
+/**
+ * The YouTube ID of a post's video, or '' when it has none.
+ *
+ * @param int|WP_Post $post Post ID or object.
+ * @return string
+ */
+function bb_get_post_youtube_id( $post = null ) {
+	$url = bb_get_post_video_url( $post );
+
+	if ( $url && preg_match( '~youtube(?:-nocookie)?\.com/embed/([A-Za-z0-9_-]{11})~i', $url, $m ) ) {
+		return $m[1];
+	}
+
+	return '';
+}
+
+/**
+ * Bring a YouTube video's still into the library as the post's featured image.
+ *
+ * Every card, the share preview and the schema read the featured image, so a
+ * video posted with only its link showed the placeholder everywhere. The
+ * largest still comes first; hqdefault is letterboxed but every video has one.
+ *
+ * @param int    $post_id  Post to give the image to.
+ * @param string $video_id YouTube video ID.
+ * @return bool Whether a featured image was set.
+ */
+function bb_video_sideload_thumbnail( $post_id, $video_id ) {
+	require_once ABSPATH . 'wp-admin/includes/media.php';
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+
+	$slug  = (string) get_post_field( 'post_name', $post_id );
+	$name  = preg_match( '/^[a-z0-9-]+$/', $slug ) ? $slug : 'video-' . $video_id;
+	$title = get_the_title( $post_id );
+
+	foreach ( array( 'maxresdefault', 'hq720', 'hqdefault' ) as $still ) {
+		$tmp = download_url( 'https://i.ytimg.com/vi/' . $video_id . '/' . $still . '.jpg', 15 );
+
+		if ( is_wp_error( $tmp ) ) {
+			continue;
+		}
+
+		$file          = array(
+			'name'     => $name . '.jpg',
+			'tmp_name' => $tmp,
+		);
+		$attachment_id = media_handle_sideload( $file, $post_id, $title );
+
+		if ( is_wp_error( $attachment_id ) ) {
+			wp_delete_file( $tmp );
+			return false;
+		}
+
+		update_post_meta( $attachment_id, '_wp_attachment_image_alt', wp_strip_all_tags( $title ) );
+
+		return (bool) set_post_thumbnail( $post_id, $attachment_id );
+	}
+
+	return false;
+}
+
+/**
+ * A YouTube post saved without a featured image gets the video's still.
+ *
+ * wp_after_insert_post fires once the meta is saved, from the editor and from
+ * the REST API alike, so a link in the content or the Video URL field counts.
+ *
+ * @param int     $post_id Post ID.
+ * @param WP_Post $post    Post object.
+ */
+function bb_video_auto_thumbnail( $post_id, $post ) {
+	if ( 'post' !== $post->post_type || wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+		return;
+	}
+	if ( in_array( $post->post_status, array( 'auto-draft', 'trash' ), true ) || has_post_thumbnail( $post_id ) ) {
+		return;
+	}
+
+	$video_id = bb_get_post_youtube_id( $post );
+
+	if ( '' !== $video_id ) {
+		bb_video_sideload_thumbnail( $post_id, $video_id );
+	}
+}
+add_action( 'wp_after_insert_post', 'bb_video_auto_thumbnail', 10, 2 );
+
+/**
+ * Video posts published before this existed get their still once, in the
+ * background, the first time someone opens the dashboard.
+ */
+function bb_video_thumbnail_backfill() {
+	$ids = get_posts( array(
+		'post_type'      => 'post',
+		'post_status'    => array( 'publish', 'future' ),
+		'posts_per_page' => 200,
+		'fields'         => 'ids',
+		'no_found_rows'  => true,
+		'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+			array(
+				'key'     => '_thumbnail_id',
+				'compare' => 'NOT EXISTS',
+			),
+		),
+	) );
+
+	foreach ( $ids as $id ) {
+		$video_id = bb_get_post_youtube_id( $id );
+
+		if ( '' !== $video_id ) {
+			bb_video_sideload_thumbnail( $id, $video_id );
+		}
+	}
+
+	update_option( 'bb_video_thumbs_backfilled', 1, false );
+}
+add_action( 'bb_video_thumbnail_backfill', 'bb_video_thumbnail_backfill' );
+
+function bb_video_schedule_backfill() {
+	if ( get_option( 'bb_video_thumbs_backfilled' ) || wp_next_scheduled( 'bb_video_thumbnail_backfill' ) ) {
+		return;
+	}
+
+	wp_schedule_single_event( time(), 'bb_video_thumbnail_backfill' );
+}
+add_action( 'admin_init', 'bb_video_schedule_backfill' );
