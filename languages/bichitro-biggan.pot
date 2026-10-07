@@ -84,8 +84,8 @@ msgstr ""
 
 #: footer.php:111
 #: footer.php:111
-#: header.php:61
-#: header.php:61
+#: header.php:62
+#: header.php:62
 msgid "ইমেইল কপি করুন"
 msgstr ""
 
@@ -98,8 +98,8 @@ msgid "ডেভেলপার"
 msgstr ""
 
 #: footer.php:157
-#: header.php:144
-#: header.php:144
+#: header.php:146
+#: header.php:146
 #: searchform.php:14
 #: searchform.php:23
 msgid "খুঁজুন"
@@ -226,7 +226,7 @@ msgid "এই সময়ের কোনো লেখা পাওয়া যা�
 msgstr ""
 
 #: functions.php:170
-#: header.php:114
+#: header.php:115
 msgid "প্রধান মেন্যু"
 msgstr ""
 
@@ -294,7 +294,7 @@ msgid "শেয়ার করুন"
 msgstr ""
 
 #: functions.php:236
-#: header.php:238
+#: header.php:240
 msgid "খবরের স্ক্রল থামান"
 msgstr ""
 
@@ -303,8 +303,8 @@ msgid "খবরের স্ক্রল চালু করুন"
 msgstr ""
 
 #: functions.php:238
-#: header.php:58
-#: header.php:126
+#: header.php:59
+#: header.php:128
 msgid "ডার্ক মোড চালু করুন"
 msgstr ""
 
@@ -477,28 +477,34 @@ msgstr ""
 msgid "ব্যাজ ও সেকশন হেডিং-এ এই রঙ ব্যবহার হবে।"
 msgstr ""
 
-#: header.php:149
-#: header.php:185
+#: header.php:100
+#: header.php:139
+#: header.php:139
+msgid "ইউটিউব চ্যানেল"
+msgstr ""
+
+#: header.php:151
+#: header.php:187
 msgid "মেন্যু"
 msgstr ""
 
-#: header.php:157
+#: header.php:159
 msgid "আগের বিভাগগুলো"
 msgstr ""
 
-#: header.php:175
+#: header.php:177
 msgid "পরের বিভাগগুলো"
 msgstr ""
 
-#: header.php:217
+#: header.php:219
 msgid "নতুন লেখা"
 msgstr ""
 
-#: header.php:236
+#: header.php:238
 msgid "আগের লেখা"
 msgstr ""
 
-#: header.php:237
+#: header.php:239
 msgid "পরের লেখা"
 msgstr ""
 
@@ -506,29 +512,23 @@ msgstr ""
 msgid "মূল কন্টেন্টে যান"
 msgstr ""
 
-#: header.php:52
-#: header.php:52
-#: header.php:129
-#: header.php:129
-#: header.php:181
-#: header.php:181
+#: header.php:53
+#: header.php:53
+#: header.php:131
+#: header.php:131
+#: header.php:183
+#: header.php:183
 msgid "সংরক্ষিত লেখাগুলো দেখুন"
 msgstr ""
 
-#: header.php:54
+#: header.php:55
 #: inc/template-tags.php:759
 msgid "পরে পড়ুন"
 msgstr ""
 
-#: header.php:59
-#: header.php:127
+#: header.php:60
+#: header.php:129
 msgid "ডার্ক মোড"
-msgstr ""
-
-#: header.php:99
-#: header.php:137
-#: header.php:137
-msgid "ইউটিউব চ্যানেল"
 msgstr ""
 
 #: inc/admin-post-search.php:69
@@ -1577,6 +1577,15 @@ msgstr ""
 msgid "ইন্টারঅ্যাক্টিভ থ্রিডি সৌরজগৎ: মাউস বা আঙুলে ঘুরিয়ে দেখুন সূর্য আর আটটি গ্রহ, গ্রহে ক্লিক করে বাংলায় জানুন মজার তথ্য, কিংবা ঘুরে আসুন গাইডেড ট্যুরে।"
 msgstr ""
 
+#: inc/solarsystem.php:293
+msgid "থ্রিডি সৌরজগৎ ঘুরে দেখুন"
+msgstr ""
+
+#: inc/solarsystem.php:313
+#: page-solarsystem.php:35
+msgid "সৌরজগৎ"
+msgstr ""
+
 #: inc/stats-admin.php:1002
 msgid "Links they followed out"
 msgstr ""
@@ -2272,10 +2281,6 @@ msgstr ""
 
 #: page-solarsystem.php:30
 msgid "ইন্টারঅ্যাক্টিভ থ্রিডি সৌরজগৎ"
-msgstr ""
-
-#: page-solarsystem.php:35
-msgid "সৌরজগৎ"
 msgstr ""
 
 #: page-solarsystem.php:36

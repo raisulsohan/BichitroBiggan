@@ -2,6 +2,14 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.28.0
+
+- The 3D solar system has its own link in the header: in the top bar before
+  পরে পড়ুন, with a small sun-and-orbit icon and the word সৌরজগৎ (the icon
+  alone on a narrow screen), and as an icon button before the dark-mode
+  switch in the stuck menu. It leads to the edition being read, and stays
+  hidden until a published page with the slug solarsystem exists.
+
 ## 7.27.0
 
 - A 3D solar system at /solarsystem (page-solarsystem.php). It opens in

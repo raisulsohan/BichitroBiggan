@@ -49,6 +49,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="bb-topbar__inner">
 			<span class="bb-topbar__date"><?php echo esc_html( bb_bangla_today() ); ?></span>
 			<div class="bb-topbar__actions">
+				<?php if ( function_exists( 'bb_solarsystem_link' ) ) { bb_solarsystem_link( 'topbar' ); } ?>
 				<button type="button" class="bb-topbar__btn bb-topbar__btn--bookmarks" data-bb-toggle="bookmarks" title="<?php esc_attr_e( 'সংরক্ষিত লেখাগুলো দেখুন', 'bichitro-biggan' ); ?>" aria-label="<?php esc_attr_e( 'সংরক্ষিত লেখাগুলো দেখুন', 'bichitro-biggan' ); ?>">
 					<span aria-hidden="true">🔖</span>
 					<span class="bb-topbar__btn-text"><?php esc_html_e( 'পরে পড়ুন', 'bichitro-biggan' ); ?></span>
@@ -122,6 +123,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</a>
 			<?php endif; ?>
 			<div class="bb-nav__sticky-actions">
+				<?php if ( function_exists( 'bb_solarsystem_link' ) ) { bb_solarsystem_link( 'nav' ); } ?>
 				<button type="button" class="bb-nav-action-btn bb-nav-action-btn--theme" data-bb-theme-toggle aria-pressed="false"
 					aria-label="<?php esc_attr_e( 'ডার্ক মোড চালু করুন', 'bichitro-biggan' ); ?>"
 					title="<?php esc_attr_e( 'ডার্ক মোড', 'bichitro-biggan' ); ?>"><span aria-hidden="true" data-bb-theme-icon>🌙</span></button>

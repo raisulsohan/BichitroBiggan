@@ -254,3 +254,62 @@ function bb_solarsystem_document_title( $title ) {
 	return $ctx['title'] ? $ctx['title'] : $title;
 }
 add_filter( 'pre_get_document_title', 'bb_solarsystem_document_title', 20 );
+
+/**
+ * The solar system page's address in the edition being served, or '' while
+ * no published page answers to the slug — the header then shows no link
+ * rather than one that leads nowhere.
+ *
+ * @return string
+ */
+function bb_solarsystem_url() {
+	static $url = null;
+
+	if ( null === $url ) {
+		$page = get_page_by_path( 'solarsystem' );
+		$url  = ( $page instanceof WP_Post && 'publish' === $page->post_status ) ? (string) get_permalink( $page ) : '';
+		$url  = (string) apply_filters( 'bb_solarsystem_url', $url );
+	}
+
+	return $url;
+}
+
+/**
+ * The link to the solar system in the header: icon and word in the top bar,
+ * icon alone among the stuck menu's buttons.
+ *
+ * @param string $place 'topbar' or 'nav'.
+ */
+function bb_solarsystem_link( $place = 'topbar' ) {
+	$url = bb_solarsystem_url();
+
+	if ( '' === $url ) {
+		return;
+	}
+
+	$icon    = '<svg class="bb-solar-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">'
+		. '<ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(-20 12 12)" stroke="currentColor" stroke-width="1.5" opacity=".8"/>'
+		. '<circle cx="12" cy="12" r="4" fill="#ffb703"/><circle cx="21" cy="8.7" r="1.8" fill="#4b8fd6"/></svg>';
+	$label   = __( 'থ্রিডি সৌরজগৎ ঘুরে দেখুন', 'bichitro-biggan' );
+	$current = bb_is_solarsystem_page() ? ' aria-current="page"' : '';
+
+	if ( 'nav' === $place ) {
+		printf(
+			'<a class="bb-nav-action-btn bb-nav-action-btn--solar" href="%1$s" title="%2$s" aria-label="%2$s"%3$s>%4$s</a>',
+			esc_url( $url ),
+			esc_attr( $label ),
+			$current, // phpcs:ignore WordPress.Security.EscapeOutput -- fixed markup.
+			$icon // phpcs:ignore WordPress.Security.EscapeOutput -- fixed markup.
+		);
+		return;
+	}
+
+	printf(
+		'<a class="bb-topbar__btn bb-topbar__btn--solar" href="%1$s" title="%2$s" aria-label="%2$s"%3$s>%4$s<span class="bb-topbar__btn-text">%5$s</span></a>',
+		esc_url( $url ),
+		esc_attr( $label ),
+		$current, // phpcs:ignore WordPress.Security.EscapeOutput -- fixed markup.
+		$icon, // phpcs:ignore WordPress.Security.EscapeOutput -- fixed markup.
+		esc_html__( 'সৌরজগৎ', 'bichitro-biggan' )
+	);
+}

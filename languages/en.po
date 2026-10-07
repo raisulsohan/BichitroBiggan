@@ -1435,7 +1435,7 @@ msgid "ইন্টারঅ্যাক্টিভ থ্রিডি সৌ�
 msgstr "Interactive 3D Solar System"
 
 msgid "সৌরজগৎ"
-msgstr "The Solar System"
+msgstr "Solar System"
 
 msgid "সূর্য আর তার আটটি গ্রহের মাঝে এক যাত্রা"
 msgstr "A journey among the Sun and its eight planets"
@@ -1580,3 +1580,6 @@ msgstr "3D Solar System: explore the Sun and the eight planets"
 
 msgid "ইন্টারঅ্যাক্টিভ থ্রিডি সৌরজগৎ: মাউস বা আঙুলে ঘুরিয়ে দেখুন সূর্য আর আটটি গ্রহ, গ্রহে ক্লিক করে বাংলায় জানুন মজার তথ্য, কিংবা ঘুরে আসুন গাইডেড ট্যুরে।"
 msgstr "An interactive 3D Solar System: turn the Sun and the eight planets with your mouse or finger, click a planet for fun facts, or take the guided tour."
+
+msgid "থ্রিডি সৌরজগৎ ঘুরে দেখুন"
+msgstr "Explore the 3D Solar System"
