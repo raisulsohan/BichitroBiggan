@@ -483,11 +483,18 @@ function bb_en_has( $post_id ) {
 		return false;
 	}
 
-	if ( '1' !== bb_en_get( $post_id, 'bb_en_ready' ) ) {
-		return false;
-	}
+	$has = '1' === bb_en_get( $post_id, 'bb_en_ready' )
+		&& '' !== bb_en_get( $post_id, 'bb_en_title' )
+		&& '' !== bb_en_get( $post_id, 'bb_en_content' );
 
-	return ( '' !== bb_en_get( $post_id, 'bb_en_title' ) && '' !== bb_en_get( $post_id, 'bb_en_content' ) );
+	/**
+	 * Lets a page whose template writes its own English (the 3D solar system)
+	 * count as translated without English fields typed into the editor.
+	 *
+	 * @param bool $has     Whether the post has an English version.
+	 * @param int  $post_id Post.
+	 */
+	return (bool) apply_filters( 'bb_en_has', $has, $post_id );
 }
 
 /**

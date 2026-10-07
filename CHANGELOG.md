@@ -2,6 +2,30 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.27.0
+
+- A 3D solar system at /solarsystem (page-solarsystem.php). It opens in
+  explore mode: drag or touch to turn the scene, scroll or pinch to zoom,
+  and click a planet, its name or its chip to fly there and open a card of
+  facts; "পুরো সৌরজগৎ" flies back out. The planets keep to their orbits
+  and the camera follows a chosen one round the Sun. A guided tour plays
+  the 75-second camera journey with captions and a full player (play,
+  restart, frame steps, seek, time and frame readouts, speed, loop, full
+  screen, and the keyboard); pausing it hands the scene back to the reader.
+  There is no sound.
+- WordPress picks the template by itself for a page whose slug is
+  solarsystem. three.js 0.160 and only the five addons the page uses are
+  served from assets/vendor/three, and they, the page script and its
+  stylesheet load on that page alone. Phones get smaller textures, fewer
+  triangles and a lower resolution that drops further if frames run slow.
+  Every texture is painted in code. A loading screen shows while the planets
+  are painted, and a browser without WebGL gets a message instead.
+- Both editions: /en/solarsystem opens in English without English fields
+  typed into the editor (bb_en_has is now filterable), and the cards,
+  captions, buttons and numbers follow the language. The page has a Bengali
+  and an English SEO title, description and 1200×630 share picture, used
+  whenever the SEO box and the featured image are left empty.
+
 ## 7.26.0
 
 - A YouTube post saved without a featured image now gets the video's still
