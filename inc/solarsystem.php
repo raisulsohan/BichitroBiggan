@@ -288,7 +288,7 @@ function bb_solarsystem_link( $place = 'topbar' ) {
 	}
 
 	/* Gold on navy in every theme, so the link stands apart from the light buttons beside it. The
-	   planet sits where its orbit starts: theme.js sets it circling until the reader has been there. */
+	   planet sits where its orbit starts; style.css sets it circling. */
 	$icon    = '<svg class="bb-solar-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true">'
 		. '<ellipse cx="12" cy="12" rx="10.5" ry="4.4" transform="rotate(-20 12 12)" stroke="#ffd27a" stroke-width="1.8"/>'
 		. '<circle cx="12" cy="12" r="4.4" fill="#ffb703"/>'

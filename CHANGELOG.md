@@ -2,6 +2,12 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.39.0
+
+- The planet in the solar system link's icon now always circles its sun, and
+  the phone's "নতুন" tag always shows; neither stops once a reader has
+  opened the page. The small script that remembered that visit is gone.
+
 ## 7.38.0
 
 - The header link to the 3D solar system always draws the eye now, as the
