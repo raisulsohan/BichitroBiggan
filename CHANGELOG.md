@@ -2,6 +2,23 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.34.0
+
+- "পুরো সৌরজগৎ" on /solarsystem now pulls right back to show the whole
+  heliosphere. The button then reads "গ্রহের দৃশ্য" and brings the planets
+  view back; it reads the same from the Kuiper Belt, heliosphere and Oort
+  cloud chips. A fresh load always opens on the planets view.
+- The planets move by default again, starting from where they really are
+  today; the 🕒 button switches to real time and ⏩ back to motion.
+- A "🕒 রিয়েল টাইম" button sits top left of the scene. One press switches to
+  real time and flies to Earth with the reader's own part of the world
+  facing them, marked with a gold "আপনি এখানে" dot; the place comes from the
+  device's time zone, so nothing is asked and nothing leaves the page. In
+  real time the button shows the clock (on the English edition in twelve-hour
+  form, "8 October, 4:15 PM"). Until it has been pressed once, it
+  glows gold with a soft pulse, and a first visit gets a small bubble beside
+  it saying what it does.
+
 ## 7.33.0
 
 - Sound on /solarsystem now starts off. On a first visit a small note under

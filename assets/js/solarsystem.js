@@ -256,12 +256,14 @@ function txt(d) {
 }
 const T = EN ? {
   hintTouch: 'Drag to turn · pinch to zoom · tap a planet', hintMouse: 'Drag to turn · scroll to zoom · click a planet',
+  realTime: 'Real time', realTitle: 'The real view right now — from where you are', you: 'You are here', realHint: 'See Earth right now — from where you are',
   showInfo: ' — show facts', centre: 'The centre of the Solar System', between: 'Between Mars and Jupiter', atCentre: 'At the centre',
   planetOf: (i) => `Planet ${i} / 8 · ${['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth'][i - 1]} from the Sun`,
   planetN: (i) => `Planet ${i} / 8`, closeCard: 'Close the facts', play: 'Play', pause: 'Pause',
   frame: (f) => `Frame ${f} / ${TOTAL}`, loading: (p) => `Building the 3D Solar System… ${p}%`,
 } : {
   hintTouch: 'আঙুলে টেনে ঘোরান · দুই আঙুলে জুম · গ্রহে ট্যাপ করুন', hintMouse: 'মাউস টেনে ঘোরান · স্ক্রল করে জুম · গ্রহে ক্লিক করুন',
+  realTime: 'রিয়েল টাইম', realTitle: 'এই মুহূর্তের আসল দৃশ্য — আপনার অবস্থান থেকে', you: 'আপনি এখানে', realHint: 'দেখুন এই মুহূর্তের পৃথিবী — আপনি যেখানে আছেন',
   showInfo: ' — তথ্য দেখুন', centre: 'সৌরজগতের কেন্দ্র', between: 'মঙ্গল আর বৃহস্পতির মাঝে', atCentre: 'কেন্দ্রে',
   planetOf: (i) => `গ্রহ ${bn(i)} / ${bn(8)} · সূর্য থেকে ${['প্রথম', 'দ্বিতীয়', 'তৃতীয়', 'চতুর্থ', 'পঞ্চম', 'ষষ্ঠ', 'সপ্তম', 'অষ্টম'][i - 1]}`,
   planetN: (i) => `গ্রহ ${bn(i)} / ${bn(8)}`, closeCard: 'তথ্য বন্ধ করুন', play: 'চালু করুন', pause: 'বিরতি',
@@ -1053,8 +1055,9 @@ function moonLon(d) {
   const M = (134.963 + 13.064993 * d) * Math.PI / 180;
   return (218.316 + 13.176396 * d) * Math.PI / 180 + 6.289 * Math.PI / 180 * Math.sin(M);
 }
-let fast = false;                 // false: real time; true: the planets sped up
-const liveA0 = PLANETS.map((p) => p.a0);
+let fast = true;                  // true: the planets sped up (the default); false: real time
+// the sped-up motion starts from where the planets really are today
+const liveA0 = PLANETS.map((p, i) => realLon(i, daysNow()));
 const _ry = new THREE.Quaternion();
 const planetPos = (i, t, out = new THREE.Vector3()) => { const p = PLANETS[i], a = p.a0 + p.w * t; return out.set(Math.cos(a) * p.a, 0, -Math.sin(a) * p.a); };
 
@@ -1313,25 +1316,114 @@ const fit = () => clamp(1.3 / camera.aspect, 1, 1.9);
 let mode = 'explore';          // 'explore' | 'tour'
 let worldT = 0;                // drives the planets
 let fxT = 0;                   // the sun's surface keeps moving in explore mode
-const nowEl = document.createElement('p');
+/* the real-time button: in motion it offers real time; in real time it shows the clock,
+   and either way a press flies to Earth with the reader's own part of the world facing them */
+const nowEl = document.createElement('button');
+nowEl.type = 'button';
 nowEl.className = 'bbs__now';
-nowEl.setAttribute('aria-live', 'off');
+nowEl.title = T.realTitle;
+nowEl.setAttribute('aria-label', T.realTitle);
 root.appendChild(nowEl);
-const nowFmtEn = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+// until the reader has tried it once, the button pulses gently to be noticed
+let realTried = false;
+try { realTried = localStorage.getItem('bb_solar_real') === '1'; } catch (e) { /* storage blocked */ }
+nowEl.classList.toggle('is-call', !realTried);
+const nowTip = document.createElement('span');
+nowTip.className = 'bbs__nowtip';
+nowTip.setAttribute('aria-hidden', 'true');
+nowTip.textContent = T.realHint;
+nowTip.hidden = true;
+root.appendChild(nowTip);
+function hideNowTip() {
+  nowTip.classList.remove('is-on');
+  setTimeout(() => { nowTip.hidden = true; }, 400);
+}
+// a first visit also gets a small bubble saying what the button does
+function showNowTip() {
+  if (realTried || mode !== 'explore') return;
+  nowTip.hidden = false;
+  // beside the button on wide screens; under it (from the stylesheet) on phones
+  nowTip.style.left = matchMedia('(max-width: 600px)').matches ? '' : (nowEl.offsetLeft + nowEl.offsetWidth + 14) + 'px';
+  requestAnimationFrame(() => nowTip.classList.add('is-on'));
+  setTimeout(hideNowTip, 10000);
+}
+nowEl.addEventListener('click', () => {
+  realTried = true;
+  hideNowTip();
+  nowEl.classList.remove('is-call');
+  try { localStorage.setItem('bb_solar_real', '1'); } catch (e) { /* storage blocked */ }
+});
+const EN_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const BN_MONTHS = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
 /* "৮ অক্টোবর, বিকেল ৩:৪৭": the way the time is said in Bengali, not a translated English clock */
 function nowText(d) {
-  if (EN) return nowFmtEn.format(d);
   const h = d.getHours(), m = String(d.getMinutes()).padStart(2, '0');
+  // "8 October, 4:15 PM": the twelve-hour clock in English too
+  if (EN) return d.getDate() + ' ' + EN_MONTHS[d.getMonth()] + ', ' + (h % 12 || 12) + ':' + m + (h < 12 ? ' AM' : ' PM');
   const part = h < 4 ? 'রাত' : h < 6 ? 'ভোর' : h < 12 ? 'সকাল' : h < 15 ? 'দুপুর' : h < 18 ? 'বিকেল' : h < 20 ? 'সন্ধ্যা' : 'রাত';
   return bn(d.getDate() + ' ' + BN_MONTHS[d.getMonth()] + ', ' + part + ' ' + (h % 12 || 12) + ':' + m);
 }
 let nowShown = '';
 function updateNow() {
-  const txt2 = (EN ? 'Live · ' : 'এখন · ') + nowText(new Date());
+  const txt2 = realNow() ? (EN ? 'Live · ' : 'এখন · ') + nowText(new Date()) : '🕒 ' + T.realTime;
   if (txt2 !== nowShown) { nowEl.textContent = txt2; nowShown = txt2; }
-  nowEl.hidden = !realNow() || !ready;
+  nowEl.classList.toggle('is-live', realNow());
+  nowEl.hidden = mode !== 'explore' || !ready;
 }
+/* Where the reader is, roughly: from the device's time zone, so no permission is asked and
+   nothing leaves the page. A known zone gives its city; any other, its longitude from the offset. */
+const YOU = (() => {
+  let tz = '';
+  try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { /* no Intl */ }
+  const Z = {
+    'Asia/Dhaka': [23.8, 90.4], 'Asia/Kolkata': [22.6, 88.4], 'Asia/Calcutta': [22.6, 88.4], 'Asia/Karachi': [24.9, 67.0], 'Asia/Kathmandu': [27.7, 85.3],
+    'Asia/Colombo': [6.9, 79.9], 'Asia/Yangon': [16.8, 96.2], 'Asia/Bangkok': [13.8, 100.5], 'Asia/Kuala_Lumpur': [3.1, 101.7], 'Asia/Singapore': [1.35, 103.8],
+    'Asia/Jakarta': [-6.2, 106.8], 'Asia/Manila': [14.6, 121.0], 'Asia/Hong_Kong': [22.3, 114.2], 'Asia/Shanghai': [31.2, 121.5], 'Asia/Seoul': [37.6, 127.0],
+    'Asia/Tokyo': [35.7, 139.7], 'Asia/Dubai': [25.2, 55.3], 'Asia/Riyadh': [24.7, 46.7], 'Asia/Qatar': [25.3, 51.5], 'Asia/Kuwait': [29.4, 48.0],
+    'Asia/Muscat': [23.6, 58.4], 'Asia/Bahrain': [26.2, 50.6], 'Asia/Tehran': [35.7, 51.4], 'Asia/Kabul': [34.5, 69.2], 'Europe/Istanbul': [41.0, 29.0],
+    'Europe/Moscow': [55.8, 37.6], 'Europe/London': [51.5, -0.1], 'Europe/Dublin': [53.3, -6.3], 'Europe/Paris': [48.9, 2.35], 'Europe/Berlin': [52.5, 13.4],
+    'Europe/Rome': [41.9, 12.5], 'Europe/Madrid': [40.4, -3.7], 'Europe/Amsterdam': [52.4, 4.9], 'Europe/Stockholm': [59.3, 18.1], 'Africa/Cairo': [30.0, 31.2],
+    'Africa/Lagos': [6.5, 3.4], 'Africa/Nairobi': [-1.3, 36.8], 'Africa/Johannesburg': [-26.2, 28.0], 'America/New_York': [40.7, -74.0], 'America/Toronto': [43.7, -79.4],
+    'America/Chicago': [41.9, -87.6], 'America/Denver': [39.7, -105.0], 'America/Los_Angeles': [34.1, -118.2], 'America/Vancouver': [49.3, -123.1], 'America/Mexico_City': [19.4, -99.1],
+    'America/Sao_Paulo': [-23.6, -46.6], 'America/Buenos_Aires': [-34.6, -58.4], 'America/Argentina/Buenos_Aires': [-34.6, -58.4], 'Australia/Sydney': [-33.9, 151.2], 'Australia/Melbourne': [-37.8, 145.0],
+    'Australia/Brisbane': [-27.5, 153.0], 'Australia/Perth': [-31.95, 115.9], 'Australia/Adelaide': [-34.9, 138.6], 'Pacific/Auckland': [-36.8, 174.8],
+  };
+  const ll = Z[tz] || [20, -new Date().getTimezoneOffset() / 4];
+  const la = ll[0] * Math.PI / 180, lo = ll[1] * Math.PI / 180;
+  // Earth's own frame: +x Greenwich, −z 90° east, +y north
+  return new THREE.Vector3(Math.cos(la) * Math.cos(lo), Math.sin(la), -Math.cos(la) * Math.sin(lo));
+})();
+const _yq = new THREE.Quaternion(), _yw = new THREE.Vector3(), _ye = new THREE.Vector3();
+let youDot = null, youTag = null;
+function buildYou() {
+  const earth = bodies[2];
+  youDot = new THREE.Mesh(new THREE.SphereGeometry(0.016, 12, 8), new THREE.MeshBasicMaterial({ color: 0xffc23d }));
+  youDot.position.copy(YOU).multiplyScalar(1.02);
+  const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex([[0, 'rgba(255,214,120,1)'], [0.35, 'rgba(255,183,3,0.5)'], [1, 'rgba(255,160,0,0)']]), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
+  glow.scale.setScalar(0.11);
+  youDot.add(glow);
+  youDot.visible = false;
+  earth.mesh.add(youDot);
+  youTag = document.createElement('span');
+  youTag.className = 'bbs-tag bbs-tag--you';
+  youTag.textContent = T.you;
+  tagsEl.appendChild(youTag);
+}
+function goReal() {
+  if (!ready) return;
+  closeCard();
+  hideHint();
+  if (mode === 'tour') return;
+  if (fast) { fast = false; syncOrbitsButton(); }
+  // turn Earth to the real moment first, then aim the camera down at the reader's place
+  updateWorld(worldT, fxT);
+  const e = bodies[2].mesh;
+  e.updateWorldMatrix(true, false);
+  const dir = YOU.clone().applyQuaternion(e.getWorldQuaternion(_yq)).normalize();
+  flyTo(3, { off: dir.add(_ye.set(0, 0.12, 0)).normalize().multiplyScalar(4.4 * fit()) });
+  updateNow();
+}
+nowEl.addEventListener('click', goReal);
 let tourT = 0, playing = false, speed = 1, loop = false;
 let free = false;              // tour paused and the viewer has taken the camera
 let dirty = true, ready = false, visible = true, seeking = false;
@@ -1410,13 +1502,14 @@ function flyTo(idx, opts = {}) {
   if (idx === BELT && !beltPicked) nearestBeltSpot(beltSpot);
   beltPicked = false;
   const L = focusPoint(idx, _L);
-  const off = focusOffset(idx, L, new THREE.Vector3());
+  const off = opts.off ? opts.off.clone() : focusOffset(idx, L, new THREE.Vector3());
   const fromP = opts.from ? opts.from.clone() : camera.position.clone();
   _goal.copy(L).add(off);
   const dur = REDUCED ? 0.01 : (opts.dur || clamp(1 + fromP.distanceTo(_goal) / 140, 1.2, 2.6));
   fly = { idx, t: 0, dur, fromP, fromQ: controls.target.clone(), off };
   if (!opts.dur) sfxWhoosh(dur);
   focus = idx;
+  syncHome();
   setLimits(idx);
   syncControls();
   dirty = true;
@@ -1554,10 +1647,18 @@ function select(idx) {
   openCard(idx);
   updateUI();
 }
+/* the wide button: out to the whole heliosphere, and from any of the outer views back to the planets */
+const isWideView = () => focus === KUIPER || focus === HELIO || focus === OORT;
 function goHome() {
   closeCard();
   if (mode === 'tour') { free = true; updateUI(); }
-  flyTo(-1);
+  flyTo(isWideView() ? -1 : HELIO);
+}
+function syncHome() {
+  const b = $('home'), wide = isWideView();
+  b.querySelector('span').textContent = wide ? b.dataset.near : b.dataset.wide;
+  b.title = wide ? b.dataset.nearTitle : b.dataset.wideTitle;
+  b.setAttribute('aria-label', b.title);
 }
 
 /* screen-space picking: generous on touch, so a tiny Mercury can still be tapped */
@@ -1763,6 +1864,22 @@ function renderFrame() {
   }
   const w = renderer.domElement.clientWidth, h = renderer.domElement.clientHeight;
   const cd = camera.position.length();
+  if (youDot) {
+    youDot.visible = realNow();
+    let show = false;
+    if (youDot.visible && labelsOn) {
+      youDot.getWorldPosition(_yw);
+      bodies[2].orbit.getWorldPosition(_ye);
+      const facing = _yw.clone().sub(_ye).dot(camera.position.clone().sub(_yw)) > 0;
+      if (facing && camera.position.distanceTo(_yw) < 40) {
+        _yw.project(camera);
+        show = _yw.z < 1;
+        if (show) youTag.style.transform = `translate(${((_yw.x + 1) / 2 * w).toFixed(1)}px, ${((1 - _yw.y) / 2 * h).toFixed(1)}px) translate(-50%, -150%)`;
+      }
+    }
+    youTag.style.opacity = show ? 1 : 0;
+    youTag.style.visibility = show ? 'visible' : 'hidden';
+  }
   tagEls.forEach((el, k) => {
     const a = tagA * labelAlpha(k, cd);
     if (a <= 0.01) { el.style.opacity = 0; el.style.visibility = 'hidden'; return; }
@@ -1847,6 +1964,7 @@ function exitTour() {
     focus = sh.type === 'planet' ? sh.i + 1 : sh.type === 'sun' ? 0 : -1;
     focusPoint(focus, lastFocus);
     setLimits(focus);
+    syncHome();
   }
   free = false;
   titleEl.style.opacity = 0; outroEl.style.opacity = 0; capEl.style.opacity = 0;
@@ -1871,13 +1989,16 @@ $('orbits').addEventListener('click', () => {
   fast = !fast;
   // sped-up motion picks up from where the planets really are
   if (fast) { const d = daysNow(); PLANETS.forEach((p, i) => { liveA0[i] = realLon(i, d) - p.w * worldT; }); }
+  syncOrbitsButton();
+  updateNow();
+  dirty = true;
+});
+function syncOrbitsButton() {
   const b = $('orbits');
   b.setAttribute('aria-pressed', fast ? 'true' : 'false');
   b.title = fast ? b.dataset.on : b.dataset.off;
   b.setAttribute('aria-label', b.title);
-  updateNow();
-  dirty = true;
-});
+}
 $('labels').addEventListener('click', () => {
   labelsOn = !labelsOn;
   const b = $('labels');
@@ -2144,6 +2265,7 @@ function progress(x) {
       await breathe();
     }
     buildExtras();
+    buildYou();
     // each photograph replaces its painting as it arrives; one that fails gets a full-size painting
     for (const b of bodies) jobs[b.p.key].then((tx) => applyReal(b, tx), () => paintBody(b, Q.tex));
     fetchTex('sky', true, { noMips: true }).then((t) => { skyMat.uniforms.uSky.value = t; skyMesh.visible = true; dirty = true; }, () => {});
@@ -2171,6 +2293,7 @@ function progress(x) {
     updateUI();
     setTimeout(loadMoonTextures, 1200);
     hintEl.classList.add('is-on');
+    setTimeout(showNowTip, 600);
     setTimeout(showSoundTip, 1500);
     hintTimer = setTimeout(hideHint, 9000);
   } catch (err) {

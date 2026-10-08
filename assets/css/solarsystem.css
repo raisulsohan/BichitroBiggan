@@ -253,15 +253,95 @@
   position: absolute;
   top: 62px;
   left: 14px;
-  z-index: 3;
-  padding: 3px 10px;
+  z-index: 4;
+  min-height: 28px;
+  padding: 3px 12px;
   border-radius: 999px;
-  font-size: 12.5px;
-  color: #dfe3ee;
-  background: rgba(8, 10, 20, 0.6);
-  border: 1px solid var(--bbs-line);
-  pointer-events: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: #f4f1ea !important;
+  background: rgba(8, 10, 20, 0.7);
+  border: 1px solid var(--bbs-accent);
   white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.bbs__now:hover { background: rgba(60, 44, 8, 0.85); }
+.bbs__now.is-live { font-weight: 500; border-color: var(--bbs-line); color: #dfe3ee !important; }
+/* drawing the eye until the first press: a gold ring breathing out and a light sweeping across */
+.bbs__now.is-call:not(.is-live) {
+  overflow: hidden;
+  min-height: 32px;
+  padding: 4px 15px;
+  font-size: 14px;
+  background: linear-gradient(135deg, rgba(150, 104, 8, 0.95), rgba(70, 46, 4, 0.92));
+  border-color: #ffc23d;
+  animation: bbs-now-ring 2s ease-out infinite;
+}
+.bbs__now.is-call:not(.is-live):hover { background: linear-gradient(135deg, rgba(180, 126, 10, 0.98), rgba(90, 60, 6, 0.95)); }
+.bbs__now.is-call:not(.is-live)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 230, 160, 0.45) 50%, transparent 70%);
+  transform: translateX(-120%);
+  animation: bbs-now-sweep 3.2s ease-in-out 0.6s infinite;
+  pointer-events: none;
+}
+@keyframes bbs-now-ring {
+  0% { box-shadow: 0 0 0 0 rgba(255, 183, 3, 0.65), 0 0 14px rgba(255, 183, 3, 0.35); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 183, 3, 0), 0 0 14px rgba(255, 183, 3, 0.35); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 183, 3, 0), 0 0 14px rgba(255, 183, 3, 0.35); }
+}
+@keyframes bbs-now-sweep { 0%, 55% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+/* the bubble beside it on a first visit */
+.bbs__nowtip {
+  position: absolute;
+  top: 63px;
+  left: 168px;
+  z-index: 4;
+  max-width: calc(100% - 190px);
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: rgba(8, 11, 22, 0.88);
+  border: 1px solid var(--bbs-accent);
+  color: #f4f1ea;
+  font-size: 13.5px;
+  line-height: 1.35;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.bbs__nowtip::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -6px;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
+  background: inherit;
+  border-left: 1px solid var(--bbs-accent);
+  border-bottom: 1px solid var(--bbs-accent);
+  transform: rotate(45deg);
+}
+.bbs__nowtip.is-on { opacity: 1; transform: none; }
+.bbs__nowtip[hidden],
+.bbs.is-tour .bbs__nowtip { display: none; }
+@media (max-width: 600px) {
+  .bbs__now.is-call:not(.is-live) { font-size: 13px; padding: 4px 13px; }
+  .bbs__nowtip { top: 96px; left: 10px; max-width: calc(100% - 20px); font-size: 12.5px; }
+  .bbs__nowtip::before { top: -6px; left: 22px; margin-top: 0; border-bottom: 0; border-top: 1px solid var(--bbs-accent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bbs__now.is-call:not(.is-live) { animation: none; box-shadow: 0 0 0 2px rgba(255, 183, 3, 0.5), 0 0 14px rgba(255, 183, 3, 0.4); }
+  .bbs__now.is-call:not(.is-live)::after { display: none; }
+}
+.bbs-tag--you {
+  color: #ffd27a;
+  font-size: 13px;
+  pointer-events: none !important;
 }
 .bbs__now[hidden],
 .bbs.is-tour .bbs__now,

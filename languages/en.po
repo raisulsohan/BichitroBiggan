@@ -1603,11 +1603,20 @@ msgstr "Back to where everything is right now"
 msgid "গ্রহগুলোকে দ্রুত চালিয়ে দেখুন"
 msgstr "Speed the planets up"
 
-msgid "পৃথিবী আর গ্রহগুলো আপনার ডিভাইসের ঘড়ি অনুযায়ী এই মুহূর্তের আসল অবস্থানে থাকে — আপনার এখানে রাত হলে পৃথিবীর আপনার দিকটাও অন্ধকার। ⏩ বোতামে গ্রহগুলোকে দ্রুত চালিয়ে দেখা যায়।"
-msgstr "Earth and the planets sit where they really are at this moment, by your device’s clock — when it is night where you are, your side of Earth is dark too. The ⏩ button speeds the planets up."
+msgid "শুরুতে গ্রহগুলো দ্রুত ঘোরে। 🕒 বোতাম চাপলে সব চলে যায় এই মুহূর্তের আসল অবস্থানে, আপনার ডিভাইসের ঘড়ি অনুযায়ী — আপনার এখানে রাত হলে পৃথিবীর আপনার দিকটাও অন্ধকার। ⏩ চাপলে আবার দ্রুত।"
+msgstr "At first the planets move sped up. The 🕒 button puts everything where it really is at this moment, by your device’s clock — when it is night where you are, your side of Earth is dark too. ⏩ speeds it up again."
 
 msgid "ঘুরে দেখার সময় হালকা শব্দও শোনা যায় — শুরুতে বন্ধ থাকে, 🔊 বোতামে চালু বা বন্ধ করুন। গাইডেড ট্যুর নীরব।"
 msgstr "Exploring can come with soft sound — it starts off; the 🔊 button turns it on or off. The guided tour is silent."
 
 msgid "শব্দ শুনতে এখানে চাপুন"
 msgstr "Tap here to hear the sound"
+
+msgid "গ্রহের দৃশ্য"
+msgstr "Planets view"
+
+msgid "পুরো সৌরজগৎ দেখুন — হেলিওস্ফিয়ার পর্যন্ত"
+msgstr "See the whole Solar System — out to the heliosphere"
+
+msgid "গ্রহগুলোর কাছে ফিরুন"
+msgstr "Back to the planets"
