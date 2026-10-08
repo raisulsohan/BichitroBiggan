@@ -256,14 +256,14 @@ function txt(d) {
 }
 const T = EN ? {
   hintTouch: 'Drag to turn · pinch to zoom · tap a planet', hintMouse: 'Drag to turn · scroll to zoom · click a planet',
-  realTime: 'Real time', realTitle: 'The real view right now — from where you are', you: 'You are here', realHint: 'See Earth right now — from where you are',
+  realTime: 'Real time', realTitle: 'The real view right now — from where you are', you: 'You are here', fastHint: 'Press ⏩ to set the planets moving again', realHint: 'See Earth right now — from where you are',
   showInfo: ' — show facts', centre: 'The centre of the Solar System', between: 'Between Mars and Jupiter', atCentre: 'At the centre',
   planetOf: (i) => `Planet ${i} / 8 · ${['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth'][i - 1]} from the Sun`,
   planetN: (i) => `Planet ${i} / 8`, closeCard: 'Close the facts', play: 'Play', pause: 'Pause',
   frame: (f) => `Frame ${f} / ${TOTAL}`, loading: (p) => `Building the 3D Solar System… ${p}%`,
 } : {
   hintTouch: 'আঙুলে টেনে ঘোরান · দুই আঙুলে জুম · গ্রহে ট্যাপ করুন', hintMouse: 'মাউস টেনে ঘোরান · স্ক্রল করে জুম · গ্রহে ক্লিক করুন',
-  realTime: 'রিয়েল টাইম', realTitle: 'এই মুহূর্তের আসল দৃশ্য — আপনার অবস্থান থেকে', you: 'আপনি এখানে', realHint: 'দেখুন এই মুহূর্তের পৃথিবী — আপনি যেখানে আছেন',
+  realTime: 'রিয়েল টাইম', realTitle: 'এই মুহূর্তের আসল দৃশ্য — আপনার অবস্থান থেকে', you: 'আপনি এখানে', fastHint: 'গ্রহগুলোকে আবার ঘোরাতে ⏩ চাপুন', realHint: 'দেখুন এই মুহূর্তের পৃথিবী — আপনি যেখানে আছেন',
   showInfo: ' — তথ্য দেখুন', centre: 'সৌরজগতের কেন্দ্র', between: 'মঙ্গল আর বৃহস্পতির মাঝে', atCentre: 'কেন্দ্রে',
   planetOf: (i) => `গ্রহ ${bn(i)} / ${bn(8)} · সূর্য থেকে ${['প্রথম', 'দ্বিতীয়', 'তৃতীয়', 'চতুর্থ', 'পঞ্চম', 'ষষ্ঠ', 'সপ্তম', 'অষ্টম'][i - 1]}`,
   planetN: (i) => `গ্রহ ${bn(i)} / ${bn(8)}`, closeCard: 'তথ্য বন্ধ করুন', play: 'চালু করুন', pause: 'বিরতি',
@@ -1422,8 +1422,42 @@ function goReal() {
   const dir = YOU.clone().applyQuaternion(e.getWorldQuaternion(_yq)).normalize();
   flyTo(3, { off: dir.add(_ye.set(0, 0.12, 0)).normalize().multiplyScalar(4.4 * fit()) });
   updateNow();
+  setTimeout(showFastTip, 1400);
 }
 nowEl.addEventListener('click', goReal);
+/* Real time stands still, so each time it starts, a note under the ⏩ button (which glows meanwhile)
+   says how to set the planets moving again. */
+const fastTip = document.createElement('button');
+fastTip.type = 'button';
+fastTip.className = 'bbs__fasttip';
+fastTip.textContent = T.fastHint;
+fastTip.hidden = true;
+root.appendChild(fastTip);
+let fastTipTimer = 0;
+function hideFastTip() {
+  clearTimeout(fastTipTimer);
+  $('orbits').classList.remove('is-nudge');
+  if (fastTip.hidden) return;
+  fastTip.classList.remove('is-on');
+  setTimeout(() => { if (!fastTip.classList.contains('is-on')) fastTip.hidden = true; }, 400);
+}
+function showFastTip() {
+  if (fast || mode !== 'explore') return;
+  hideSoundTip();
+  const b = $('orbits').getBoundingClientRect(), r = root.getBoundingClientRect();
+  fastTip.style.top = (b.bottom - r.top + 12) + 'px';
+  fastTip.style.right = (r.right - b.right) + 'px';
+  fastTip.hidden = false;
+  // on a narrow screen it would cover the clock: then it drops below it
+  const t = fastTip.getBoundingClientRect(), n = nowEl.getBoundingClientRect();
+  if (t.left < n.right && t.top < n.bottom) fastTip.style.top = (n.bottom - r.top + 12) + 'px';
+  $('orbits').classList.add('is-nudge');
+  requestAnimationFrame(() => fastTip.classList.add('is-on'));
+  clearTimeout(fastTipTimer);
+  fastTipTimer = setTimeout(hideFastTip, 8000);
+}
+// the note itself does what it says
+fastTip.addEventListener('click', () => $('orbits').click());
 let tourT = 0, playing = false, speed = 1, loop = false;
 let free = false;              // tour paused and the viewer has taken the camera
 let dirty = true, ready = false, visible = true, seeking = false;
@@ -1986,6 +2020,7 @@ $('camreset').addEventListener('click', endFreeLook);
 $('home').addEventListener('click', goHome);
 root.querySelectorAll('[data-s="fs"]').forEach((b) => b.addEventListener('click', toggleFs));
 $('orbits').addEventListener('click', () => {
+  hideFastTip();
   fast = !fast;
   // sped-up motion picks up from where the planets really are
   if (fast) { const d = daysNow(); PLANETS.forEach((p, i) => { liveA0[i] = realLon(i, d) - p.w * worldT; }); }

@@ -2,6 +2,13 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.35.0
+
+- Real time on /solarsystem stands still, so each time it starts a note
+  appears under the ⏩ button, "গ্রহগুলোকে আবার ঘোরাতে ⏩ চাপুন", while the
+  button glows gold. Tapping the note does what it says; it fades after a
+  few seconds or once ⏩ is pressed. On a phone it sits below the clock.
+
 ## 7.34.0
 
 - "পুরো সৌরজগৎ" on /solarsystem now pulls right back to show the whole
