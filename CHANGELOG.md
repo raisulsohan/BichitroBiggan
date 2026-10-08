@@ -2,6 +2,16 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.36.0
+
+- On /solarsystem the toolbar, its notes and the chips now always stay in view.
+  When the site's sticky menu (or the admin bar) covers the top of the scene,
+  the toolbar moves down to sit just below it; when the scene runs past the
+  bottom of the window, as on wide but short screens, the chips move up into
+  view. Full screen is unchanged.
+- The default view of the planets is closer, so the Sun and the inner planets
+  read larger on load.
+
 ## 7.35.0
 
 - Real time on /solarsystem stands still, so each time it starts a note

@@ -1353,6 +1353,46 @@ nowEl.addEventListener('click', () => {
   nowEl.classList.remove('is-call');
   try { localStorage.setItem('bb_solar_real', '1'); } catch (e) { /* storage blocked */ }
 });
+/* The site's own fixed bars (its sticky menu, the admin bar) can cover the top of the scene, and on a short
+   or very wide screen the scene's bottom can run past the window. The toolbar, the notes and the chips
+   move into whatever part of the scene is in view, so they are always there to press. */
+function coverBottom(x) {
+  let y = 0;
+  for (let k = 0; k < 4; k++) {
+    let hit = 0;
+    for (const el of document.elementsFromPoint(x, y + 1)) {
+      if (root.contains(el)) break;
+      for (let e = el; e && e !== document.body && e !== document.documentElement; e = e.parentElement) {
+        const p = getComputedStyle(e).position;
+        if (p === 'fixed' || p === 'sticky') { hit = Math.max(hit, e.getBoundingClientRect().bottom); break; }
+      }
+    }
+    if (hit <= y + 1) break;
+    y = hit;
+  }
+  return y;
+}
+let safeT = -1, safeB = -1, safeAsked = false;
+function updateSafe() {
+  safeAsked = false;
+  let t = 0, b = 0;
+  const full = document.fullscreenElement || document.webkitFullscreenElement || root.classList.contains('is-pseudo-fs');
+  const r = root.getBoundingClientRect(), vh = window.innerHeight;
+  if (!full && r.bottom > 0 && r.top < vh) {
+    const x = clamp(r.left + r.width / 2, 1, window.innerWidth - 1);
+    t = clamp(coverBottom(x) - r.top, 0, r.height - 220);
+    b = clamp(r.bottom - vh, 0, Math.max(0, r.height - 220 - t));
+  }
+  t = Math.round(t); b = Math.round(b);
+  if (t !== safeT) { safeT = t; root.style.setProperty('--bbs-safe-top', t + 'px'); }
+  if (b !== safeB) { safeB = b; root.style.setProperty('--bbs-safe-bottom', b + 'px'); }
+}
+const askSafe = () => { if (!safeAsked) { safeAsked = true; requestAnimationFrame(updateSafe); } };
+addEventListener('scroll', askSafe, { passive: true });
+addEventListener('resize', askSafe);
+document.addEventListener('fullscreenchange', askSafe);
+if (window.ResizeObserver) new ResizeObserver(askSafe).observe(root);
+askSafe();
 const EN_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const BN_MONTHS = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
 /* "৮ অক্টোবর, বিকেল ৩:৪৭": the way the time is said in Bengali, not a translated English clock */
@@ -1507,7 +1547,7 @@ function focusPoint(idx, out) {
 }
 function focusOffset(idx, L, out) {
   const az = Math.atan2(camera.position.z - controls.target.z, camera.position.x - controls.target.x);
-  if (idx < 0) return out.set(Math.cos(az) * 140, 95, Math.sin(az) * 140).multiplyScalar(fit());
+  if (idx < 0) return out.set(Math.cos(az) * 98, 66, Math.sin(az) * 98).multiplyScalar(fit());
   if (idx === 0) return out.set(Math.cos(az), 0.28, Math.sin(az)).normalize().multiplyScalar(27 * fit());
   if (idx === BELT) {
     // a little inside the ring and above it, so the rocks are lit and the Sun sits off to one side

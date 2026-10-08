@@ -184,6 +184,9 @@
   pointer-events: none;
 }
 .bbs__top > * { pointer-events: auto; }
+/* what sits at the top or bottom of the scene moves into the part that is in view (set by the script) */
+.bbs__top, .bbs__now, .bbs__nowtip, .bbs__soundtip, .bbs__hint, .bbs-card, .bbs__camreset { margin-top: var(--bbs-safe-top, 0px); }
+.bbs__chips, .bbs-bar, .bbs__cap, .bbs-card { margin-bottom: var(--bbs-safe-bottom, 0px); }
 .bbs__tools { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 
 .bbs-btn {
@@ -423,7 +426,7 @@
 .bbs__soundtip:hover { background: rgba(60, 44, 8, 0.9); }
 .bbs__soundtip[hidden],
 .bbs.is-tour .bbs__soundtip { display: none; }
-@keyframes bbs-tip-bob { 50% { margin-top: 3px; } }
+@keyframes bbs-tip-bob { 50% { translate: 0 3px; } }
 @media (max-width: 600px) {
   .bbs__soundtip { top: 54px; right: 110px; font-size: 13px; padding: 6px 12px; }
   .bbs__soundtip::before { right: 18px; }
@@ -520,7 +523,7 @@
   right: 14px;
   z-index: 5;
   width: min(340px, calc(100% - 28px));
-  max-height: calc(100% - 136px);
+  max-height: calc(100% - 136px - var(--bbs-safe-top, 0px) - var(--bbs-safe-bottom, 0px));
   overflow-y: auto;
   padding: 16px 18px 14px;
   border-radius: 14px;
