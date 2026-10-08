@@ -1577,13 +1577,18 @@ msgstr ""
 msgid "ইন্টারঅ্যাক্টিভ থ্রিডি সৌরজগৎ: মাউস বা আঙুলে ঘুরিয়ে দেখুন সূর্য আর আটটি গ্রহ, গ্রহে ক্লিক করে বাংলায় জানুন মজার তথ্য, কিংবা ঘুরে আসুন গাইডেড ট্যুরে।"
 msgstr ""
 
-#: inc/solarsystem.php:293
+#: inc/solarsystem.php:296
 msgid "থ্রিডি সৌরজগৎ ঘুরে দেখুন"
 msgstr ""
 
-#: inc/solarsystem.php:313
+#: inc/solarsystem.php:306
+#: inc/solarsystem.php:318
 #: page-solarsystem.php:35
 msgid "সৌরজগৎ"
+msgstr ""
+
+#: inc/solarsystem.php:307
+msgid "নতুন"
 msgstr ""
 
 #: inc/stats-admin.php:1002

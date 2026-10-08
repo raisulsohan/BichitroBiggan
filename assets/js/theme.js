@@ -51,7 +51,29 @@
 		initShareButtons();
 		initViewCounter();
 		initMath();
+		initSolarLink();
 	});
+
+	/* ---------------------------------------------------------------
+	 * The solar system link
+	 *
+	 * Until the reader has opened the 3D solar system once, its link in
+	 * the header carries a "new" tag and the planet in its icon circles
+	 * the little sun (both in style.css, under html.bb-solar-fresh).
+	 * Opening that page is what counts.
+	 * ------------------------------------------------------------ */
+	function initSolarLink() {
+		var links = document.querySelectorAll('.bb-nav-action-btn--solar, .bb-topbar__btn--solar');
+		if (!links.length) return;
+
+		var seen = false;
+		try { seen = localStorage.getItem('bb_solar_seen') === '1'; } catch (e) {}
+		if (links[0].getAttribute('aria-current') === 'page') {
+			seen = true;
+			try { localStorage.setItem('bb_solar_seen', '1'); } catch (e) {}
+		}
+		if (!seen) document.documentElement.classList.add('bb-solar-fresh');
+	}
 
 	/* ---------------------------------------------------------------
 	 * Light and dark

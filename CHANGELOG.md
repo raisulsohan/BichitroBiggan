@@ -2,6 +2,18 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.37.0
+
+- The header link to the 3D solar system stands out. Among the stuck menu's
+  light buttons it is now a navy, gold-edged pill with a larger icon and its
+  name, "সৌরজগৎ" ("Solar System" on /en); on a phone, where there is no room
+  for the name, a round navy button with a small gold "নতুন" tag. In the top
+  bar its name is gold. Its colours are the same in both themes.
+- Until a reader has opened the solar system once, the planet in the icon
+  circles its sun along the drawn orbit (a CSS motion path, left still for
+  readers who ask for less motion) and the phone tag shows; opening the page
+  ends both, remembered in the browser.
+
 ## 7.36.0
 
 - On /solarsystem the toolbar, its notes and the chips now always stay in view.

@@ -1620,3 +1620,6 @@ msgstr "See the whole Solar System — out to the heliosphere"
 
 msgid "গ্রহগুলোর কাছে ফিরুন"
 msgstr "Back to the planets"
+
+msgid "নতুন"
+msgstr "New"

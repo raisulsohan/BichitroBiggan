@@ -3,7 +3,7 @@ Theme Name: Bichitro Biggan
 Theme URI: https://bichitrobiggan.com
 Author: Raisul Sohan
 Description: Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic WordPress theme built for a Bengali science magazine and digital publication. Custom-made and developed from scratch by Raisul Sohan, it is designed with a world-class reading experience, built-in SEO, live search, and comprehensive customizer controls.
-Version: 7.36.0
+Version: 7.37.0
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
@@ -3399,11 +3399,72 @@ body.admin-bar .bb-nav.is-stuck { top: 32px; }
 }
 
 /* The link to the 3D solar system, in the top bar and among the stuck
-   menu's buttons. On a narrow top bar it keeps only its icon. */
-.bb-topbar__btn--solar { text-decoration: none; }
-.bb-solar-icon { display: block; flex: none; }
+   menu's buttons. It is the one navy, gold-edged button among the light
+   ones, so it reads at a glance: with room it carries its name; on a phone,
+   a round button with a larger icon and, until the reader has been there
+   (theme.js sets .bb-solar-fresh), a small "new" tag. Its colours are the
+   same in both themes. On a narrow top bar it keeps only its icon. */
+.bb-topbar__btn--solar { text-decoration: none; color: #ffd27a; font-weight: 600; }
+.bb-topbar__btn--solar .bb-solar-icon { width: 18px; height: 18px; }
+.bb-solar-icon { display: block; flex: none; overflow: visible; }
 @media (max-width: 480px) {
   .bb-topbar__btn--solar .bb-topbar__btn-text { display: none; }
+}
+.bb-nav__sticky-actions .bb-nav-action-btn.bb-nav-action-btn--solar {
+  gap: 6px;
+  border-radius: 999px;
+  background: #0b1e3d;
+  border: 1.5px solid #ffb703;
+  color: #ffd27a;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 2px 8px -2px rgba(11, 30, 61, 0.55);
+}
+.bb-nav__sticky-actions .bb-nav-action-btn.bb-nav-action-btn--solar:hover {
+  background: #13305e;
+  border-color: #ffc23d;
+  color: #ffe2a3;
+  box-shadow: 0 4px 12px -2px rgba(255, 183, 3, 0.45);
+}
+.bb-nav-action-btn__text { display: none; white-space: nowrap; }
+.bb-solar-new {
+  display: none;
+  position: absolute;
+  top: -7px;
+  right: -11px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #ffb703;
+  color: #1a1200;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 15px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.bb-solar-fresh .bb-nav-action-btn--solar .bb-solar-new { display: block; }
+/* The planet circles along the orbit drawn in the icon (an ellipse 10.5 by
+   4.4, tilted 20 degrees). The planet is drawn where that path starts; the
+   translate brings it to the path's own origin. A browser without motion
+   paths keeps it still where it is drawn. */
+@supports (offset-path: path('M0 0')) {
+  @media (prefers-reduced-motion: no-preference) {
+    .bb-solar-fresh .bb-solar-icon__planet {
+      transform: translate(-21.87px, -8.41px);
+      offset-path: path('M21.87 8.41A10.5 4.4 -20 1 1 2.13 15.59A10.5 4.4 -20 1 1 21.87 8.41');
+      offset-rotate: 0deg;
+      animation: bb-solar-orbit 8s linear infinite;
+    }
+  }
+}
+@keyframes bb-solar-orbit {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
+}
+@media (min-width: 768px) {
+  .bb-nav__sticky-actions .bb-nav-action-btn.bb-nav-action-btn--solar { width: auto; padding: 0 12px 0 7px; }
+  .bb-nav-action-btn--solar .bb-nav-action-btn__text { display: inline; }
+  .bb-solar-fresh .bb-nav-action-btn--solar .bb-solar-new { display: none; }
 }
 
 

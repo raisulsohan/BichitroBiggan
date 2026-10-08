@@ -287,19 +287,24 @@ function bb_solarsystem_link( $place = 'topbar' ) {
 		return;
 	}
 
-	$icon    = '<svg class="bb-solar-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">'
-		. '<ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(-20 12 12)" stroke="currentColor" stroke-width="1.5" opacity=".8"/>'
-		. '<circle cx="12" cy="12" r="4" fill="#ffb703"/><circle cx="21" cy="8.7" r="1.8" fill="#4b8fd6"/></svg>';
+	/* Gold on navy in every theme, so the link stands apart from the light buttons beside it. The
+	   planet sits where its orbit starts: theme.js sets it circling until the reader has been there. */
+	$icon    = '<svg class="bb-solar-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true">'
+		. '<ellipse cx="12" cy="12" rx="10.5" ry="4.4" transform="rotate(-20 12 12)" stroke="#ffd27a" stroke-width="1.8"/>'
+		. '<circle cx="12" cy="12" r="4.4" fill="#ffb703"/>'
+		. '<circle class="bb-solar-icon__planet" cx="21.87" cy="8.41" r="2.1" fill="#6bb6ff"/></svg>';
 	$label   = __( 'থ্রিডি সৌরজগৎ ঘুরে দেখুন', 'bichitro-biggan' );
 	$current = bb_is_solarsystem_page() ? ' aria-current="page"' : '';
 
 	if ( 'nav' === $place ) {
 		printf(
-			'<a class="bb-nav-action-btn bb-nav-action-btn--solar" href="%1$s" title="%2$s" aria-label="%2$s"%3$s>%4$s</a>',
+			'<a class="bb-nav-action-btn bb-nav-action-btn--solar" href="%1$s" title="%2$s" aria-label="%2$s"%3$s>%4$s<span class="bb-nav-action-btn__text" aria-hidden="true">%5$s</span><span class="bb-solar-new" aria-hidden="true">%6$s</span></a>',
 			esc_url( $url ),
 			esc_attr( $label ),
 			$current, // phpcs:ignore WordPress.Security.EscapeOutput -- fixed markup.
-			$icon // phpcs:ignore WordPress.Security.EscapeOutput -- fixed markup.
+			$icon, // phpcs:ignore WordPress.Security.EscapeOutput -- fixed markup.
+			esc_html__( 'সৌরজগৎ', 'bichitro-biggan' ),
+			esc_html__( 'নতুন', 'bichitro-biggan' )
 		);
 		return;
 	}
