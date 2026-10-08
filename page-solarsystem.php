@@ -56,12 +56,19 @@ while ( have_posts() ) :
 						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-5 1.5 3h-3zm0 20-1.5-3h3zM2 12l3-1.5v3zm20 0-3 1.5v-3zM4.9 4.9l3.2 1.1-2.1 2.1zm14.2 14.2-3.2-1.1 2.1-2.1zM4.9 19.1l1.1-3.2 2.1 2.1zM19.1 4.9 18 8.1 15.9 6z"/></svg>
 						<span><?php esc_html_e( 'পুরো সৌরজগৎ', 'bichitro-biggan' ); ?></span>
 					</button>
-					<button type="button" class="bbs-icon" data-s="orbits" aria-pressed="true"
-						data-on="<?php esc_attr_e( 'গ্রহগুলোর চলা থামান', 'bichitro-biggan' ); ?>"
-						data-off="<?php esc_attr_e( 'গ্রহগুলোকে আবার চালান', 'bichitro-biggan' ); ?>"
-						title="<?php esc_attr_e( 'গ্রহগুলোর চলা থামান', 'bichitro-biggan' ); ?>"
-						aria-label="<?php esc_attr_e( 'গ্রহগুলোর চলা থামান', 'bichitro-biggan' ); ?>">
-						<svg viewBox="0 0 24 24" aria-hidden="true"><path class="bbs-ico-on" d="M7 5h3.5v14H7zm6.5 0H17v14h-3.5z"/><path class="bbs-ico-off" d="M7 4v16l13-8z"/></svg>
+					<button type="button" class="bbs-icon" data-s="sound" aria-pressed="true"
+						data-on="<?php esc_attr_e( 'শব্দ বন্ধ করুন', 'bichitro-biggan' ); ?>"
+						data-off="<?php esc_attr_e( 'শব্দ চালু করুন', 'bichitro-biggan' ); ?>"
+						title="<?php esc_attr_e( 'শব্দ বন্ধ করুন', 'bichitro-biggan' ); ?>"
+						aria-label="<?php esc_attr_e( 'শব্দ বন্ধ করুন', 'bichitro-biggan' ); ?>">
+						<svg viewBox="0 0 24 24" aria-hidden="true"><path class="bbs-ico-on" d="M4 9v6h4l5 5V4L8 9zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/><path class="bbs-ico-off" d="M4 9v6h4l5 5V4L8 9zm12.6 3L19 9.6 17.6 8.2 15.2 10.6 12.8 8.2 11.4 9.6 13.8 12l-2.4 2.4 1.4 1.4 2.4-2.4 2.4 2.4 1.4-1.4z"/></svg>
+					</button>
+					<button type="button" class="bbs-icon" data-s="orbits" aria-pressed="false"
+						data-on="<?php esc_attr_e( 'এখনকার আসল অবস্থানে ফিরুন', 'bichitro-biggan' ); ?>"
+						data-off="<?php esc_attr_e( 'গ্রহগুলোকে দ্রুত চালিয়ে দেখুন', 'bichitro-biggan' ); ?>"
+						title="<?php esc_attr_e( 'গ্রহগুলোকে দ্রুত চালিয়ে দেখুন', 'bichitro-biggan' ); ?>"
+						aria-label="<?php esc_attr_e( 'গ্রহগুলোকে দ্রুত চালিয়ে দেখুন', 'bichitro-biggan' ); ?>">
+						<svg viewBox="0 0 24 24" aria-hidden="true"><path class="bbs-ico-on" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm-1 3v6.4l5 3 1-1.7-4-2.4V7z"/><path class="bbs-ico-off" d="M3 6v12l8.5-6zm9.5 0v12l8.5-6z"/></svg>
 					</button>
 					<button type="button" class="bbs-icon" data-s="labels" aria-pressed="true"
 						data-on="<?php esc_attr_e( 'নাম লুকান', 'bichitro-biggan' ); ?>"
@@ -165,6 +172,8 @@ while ( have_posts() ) :
 				<li><?php esc_html_e( 'ঘোরাতে: মাউস টেনে বা এক আঙুলে স্পর্শ করে সরান।', 'bichitro-biggan' ); ?></li>
 				<li><?php esc_html_e( 'জুম করতে: মাউসের চাকা ঘোরান, বা দুই আঙুলে চিমটি কাটুন।', 'bichitro-biggan' ); ?></li>
 				<li><?php esc_html_e( 'কোনো গ্রহ বা তার নামে ক্লিক করুন — ক্যামেরা সেখানে উড়ে যাবে, আর তথ্যের কার্ড খুলবে।', 'bichitro-biggan' ); ?></li>
+				<li><?php esc_html_e( 'পৃথিবী আর গ্রহগুলো আপনার ডিভাইসের ঘড়ি অনুযায়ী এই মুহূর্তের আসল অবস্থানে থাকে — আপনার এখানে রাত হলে পৃথিবীর আপনার দিকটাও অন্ধকার। ⏩ বোতামে গ্রহগুলোকে দ্রুত চালিয়ে দেখা যায়।', 'bichitro-biggan' ); ?></li>
+				<li><?php esc_html_e( 'ঘুরে দেখার সময় হালকা শব্দ বাজে — দৃশ্যে প্রথম ছোঁয়ার পর শুরু হয়, 🔊 বোতামে বন্ধ করা যায়। গাইডেড ট্যুর নীরব।', 'bichitro-biggan' ); ?></li>
 				<li><?php esc_html_e( 'নিচের চিপ থেকে কাইপার বেল্ট, হেলিওস্ফিয়ার আর ঊর্ট মেঘে যান — সৌরজগতের শেষ সীমা পর্যন্ত। কোনো গ্রহের কার্ড থেকে তার চাঁদগুলোতেও যাওয়া যায়।', 'bichitro-biggan' ); ?></li>
 				<li><?php esc_html_e( '“গাইডেড ট্যুর” চাপলে ৭৫ সেকেন্ডের এক যাত্রা শুরু হবে। ট্যুর থামালেই আবার নিজের মতো ঘুরে দেখতে পারবেন।', 'bichitro-biggan' ); ?></li>
 				<li><?php esc_html_e( 'ট্যুরের কিবোর্ড শর্টকাট: Space বা K চালু/বিরতি, ← → এক সেকেন্ড পিছনে/সামনে, কমা ও দাঁড়ি এক ফ্রেম, Home/End শুরু/শেষ, L লুপ, F পূর্ণ পর্দা।', 'bichitro-biggan' ); ?></li>

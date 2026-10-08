@@ -2,6 +2,29 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.32.0
+
+- Real time: explore mode shows the Solar System as it is at this moment by
+  the viewer's own clock. The planets sit at today's positions (mean orbital
+  elements), Earth turns by Greenwich sidereal time with its axis tilted the
+  way it really is, so night falls on each country when it is night there
+  (the sub-solar point checks out against the clock), and the Moon is where
+  it really is, with its true phase. A pill shows the time ("এখন · ৮ অক্টোবর,
+  বিকেল ৩:৪৭"); the ⏩ button speeds the planets up from where they are, and
+  pressing it again returns to now. The guided tour keeps its own timeline.
+- Sound in explore mode, all made in code: a low drone of space that deepens
+  as the camera pulls back, a whoosh for each flight, a soft chime for a card
+  and the Sun's rumble up close. It starts with the first touch of the scene
+  and goes quiet off screen; a 🔊 button turns it off and is remembered. The
+  guided tour stays silent.
+- More real: the Milky Way behind everything (Solar System Scope's star map,
+  turned to where it really is); Earth with a sunset band along the edge of
+  night, relief and clouds that cast shadows on the ground; real relief on
+  the Moon and Mercury from height maps; moons cast eclipse shadows on their
+  planets; and on a computer, 4k maps fetched when the camera comes right up
+  to Earth, the Moon, Mercury, Venus, Mars, Jupiter or Saturn.
+- Pluto has its own chip, between Neptune and the Kuiper Belt.
+
 ## 7.31.0
 
 - /solarsystem reaches the edge of the Solar System. Three new chips fly out

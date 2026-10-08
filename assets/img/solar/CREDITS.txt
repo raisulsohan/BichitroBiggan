@@ -39,3 +39,14 @@ around it (a smooth blend towards the map's average, with light noise).
   oberon.webp    File:Oberon map JPL USGS.jpg  (gaps filled)
 
 Titan, Ceres, Deimos, Eris, Haumea and Makemake are painted in code.
+
+
+Sky, close-ups and relief
+
+2k/sky.webp, 1k/sky.webp      Solar System Scope, 8k stars milky way (CC BY 4.0), brightened a little and resized
+2k/earth-normal.webp, 4k/earth-normal.webp   Solar System Scope, 8k earth normal map (CC BY 4.0), resized
+4k/*.webp                     Solar System Scope 8k (and 4k Venus atmosphere) maps (CC BY 4.0), resized to 4096 x 2048;
+                              fetched only when the camera comes right up to a body, on a computer
+2k|1k/moon-normal.webp        normal map computed from File:Moon topography map.jpg (CC0; colour-coded heights read back to height)
+2k|1k/mercury-normal.webp     normal map computed from File:Mercury height map.jpg (CC0; centred on 180 degrees, turned half a turn to match)
+

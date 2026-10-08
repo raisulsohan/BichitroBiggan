@@ -242,8 +242,31 @@
   .bbs-btn[data-s="home"] span { display: none; }
   .bbs-btn[data-s="home"] { width: 38px; padding: 0; justify-content: center; }
   .bbs-btn__meta { display: none; }
-  .bbs-icon { width: 38px; height: 38px; }
+  .bbs-icon { width: 34px; height: 34px; }
+  .bbs-icon svg { width: 18px; height: 18px; }
+  .bbs__tools { gap: 4px; flex-wrap: nowrap; }
+  .bbs-btn[data-s="home"] { width: 34px; min-height: 34px; }
 }
+
+/* ---------- the "now" pill: real time ---------- */
+.bbs__now {
+  position: absolute;
+  top: 62px;
+  left: 14px;
+  z-index: 3;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  color: #dfe3ee;
+  background: rgba(8, 10, 20, 0.6);
+  border: 1px solid var(--bbs-line);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.bbs__now[hidden],
+.bbs.is-tour .bbs__now,
+.bbs:not(.is-ready) .bbs__now { display: none; }
+@media (max-width: 600px) { .bbs__now { top: 56px; left: 10px; font-size: 12px; } }
 
 /* ---------- hint ---------- */
 .bbs__hint {
@@ -267,7 +290,7 @@
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 .bbs__hint.is-on { opacity: 1; transform: translate(-50%, 0); }
-@media (max-width: 600px) { .bbs__hint { top: 60px; font-size: 13px; white-space: normal; text-align: center; border-radius: 14px; } }
+@media (max-width: 600px) { .bbs__hint { top: 88px; font-size: 13px; white-space: normal; text-align: center; border-radius: 14px; } }
 
 /* ---------- planet chips ---------- */
 .bbs__chips {

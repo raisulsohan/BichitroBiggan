@@ -465,7 +465,7 @@ EXTRAS.forEach((d) => { d.facts = d.f; d.note = d.n; d.info = []; });
 EXTRAS.forEach((d) => BODIES.push(d));
 const KEY_IDX = {};
 BODIES.forEach((d, i) => { KEY_IDX[d.key] = i; });
-ORDER.push(KUIPER, HELIO, OORT);
+ORDER.push(KEY_IDX.pluto, KUIPER, HELIO, OORT);
 const kindOf = (i) => (i >= 0 && BODIES[i] ? BODIES[i].kind : '');
 const parentIdx = (i) => KEY_IDX[BODIES[i].parent];
 const moonsOf = (key) => EXTRAS.filter((d) => d.kind === 'moon' && d.parent === key).map((d) => KEY_IDX[d.key]);
@@ -544,11 +544,11 @@ scene.add(new THREE.PointLight(0xfff1dd, 2.8, 0, 0));
 
 // stars
 {
-  const n = Q.stars, pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
+  const n = Math.round(Q.stars * 0.45), pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
   for (let i = 0; i < n; i++) {
     const u = rng() * 2 - 1, th = rng() * Math.PI * 2, s = Math.sqrt(1 - u * u), R = 9000 + rng() * 3000;
     pos.set([R * s * Math.cos(th), R * u, R * s * Math.sin(th)], i * 3);
-    const tint = rng(), b = 0.45 + rng() * 0.55;
+    const tint = rng(), b = 0.3 + rng() * 0.5;
     const c = tint < 0.15 ? [1, 0.8, 0.6] : tint < 0.3 ? [0.7, 0.8, 1] : [1, 1, 1];
     col.set(c.map((v) => v * b), i * 3);
   }
@@ -557,6 +557,29 @@ scene.add(new THREE.PointLight(0xfff1dd, 2.8, 0, 0));
   g.setAttribute('color', new THREE.BufferAttribute(col, 3));
   scene.add(new THREE.Points(g, new THREE.PointsMaterial({ size: 1.7, sizeAttenuation: false, vertexColors: true, depthWrite: false })));
 }
+/* the Milky Way: Solar System Scope's star map, which is drawn in galactic coordinates, turned
+   so it sits where it really is around the planets' plane. Drawn first, always behind everything. */
+const SKY_TO_GAL = (() => {
+  const e = 23.4393 * Math.PI / 180, c = Math.cos(e), sn = Math.sin(e);
+  const toEcl = new THREE.Matrix3().set(1, 0, 0, 0, 0, -1, 0, 1, 0);              // scene → ecliptic
+  const toEq = new THREE.Matrix3().set(1, 0, 0, 0, c, -sn, 0, sn, c);             // ecliptic → equatorial
+  const toGal = new THREE.Matrix3().set(-0.0548755604, -0.8734370902, -0.4838350155, 0.4941094279, -0.44482963, 0.7469822445, -0.867666149, -0.1980763734, 0.4559837762);
+  return toGal.multiply(toEq).multiply(toEcl);
+})();
+const skyMat = new THREE.ShaderMaterial({
+  uniforms: { uSky: { value: null }, uToGal: { value: SKY_TO_GAL }, uBright: { value: 1.0 } },
+  vertexShader: 'varying vec3 vDir; void main(){ vDir = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: `uniform sampler2D uSky; uniform mat3 uToGal; uniform float uBright; varying vec3 vDir;
+    void main(){
+      vec3 g = uToGal * normalize(vDir);
+      vec2 uv = vec2(fract(0.5 - atan(g.y, g.x) / 6.2831853), 0.5 + asin(clamp(g.z, -1.0, 1.0)) / 3.1415927);
+      gl_FragColor = vec4(texture2D(uSky, uv).rgb * uBright, 1.0);
+    }`,
+  side: THREE.BackSide, depthWrite: false, depthTest: false,
+});
+const skyMesh = new THREE.Mesh(new THREE.SphereGeometry(1000, 48, 24), skyMat);
+skyMesh.renderOrder = -10; skyMesh.frustumCulled = false; skyMesh.visible = false;
+scene.add(skyMesh);
 
 // sun: boiling granulation, limb darkening, sunspots with their penumbrae and faculae.
 // Everything is a function of uTime, so a paused tour frame is always the same frame.
@@ -683,15 +706,23 @@ const glow2 = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex([[0, 'rgb
 glow2.scale.setScalar(SUN_R * 12); scene.add(glow2);
 
 // atmosphere rim shader
-function atmosphere(radius, color, strength = 1) {
+function atmosphere(radius, color, strength = 1, sunset = false) {
   const m = new THREE.ShaderMaterial({
     uniforms: { uColor: { value: new THREE.Color(...color) }, uS: { value: strength } },
+    defines: sunset ? { SUNSET: 1 } : {},
     vertexShader: `varying vec3 vN; varying vec3 vV; varying vec3 vW;
       void main(){ vec4 wp = modelMatrix*vec4(position,1.); vW = wp.xyz; vN = normalize(mat3(modelMatrix)*normal); vV = normalize(cameraPosition-wp.xyz); gl_Position = projectionMatrix*viewMatrix*wp; }`,
     fragmentShader: `uniform vec3 uColor; uniform float uS; varying vec3 vN; varying vec3 vV; varying vec3 vW;
       void main(){ float rim = pow(1.0 - max(dot(vN, vV), 0.), 4.0);
-        float lit = clamp(dot(vN, normalize(-vW))*0.8+0.35, 0., 1.);
-        gl_FragColor = vec4(uColor*rim*lit*uS*0.6, 1.); }`,
+        float ndl = dot(vN, normalize(-vW));
+        float lit = clamp(ndl*0.8+0.35, 0., 1.);
+        vec3 col = uColor;
+        #ifdef SUNSET
+          // where day turns to night the light has crossed the most air: it reddens, then fades
+          col = mix(uColor, vec3(1.0, 0.42, 0.16), smoothstep(-0.25, 0.05, ndl) * (1.0 - smoothstep(0.05, 0.4, ndl)));
+          lit = smoothstep(-0.3, 0.25, ndl);
+        #endif
+        gl_FragColor = vec4(col*rim*lit*uS*0.6, 1.); }`,
     blending: THREE.AdditiveBlending, transparent: true, depthWrite: false,
   });
   return new THREE.Mesh(new THREE.SphereGeometry(radius, Q.atmoSeg[0], Q.atmoSeg[1]), m);
@@ -717,36 +748,78 @@ const belt = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.11, 0), new
 }
 scene.add(belt);
 
-/* city lights only on the night side: mask the emissive term by the angle to the sun (at the origin) */
-function nightSideEmissive(mat) {
-  mat.onBeforeCompile = (sh) => {
-    sh.fragmentShader = sh.fragmentShader.replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
-      vec3 sunView = (viewMatrix * vec4(0., 0., 0., 1.)).xyz;
-      totalEmissiveRadiance *= smoothstep(0.1, -0.25, dot(normal, normalize(sunView + vViewPosition)));`);
-  };
-}
-
-/* Saturn: ring shadow on the planet (march toward the sun, hit the ring plane, read ring opacity) */
+/* Saturn's ring geometry and the texture the ring and its shadow share */
 const ringC = new THREE.Vector3(), ringN = new THREE.Vector3();
 // one texture serves the rings and the shadow they throw, so the photograph replaces both at once
 const ringTexU = { value: null }, ringTint = new THREE.Color(0xd8d0c0);
-function ringShadowOnPlanet(mat, inner, outer) {
+// Earth's clouds throw shadows on the ground: the cloud photograph, and how far the cloud layer has turned
+const cloudTexU = { value: null }, cloudShiftU = { value: 0 };
+// moon shadows: up to four moons per planet, centre and radius, refreshed every frame
+const SHADOW_MOONS = 4, moonShadows = {};
+/* What a planet's surface shader adds to the standard one:
+   night: city lights on the night side only; ring: Saturn's ring shadow;
+   moons: eclipses where a moon stands between the Sun and the ground; clouds: cloud shadows. */
+function planetShader(mat, f) {
+  mat.customProgramCacheKey = () => 'planet:' + (f.night ? 'n' : '') + (f.ring ? 'r' : '') + (f.moons ? 'm' : '') + (f.clouds ? 'c' : '');
   mat.onBeforeCompile = (sh) => {
-    Object.assign(sh.uniforms, { uRingC: { value: ringC }, uRingN: { value: ringN }, uRingTex: ringTexU, uRingIn: { value: inner }, uRingOut: { value: outer } });
+    const U = sh.uniforms;
+    if (f.ring) Object.assign(U, { uRingC: { value: ringC }, uRingN: { value: ringN }, uRingTex: ringTexU, uRingIn: { value: f.ring[0] }, uRingOut: { value: f.ring[1] } });
+    if (f.moons) U.uMoons = { value: f.moons };
+    if (f.clouds) Object.assign(U, { uClouds: cloudTexU, uCloudShift: cloudShiftU });
     sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vWP;')
       .replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvWP = (modelMatrix * vec4(transformed, 1.0)).xyz;');
-    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', `#include <common>
-      varying vec3 vWP; uniform vec3 uRingC; uniform vec3 uRingN; uniform sampler2D uRingTex; uniform float uRingIn; uniform float uRingOut;`)
-      .replace('#include <opaque_fragment>', `{
+    let decl = 'varying vec3 vWP;\n';
+    if (f.ring) decl += 'uniform vec3 uRingC; uniform vec3 uRingN; uniform sampler2D uRingTex; uniform float uRingIn; uniform float uRingOut;\n';
+    if (f.moons) decl += `uniform vec4 uMoons[${SHADOW_MOONS}];\n`;
+    if (f.clouds) decl += 'uniform sampler2D uClouds; uniform float uCloudShift;\n';
+    let fs = sh.fragmentShader.replace('#include <common>', '#include <common>\n' + decl);
+    if (f.clouds) fs = fs.replace('#include <map_fragment>', `#include <map_fragment>
+      diffuseColor.rgb *= 1.0 - 0.4 * texture2D(uClouds, vec2(fract(vMapUv.x + uCloudShift), vMapUv.y)).g;`);
+    if (f.night) fs = fs.replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+      vec3 sunView = (viewMatrix * vec4(0., 0., 0., 1.)).xyz;
+      totalEmissiveRadiance *= smoothstep(0.1, -0.25, dot(normal, normalize(sunView + vViewPosition)));`);
+    let shade = '';
+    if (f.ring) shade += `{
         vec3 L = normalize(-vWP); float dn = dot(L, uRingN);
         float s = dot(uRingC - vWP, uRingN) / (abs(dn) < 1e-4 ? 1e-4 : dn);
         float r = length(vWP + L * s - uRingC);
         float u = (r - uRingIn) / (uRingOut - uRingIn);
         float a = texture2D(uRingTex, vec2(clamp(u, 0., 1.), .5)).a * step(0., s) * step(0., u) * step(u, 1.);
         outgoingLight *= 1. - a * 0.8;
-      }
-      #include <opaque_fragment>`);
+      }`;
+    if (f.moons) shade += `{
+        vec3 L = normalize(-vWP); float lit = 1.0;
+        for (int k = 0; k < ${SHADOW_MOONS}; k++) {
+          vec4 m = uMoons[k];
+          if (m.w <= 0.0) continue;
+          vec3 cp = m.xyz - vWP; float t = dot(cp, L);
+          if (t <= 0.0) continue;
+          float d = length(cp - L * t);
+          lit *= mix(0.1, 1.0, smoothstep(m.w * 0.7, m.w * 1.3, d));
+        }
+        outgoingLight *= lit;
+      }`;
+    if (shade) fs = fs.replace('#include <opaque_fragment>', shade + '\n      #include <opaque_fragment>');
+    sh.fragmentShader = fs;
   };
+}
+/* the moons whose shadows each planet can catch */
+function shadowSet(key) {
+  const ids = key === 'earth' ? [KEY_IDX.moon] : moonsOf(key).slice(0, SHADOW_MOONS);
+  if (!ids.length) return null;
+  moonShadows[key] = { ids, list: Array.from({ length: SHADOW_MOONS }, () => new THREE.Vector4(0, 0, 0, 0)) };
+  return moonShadows[key].list;
+}
+const _ms = new THREE.Vector3();
+function updateMoonShadows() {
+  for (const key in moonShadows) {
+    const m = moonShadows[key];
+    m.ids.forEach((id, j) => {
+      if (!XR[id]) return;
+      bodyWorld(id, _ms);
+      m.list[j].set(_ms.x, _ms.y, _ms.z, BODIES[id].r);
+    });
+  }
 }
 
 /* Saturn's rings: planet shadow across the rings, and dimmer when seen from the unlit face */
@@ -776,15 +849,17 @@ const TEX_DIR = new URL('../img/solar/' + (IS_MOBILE ? '1k' : '2k') + '/', impor
 const TEX_V = '1';
 const LOW = IS_MOBILE ? 192 : 384;
 const REAL = {
-  mercury: { map: 'mercury' }, venus: { map: 'venus' },
-  earth: { map: 'earth-day', night: 'earth-night', clouds: 'earth-clouds', rough: 'earth-rough' },
-  moon: { map: 'moon' }, mars: { map: 'mars' }, jupiter: { map: 'jupiter' },
+  mercury: { map: 'mercury', normal: 'mercury-normal' }, venus: { map: 'venus' },
+  earth: { map: 'earth-day', night: 'earth-night', clouds: 'earth-clouds', rough: 'earth-rough', ...(IS_MOBILE ? {} : { normal: 'earth-normal' }) },
+  moon: { map: 'moon', normal: 'moon-normal' }, mars: { map: 'mars' }, jupiter: { map: 'jupiter' },
   saturn: { map: 'saturn', ring: 'saturn-ring' }, uranus: { map: 'uranus' }, neptune: { map: 'neptune' },
 };
 const SRGB_KEYS = new Set(['map', 'night', 'ring']);
-const BUMP = { mercury: 1.6, mars: 0.8, moon: 1.4 };   // the photograph's own light and shade, used as relief
+// Mars has no height map here: its photograph's own light and shade stands in for relief.
+// The Moon and Mercury get normal maps made from real height maps instead.
+const BUMP = { mars: 0.8 };
 let texTotal = 0, texDone = 0;
-function fetchTex(name, srgb) {
+function fetchTex(name, srgb, opt = {}) {
   texTotal++;
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -794,6 +869,7 @@ function fetchTex(name, srgb) {
       const t = new THREE.Texture(img);
       t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
       t.anisotropy = Math.min(IS_MOBILE ? 4 : 8, renderer.capabilities.getMaxAnisotropy());
+      if (opt.noMips) { t.generateMipmaps = false; t.minFilter = THREE.LinearFilter; }
       t.needsUpdate = true;
       renderer.initTexture(t);
       texDone++;
@@ -804,7 +880,7 @@ function fetchTex(name, srgb) {
       texDone++;
       reject(new Error('texture ' + name));
     };
-    img.src = TEX_DIR + name + '.webp?v=' + TEX_V;
+    img.src = (opt.dir || TEX_DIR) + name + '.webp?v=' + TEX_V;
     if (img.decode) img.decode().then(done, fail); else { img.onload = done; img.onerror = fail; }
   });
 }
@@ -837,10 +913,13 @@ function buildPlanet(p) {
   const orbit = new THREE.Group(); // positioned on orbit
   const tilt = new THREE.Group(); tilt.rotation.z = p.tilt; orbit.add(tilt);
   const mat = new THREE.MeshStandardMaterial({ roughness: 1, metalness: 0 });
-  if (p.key === 'earth') { mat.emissive.set(0xffffff); mat.emissiveIntensity = 1.4; nightSideEmissive(mat); }
+  if (p.key === 'earth') { mat.emissive.set(0xffffff); mat.emissiveIntensity = 1.4; }
+  const shadows = shadowSet(p.key);
+  if (p.key === 'earth') planetShader(mat, { night: true, clouds: true, moons: shadows });
+  else if (!p.ring && shadows) planetShader(mat, { moons: shadows });
   const mesh = new THREE.Mesh(new THREE.SphereGeometry(p.r, Q.seg[0], Q.seg[1]), mat);
   tilt.add(mesh);
-  if (p.atmo) orbit.add(atmosphere(p.r * 1.05, p.atmo, p.key === 'earth' ? 1.4 : 0.9));
+  if (p.atmo) orbit.add(atmosphere(p.r * 1.05, p.atmo, p.key === 'earth' ? 1.5 : 0.9, p.key === 'earth'));
   if (p.key === 'earth') {
     earthClouds = new THREE.Mesh(new THREE.SphereGeometry(p.r * 1.012, Q.seg[0], Q.seg[1]), new THREE.MeshStandardMaterial({ transparent: true, depthWrite: false, roughness: 1 }));
     tilt.add(earthClouds);
@@ -866,7 +945,7 @@ function buildPlanet(p) {
     ringTexU.value = new THREE.CanvasTexture(cv); ringTexU.value.colorSpace = THREE.SRGBColorSpace;
     const ring = new THREE.Mesh(geo, ringMaterial(p.r));
     ring.rotation.x = -Math.PI / 2; tilt.add(ring);
-    ringShadowOnPlanet(mat, inner, outer);
+    planetShader(mat, { ring: [inner, outer], moons: shadows });
     ringN.set(-Math.sin(p.tilt), Math.cos(p.tilt), 0); // ring plane normal: +Y rotated by the axial tilt
     saturnRing = orbit;
   }
@@ -883,6 +962,7 @@ function paintBody(b, size) {
   b.mesh.material.bumpScale = p.key === 'earth' ? 1.2 : 2.5;
   if (p.key === 'earth') {
     swapMaps(earthClouds.material, { map: paint(size, size / 2, PAINTERS.clouds), alphaMap: null });
+    cloudTexU.value = null;
     earthClouds.material.opacity = 1;
   }
 }
@@ -894,15 +974,17 @@ function paintMoon(size) {
 function applyReal(b, tx) {
   const key = b.p.key, m = b.mesh.material;
   if (key === 'earth') {
-    swapMaps(m, { map: tx.map, bumpMap: null, roughnessMap: tx.rough, emissiveMap: tx.night });
+    swapMaps(m, { map: tx.map, bumpMap: null, roughnessMap: tx.rough, emissiveMap: tx.night, normalMap: tx.normal || null });
     m.emissiveIntensity = 1.6;
+    cloudTexU.value = tx.clouds;
     // the cloud photograph is grey: white cloud, its brightness as opacity
     swapMaps(earthClouds.material, { map: null, alphaMap: tx.clouds });
     earthClouds.material.opacity = 0.92;
     return;
   }
-  swapMaps(m, { map: tx.map, bumpMap: BUMP[key] ? tx.map : null, roughnessMap: null, emissiveMap: null });
+  swapMaps(m, { map: tx.map, bumpMap: BUMP[key] ? tx.map : null, roughnessMap: null, emissiveMap: null, normalMap: tx.normal || null });
   if (BUMP[key]) m.bumpScale = BUMP[key];
+  if (tx.normal) m.normalScale.set(1.4, 1.4);
   if (key === 'saturn') {
     ringTexU.value.dispose();
     ringTexU.value = tx.ring;
@@ -910,9 +992,70 @@ function applyReal(b, tx) {
   }
 }
 function applyMoon(tx) {
-  swapMaps(moon.material, { map: tx.map, bumpMap: tx.map });
-  moon.material.bumpScale = BUMP.moon;
+  swapMaps(moon.material, { map: tx.map, bumpMap: null, normalMap: tx.normal });
+  moon.material.normalScale.set(1.4, 1.4);
 }
+/* 4k close-ups, on a computer only: fetched the first time the camera comes right up to a body */
+const HI_DIR = new URL('../img/solar/4k/', import.meta.url).href;
+const HI = {
+  earth: { map: 'earth-day', night: 'earth-night', normal: 'earth-normal' }, moon: { map: 'moon' }, mercury: { map: 'mercury' },
+  venus: { map: 'venus' }, mars: { map: 'mars' }, jupiter: { map: 'jupiter' }, saturn: { map: 'saturn' },
+};
+const HI_OK = !IS_MOBILE && renderer.capabilities.maxTextureSize >= 4096;
+const hiState = {}, _hw = new THREE.Vector3();
+function checkHi() {
+  if (!HI_OK || focus < 0 || fly) return;
+  const d = BODIES[focus], key = d.key;
+  if (!HI[key] || hiState[key]) return;
+  // close means about the distance a flight to it ends at, or nearer
+  const near = d.kind === 'planet' ? viewDist(d) * fit() * 1.25 : Math.max(d.r * 5.5 * fit() * 1.25, d.r * 8);
+  if (camera.position.distanceTo(bodyWorld(focus, _hw)) > near) return;
+  hiState[key] = 'loading';
+  const names = Object.keys(HI[key]);
+  Promise.all(names.map((k) => fetchTex(HI[key][k], k !== 'normal', { dir: HI_DIR }))).then((list) => {
+    const tx = {};
+    names.forEach((k, i) => { tx[k] = list[i]; });
+    if (key === 'moon') swapMaps(moon.material, { map: tx.map });
+    else {
+      const m = bodies[planetIdx(key) - 1].mesh.material;
+      if (key === 'earth') swapMaps(m, { map: tx.map, emissiveMap: tx.night, normalMap: tx.normal });
+      else swapMaps(m, { map: tx.map, bumpMap: BUMP[key] ? tx.map : m.bumpMap });
+    }
+    hiState[key] = 'done';
+  }, () => { hiState[key] = 'failed'; });
+}
+/* Real time. Explore mode shows the Solar System as it is at this moment by the viewer's own
+   clock: the planets at today's positions (mean orbital elements, J2000, good to about a degree),
+   Earth turned by Greenwich sidereal time with its axis tilted the way it really is, and the Moon
+   where it really is, so its phase is right. Night falls on Dhaka when it is night in Dhaka. */
+const J2000 = Date.UTC(2000, 0, 1, 12, 0, 0);
+const daysNow = () => (Date.now() - J2000) / 864e5;
+// mean longitude L0 and its daily rate, longitude of perihelion, eccentricity (degrees)
+const ELEMENTS = [[252.2503, 4.0923344, 77.4565, 0.2056], [181.9798, 1.6021302, 131.5637, 0.0068], [100.4664, 0.9856474, 102.9373, 0.0167], [355.4533, 0.5240208, 336.0602, 0.0934],
+  [34.3965, 0.0830853, 14.7285, 0.0484], [49.9543, 0.0334442, 92.5988, 0.0539], [313.2381, 0.0117331, 170.9543, 0.0473], [304.8800, 0.0059810, 44.9648, 0.0086]];
+const SPIN_DAYS = [58.646, -243.02, 0.99727, 1.026, 0.4135, 0.4440, -0.7183, 0.6713];
+function realLon(i, d) {
+  const [L0, n, peri, e] = ELEMENTS[i];
+  const L = (L0 + n * d) * Math.PI / 180, M = L - peri * Math.PI / 180;
+  return L + 2 * e * Math.sin(M) + 1.25 * e * e * Math.sin(2 * M); // equation of centre
+}
+const EPS = 23.4393 * Math.PI / 180;
+const EQ_X = new THREE.Vector3(1, 0, 0), EQ_Y = new THREE.Vector3(0, -Math.sin(EPS), -Math.cos(EPS)), EQ_Z = new THREE.Vector3(0, Math.cos(EPS), -Math.sin(EPS));
+const earthQ = new THREE.Quaternion(), _bm = new THREE.Matrix4(), _c0 = new THREE.Vector3(), _c2 = new THREE.Vector3();
+/* Earth's orientation: the texture's Greenwich meridian faces the sidereal angle of Greenwich */
+function earthOrientation(d, out) {
+  const th = (280.46061837 + 360.98564736629 * d) * Math.PI / 180;
+  _c0.copy(EQ_X).multiplyScalar(Math.cos(th)).addScaledVector(EQ_Y, Math.sin(th));
+  _c2.copy(EQ_X).multiplyScalar(Math.sin(th)).addScaledVector(EQ_Y, -Math.cos(th));
+  return out.setFromRotationMatrix(_bm.makeBasis(_c0, EQ_Z, _c2));
+}
+function moonLon(d) {
+  const M = (134.963 + 13.064993 * d) * Math.PI / 180;
+  return (218.316 + 13.176396 * d) * Math.PI / 180 + 6.289 * Math.PI / 180 * Math.sin(M);
+}
+let fast = false;                 // false: real time; true: the planets sped up
+const liveA0 = PLANETS.map((p) => p.a0);
+const _ry = new THREE.Quaternion();
 const planetPos = (i, t, out = new THREE.Vector3()) => { const p = PLANETS[i], a = p.a0 + p.w * t; return out.set(Math.cos(a) * p.a, 0, -Math.sin(a) * p.a); };
 
 
@@ -1081,15 +1224,17 @@ function buildHeliosphere() {
   });
 }
 
-function updateExtras(t) {
+function updateExtras(t, real, days) {
   for (const k in XR) {
     const x = XR[k], i = +k, d = BODIES[i];
     if (d.kind === 'moon' && !d.existing) {
-      const a = x.a0 + x.w * t;
+      // in real time a moon goes round at its true rate (its starting point is not real)
+      const a = real ? x.a0 + days / d.P * Math.PI * 2 : x.a0 + x.w * t;
       x.obj.position.set(Math.cos(a) * x.R, 0, -Math.sin(a) * x.R);
       x.obj.rotation.y = a + Math.PI; // the same face always turned to its planet
     } else if (d.kind === 'dwarf') {
-      dwarfPos(x.orbit, t, x.obj.position);
+      if (real) dwarfPos({ ...x.orbit, a0: x.orbit.a0 + days / (x.orbit.T * 365.25) * Math.PI * 2 }, 0, x.obj.position);
+      else dwarfPos(x.orbit, t, x.obj.position);
       x.mesh.rotation.y = t * (d.key === 'haumea' ? 1.6 : 0.3);
     }
   }
@@ -1168,7 +1313,25 @@ const fit = () => clamp(1.3 / camera.aspect, 1, 1.9);
 let mode = 'explore';          // 'explore' | 'tour'
 let worldT = 0;                // drives the planets
 let fxT = 0;                   // the sun's surface keeps moving in explore mode
-let orbitsOn = true;
+const nowEl = document.createElement('p');
+nowEl.className = 'bbs__now';
+nowEl.setAttribute('aria-live', 'off');
+root.appendChild(nowEl);
+const nowFmtEn = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+const BN_MONTHS = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+/* "৮ অক্টোবর, বিকেল ৩:৪৭": the way the time is said in Bengali, not a translated English clock */
+function nowText(d) {
+  if (EN) return nowFmtEn.format(d);
+  const h = d.getHours(), m = String(d.getMinutes()).padStart(2, '0');
+  const part = h < 4 ? 'রাত' : h < 6 ? 'ভোর' : h < 12 ? 'সকাল' : h < 15 ? 'দুপুর' : h < 18 ? 'বিকেল' : h < 20 ? 'সন্ধ্যা' : 'রাত';
+  return bn(d.getDate() + ' ' + BN_MONTHS[d.getMonth()] + ', ' + part + ' ' + (h % 12 || 12) + ':' + m);
+}
+let nowShown = '';
+function updateNow() {
+  const txt2 = (EN ? 'Live · ' : 'এখন · ') + nowText(new Date());
+  if (txt2 !== nowShown) { nowEl.textContent = txt2; nowShown = txt2; }
+  nowEl.hidden = !realNow() || !ready;
+}
 let tourT = 0, playing = false, speed = 1, loop = false;
 let free = false;              // tour paused and the viewer has taken the camera
 let dirty = true, ready = false, visible = true, seeking = false;
@@ -1252,6 +1415,7 @@ function flyTo(idx, opts = {}) {
   _goal.copy(L).add(off);
   const dur = REDUCED ? 0.01 : (opts.dur || clamp(1 + fromP.distanceTo(_goal) / 140, 1.2, 2.6));
   fly = { idx, t: 0, dur, fromP, fromQ: controls.target.clone(), off };
+  if (!opts.dur) sfxWhoosh(dur);
   focus = idx;
   setLimits(idx);
   syncControls();
@@ -1363,6 +1527,7 @@ function openCard(idx) {
     '</div>' : '');
   card.hidden = false;
   card.scrollTop = 0;
+  sfxChime();
   cardIdx = idx;
   chipEls.forEach((c) => c.setAttribute('aria-pressed', +c.dataset.i === idx ? 'true' : 'false'));
 }
@@ -1471,19 +1636,50 @@ function setCaption(j) {
   capEl.querySelector('ul').innerHTML = x.info.map((s) => `<li>${s}</li>`).join('');
 }
 
+const realNow = () => mode === 'explore' && !fast;
 function updateWorld(t, fx) {
   sunMat.uniforms.uTime.value = fx;
   sun.rotation.y = t * 0.03;
+  const real = realNow(), d = daysNow();
   for (let i = 0; i < bodies.length; i++) {
     const b = bodies[i];
-    planetPos(i, t, b.orbit.position);
-    b.mesh.rotation.y = t * b.p.spin;
+    if (real) {
+      const a = realLon(i, d);
+      b.orbit.position.set(Math.cos(a) * b.p.a, 0, -Math.sin(a) * b.p.a);
+      b.mesh.rotation.y = d / SPIN_DAYS[i] * Math.PI * 2;
+    } else if (mode === 'explore') {
+      const a = liveA0[i] + b.p.w * t;
+      b.orbit.position.set(Math.cos(a) * b.p.a, 0, -Math.sin(a) * b.p.a);
+      b.mesh.rotation.y = t * b.p.spin;
+    } else {
+      planetPos(i, t, b.orbit.position);
+      b.mesh.rotation.y = t * b.p.spin;
+    }
   }
-  if (earthClouds) earthClouds.rotation.y = t * 0.04;
-  if (moon) { const a = t * 1.1 + 1; moon.position.set(Math.cos(a) * 2.3, Math.sin(a) * 0.25, -Math.sin(a) * 2.3); moon.rotation.y = -a; }
+  const earth = bodies[2];
+  if (earth && earthClouds) {
+    if (real) {
+      // the real Earth: its true axis and turn; the clouds drift slowly over it
+      earth.mesh.parent.quaternion.identity();
+      earthOrientation(d, earth.mesh.quaternion);
+      const drift = fx * 0.004;
+      earthClouds.quaternion.copy(earth.mesh.quaternion).multiply(_ry.setFromAxisAngle(UP, drift));
+      cloudShiftU.value = -drift / (Math.PI * 2);
+    } else {
+      earth.mesh.parent.rotation.set(0, 0, earth.p.tilt);
+      earth.mesh.rotation.set(0, t * earth.p.spin, 0);
+      earthClouds.rotation.set(0, t * 0.04, 0);
+      cloudShiftU.value = (earth.mesh.rotation.y - earthClouds.rotation.y) / (Math.PI * 2);
+    }
+  }
+  if (moon) {
+    const a = real ? moonLon(d) : t * 1.1 + 1;
+    moon.position.set(Math.cos(a) * 2.3, real ? 0 : Math.sin(a) * 0.25, -Math.sin(a) * 2.3);
+    moon.rotation.y = real ? a + Math.PI : -a;   // the same face always turned to Earth
+  }
   belt.rotation.y = t * 0.02;
   if (saturnRing) ringC.copy(saturnRing.position);
-  updateExtras(t);
+  updateExtras(t, real, d);
 }
 
 /* with the card open, slide the picture so the chosen body sits in the space
@@ -1543,6 +1739,8 @@ function renderFrame() {
   // the near plane follows the zoom: close enough for a moon, far enough to keep depth precise out at the Oort cloud
   const nearW = clamp(camera.position.distanceTo(controls.target) * 0.004, 0.02, 6);
   if (Math.abs(camera.near - nearW) > nearW * 0.2) { camera.near = nearW; camera.updateProjectionMatrix(); }
+  skyMesh.position.copy(camera.position);
+  updateMoonShadows();
   sunRim.lookAt(camera.position);
   const sd = camera.position.length();
   rimMat.uniforms.uLimb.value = Math.sqrt(Math.max(0.0001, 1 - (SUN_R / Math.max(sd, SUN_R * 1.0001)) ** 2));
@@ -1613,6 +1811,7 @@ function updateUI() {
   root.classList.toggle('is-free', mode === 'tour' && free);
   $('bigplay').hidden = !(mode === 'tour' && !playing && !free && ready);
   $('camreset').hidden = !(mode === 'tour' && free);
+  updateNow();
   syncControls();
 }
 
@@ -1668,11 +1867,15 @@ $('camreset').addEventListener('click', endFreeLook);
 $('home').addEventListener('click', goHome);
 root.querySelectorAll('[data-s="fs"]').forEach((b) => b.addEventListener('click', toggleFs));
 $('orbits').addEventListener('click', () => {
-  orbitsOn = !orbitsOn;
+  fast = !fast;
+  // sped-up motion picks up from where the planets really are
+  if (fast) { const d = daysNow(); PLANETS.forEach((p, i) => { liveA0[i] = realLon(i, d) - p.w * worldT; }); }
   const b = $('orbits');
-  b.setAttribute('aria-pressed', orbitsOn ? 'true' : 'false');
-  b.title = orbitsOn ? b.dataset.on : b.dataset.off;
+  b.setAttribute('aria-pressed', fast ? 'true' : 'false');
+  b.title = fast ? b.dataset.on : b.dataset.off;
   b.setAttribute('aria-label', b.title);
+  updateNow();
+  dirty = true;
 });
 $('labels').addEventListener('click', () => {
   labelsOn = !labelsOn;
@@ -1688,6 +1891,92 @@ const endSeek = () => { if (seeking) { seeking = false; updateUI(); } };
 seek.addEventListener('pointerup', endSeek); seek.addEventListener('change', endSeek);
 // a mouse click leaves focus on the button, and Space would then press it again
 root.querySelectorAll('.bbs-bar button').forEach((b) => b.addEventListener('pointerup', (e) => { if (e.pointerType === 'mouse') b.blur(); }));
+
+/* ---------------- sound effects (explore mode only; the tour stays silent) ----------------
+   All made in code with the Web Audio API: a low drone of space that deepens as the camera pulls
+   back, a whoosh for each flight, a soft chime for a card and the Sun's rumble up close. Starts with
+   the first touch of the scene, as browsers require, and goes quiet when the scene is off screen. */
+const sfx = { on: true, ctx: null };
+try { if (localStorage.getItem('bb_solar_sfx') === '0') sfx.on = false; } catch (e) { /* storage blocked */ }
+function sfxStart() {
+  if (!sfx.on) return;
+  if (sfx.ctx) { if (sfx.ctx.state === 'suspended') sfx.ctx.resume(); return; }
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return;
+  const c = sfx.ctx = new AC();
+  const master = sfx.master = c.createGain();
+  master.gain.setValueAtTime(0, c.currentTime);
+  master.gain.setTargetAtTime(0.9, c.currentTime, 1.2);
+  master.connect(c.destination);
+  // brown noise: the raw material for wind, whooshes and the Sun
+  const nb = c.createBuffer(1, c.sampleRate * 3, c.sampleRate), nd = nb.getChannelData(0);
+  let last = 0;
+  for (let i = 0; i < nd.length; i++) { last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02; nd[i] = last * 3.5; }
+  sfx.noise = nb;
+  const lp = sfx.ambLP = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 420; lp.Q.value = 0.6;
+  const amb = sfx.amb = c.createGain(); amb.gain.value = 0.05;
+  lp.connect(amb); amb.connect(master);
+  [[55, 0.5, 'sine'], [55.4, 0.5, 'sine'], [82.4, 0.22, 'triangle'], [110.2, 0.12, 'triangle'], [164.8, 0.06, 'triangle']].forEach(([f, v, ty]) => {
+    const o = c.createOscillator(); o.type = ty; o.frequency.value = f;
+    const g = c.createGain(); g.gain.value = v; o.connect(g); g.connect(lp); o.start();
+  });
+  const lfo = c.createOscillator(); lfo.frequency.value = 0.05;
+  const lg = c.createGain(); lg.gain.value = 140; lfo.connect(lg); lg.connect(lp.frequency); lfo.start();
+  const wind = c.createBufferSource(); wind.buffer = nb; wind.loop = true;
+  const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 600; bp.Q.value = 0.7;
+  const wg = c.createGain(); wg.gain.value = 0.012; wind.connect(bp); bp.connect(wg); wg.connect(master); wind.start();
+  const rum = c.createBufferSource(); rum.buffer = nb; rum.loop = true;
+  const rlp = c.createBiquadFilter(); rlp.type = 'lowpass'; rlp.frequency.value = 140;
+  const rg = sfx.rum = c.createGain(); rg.gain.value = 0; rum.connect(rlp); rlp.connect(rg); rg.connect(master); rum.start();
+}
+function sfxLive() { return sfx.on && sfx.ctx && sfx.ctx.state === 'running' && mode === 'explore'; }
+function sfxWhoosh(dur) {
+  if (!sfxLive() || dur < 0.3) return;
+  const c = sfx.ctx, t = c.currentTime;
+  const src = c.createBufferSource(); src.buffer = sfx.noise; src.loop = true;
+  const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.2;
+  bp.frequency.setValueAtTime(220, t); bp.frequency.exponentialRampToValueAtTime(1400, t + dur * 0.5); bp.frequency.exponentialRampToValueAtTime(260, t + dur);
+  const g = c.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.22, t + dur * 0.45); g.gain.linearRampToValueAtTime(0, t + dur);
+  src.connect(bp); bp.connect(g);
+  if (c.createStereoPanner) {
+    const pan = c.createStereoPanner(); pan.pan.setValueAtTime(-0.6, t); pan.pan.linearRampToValueAtTime(0.6, t + dur);
+    g.connect(pan); pan.connect(sfx.master);
+  } else g.connect(sfx.master);
+  src.start(t, Math.random() * 2); src.stop(t + dur + 0.1);
+}
+function sfxChime() {
+  if (!sfxLive()) return;
+  const c = sfx.ctx, t = c.currentTime + 0.02;
+  [[660, 0.045], [990, 0.025], [1320, 0.012]].forEach(([f, v], k) => {
+    const o = c.createOscillator(); o.type = 'sine'; o.frequency.value = f;
+    const g = c.createGain(); g.gain.setValueAtTime(0, t + k * 0.04); g.gain.linearRampToValueAtTime(v, t + k * 0.04 + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + k * 0.04 + 1.6);
+    o.connect(g); g.connect(sfx.master); o.start(t + k * 0.04); o.stop(t + k * 0.04 + 1.7);
+  });
+}
+function sfxUpdate() {
+  if (!sfx.ctx) return;
+  const want = sfx.on && visible && !document.hidden && mode === 'explore';
+  if (!want) { if (sfx.ctx.state === 'running') sfx.ctx.suspend(); return; }
+  if (sfx.ctx.state === 'suspended') sfx.ctx.resume();
+  const ds = camera.position.length(), t = sfx.ctx.currentTime;
+  sfx.rum.gain.setTargetAtTime(0.4 * (1 - smooth(14, 70, ds)), t, 0.3);
+  sfx.amb.gain.setTargetAtTime(0.05 * (0.7 + 0.5 * smooth(150, 900, ds)), t, 0.6);
+  sfx.ambLP.frequency.setTargetAtTime(420 - 180 * smooth(150, 900, ds), t, 0.6);
+}
+function syncSoundButton() {
+  const b = $('sound');
+  b.setAttribute('aria-pressed', sfx.on ? 'true' : 'false');
+  b.title = sfx.on ? b.dataset.on : b.dataset.off;
+  b.setAttribute('aria-label', b.title);
+}
+$('sound').addEventListener('click', () => {
+  sfx.on = !sfx.on;
+  try { localStorage.setItem('bb_solar_sfx', sfx.on ? '1' : '0'); } catch (e) { /* storage blocked */ }
+  if (sfx.on) sfxStart(); else if (sfx.ctx) sfx.ctx.suspend();
+  syncSoundButton();
+});
+syncSoundButton();
+root.addEventListener('pointerdown', sfxStart);
 
 /* ---------------- fullscreen (with a stand-in for phones that have none) ---------------- */
 let fsPending = false;
@@ -1764,7 +2053,7 @@ root.addEventListener('pointermove', poke);
 root.addEventListener('focusin', poke);
 
 /* ---------------- loop ---------------- */
-let lastPerf = performance.now(), slow = 0, frames = 0;
+let lastPerf = performance.now(), slow = 0, frames = 0, hiTimer = 0;
 function tick(now) {
   requestAnimationFrame(tick);
   const dt = Math.min(0.1, (now - lastPerf) / 1000); lastPerf = now;
@@ -1779,11 +2068,15 @@ function tick(now) {
     }
     worldT = tourT;
   } else {
-    if (orbitsOn) worldT += dt;
+    if (fast) worldT += dt;
     fxT += dt;
     dirty = true;
   }
+  if (frames % 30 === 0) updateNow();
   if (!visible || document.hidden) return;
+  sfxUpdate();
+  hiTimer += dt;
+  if (hiTimer > 0.5) { hiTimer = 0; checkHi(); }
   if (fly) { if (mode === 'explore') updateWorld(worldT, fxT); stepFly(dt); dirty = true; }
   else if (mode === 'explore') { updateWorld(worldT, fxT); follow(); }
   if (controls.enabled && controls.update()) dirty = true;
@@ -1802,9 +2095,9 @@ function tick(now) {
 // for testing in the browser console
 window.__bbSolar = {
   get mode() { return mode; }, get t() { return tourT; }, get worldT() { return worldT; }, get playing() { return playing; }, get speed() { return speed; },
-  get loop() { return loop; }, get free() { return free; }, get focus() { return focus; },
+  get loop() { return loop; }, get free() { return free; }, get focus() { return focus; }, get fast() { return fast; }, get sfx() { return { on: sfx.on, state: sfx.ctx ? sfx.ctx.state : null }; },
   get flying() { return !!fly; }, get card() { return cardIdx; }, get dpr() { return dpr; },
-  camera, controls, pick, select, setTime, render: () => renderFrame(),
+  camera, controls, scene, pick, select, setTime, render: () => renderFrame(), get clouds() { return earthClouds; }, cloudShift: cloudShiftU, cloudTex: cloudTexU, renderer,
 };
 
 const progressEl = $('progress'), loadText = $('loadtext');
@@ -1832,6 +2125,7 @@ function progress(x) {
     buildExtras();
     // each photograph replaces its painting as it arrives; one that fails gets a full-size painting
     for (const b of bodies) jobs[b.p.key].then((tx) => applyReal(b, tx), () => paintBody(b, Q.tex));
+    fetchTex('sky', true, { noMips: true }).then((t) => { skyMat.uniforms.uSky.value = t; skyMesh.visible = true; dirty = true; }, () => {});
     jobs.moon.then(applyMoon, () => paintMoon(Q.moon));
     // wait for them, but not for ever: on a slow line the paintings show first
     const waitFrom = performance.now();
