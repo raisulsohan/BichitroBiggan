@@ -3,7 +3,7 @@ Theme Name: Bichitro Biggan
 Theme URI: https://bichitrobiggan.com
 Author: Raisul Sohan
 Description: Bichitro Biggan is a modern, super-fast, and completely zero-plugin classic WordPress theme built for a Bengali science magazine and digital publication. Custom-made and developed from scratch by Raisul Sohan, it is designed with a world-class reading experience, built-in SEO, live search, and comprehensive customizer controls.
-Version: 7.37.0
+Version: 7.38.0
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
@@ -3466,6 +3466,54 @@ body.admin-bar .bb-nav.is-stuck { top: 32px; }
   .bb-nav-action-btn--solar .bb-nav-action-btn__text { display: inline; }
   .bb-solar-fresh .bb-nav-action-btn--solar .bb-solar-new { display: none; }
 }
+/* In the top bar it is a gold-edged pill as well, so the glow has an edge
+   to follow. */
+.bb-topbar__btn.bb-topbar__btn--solar {
+  position: relative;
+  padding: 2px 10px 2px 5px;
+  border: 1px solid rgba(255, 183, 3, 0.8);
+  border-radius: 999px;
+  background: rgba(255, 183, 3, 0.1);
+}
+.bb-topbar__btn.bb-topbar__btn--solar:hover { color: #ffe2a3; background: rgba(255, 183, 3, 0.2); }
+@media (max-width: 480px) {
+  .bb-topbar__btn.bb-topbar__btn--solar { padding: 2px 5px; }
+}
+/* And it always draws the eye, as the real-time button does on the solar
+   page: a gold ring breathing out from its edge, and a light sweeping
+   across its face. Readers who ask for less motion get a steady glow. */
+.bb-nav__sticky-actions .bb-nav-action-btn.bb-nav-action-btn--solar,
+.bb-topbar__btn.bb-topbar__btn--solar { animation: bb-solar-ring 2.4s ease-out infinite; }
+.bb-nav-action-btn--solar::after,
+.bb-topbar__btn--solar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(100deg, transparent 38%, rgba(255, 236, 180, 0.55) 50%, transparent 62%) no-repeat;
+  background-size: 250% 100%;
+  animation: bb-solar-sweep 3.6s ease-in-out 0.8s infinite;
+  pointer-events: none;
+}
+@keyframes bb-solar-ring {
+  0% { box-shadow: 0 0 0 0 rgba(255, 183, 3, 0.6), 0 0 12px rgba(255, 183, 3, 0.35); }
+  70% { box-shadow: 0 0 0 8px rgba(255, 183, 3, 0), 0 0 12px rgba(255, 183, 3, 0.35); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 183, 3, 0), 0 0 12px rgba(255, 183, 3, 0.35); }
+}
+/* the band starts off the left edge and runs out past the right one, then waits */
+@keyframes bb-solar-sweep {
+  0%, 50% { background-position: 150% 0; }
+  100% { background-position: -50% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bb-nav__sticky-actions .bb-nav-action-btn.bb-nav-action-btn--solar,
+  .bb-topbar__btn.bb-topbar__btn--solar {
+    animation: none;
+    box-shadow: 0 0 0 2px rgba(255, 183, 3, 0.45), 0 0 12px rgba(255, 183, 3, 0.4);
+  }
+  .bb-nav-action-btn--solar::after,
+  .bb-topbar__btn--solar::after { display: none; }
+}
 
 
 .bb-nav-action-btn { position: relative; }
@@ -4220,6 +4268,16 @@ textarea:focus-visible,
   .bb-topbar__actions { gap: 8px; }
   .bb-topbar__lang { padding: 0 7px; gap: 4px; }
   .bb-nav-action-btn--lang { padding: 0 8px; }
+}
+
+/* The top bar's buttons keep their words on one line ("পরে পড়ুন" used to
+   break in two on a phone): the date gives way first, shortening with an
+   ellipsis, and on the narrowest phones the bookmarks button keeps only
+   its icon, as the solar link does under 480px. */
+.bb-topbar__btn { white-space: nowrap; }
+.bb-topbar__actions { flex-shrink: 0; }
+@media (max-width: 360px) {
+  .bb-topbar__btn--bookmarks .bb-topbar__btn-text { display: none; }
 }
 
 .bb-single .bb-authorrow__date {

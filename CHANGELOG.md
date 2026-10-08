@@ -2,6 +2,16 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.38.0
+
+- The header link to the 3D solar system always draws the eye now, as the
+  real-time button on the solar page does: a gold ring breathes out from its
+  edge and a light sweeps across it, all the time (a steady glow for readers
+  who ask for less motion). In the top bar it is a gold-edged pill too.
+- The top bar's buttons keep their words on one line: "পরে পড়ুন" no longer
+  breaks in two on a phone. The date shortens first, and under 360px the
+  bookmarks button keeps only its icon.
+
 ## 7.37.0
 
 - The header link to the 3D solar system stands out. Among the stuck menu's
