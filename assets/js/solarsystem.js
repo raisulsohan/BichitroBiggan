@@ -204,7 +204,16 @@ const SUN_INFO = { key: 'sun', bn: 'সূর্য', en: 'THE SUN', color: '#ff
   info: ['একটি মাঝারি আকারের হলুদ নক্ষত্র', 'ব্যাস পৃথিবীর প্রায় ১০৯ গুণ', 'পৃষ্ঠের তাপমাত্রা প্রায় ৫,৫০০°সে'],
   facts: [['ব্যাস', 'প্রায় ১৩ লক্ষ ৯২ হাজার কিমি'], ['নিজ অক্ষে এক পাক', 'প্রায় ২৫ দিন (বিষুবরেখায়)'], ['পৃষ্ঠের তাপমাত্রা', 'প্রায় ৫,৫০০°সে'], ['বয়স', 'প্রায় ৪৬০ কোটি বছর'], ['আলো পৃথিবীতে পৌঁছায়', 'প্রায় ৮ মিনিট ২০ সেকেন্ডে']],
   note: 'একটি মাঝারি আকারের হলুদ নক্ষত্র। পুরো সৌরজগতের ভরের ৯৯.৮ ভাগই সূর্যের; ব্যাস পৃথিবীর প্রায় ১০৯ গুণ।' };
-const BODIES = [SUN_INFO, ...PLANETS];
+const BELT_R = 37, BELT = 9;
+const BELT_INFO = { key: 'belt', bn: 'গ্রহাণুপুঞ্জ', en: 'ASTEROID BELT', color: '#9a8d7c',
+  info: ['মঙ্গল আর বৃহস্পতির কক্ষপথের মাঝে', 'লাখ লাখ পাথুরে আর ধাতব টুকরো', 'সবচেয়ে বড় সদস্য: বামন গ্রহ সেরেস'],
+  facts: [['অবস্থান', 'মঙ্গল আর বৃহস্পতির মাঝে'], ['সূর্য থেকে দূরত্ব', 'প্রায় ৩৩ থেকে ৪৮ কোটি কিমি'], ['সবচেয়ে বড় সদস্য', 'সেরেস — ব্যাস প্রায় ৯৪০ কিমি'], ['জানা গ্রহাণু', '১০ লক্ষেরও বেশি'], ['সব মিলিয়ে ভর', 'চাঁদের মাত্র ৩ ভাগের মতো']],
+  note: 'সূর্যকে ঘিরে ঘুরছে লাখ লাখ পাথুরে আর ধাতব টুকরো — গ্রহ গড়ে ওঠার সময়কার বেঁচে যাওয়া উপাদান। ছবিতে যত ঘন দেখায় আসলে তত নয়: দুটো গ্রহাণুর মাঝে গড়ে প্রায় ১০ লক্ষ কিলোমিটার ফাঁকা।' };
+/* index: 0 the Sun, 1..8 the planets, 9 the belt. ORDER is outward from the Sun,
+   for the chips and the card's previous / next. */
+const BODIES = [SUN_INFO, ...PLANETS, BELT_INFO];
+const ORDER = [0, 1, 2, 3, 4, BELT, 5, 6, 7, 8];
+const isPlanet = (i) => i >= 1 && i <= 8;
 
 /* the English edition's words for the same bodies */
 const EN_DATA = {
@@ -232,6 +241,9 @@ const EN_DATA = {
   uranus: { name: 'Uranus', info: ['Distance from the Sun: 2.87 billion km', 'One year: about 84 Earth years', 'Tilted about 98° — it rolls on its side'],
     facts: [['Diameter', '50,724 km'], ['One spin', '17 h 14 min (backwards)'], ['One year', 'about 84 Earth years'], ['Moons', 'more than 28'], ['Distance from the Sun', '2.87 billion km']],
     note: 'Tipped over by about 98°, it rolls along on its side. Methane gas gives it its pale blue-green colour.' },
+  belt: { name: 'Asteroid Belt', info: ['Between the orbits of Mars and Jupiter', 'Millions of fragments of rock and metal', 'Largest member: the dwarf planet Ceres'],
+    facts: [['Where', 'between Mars and Jupiter'], ['Distance from the Sun', 'about 330–480 million km'], ['Largest member', 'Ceres — about 940 km across'], ['Known asteroids', 'more than a million'], ['Total mass', "only about 3% of the Moon's"]],
+    note: 'Millions of fragments of rock and metal circle the Sun here, left over from when the planets formed. It is far emptier than it looks: neighbouring asteroids are on average about a million kilometres apart.' },
   neptune: { name: 'Neptune', info: ['Distance from the Sun: 4.5 billion km', 'One year: about 165 Earth years', 'The fiercest winds — over 2,000 km/h'],
     facts: [['Diameter', '49,244 km'], ['One spin', '16 h 6 min'], ['One year', 'about 165 Earth years'], ['Moons', 'at least 16'], ['Distance from the Sun', '4.5 billion km']],
     note: 'The farthest planet from the Sun, with the fiercest winds in the Solar System — over 2,000 km an hour.' },
@@ -244,13 +256,13 @@ function txt(d) {
 }
 const T = EN ? {
   hintTouch: 'Drag to turn · pinch to zoom · tap a planet', hintMouse: 'Drag to turn · scroll to zoom · click a planet',
-  showInfo: ' — show facts', centre: 'The centre of the Solar System', atCentre: 'At the centre',
+  showInfo: ' — show facts', centre: 'The centre of the Solar System', between: 'Between Mars and Jupiter', atCentre: 'At the centre',
   planetOf: (i) => `Planet ${i} / 8 · ${['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth'][i - 1]} from the Sun`,
   planetN: (i) => `Planet ${i} / 8`, closeCard: 'Close the facts', play: 'Play', pause: 'Pause',
   frame: (f) => `Frame ${f} / ${TOTAL}`, loading: (p) => `Building the 3D Solar System… ${p}%`,
 } : {
   hintTouch: 'আঙুলে টেনে ঘোরান · দুই আঙুলে জুম · গ্রহে ট্যাপ করুন', hintMouse: 'মাউস টেনে ঘোরান · স্ক্রল করে জুম · গ্রহে ক্লিক করুন',
-  showInfo: ' — তথ্য দেখুন', centre: 'সৌরজগতের কেন্দ্র', atCentre: 'কেন্দ্রে',
+  showInfo: ' — তথ্য দেখুন', centre: 'সৌরজগতের কেন্দ্র', between: 'মঙ্গল আর বৃহস্পতির মাঝে', atCentre: 'কেন্দ্রে',
   planetOf: (i) => `গ্রহ ${bn(i)} / ${bn(8)} · সূর্য থেকে ${['প্রথম', 'দ্বিতীয়', 'তৃতীয়', 'চতুর্থ', 'পঞ্চম', 'ষষ্ঠ', 'সপ্তম', 'অষ্টম'][i - 1]}`,
   planetN: (i) => `গ্রহ ${bn(i)} / ${bn(8)}`, closeCard: 'তথ্য বন্ধ করুন', play: 'চালু করুন', pause: 'বিরতি',
   frame: (f) => `ফ্রেম ${bn(f)} / ${bn(TOTAL)}`, loading: (p) => `থ্রিডি সৌরজগৎ তৈরি হচ্ছে… ${bn(p)}%`,
@@ -577,24 +589,40 @@ function syncControls() { controls.enabled = interactive() && !fly; }
 /* ---------------- focus, flights and following ---------------- */
 const OVERVIEW_Q = new THREE.Vector3(0, -3, 0);
 const _L = new THREE.Vector3(), _goal = new THREE.Vector3(), _d = new THREE.Vector3();
+/* the belt is a ring: a flight goes to the stretch of it nearest the camera */
+const beltSpot = new THREE.Vector3();
+let beltPicked = false;
+function nearestBeltSpot(out) {
+  const az = Math.atan2(camera.position.z, camera.position.x);
+  return out.set(Math.cos(az) * BELT_R, 0, Math.sin(az) * BELT_R);
+}
 function focusPoint(idx, out) {
   if (idx < 0) return out.copy(OVERVIEW_Q);
   if (idx === 0) return out.set(0, 0, 0);
+  if (idx === BELT) return out.copy(beltSpot);
   return out.copy(bodies[idx - 1].orbit.position);
 }
 function focusOffset(idx, L, out) {
   const az = Math.atan2(camera.position.z - controls.target.z, camera.position.x - controls.target.x);
   if (idx < 0) return out.set(Math.cos(az) * 140, 95, Math.sin(az) * 140).multiplyScalar(fit());
   if (idx === 0) return out.set(Math.cos(az), 0.28, Math.sin(az)).normalize().multiplyScalar(27 * fit());
+  if (idx === BELT) {
+    // a little inside the ring and above it, so the rocks are lit and the Sun sits off to one side
+    _dir.copy(L).normalize(); _side.set(-_dir.z, 0, _dir.x);
+    return out.copy(_dir).multiplyScalar(-7).addScaledVector(_side, 14).addScaledVector(UP, 7.5).multiplyScalar(fit());
+  }
   const pl = PLANETS[idx - 1];
   return planetView(pl, L, out).multiplyScalar(viewDist(pl) * fit());
 }
 function setLimits(idx) {
-  controls.minDistance = idx < 0 ? 4 : idx === 0 ? SUN_R * 1.35 : PLANETS[idx - 1].r * (PLANETS[idx - 1].ring ? 1.6 : 1.45);
+  controls.minDistance = idx < 0 ? 4 : idx === 0 ? SUN_R * 1.35 : idx === BELT ? 1.5 : PLANETS[idx - 1].r * (PLANETS[idx - 1].ring ? 1.6 : 1.45);
   controls.maxDistance = 600;
 }
 function flyTo(idx, opts = {}) {
   flushControls();
+  // a click on the belt flies to where it landed; a chip, to the stretch nearest the camera
+  if (idx === BELT && !beltPicked) nearestBeltSpot(beltSpot);
+  beltPicked = false;
   const L = focusPoint(idx, _L);
   const off = focusOffset(idx, L, new THREE.Vector3());
   const fromP = opts.from ? opts.from.clone() : camera.position.clone();
@@ -625,7 +653,7 @@ function stepFly(dt) {
    turns with the planet around the sun, so its lit face stays towards us */
 const _o = new THREE.Vector3(), _t = new THREE.Vector3();
 function follow() {
-  if (focus < 1 || fly) return;
+  if (!isPlanet(focus) || fly) return;
   focusPoint(focus, _L);
   const dA = Math.atan2(-_L.z, _L.x) - Math.atan2(-lastFocus.z, lastFocus.x);
   if (dA) {
@@ -646,7 +674,8 @@ const tagEls = BODIES.map((d, k) => {
   tagsEl.appendChild(b); return b;
 });
 tagsEl.addEventListener('click', (e) => { const b = e.target.closest('.bbs-tag'); if (b) select(+b.dataset.i); });
-const chipEls = BODIES.map((d, k) => {
+const chipEls = ORDER.map((k) => {
+  const d = BODIES[k];
   const b = document.createElement('button');
   b.type = 'button'; b.className = 'bbs-chip'; b.dataset.i = k;
   b.innerHTML = '<span class="bbs-chip__dot" aria-hidden="true"></span>';
@@ -657,8 +686,9 @@ const chipEls = BODIES.map((d, k) => {
 chipsEl.addEventListener('click', (e) => { const b = e.target.closest('.bbs-chip'); if (b) select(+b.dataset.i); });
 
 function openCard(idx) {
-  const d = BODIES[idx], x = txt(d), prev = txt(BODIES[(idx + 8) % 9]), next = txt(BODIES[(idx + 1) % 9]);
-  const kicker = idx === 0 ? T.centre : T.planetOf(idx);
+  const pos = ORDER.indexOf(idx), pi = ORDER[(pos + ORDER.length - 1) % ORDER.length], ni = ORDER[(pos + 1) % ORDER.length];
+  const d = BODIES[idx], x = txt(d), prev = txt(BODIES[pi]), next = txt(BODIES[ni]);
+  const kicker = idx === 0 ? T.centre : idx === BELT ? T.between : T.planetOf(idx);
   card.innerHTML =
     `<button type="button" class="bbs-card__close" data-c="close" aria-label="${T.closeCard}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12 19 6.4 17.6 5 12 10.6z"/></svg></button>` +
     `<p class="bbs-card__kicker">${kicker}</p>` +
@@ -666,13 +696,13 @@ function openCard(idx) {
     `<p class="bbs-card__note">${x.note}</p>` +
     '<dl class="bbs-card__facts">' + x.facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('') + '</dl>' +
     '<div class="bbs-card__nav">' +
-    `<button type="button" data-c="prev" data-i="${(idx + 8) % 9}"><span aria-hidden="true">‹</span> ${prev.name}</button>` +
-    `<button type="button" data-c="next" data-i="${(idx + 1) % 9}">${next.name} <span aria-hidden="true">›</span></button>` +
+    `<button type="button" data-c="prev" data-i="${pi}"><span aria-hidden="true">‹</span> ${prev.name}</button>` +
+    `<button type="button" data-c="next" data-i="${ni}">${next.name} <span aria-hidden="true">›</span></button>` +
     '</div>';
   card.hidden = false;
   card.scrollTop = 0;
   cardIdx = idx;
-  chipEls.forEach((c, k) => c.setAttribute('aria-pressed', k === idx ? 'true' : 'false'));
+  chipEls.forEach((c) => c.setAttribute('aria-pressed', +c.dataset.i === idx ? 'true' : 'false'));
 }
 function closeCard() {
   if (cardIdx < 0) return;
@@ -710,7 +740,7 @@ function pick(cx, cy) {
   const tanH = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
   const minHit = COARSE ? 28 : 16;
   let best = -1, bestScore = Infinity;
-  for (let k = 0; k < BODIES.length; k++) {
+  for (let k = 0; k <= 8; k++) {
     const R = k === 0 ? SUN_R : PLANETS[k - 1].r * (PLANETS[k - 1].ring ? 1.9 : 1.15);
     focusPoint(k, _s);
     const dist = camera.position.distanceTo(_s);
@@ -721,8 +751,17 @@ function pick(cx, cy) {
     const d = Math.hypot(sx - x, sy - y);
     if (d <= rad && d / rad < bestScore) { bestScore = d / rad; best = k; }
   }
+  if (best < 0) {
+    // nothing round was hit: was it the belt? where the ray meets the orbital plane
+    raycaster.setFromCamera(_ndc.set(x / w * 2 - 1, -(y / h) * 2 + 1), camera);
+    if (raycaster.ray.intersectPlane(PLANE, _s)) {
+      const r = Math.hypot(_s.x, _s.z);
+      if (Math.abs(r - BELT_R) < 4.2) { best = BELT; beltSpot.set(_s.x, 0, _s.z).setLength(BELT_R); beltPicked = true; }
+    }
+  }
   return best;
 }
+const raycaster = new THREE.Raycaster(), _ndc = new THREE.Vector2(), PLANE = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 
 let downAt = null;
 renderer.domElement.addEventListener('pointerdown', (e) => { downAt = { x: e.clientX, y: e.clientY, t: performance.now() }; });
@@ -818,7 +857,7 @@ function renderFrame() {
   const w = renderer.domElement.clientWidth, h = renderer.domElement.clientHeight;
   tagEls.forEach((el, k) => {
     if (tagA <= 0) { el.style.opacity = 0; el.style.visibility = 'hidden'; return; }
-    if (k === 0) tmp.set(0, SUN_R * 1.2, 0); else { tmp.copy(bodies[k - 1].orbit.position); tmp.y += PLANETS[k - 1].r * (PLANETS[k - 1].ring ? 1.4 : 1.2); }
+    if (k === BELT) { nearestBeltSpot(tmp); tmp.y += 1.6; } else if (k === 0) tmp.set(0, SUN_R * 1.2, 0); else { tmp.copy(bodies[k - 1].orbit.position); tmp.y += PLANETS[k - 1].r * (PLANETS[k - 1].ring ? 1.4 : 1.2); }
     tmp.project(camera);
     if (tmp.z > 1 || Math.abs(tmp.x) > 1.2 || Math.abs(tmp.y) > 1.2) { el.style.opacity = 0; el.style.visibility = 'hidden'; return; }
     el.style.visibility = 'visible';

@@ -2,6 +2,16 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.29.0
+
+- The asteroid belt on /solarsystem is now a body of its own: it carries a
+  name in the scene (গ্রহাণুপুঞ্জ, Asteroid Belt on /en), has a chip between
+  মঙ্গল and বৃহস্পতি, and a click on the ring — or on its name or chip — flies
+  to that stretch of it and opens a card of facts like the planets have:
+  where it lies, its distance from the Sun, Ceres, how many asteroids are
+  known and how little they weigh together. The card's previous and next now
+  step outward from the Sun, the belt included.
+
 ## 7.28.0
 
 - The 3D solar system has its own link in the header: in the top bar before
