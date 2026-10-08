@@ -1585,5 +1585,8 @@ msgid "থ্রিডি সৌরজগৎ ঘুরে দেখুন"
 msgstr "Explore the 3D Solar System"
 
 #. translators: 1: link to Solar System Scope, 2: link to the licence.
-msgid "গ্রহের ছবির টেক্সচার: %1$s, %2$s লাইসেন্সে (ছোট করে WebP-তে রূপান্তরিত)।"
-msgstr "Planet textures: %1$s, under %2$s (resized and converted to WebP)."
+msgid "গ্রহের ছবির টেক্সচার: %1$s, %2$s লাইসেন্সে; চাঁদ আর প্লুটোর মানচিত্র: NASA, JPL ও USGS (পাবলিক ডোমেইন)। সবই ছোট করে WebP-তে রূপান্তরিত।"
+msgstr "Planet textures: %1$s, under %2$s; maps of the moons and Pluto: NASA, JPL and USGS (public domain). All resized and converted to WebP."
+
+msgid "নিচের চিপ থেকে কাইপার বেল্ট, হেলিওস্ফিয়ার আর ঊর্ট মেঘে যান — সৌরজগতের শেষ সীমা পর্যন্ত। কোনো গ্রহের কার্ড থেকে তার চাঁদগুলোতেও যাওয়া যায়।"
+msgstr "Use the chips below to travel out to the Kuiper Belt, the heliosphere and the Oort cloud — the very edge of the Solar System. A planet's card leads on to its moons."

@@ -165,6 +165,7 @@ while ( have_posts() ) :
 				<li><?php esc_html_e( 'ঘোরাতে: মাউস টেনে বা এক আঙুলে স্পর্শ করে সরান।', 'bichitro-biggan' ); ?></li>
 				<li><?php esc_html_e( 'জুম করতে: মাউসের চাকা ঘোরান, বা দুই আঙুলে চিমটি কাটুন।', 'bichitro-biggan' ); ?></li>
 				<li><?php esc_html_e( 'কোনো গ্রহ বা তার নামে ক্লিক করুন — ক্যামেরা সেখানে উড়ে যাবে, আর তথ্যের কার্ড খুলবে।', 'bichitro-biggan' ); ?></li>
+				<li><?php esc_html_e( 'নিচের চিপ থেকে কাইপার বেল্ট, হেলিওস্ফিয়ার আর ঊর্ট মেঘে যান — সৌরজগতের শেষ সীমা পর্যন্ত। কোনো গ্রহের কার্ড থেকে তার চাঁদগুলোতেও যাওয়া যায়।', 'bichitro-biggan' ); ?></li>
 				<li><?php esc_html_e( '“গাইডেড ট্যুর” চাপলে ৭৫ সেকেন্ডের এক যাত্রা শুরু হবে। ট্যুর থামালেই আবার নিজের মতো ঘুরে দেখতে পারবেন।', 'bichitro-biggan' ); ?></li>
 				<li><?php esc_html_e( 'ট্যুরের কিবোর্ড শর্টকাট: Space বা K চালু/বিরতি, ← → এক সেকেন্ড পিছনে/সামনে, কমা ও দাঁড়ি এক ফ্রেম, Home/End শুরু/শেষ, L লুপ, F পূর্ণ পর্দা।', 'bichitro-biggan' ); ?></li>
 			</ul>
@@ -185,7 +186,7 @@ while ( have_posts() ) :
 				echo wp_kses_post(
 					sprintf(
 						/* translators: 1: link to Solar System Scope, 2: link to the licence. */
-						esc_html__( 'গ্রহের ছবির টেক্সচার: %1$s, %2$s লাইসেন্সে (ছোট করে WebP-তে রূপান্তরিত)।', 'bichitro-biggan' ),
+						esc_html__( 'গ্রহের ছবির টেক্সচার: %1$s, %2$s লাইসেন্সে; চাঁদ আর প্লুটোর মানচিত্র: NASA, JPL ও USGS (পাবলিক ডোমেইন)। সবই ছোট করে WebP-তে রূপান্তরিত।', 'bichitro-biggan' ),
 						'<a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener">Solar System Scope</a>',
 						'<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener license">CC BY 4.0</a>'
 					)

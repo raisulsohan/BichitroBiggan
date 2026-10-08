@@ -2,6 +2,28 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.31.0
+
+- /solarsystem reaches the edge of the Solar System. Three new chips fly out
+  to the Kuiper Belt (a ring of icy bodies with Pluto, Eris, Haumea and
+  Makemake on their real tilted, stretched orbits), the heliosphere (the
+  termination shock and heliopause as a comet-like bubble, with Voyager 1
+  and 2 shown where they are now, beyond it) and the Oort cloud. Distances
+  past Neptune are squeezed on a logarithm and the cards give the real ones;
+  the outer layers fade in only as the camera pulls back.
+- The major moons are there: the Moon, Phobos and Deimos, Io, Europa,
+  Ganymede and Callisto, Enceladus, Rhea, Titan and Iapetus, Miranda, Ariel,
+  Titania and Oberon, Triton (backwards, as it really goes) and Charon, plus
+  Ceres in the asteroid belt. They orbit in their planet's equator, show
+  their names once the camera is near, and each has a card of facts. A
+  planet's card lists its moons, and a region's card what lies in it.
+- Moon and Pluto maps are public-domain NASA, JPL and USGS mosaics (Wikimedia
+  Commons, checked by SHA-1), about 1 MB on a computer and 0.3 MB on a
+  phone, fetched only after the scene is up; parts no mission imaged are
+  filled from the colours around them. Titan, Ceres, Deimos and the far
+  dwarf planets are painted in code. The credit line and CREDITS.txt name
+  every source. Bengali and English throughout.
+
 ## 7.30.0
 
 - The planets on /solarsystem wear real maps: Solar System Scope's textures

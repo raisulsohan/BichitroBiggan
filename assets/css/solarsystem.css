@@ -390,6 +390,26 @@
 }
 .bbs-card__facts dt { color: var(--bbs-muted); flex: none; }
 .bbs-card__facts dd { margin: 0; text-align: right; color: #fff; font-weight: 500; }
+.bbs-card__rel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 12px;
+}
+.bbs-card__rel-h { font-size: 13px; color: var(--bbs-muted); margin-right: 2px; }
+.bbs-card__rel button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid var(--bbs-line);
+  font-size: 13px;
+}
+.bbs-card__rel button:hover { background: rgba(255, 255, 255, 0.1); }
+.bbs-card__reldot { width: 8px; height: 8px; border-radius: 50%; }
 .bbs-card__nav { display: flex; justify-content: space-between; gap: 8px; }
 .bbs-card__nav button {
   min-height: 36px;

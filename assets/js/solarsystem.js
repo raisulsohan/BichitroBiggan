@@ -276,6 +276,231 @@ const SHOTS = [
 ];
 const shotAt = (t) => { for (let j = SHOTS.length - 1; j >= 0; j--) if (t >= SHOTS[j].s) return j; return 0; };
 
+Object.assign(T, EN
+  ? { moonOf: (p) => `Moon of ${p}`, relMoons: 'Moons', relHere: 'Out here', relBack: 'Back to' }
+  : { moonOf: (p) => `${genitive(p)} চাঁদ`, relMoons: 'চাঁদ', relHere: 'এখানে আছে', relBack: 'ফিরে যান' });
+/* Bengali possessive: পৃথিবী → পৃথিবীর, মঙ্গল → মঙ্গলের */
+function genitive(w) { return /[া-ৌঅ-ঔ]$/.test(w) ? w + 'র' : w + 'ের'; }
+
+/* ---------------- beyond the planets: moons, dwarf planets, the edges of the Solar System ----------------
+   Distances out to Neptune keep the layout above; beyond it they are squeezed on a logarithm,
+   or the Oort cloud would sit thousands of Neptunes away. Small moons are drawn larger than
+   they are, so they can be seen at all; the cards give the real figures. */
+const AU_ANCHORS = [[0, 6.5], [0.39, 13], [0.72, 18], [1, 24], [1.52, 31], [2.77, 37], [5.2, 48], [9.54, 64], [19.2, 78], [30.07, 90]];
+function auToScene(au) {
+  if (au >= 30.07) return 90 + 50 * Math.log(au / 30.07);
+  for (let i = 1; i < AU_ANCHORS.length; i++) {
+    const [a1, s1] = AU_ANCHORS[i];
+    if (au <= a1) { const [a0, s0] = AU_ANCHORS[i - 1]; return s0 + (s1 - s0) * (au - a0) / (a1 - a0); }
+  }
+  return 90;
+}
+/* a direction from ecliptic longitude and latitude, in the frame the planets move in */
+function eclDir(lon, lat, out = new THREE.Vector3()) {
+  const l = lon * Math.PI / 180, b = lat * Math.PI / 180;
+  return out.set(Math.cos(b) * Math.cos(l), Math.sin(b), -Math.cos(b) * Math.sin(l));
+}
+SUN_INFO.kind = 'sun'; BELT_INFO.kind = 'belt';
+PLANETS.forEach((p) => { p.kind = 'planet'; });
+const KUIPER = 10, HELIO = 11, OORT = 12;
+const HELIO_NOSE = eclDir(255.7, 5.1);   // the interstellar wind blows in from here (IBEX)
+
+/* f: facts (Bengali), n: note; the English is in EN_X below */
+const EXTRAS = [
+  { key: 'kuiper', kind: 'region', bn: 'কাইপার বেল্ট', en: 'KUIPER BELT', color: '#9fb3d9', kick: 'নেপচুনের ওপারে',
+    f: [['অবস্থান', 'সূর্য থেকে ৩০–৫০ AU (৪৫০–৭৫০ কোটি কিমি)'], ['বড় সদস্য', 'প্লুটো, হাউমেয়া, মাকেমাকে'], ['১০০ কিমির বড় বস্তু', 'আনুমানিক এক লাখেরও বেশি'], ['কাছ থেকে দেখা', 'আরোকথ — নিউ হরাইজনস, ২০১৯']],
+    n: 'নেপচুনের ওপারে বরফের টুকরোর এক বিশাল বলয় — গ্রহাণুপুঞ্জের মতো, কিন্তু প্রায় ২০ গুণ চওড়া আর বহু গুণ ভারী। স্বল্পমেয়াদি অনেক ধূমকেতু এখান থেকেই আসে।',
+    rel: ['pluto', 'haumea', 'makemake', 'eris'] },
+  { key: 'helio', kind: 'region', bn: 'হেলিওস্ফিয়ার', en: 'HELIOSPHERE', color: '#a98cf0', kick: 'সূর্যের বাতাসের বুদবুদ',
+    f: [['যা দিয়ে গড়া', 'সৌরবায়ু — সূর্য থেকে ছুটে আসা কণার স্রোত'], ['টার্মিনেশন শক', 'প্রায় ৯০ AU — বাতাস এখানে হঠাৎ ধীর হয়'], ['হেলিওপজ', 'প্রায় ১২০ AU — এর বাইরে নক্ষত্রের মাঝের জায়গা'], ['পেরিয়ে গেছে', 'ভয়েজার ১ (২০১২), ভয়েজার ২ (২০১৮)']],
+    n: 'সৌরবায়ু ছায়াপথের গ্যাসকে ঠেলে সরিয়ে বিশাল এক বুদবুদ গড়েছে, আর সব গ্রহ তার ভেতরে। ক্ষতিকর মহাজাগতিক রশ্মির বড় অংশ এটাই আটকায়। এর আসল আকার নিয়ে বিজ্ঞানীদের বিতর্ক আছে — এখানে দেখানো হয়েছে ধূমকেতুর মতো লেজওয়ালা মডেল।',
+    rel: ['voyager1', 'voyager2'] },
+  { key: 'oort', kind: 'region', bn: 'ঊর্ট মেঘ', en: 'OORT CLOUD', color: '#8b9bc0', kick: 'সৌরজগতের শেষ সীমা',
+    f: [['দূরত্ব', 'আনুমানিক ২,০০০ থেকে ১,০০,০০০ AU'], ['বাইরের কিনারা', 'প্রায় ১.৬ আলোকবর্ষ দূরে'], ['বস্তুর সংখ্যা', 'শত শত কোটি, হয়তো লক্ষ কোটি বরফের টুকরো'], ['দেখা গেছে কি', 'না — এখনো শুধু অনুমান']],
+    n: 'সৌরজগৎকে ঘিরে থাকা বরফের এক অনুমিত গোলক; দীর্ঘমেয়াদি ধূমকেতুগুলো এখান থেকে আসে বলে ধারণা। ভয়েজার ১-এর এর ভেতরের কিনারায় পৌঁছাতে প্রায় ৩০০ বছর লাগবে, আর পেরোতে প্রায় ৩০,০০০ বছর।' },
+
+  { key: 'ceres', kind: 'dwarf', bn: 'সেরেস', en: 'CERES', color: '#9a958d', kick: 'বামন গ্রহ · গ্রহাণুপুঞ্জে', home: 'belt',
+    orbit: { a: 2.77, e: 0.076, i: 10.6, node: 80.3, peri: 73.6, T: 4.6, a0: 2.4 }, r: 0.18, paint: 'ceres',
+    f: [['ব্যাস', 'প্রায় ৯৪০ কিমি'], ['সূর্য থেকে দূরত্ব', 'প্রায় ৪১ কোটি কিমি (২.৮ AU)'], ['এক বছর', 'প্রায় ৪.৬ পার্থিব বছর'], ['উপগ্রহ', 'নেই']],
+    n: 'গ্রহাণুপুঞ্জের সবচেয়ে বড় সদস্য, আর ভেতরের সৌরজগতের একমাত্র বামন গ্রহ। অকাটর খাদে উজ্জ্বল লবণের দাগ দেখা যায়; ডন যান ২০১৫ সাল থেকে একে ঘিরে ঘুরেছে।' },
+  { key: 'pluto', kind: 'dwarf', bn: 'প্লুটো', en: 'PLUTO', color: '#c9a58e', kick: 'বামন গ্রহ · কাইপার বেল্টে', home: 'kuiper',
+    orbit: { a: 39.48, e: 0.249, i: 17.2, node: 110.3, peri: 113.8, T: 248, a0: 4.1 }, r: 0.3, tex: 'pluto', paint: 'icy', tint: [205, 175, 155],
+    f: [['ব্যাস', '২,৩৭৭ কিমি'], ['সূর্য থেকে গড় দূরত্ব', 'প্রায় ৫৯০ কোটি কিমি (৩৯.৫ AU)'], ['এক বছর', 'প্রায় ২৪৮ পার্থিব বছর'], ['উপগ্রহ', '৫টি — সবচেয়ে বড়টি শ্যারন']],
+    n: '২০০৬ সাল থেকে বামন গ্রহ। বুকে হৃদয়ের মতো দেখতে নাইট্রোজেন বরফের বিশাল সমভূমি; নিউ হরাইজনস ২০১৫ সালে পাশ দিয়ে উড়ে গিয়ে প্রথম কাছের ছবি তোলে। দক্ষিণের যে অংশের ছবি তোলা যায়নি, সেটা আশপাশের রঙে ভরাট করা।' },
+  { key: 'eris', kind: 'dwarf', bn: 'এরিস', en: 'ERIS', color: '#e6e6e2', kick: 'বামন গ্রহ · কাইপার বেল্টের বাইরে', home: 'kuiper',
+    orbit: { a: 67.9, e: 0.436, i: 44.0, node: 35.9, peri: 151.6, T: 559, a0: 1.3 }, r: 0.29, paint: 'icy', tint: [236, 234, 228],
+    f: [['ব্যাস', '২,৩২৬ কিমি'], ['সূর্য থেকে গড় দূরত্ব', 'প্রায় ১,০১৫ কোটি কিমি (৬৮ AU)'], ['এক বছর', 'প্রায় ৫৫৯ পার্থিব বছর'], ['উপগ্রহ', '১টি — ডিসনোমিয়া']],
+    n: '২০০৫ সালে এর আবিষ্কারের পরেই প্রশ্ন ওঠে প্লুটোকে আর গ্রহ বলা যায় কিনা। ভরে প্লুটোর চেয়ে প্রায় ২৭ ভাগ বেশি। কোনো যান এর কাছে যায়নি — রূপটা শিল্পীর কল্পনা।' },
+  { key: 'haumea', kind: 'dwarf', bn: 'হাউমেয়া', en: 'HAUMEA', color: '#ece8e4', kick: 'বামন গ্রহ · কাইপার বেল্টে', home: 'kuiper',
+    orbit: { a: 43.1, e: 0.195, i: 28.2, node: 122.2, peri: 239, T: 284, a0: 5.6 }, r: 0.26, shape: [1.25, 1.0, 0.64], paint: 'haumea',
+    f: [['আকার', 'প্রায় ২,১০০ × ১,৬৮০ × ১,০৭০ কিমি'], ['সূর্য থেকে গড় দূরত্ব', 'প্রায় ৬৪৫ কোটি কিমি (৪৩ AU)'], ['এক বছর', 'প্রায় ২৮৪ পার্থিব বছর'], ['উপগ্রহ', '২টি']],
+    n: 'মাত্র ৪ ঘণ্টায় একবার নিজ অক্ষে ঘোরে — এত জোরে যে ডিমের মতো লম্বাটে হয়ে গেছে। চারপাশে একটা সরু বলয়ও আছে। রূপটা শিল্পীর কল্পনা।' },
+  { key: 'makemake', kind: 'dwarf', bn: 'মাকেমাকে', en: 'MAKEMAKE', color: '#c98d6c', kick: 'বামন গ্রহ · কাইপার বেল্টে', home: 'kuiper',
+    orbit: { a: 45.4, e: 0.16, i: 29.0, node: 79.4, peri: 297, T: 306, a0: 0.4 }, r: 0.22, paint: 'icy', tint: [205, 142, 108],
+    f: [['ব্যাস', 'প্রায় ১,৪৩০ কিমি'], ['সূর্য থেকে গড় দূরত্ব', 'প্রায় ৬৮০ কোটি কিমি (৪৫.৫ AU)'], ['এক বছর', 'প্রায় ৩০৬ পার্থিব বছর'], ['উপগ্রহ', '১টি']],
+    n: '২০০৫ সালে ইস্টারের ঠিক পরে আবিষ্কৃত, তাই নাম রাখা হয়েছে ইস্টার দ্বীপের সৃষ্টিদেবতার নামে। লালচে মিথেন বরফে ঢাকা। রূপটা শিল্পীর কল্পনা।' },
+
+  // moons: parent, radius and orbit in scene units, period in days (minus: backwards), inclination in degrees
+  { key: 'moon', kind: 'moon', parent: 'earth', bn: 'চাঁদ', en: 'THE MOON', color: '#b9b6b0', r: 0.27, existing: true,
+    f: [['ব্যাস', '৩,৪৭৪ কিমি'], ['পৃথিবী থেকে দূরত্ব', '৩,৮৪,৪০০ কিমি'], ['এক পাক ঘুরতে লাগে', '২৭.৩ দিন'], ['মানুষের পা পড়েছে', '১৯৬৯ থেকে ১৯৭২, ১২ জন']],
+    n: 'পৃথিবীর একমাত্র প্রাকৃতিক উপগ্রহ। নিজ অক্ষে আর পৃথিবীর চারপাশে একই সময়ে ঘোরে বলে আমরা সব সময় এর একটা দিকই দেখি।' },
+  { key: 'phobos', kind: 'moon', parent: 'mars', bn: 'ফোবস', en: 'PHOBOS', color: '#8a7b6d', r: 0.06, orbit: 1.25, P: 0.32, inc: 1, a0: 0.3, tex: 'phobos', paint: 'rocky', tint: [150, 130, 112],
+    f: [['ব্যাস', 'প্রায় ২২ কিমি'], ['মঙ্গল থেকে দূরত্ব', '৯,৩৭৬ কিমি'], ['এক পাক ঘুরতে লাগে', '৭ ঘণ্টা ৩৯ মিনিট'], ['আবিষ্কার', '১৮৭৭ — আসাফ হল']],
+    n: 'আলুর মতো এবড়োখেবড়ো ছোট্ট চাঁদ, মঙ্গলের খুব কাছ দিয়ে ঘোরে আর ধীরে ধীরে আরও কাছে নেমে আসছে — কয়েক কোটি বছর পর ভেঙে টুকরো হয়ে যাবে।' },
+  { key: 'deimos', kind: 'moon', parent: 'mars', bn: 'ডিমোস', en: 'DEIMOS', color: '#9a8a7a', r: 0.045, orbit: 1.9, P: 1.26, inc: 2, a0: 2.2, paint: 'rocky', tint: [160, 142, 124],
+    f: [['ব্যাস', 'প্রায় ১২ কিমি'], ['মঙ্গল থেকে দূরত্ব', '২৩,৪৬৩ কিমি'], ['এক পাক ঘুরতে লাগে', '৩০ ঘণ্টা ১৮ মিনিট'], ['আবিষ্কার', '১৮৭৭ — আসাফ হল']],
+    n: 'মঙ্গলের দুই চাঁদের মধ্যে ছোট আর দূরেরটি; পৃষ্ঠ ধুলোয় ঢাকা, তাই তুলনায় মসৃণ। রূপটা আঁকা।' },
+  { key: 'io', kind: 'moon', parent: 'jupiter', bn: 'আইও', en: 'IO', color: '#d9c25a', r: 0.17, orbit: 5.2, P: 1.77, inc: 0, a0: 0.5, tex: 'io', paint: 'rocky', tint: [220, 200, 110],
+    f: [['ব্যাস', '৩,৬৪৩ কিমি'], ['বৃহস্পতি থেকে দূরত্ব', '৪,২১,৭০০ কিমি'], ['এক পাক ঘুরতে লাগে', '১.৭৭ দিন'], ['আবিষ্কার', '১৬১০ — গ্যালিলিও']],
+    n: 'সৌরজগতের সবচেয়ে আগ্নেয় জায়গা — চার শতাধিক জীবন্ত আগ্নেয়গিরি। বৃহস্পতির টানে ভেতরটা ক্রমাগত দলে-মুচড়ে গরম হয়।' },
+  { key: 'europa', kind: 'moon', parent: 'jupiter', bn: 'ইউরোপা', en: 'EUROPA', color: '#cdbfa6', r: 0.15, orbit: 6.6, P: 3.55, inc: 0.5, a0: 2.5, tex: 'europa', paint: 'icy', tint: [215, 205, 190],
+    f: [['ব্যাস', '৩,১২২ কিমি'], ['বৃহস্পতি থেকে দূরত্ব', '৬,৭১,১০০ কিমি'], ['এক পাক ঘুরতে লাগে', '৩.৫৫ দিন'], ['আবিষ্কার', '১৬১০ — গ্যালিলিও']],
+    n: 'বরফের খোলসের নিচে লোনা পানির বিশাল সাগর — প্রাণের খোঁজে বিজ্ঞানীদের সবচেয়ে আশার জায়গাগুলোর একটি।' },
+  { key: 'ganymede', kind: 'moon', parent: 'jupiter', bn: 'গ্যানিমিড', en: 'GANYMEDE', color: '#a59a8c', r: 0.24, orbit: 8.4, P: 7.15, inc: 0.2, a0: 4.3, tex: 'ganymede', paint: 'rocky', tint: [170, 160, 148],
+    f: [['ব্যাস', '৫,২৬৮ কিমি'], ['বৃহস্পতি থেকে দূরত্ব', '১০,৭০,৪০০ কিমি'], ['এক পাক ঘুরতে লাগে', '৭.১৫ দিন'], ['আবিষ্কার', '১৬১০ — গ্যালিলিও']],
+    n: 'সৌরজগতের সবচেয়ে বড় চাঁদ — বুধের চেয়েও বড়। একমাত্র চাঁদ যার নিজের চৌম্বকক্ষেত্র আছে।' },
+  { key: 'callisto', kind: 'moon', parent: 'jupiter', bn: 'ক্যালিস্টো', en: 'CALLISTO', color: '#6f665d', r: 0.22, orbit: 10.8, P: 16.7, inc: 0.3, a0: 1.1, tex: 'callisto', paint: 'rocky', tint: [118, 108, 98],
+    f: [['ব্যাস', '৪,৮২১ কিমি'], ['বৃহস্পতি থেকে দূরত্ব', '১৮,৮২,৭০০ কিমি'], ['এক পাক ঘুরতে লাগে', '১৬.৭ দিন'], ['আবিষ্কার', '১৬১০ — গ্যালিলিও']],
+    n: 'সৌরজগতের সবচেয়ে বেশি খাদে ভরা পৃষ্ঠ — কোটি কোটি বছর ধরে প্রায় অপরিবর্তিত। মানচিত্রের যে অংশের ছবি নেই, সেটা ভরাট করা।' },
+  { key: 'enceladus', kind: 'moon', parent: 'saturn', bn: 'এনসেলাডাস', en: 'ENCELADUS', color: '#eef2f4', r: 0.07, orbit: 7.0, P: 1.37, inc: 0, a0: 3.0, tex: 'enceladus', paint: 'icy', tint: [240, 244, 246],
+    f: [['ব্যাস', '৫০৪ কিমি'], ['শনি থেকে দূরত্ব', '২,৩৮,০০০ কিমি'], ['এক পাক ঘুরতে লাগে', '১.৩৭ দিন'], ['আবিষ্কার', '১৭৮৯ — উইলিয়াম হার্শেল']],
+    n: 'দক্ষিণ মেরুর ফাটল দিয়ে পানির বরফের ফোয়ারা মহাকাশে ছিটকে বেরোয় — নিচে লুকানো আছে এক সাগর।' },
+  { key: 'rhea', kind: 'moon', parent: 'saturn', bn: 'রিয়া', en: 'RHEA', color: '#c9c6bf', r: 0.1, orbit: 8.6, P: 4.52, inc: 0.3, a0: 0.6, tex: 'rhea', paint: 'icy', tint: [205, 202, 195],
+    f: [['ব্যাস', '১,৫২৭ কিমি'], ['শনি থেকে দূরত্ব', '৫,২৭,১০০ কিমি'], ['এক পাক ঘুরতে লাগে', '৪.৫২ দিন'], ['আবিষ্কার', '১৬৭২ — জোভান্নি ক্যাসিনি']],
+    n: 'শনির দ্বিতীয় বৃহত্তম চাঁদ, প্রায় পুরোটাই বরফ আর খাদে ভরা।' },
+  { key: 'titan', kind: 'moon', parent: 'saturn', bn: 'টাইটান', en: 'TITAN', color: '#d79a4e', r: 0.24, orbit: 11.5, P: 15.95, inc: 0.3, a0: 5.0, paint: 'titan', atmo: [1.0, 0.62, 0.25],
+    f: [['ব্যাস', '৫,১৫০ কিমি'], ['শনি থেকে দূরত্ব', '১২,২১,৯০০ কিমি'], ['এক পাক ঘুরতে লাগে', '১৫.৯৫ দিন'], ['আবিষ্কার', '১৬৫৫ — ক্রিস্টিয়ান হাইগেনস']],
+    n: 'ঘন নাইট্রোজেনের বায়ুমণ্ডলে ঢাকা কমলা ধোঁয়াশার জগৎ; পৃষ্ঠে মিথেনের হ্রদ আর নদী। হাইগেনস যান ২০০৫ সালে এখানে নেমেছিল।' },
+  { key: 'iapetus', kind: 'moon', parent: 'saturn', bn: 'আয়াপেটাস', en: 'IAPETUS', color: '#8f877c', r: 0.1, orbit: 15.0, P: 79.3, inc: 8, a0: 2.0, tex: 'iapetus', paint: 'rocky', tint: [150, 140, 128],
+    f: [['ব্যাস', '১,৪৬৯ কিমি'], ['শনি থেকে দূরত্ব', '৩৫,৬০,৮০০ কিমি'], ['এক পাক ঘুরতে লাগে', '৭৯.৩ দিন'], ['আবিষ্কার', '১৬৭১ — জোভান্নি ক্যাসিনি']],
+    n: 'দুই রঙের চাঁদ — এক দিক কয়লার মতো কালো, অন্য দিক বরফের মতো সাদা। বিষুবরেখা বরাবর পাহাড়ের এক লম্বা শিরদাঁড়া।' },
+  { key: 'miranda', kind: 'moon', parent: 'uranus', bn: 'মিরান্ডা', en: 'MIRANDA', color: '#b9b9b6', r: 0.055, orbit: 3.0, P: 1.41, inc: 4, a0: 0.8, tex: 'miranda', paint: 'icy', tint: [190, 190, 186],
+    f: [['ব্যাস', '৪৭২ কিমি'], ['ইউরেনাস থেকে দূরত্ব', '১,২৯,৯০০ কিমি'], ['এক পাক ঘুরতে লাগে', '১.৪১ দিন'], ['আবিষ্কার', '১৯৪৮ — জেরার্ড কাইপার']],
+    n: 'জোড়াতালি দেওয়া পৃষ্ঠ; এখানে আছে প্রায় ২০ কিমি উঁচু খাড়া পাহাড় ভেরোনা রুপেস। ভয়েজার ২ শুধু দক্ষিণ দিকের ছবি তুলেছিল — বাকিটা ভরাট করা।' },
+  { key: 'ariel', kind: 'moon', parent: 'uranus', bn: 'এরিয়েল', en: 'ARIEL', color: '#c7c7c3', r: 0.08, orbit: 3.8, P: 2.52, inc: 0, a0: 2.9, tex: 'ariel', paint: 'icy', tint: [200, 200, 196],
+    f: [['ব্যাস', '১,১৫৮ কিমি'], ['ইউরেনাস থেকে দূরত্ব', '১,৯০,৯০০ কিমি'], ['এক পাক ঘুরতে লাগে', '২.৫২ দিন'], ['আবিষ্কার', '১৮৫১ — উইলিয়াম ল্যাসেল']],
+    n: 'ইউরেনাসের চাঁদগুলোর মধ্যে সবচেয়ে উজ্জ্বল আর সবচেয়ে নবীন পৃষ্ঠ। উত্তরের অংশ ভরাট করা।' },
+  { key: 'titania', kind: 'moon', parent: 'uranus', bn: 'টাইটানিয়া', en: 'TITANIA', color: '#b7b2ab', r: 0.1, orbit: 5.2, P: 8.71, inc: 0, a0: 4.7, tex: 'titania', paint: 'icy', tint: [188, 182, 175],
+    f: [['ব্যাস', '১,৫৭৭ কিমি'], ['ইউরেনাস থেকে দূরত্ব', '৪,৩৬,৩০০ কিমি'], ['এক পাক ঘুরতে লাগে', '৮.৭১ দিন'], ['আবিষ্কার', '১৭৮৭ — উইলিয়াম হার্শেল']],
+    n: 'ইউরেনাসের সবচেয়ে বড় চাঁদ; বিশাল গিরিখাতে চেরা। উত্তরের অংশ ভরাট করা।' },
+  { key: 'oberon', kind: 'moon', parent: 'uranus', bn: 'ওবেরন', en: 'OBERON', color: '#a29a91', r: 0.1, orbit: 6.4, P: 13.46, inc: 0, a0: 1.6, tex: 'oberon', paint: 'rocky', tint: [165, 156, 147],
+    f: [['ব্যাস', '১,৫২৩ কিমি'], ['ইউরেনাস থেকে দূরত্ব', '৫,৮৩,৫০০ কিমি'], ['এক পাক ঘুরতে লাগে', '১৩.৪৬ দিন'], ['আবিষ্কার', '১৭৮৭ — উইলিয়াম হার্শেল']],
+    n: 'ইউরেনাসের সবচেয়ে বাইরের বড় চাঁদ; পুরোনো, খাদে ভরা পৃষ্ঠ। উত্তরের অংশ ভরাট করা।' },
+  { key: 'triton', kind: 'moon', parent: 'neptune', bn: 'ট্রাইটন', en: 'TRITON', color: '#d8cbbf', r: 0.15, orbit: 4.0, P: -5.88, inc: 23, a0: 3.4, tex: 'triton', paint: 'icy', tint: [222, 210, 198],
+    f: [['ব্যাস', '২,৭০৭ কিমি'], ['নেপচুন থেকে দূরত্ব', '৩,৫৪,৮০০ কিমি'], ['এক পাক ঘুরতে লাগে', '৫.৮৮ দিন — উল্টো দিকে'], ['আবিষ্কার', '১৮৪৬ — উইলিয়াম ল্যাসেল']],
+    n: 'গ্রহের উল্টো দিকে ঘোরে — সম্ভবত একসময় কাইপার বেল্টের বস্তু ছিল, নেপচুনের টানে ধরা পড়েছে। নাইট্রোজেনের ফোয়ারা ওঠে; পৃষ্ঠ প্রায় −২৩৫°সে। উত্তরের অংশ ভরাট করা।' },
+  { key: 'charon', kind: 'moon', parent: 'pluto', bn: 'শ্যারন', en: 'CHARON', color: '#a8a39e', r: 0.15, orbit: 0.95, P: 6.39, inc: 0, a0: 0, tex: 'charon', paint: 'icy', tint: [175, 170, 165],
+    f: [['ব্যাস', '১,২১২ কিমি'], ['প্লুটো থেকে দূরত্ব', '১৯,৬০০ কিমি'], ['এক পাক ঘুরতে লাগে', '৬.৩৯ দিন'], ['আবিষ্কার', '১৯৭৮ — জেমস ক্রিস্টি']],
+    n: 'প্লুটোর প্রায় অর্ধেক মাপের চাঁদ; দুজনেই সব সময় পরস্পরের দিকে একই মুখ ফিরিয়ে ঘোরে। উত্তর মেরুর লালচে দাগটার ডাকনাম মর্ডর। দক্ষিণের অংশ ভরাট করা।' },
+
+  { key: 'voyager1', kind: 'craft', bn: 'ভয়েজার ১', en: 'VOYAGER 1', color: '#e8e2cf', kick: 'মহাকাশযান · নক্ষত্রের মাঝের জায়গায়', home: 'helio',
+    dir: [255.9, 34.9], au: 170,
+    f: [['উৎক্ষেপণ', '৫ সেপ্টেম্বর ১৯৭৭'], ['সূর্য থেকে দূরত্ব', 'প্রায় ১৭০ AU (২০২৬) — প্রায় ২,৫০০ কোটি কিমি'], ['হেলিওপজ পেরোয়', 'আগস্ট ২০১২, ১২১.৬ AU-তে'], ['সংকেত পৌঁছাতে লাগে', 'প্রায় ২৩ ঘণ্টা']],
+    n: 'মানুষের তৈরি সবচেয়ে দূরের বস্তু। বৃহস্পতি আর শনির পাশ দিয়ে গিয়ে এখন নক্ষত্রের মাঝের জায়গায়; সঙ্গে আছে পৃথিবীর শব্দ আর ছবির সোনালি রেকর্ড। যানটা প্রতীকী, মাপমতো নয়।' },
+  { key: 'voyager2', kind: 'craft', bn: 'ভয়েজার ২', en: 'VOYAGER 2', color: '#e8e2cf', kick: 'মহাকাশযান · নক্ষত্রের মাঝের জায়গায়', home: 'helio',
+    dir: [290.5, -35.8], au: 145,
+    f: [['উৎক্ষেপণ', '২০ আগস্ট ১৯৭৭'], ['সূর্য থেকে দূরত্ব', 'প্রায় ১৪৫ AU (২০২৬) — প্রায় ২,১৭০ কোটি কিমি'], ['হেলিওপজ পেরোয়', 'নভেম্বর ২০১৮, প্রায় ১১৯ AU-তে'], ['যা আর কেউ পারেনি', 'ইউরেনাস আর নেপচুনের পাশ দিয়ে যাওয়া']],
+    n: 'চারটি দানব গ্রহের পাশ দিয়েই গেছে একমাত্র এই যান; ইউরেনাস (১৯৮৬) আর নেপচুনের (১৯৮৯) কাছের প্রায় সব ছবিই এর তোলা। যানটা প্রতীকী, মাপমতো নয়।' },
+];
+
+const EN_X = {
+  kuiper: { name: 'Kuiper Belt', kick: 'Beyond Neptune', facts: [['Where', '30–50 AU from the Sun (4.5–7.5 billion km)'], ['Largest members', 'Pluto, Haumea, Makemake'], ['Bodies over 100 km', 'probably more than 100,000'], ['Seen up close', 'Arrokoth — New Horizons, 2019']],
+    note: 'A vast ring of icy bodies beyond Neptune — like the asteroid belt, but about 20 times as wide and many times as massive. Many short-period comets come from here.' },
+  helio: { name: 'Heliosphere', kick: "The Sun's own bubble", facts: [['Made by', 'the solar wind — particles streaming from the Sun'], ['Termination shock', 'about 90 AU — the wind suddenly slows'], ['Heliopause', 'about 120 AU — beyond it, interstellar space'], ['Crossed by', 'Voyager 1 (2012), Voyager 2 (2018)']],
+    note: 'The solar wind pushes back the gas between the stars and blows a vast bubble with every planet inside it. It holds off much of the harmful cosmic radiation. Its true shape is still debated — this is the comet-like model with a tail.' },
+  oort: { name: 'Oort Cloud', kick: 'The far edge of the Solar System', facts: [['Distance', 'roughly 2,000 to 100,000 AU'], ['Outer edge', 'about 1.6 light-years away'], ['How many bodies', 'billions, perhaps trillions of icy ones'], ['Ever seen?', 'no — it is still inferred']],
+    note: 'A thought-to-exist shell of icy bodies around the whole Solar System, where long-period comets are believed to come from. Voyager 1 will reach its inner edge in about 300 years and take some 30,000 years to cross it.' },
+  ceres: { name: 'Ceres', kick: 'Dwarf planet · in the asteroid belt', facts: [['Diameter', 'about 940 km'], ['Distance from the Sun', 'about 414 million km (2.8 AU)'], ['One year', 'about 4.6 Earth years'], ['Moons', 'none']],
+    note: 'The largest member of the asteroid belt and the only dwarf planet in the inner Solar System. Bright salt spots shine in Occator crater; the Dawn spacecraft orbited it from 2015.' },
+  pluto: { name: 'Pluto', kick: 'Dwarf planet · in the Kuiper Belt', facts: [['Diameter', '2,377 km'], ['Average distance from the Sun', 'about 5.9 billion km (39.5 AU)'], ['One year', 'about 248 Earth years'], ['Moons', '5 — the largest is Charon']],
+    note: 'A dwarf planet since 2006, with a vast heart-shaped plain of nitrogen ice. New Horizons flew past in 2015 and took the first close pictures; the southern part it could not see is filled in from the colours around it.' },
+  eris: { name: 'Eris', kick: 'Dwarf planet · beyond the Kuiper Belt', facts: [['Diameter', '2,326 km'], ['Average distance from the Sun', 'about 10.2 billion km (68 AU)'], ['One year', 'about 559 Earth years'], ['Moons', '1 — Dysnomia']],
+    note: 'Its discovery in 2005 is what made astronomers ask whether Pluto was still a planet. About 27% more massive than Pluto. No spacecraft has been there — this look is an artist’s impression.' },
+  haumea: { name: 'Haumea', kick: 'Dwarf planet · in the Kuiper Belt', facts: [['Size', 'about 2,100 × 1,680 × 1,070 km'], ['Average distance from the Sun', 'about 6.4 billion km (43 AU)'], ['One year', 'about 284 Earth years'], ['Moons', '2']],
+    note: 'It spins once in only 4 hours — so fast that it has stretched into an egg shape — and it has a thin ring. This look is an artist’s impression.' },
+  makemake: { name: 'Makemake', kick: 'Dwarf planet · in the Kuiper Belt', facts: [['Diameter', 'about 1,430 km'], ['Average distance from the Sun', 'about 6.8 billion km (45.5 AU)'], ['One year', 'about 306 Earth years'], ['Moons', '1']],
+    note: 'Found just after Easter 2005, so it was named after the creator god of Easter Island. Covered in reddish methane ice. This look is an artist’s impression.' },
+  moon: { name: 'The Moon', facts: [['Diameter', '3,474 km'], ['Distance from Earth', '384,400 km'], ['One orbit', '27.3 days'], ['People who walked on it', '12, from 1969 to 1972']],
+    note: "Earth's only natural satellite. It turns once in the time it takes to go round us, so we always see the same face." },
+  phobos: { name: 'Phobos', facts: [['Diameter', 'about 22 km'], ['Distance from Mars', '9,376 km'], ['One orbit', '7 h 39 min'], ['Discovered', '1877 — Asaph Hall']],
+    note: 'A small, lumpy moon skimming low over Mars and slowly spiralling in — in tens of millions of years it will break apart.' },
+  deimos: { name: 'Deimos', facts: [['Diameter', 'about 12 km'], ['Distance from Mars', '23,463 km'], ['One orbit', '30 h 18 min'], ['Discovered', '1877 — Asaph Hall']],
+    note: "The smaller and farther of Mars's two moons; dust smooths its surface. This look is painted." },
+  io: { name: 'Io', facts: [['Diameter', '3,643 km'], ['Distance from Jupiter', '421,700 km'], ['One orbit', '1.77 days'], ['Discovered', '1610 — Galileo']],
+    note: "The most volcanic place in the Solar System, with more than 400 active volcanoes; Jupiter's pull keeps kneading and heating its insides." },
+  europa: { name: 'Europa', facts: [['Diameter', '3,122 km'], ['Distance from Jupiter', '671,100 km'], ['One orbit', '3.55 days'], ['Discovered', '1610 — Galileo']],
+    note: 'Beneath its shell of ice lies a vast salty ocean — one of the most promising places to look for life.' },
+  ganymede: { name: 'Ganymede', facts: [['Diameter', '5,268 km'], ['Distance from Jupiter', '1,070,400 km'], ['One orbit', '7.15 days'], ['Discovered', '1610 — Galileo']],
+    note: 'The largest moon in the Solar System — bigger than Mercury — and the only moon with a magnetic field of its own.' },
+  callisto: { name: 'Callisto', facts: [['Diameter', '4,821 km'], ['Distance from Jupiter', '1,882,700 km'], ['One orbit', '16.7 days'], ['Discovered', '1610 — Galileo']],
+    note: 'The most heavily cratered surface in the Solar System, barely changed for billions of years. Gaps in the map are filled in.' },
+  enceladus: { name: 'Enceladus', facts: [['Diameter', '504 km'], ['Distance from Saturn', '238,000 km'], ['One orbit', '1.37 days'], ['Discovered', '1789 — William Herschel']],
+    note: 'Geysers of water ice shoot into space from cracks at its south pole — there is an ocean hidden underneath.' },
+  rhea: { name: 'Rhea', facts: [['Diameter', '1,527 km'], ['Distance from Saturn', '527,100 km'], ['One orbit', '4.52 days'], ['Discovered', '1672 — Giovanni Cassini']],
+    note: "Saturn's second-largest moon, almost all ice and covered in craters." },
+  titan: { name: 'Titan', facts: [['Diameter', '5,150 km'], ['Distance from Saturn', '1,221,900 km'], ['One orbit', '15.95 days'], ['Discovered', '1655 — Christiaan Huygens']],
+    note: 'An orange, hazy world under a thick nitrogen atmosphere, with lakes and rivers of methane. The Huygens probe landed here in 2005.' },
+  iapetus: { name: 'Iapetus', facts: [['Diameter', '1,469 km'], ['Distance from Saturn', '3,560,800 km'], ['One orbit', '79.3 days'], ['Discovered', '1671 — Giovanni Cassini']],
+    note: 'A two-tone moon: one side dark as coal, the other bright as snow, with a long mountain ridge along its equator.' },
+  miranda: { name: 'Miranda', facts: [['Diameter', '472 km'], ['Distance from Uranus', '129,900 km'], ['One orbit', '1.41 days'], ['Discovered', '1948 — Gerard Kuiper']],
+    note: 'A patchwork surface with Verona Rupes, a cliff some 20 km high. Voyager 2 saw only its southern side — the rest is filled in.' },
+  ariel: { name: 'Ariel', facts: [['Diameter', '1,158 km'], ['Distance from Uranus', '190,900 km'], ['One orbit', '2.52 days'], ['Discovered', '1851 — William Lassell']],
+    note: "The brightest and youngest surface among Uranus's moons. The northern part is filled in." },
+  titania: { name: 'Titania', facts: [['Diameter', '1,577 km'], ['Distance from Uranus', '436,300 km'], ['One orbit', '8.71 days'], ['Discovered', '1787 — William Herschel']],
+    note: "Uranus's largest moon, split by huge canyons. The northern part is filled in." },
+  oberon: { name: 'Oberon', facts: [['Diameter', '1,523 km'], ['Distance from Uranus', '583,500 km'], ['One orbit', '13.46 days'], ['Discovered', '1787 — William Herschel']],
+    note: "Uranus's outermost large moon, old and heavily cratered. The northern part is filled in." },
+  triton: { name: 'Triton', facts: [['Diameter', '2,707 km'], ['Distance from Neptune', '354,800 km'], ['One orbit', '5.88 days — backwards'], ['Discovered', '1846 — William Lassell']],
+    note: 'It orbits backwards — probably a Kuiper Belt object that Neptune captured. Nitrogen geysers erupt on a surface near −235 °C. The northern part is filled in.' },
+  charon: { name: 'Charon', facts: [['Diameter', '1,212 km'], ['Distance from Pluto', '19,600 km'], ['One orbit', '6.39 days'], ['Discovered', '1978 — James Christy']],
+    note: "Half Pluto's size; the two always keep the same faces turned to each other. The reddish polar cap is nicknamed Mordor. The southern part is filled in." },
+  voyager1: { name: 'Voyager 1', kick: 'Spacecraft · in interstellar space', facts: [['Launched', '5 September 1977'], ['Distance from the Sun', 'about 170 AU (2026) — some 25 billion km'], ['Crossed the heliopause', 'August 2012, at 121.6 AU'], ['A signal takes', 'about 23 hours to arrive']],
+    note: 'The farthest human-made object. It flew past Jupiter and Saturn and is now between the stars, carrying the Golden Record of Earth’s sounds and pictures. The craft is a symbol, not to scale.' },
+  voyager2: { name: 'Voyager 2', kick: 'Spacecraft · in interstellar space', facts: [['Launched', '20 August 1977'], ['Distance from the Sun', 'about 145 AU (2026) — some 21.7 billion km'], ['Crossed the heliopause', 'November 2018, at about 119 AU'], ['Only one ever to', 'fly past Uranus and Neptune']],
+    note: 'The only spacecraft to pass all four giant planets; nearly every close-up of Uranus (1986) and Neptune (1989) is its work. The craft is a symbol, not to scale.' },
+};
+Object.assign(EN_DATA, EN_X);
+EXTRAS.forEach((d) => { d.facts = d.f; d.note = d.n; d.info = []; });
+// regions take indices 10–12 so their chips follow the planets; the rest come after
+EXTRAS.forEach((d) => BODIES.push(d));
+const KEY_IDX = {};
+BODIES.forEach((d, i) => { KEY_IDX[d.key] = i; });
+ORDER.push(KUIPER, HELIO, OORT);
+const kindOf = (i) => (i >= 0 && BODIES[i] ? BODIES[i].kind : '');
+const parentIdx = (i) => KEY_IDX[BODIES[i].parent];
+const moonsOf = (key) => EXTRAS.filter((d) => d.kind === 'moon' && d.parent === key).map((d) => KEY_IDX[d.key]);
+const DWARFS = EXTRAS.filter((d) => d.kind === 'dwarf').map((d) => KEY_IDX[d.key]);
+const CRAFT = EXTRAS.filter((d) => d.kind === 'craft').map((d) => KEY_IDX[d.key]);
+
+/* painters for bodies without a usable photograph, and the placeholders before one arrives */
+const rockyPainter = (tint, seed) => (x, y, z) => {
+  const n = fbm(x * 3 + seed, y * 3, z * 3), c = Math.abs(noise(x * 10 + seed, y * 10, z * 10)), c2 = Math.abs(noise(x * 24, y * 24 + seed, z * 24));
+  const v = 0.62 + n * 0.4 - c * 0.2;
+  return { map: [tint[0] * v, tint[1] * v, tint[2] * v], bumpMap: 128 + n * 120 - (1 - c) * 50 - (1 - c2) * 30 };
+};
+const icyPainter = (tint, seed) => (x, y, z) => {
+  const n = fbm(x * 2.5 + seed, y * 2.5, z * 2.5), l = Math.abs(noise(x * 14, y * 14 + seed, z * 14));
+  const v = 0.8 + n * 0.28 - (l < 0.035 ? 0.16 : 0);
+  return [tint[0] * v, tint[1] * v, tint[2] * v];
+};
+PAINTERS.titan = (x, y, z, lat) => { const n = fbm(x * 2, y * 6, z * 2); return mix3([190, 120, 48], [232, 172, 92], clamp(0.5 + Math.sin(lat * 5) * 0.12 + n * 0.45, 0, 1)); };
+PAINTERS.ceres = (x, y, z, lat, lon) => {
+  const o = rockyPainter([150, 146, 140], 3)(x, y, z);
+  let dl = lon + 2.11; dl = Math.atan2(Math.sin(dl), Math.cos(dl));
+  if ((dl / 0.05) ** 2 + ((lat - 0.35) / 0.035) ** 2 < 1) o.map = [245, 243, 236]; // the bright salts of Occator
+  return o;
+};
+PAINTERS.haumea = (x, y, z, lat, lon) => {
+  const c = icyPainter([238, 235, 230], 5)(x, y, z);
+  let dl = lon - 0.8; dl = Math.atan2(Math.sin(dl), Math.cos(dl));
+  return (dl / 0.45) ** 2 + (lat / 0.35) ** 2 < 1 ? mix3(c, [140, 70, 55], 0.6) : c; // its dark red spot
+};
+function painterFor(d, k) {
+  if (d.paint === 'rocky') return rockyPainter(d.tint, k * 1.7);
+  if (d.paint === 'icy') return icyPainter(d.tint, k * 1.7);
+  return PAINTERS[d.paint];
+}
+
 /* ---------------- three.js scene ---------------- */
 let renderer;
 try {
@@ -292,7 +517,7 @@ renderer.toneMappingExposure = 1.1;
 renderer.domElement.setAttribute('aria-hidden', 'true');
 root.prepend(renderer.domElement);
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, 1, 0.05, 4000);
+const camera = new THREE.PerspectiveCamera(45, 1, 0.05, 30000);
 
 // post-processing: bloom picks up only what is brighter than the threshold (the sun, its glow, bright rims)
 const composer = new EffectComposer(renderer);
@@ -321,7 +546,7 @@ scene.add(new THREE.PointLight(0xfff1dd, 2.8, 0, 0));
 {
   const n = Q.stars, pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
   for (let i = 0; i < n; i++) {
-    const u = rng() * 2 - 1, th = rng() * Math.PI * 2, s = Math.sqrt(1 - u * u), R = 1500 + rng() * 600;
+    const u = rng() * 2 - 1, th = rng() * Math.PI * 2, s = Math.sqrt(1 - u * u), R = 9000 + rng() * 3000;
     pos.set([R * s * Math.cos(th), R * u, R * s * Math.sin(th)], i * 3);
     const tint = rng(), b = 0.45 + rng() * 0.55;
     const c = tint < 0.15 ? [1, 0.8, 0.6] : tint < 0.3 ? [0.7, 0.8, 1] : [1, 1, 1];
@@ -690,6 +915,208 @@ function applyMoon(tx) {
 }
 const planetPos = (i, t, out = new THREE.Vector3()) => { const p = PLANETS[i], a = p.a0 + p.w * t; return out.set(Math.cos(a) * p.a, 0, -Math.sin(a) * p.a); };
 
+
+/* the objects themselves; XR[index] holds what each body needs at run time */
+const XR = {};
+const MOON_SEG = IS_MOBILE ? [24, 16] : [40, 28];
+let kuiperPts, oortPts, helioShells = [];
+const _w = new THREE.Vector3(), _q = new THREE.Quaternion();
+function bodyWorld(i, out) {
+  if (i === 0) return out.set(0, 0, 0);
+  if (isPlanet(i)) return out.copy(bodies[i - 1].orbit.position);
+  if (i === BELT) return out.copy(beltSpot);
+  const x = XR[i];
+  if (!x) return out.set(0, 0, 0);
+  if (x.center) return out.copy(x.center);
+  x.obj.updateWorldMatrix(true, false);
+  return x.obj.getWorldPosition(out);
+}
+function planetIdx(key) { return PLANETS.findIndex((p) => p.key === key) + 1; }
+
+function dwarfPos(o, t, out) {
+  const nu = o.a0 + 0.32 / Math.sqrt(o.T) * t;
+  const rau = o.a * (1 - o.e * o.e) / (1 + o.e * Math.cos(nu));
+  const th = nu + o.peri * Math.PI / 180, Om = o.node * Math.PI / 180, inc = o.i * Math.PI / 180;
+  const xe = Math.cos(Om) * Math.cos(th) - Math.sin(Om) * Math.sin(th) * Math.cos(inc);
+  const ye = Math.sin(Om) * Math.cos(th) + Math.cos(Om) * Math.sin(th) * Math.cos(inc);
+  const ze = Math.sin(th) * Math.sin(inc);
+  return out.set(xe, ze, -ye).multiplyScalar(auToScene(rau));
+}
+function moonMaterial(d, k) {
+  const m = new THREE.MeshStandardMaterial({ roughness: 1, metalness: 0 });
+  const maps = paintMaps(IS_MOBILE ? 96 : 128, IS_MOBILE ? 48 : 64, painterFor(d, k));
+  m.map = maps.map;
+  if (maps.bumpMap) { m.bumpMap = maps.bumpMap; m.bumpScale = 1.4; }
+  return m;
+}
+function buildExtras() {
+  EXTRAS.forEach((d, k) => {
+    const i = KEY_IDX[d.key];
+    if (d.kind === 'moon') {
+      if (d.existing) { XR[i] = { obj: moon, r: d.r }; return; }
+      const parent = d.parent === 'pluto' ? XR[KEY_IDX.pluto].obj : bodies[planetIdx(d.parent) - 1].mesh.parent;
+      const pivot = new THREE.Group(); pivot.rotation.x = (d.inc || 0) * Math.PI / 180; parent.add(pivot);
+      const mesh = new THREE.Mesh(new THREE.SphereGeometry(d.r, MOON_SEG[0], MOON_SEG[1]), moonMaterial(d, k));
+      pivot.add(mesh);
+      if (d.atmo) mesh.add(atmosphere(d.r * 1.08, d.atmo, 1.3));
+      const w = Math.sign(d.P) * Math.min(2.2, 2.6 / Math.sqrt(Math.abs(d.P)));
+      XR[i] = { obj: mesh, r: d.r, w, a0: d.a0, R: d.orbit };
+    } else if (d.kind === 'dwarf') {
+      const g = new THREE.Group(); scene.add(g);
+      const mesh = new THREE.Mesh(new THREE.SphereGeometry(d.r, MOON_SEG[0], MOON_SEG[1]), moonMaterial(d, k));
+      if (d.shape) mesh.scale.set(d.shape[0], d.shape[2], d.shape[1]);
+      g.add(mesh);
+      XR[i] = { obj: g, mesh, r: d.r, orbit: d.orbit };
+      if (d.key !== 'ceres') {
+        // the orbit, tilted and stretched as it really is
+        const pts = [];
+        for (let s = 0; s <= 240; s++) {
+          const o = { ...d.orbit, a0: s / 240 * Math.PI * 2 };
+          pts.push(dwarfPos(o, 0, new THREE.Vector3()));
+        }
+        scene.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts), dwarfOrbitMat));
+      }
+    } else if (d.kind === 'craft') {
+      const g = voyagerModel();
+      const pos = eclDir(d.dir[0], d.dir[1]).multiplyScalar(auToScene(d.au));
+      g.position.copy(pos); g.lookAt(0, 0, 0); scene.add(g);
+      const path = new THREE.Line(new THREE.BufferGeometry().setFromPoints([pos.clone().setLength(SUN_R * 2), pos]), craftPathMat);
+      path.computeLineDistances(); scene.add(path);
+      XR[i] = { obj: g, r: 0.6 };
+    }
+  });
+  buildKuiper();
+  buildHeliosphere();
+  buildOort();
+  XR[KUIPER] = { center: new THREE.Vector3(0, 0, 0), r: 118 };
+  XR[HELIO] = { center: HELIO_NOSE.clone().multiplyScalar(-110), r: 270 };
+  XR[OORT] = { center: new THREE.Vector3(0, 0, 0), r: 495 };
+}
+const dwarfOrbitMat = new THREE.LineBasicMaterial({ color: 0xb59fe0, transparent: true, opacity: 0.2, depthWrite: false });
+const craftPathMat = new THREE.LineDashedMaterial({ color: 0xb8c6ff, dashSize: 2.5, gapSize: 2.5, transparent: true, opacity: 0.35, depthWrite: false });
+
+function voyagerModel() {
+  const g = new THREE.Group();
+  const white = new THREE.MeshStandardMaterial({ color: 0xe4e2dc, roughness: 0.45, metalness: 0.3, side: THREE.DoubleSide });
+  const gold = new THREE.MeshStandardMaterial({ color: 0xc9a24a, roughness: 0.35, metalness: 0.7 });
+  const dark = new THREE.MeshStandardMaterial({ color: 0x45464a, roughness: 0.6, metalness: 0.4 });
+  // the big dish faces home: +z points at the Sun after lookAt
+  const dish = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.1, 0.1, 32, 1, true), white);
+  dish.rotation.x = Math.PI / 2; dish.position.z = 0.12; g.add(dish);
+  const bus = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.14, 10), gold);
+  bus.rotation.x = Math.PI / 2; g.add(bus);
+  const rod = (len, ang, mat, w = 0.012) => {
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(w, w, len, 6), mat);
+    m.rotation.z = ang; m.position.set(Math.cos(ang - Math.PI / 2) * -len / 2, Math.sin(ang - Math.PI / 2) * -len / 2, -0.05);
+    g.add(m); return m;
+  };
+  rod(1.0, Math.PI / 2 + 0.15, dark, 0.018);          // the power boom
+  const rtg = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.22, 8), dark);
+  rtg.position.set(-0.99, -0.15, -0.05); rtg.rotation.z = Math.PI / 2; g.add(rtg);
+  rod(0.8, -Math.PI / 2 - 0.2, white, 0.014);          // the science boom
+  rod(2.2, Math.PI / 4, dark, 0.006);                  // the long magnetometer boom
+  return g;
+}
+
+function buildKuiper() {
+  const n = IS_MOBILE ? 2500 : 5000, pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
+  const g3 = () => rng() + rng() + rng() - 1.5;
+  for (let s = 0; s < n; s++) {
+    const u = rng();
+    // the cold classical belt, the plutinos locked to Neptune, and the scattered disc
+    const au = u < 0.6 ? 44 + g3() * 3.2 : u < 0.8 ? 39.4 + (rng() - 0.5) * 1.4 : 31 + rng() * rng() * 60;
+    const inc = (u < 0.6 ? 2.5 : 13) * g3() * Math.PI / 180, lon = rng() * Math.PI * 2, R = auToScene(au);
+    pos.set([Math.cos(lon) * Math.cos(inc) * R, Math.sin(inc) * R, -Math.sin(lon) * Math.cos(inc) * R], s * 3);
+    const b = 0.45 + rng() * 0.55, red = rng() < 0.55;
+    col.set(red ? [0.85 * b, 0.66 * b, 0.55 * b] : [0.72 * b, 0.8 * b, 0.92 * b], s * 3);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  kuiperPts = new THREE.Points(g, new THREE.PointsMaterial({ size: IS_MOBILE ? 1.6 : 1.8, sizeAttenuation: false, vertexColors: true, transparent: true, opacity: 0.85, depthWrite: false }));
+  scene.add(kuiperPts);
+}
+function buildOort() {
+  const n = IS_MOBILE ? 3000 : 6000, pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
+  for (let s = 0; s < n; s++) {
+    const R = 300 + 195 * Math.pow(rng(), 0.8), u = rng() * 2 - 1, th = rng() * Math.PI * 2, sq = Math.sqrt(1 - u * u);
+    const flat = R < 380 ? 0.55 : 1; // the inner (Hills) cloud is flatter, nearer the planets' plane
+    pos.set([sq * Math.cos(th) * R, u * R * flat, sq * Math.sin(th) * R], s * 3);
+    const b = 0.4 + rng() * 0.6;
+    col.set([0.75 * b, 0.82 * b, 1.0 * b], s * 3);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  oortPts = new THREE.Points(g, new THREE.PointsMaterial({ size: 1.4, sizeAttenuation: false, vertexColors: true, transparent: true, opacity: 0, depthWrite: false }));
+  scene.add(oortPts);
+}
+/* the termination shock and the heliopause: round at the nose, drawn out into a tail */
+function buildHeliosphere() {
+  [[90, [0.42, 0.62, 1.0], 0.9], [120, [0.72, 0.46, 1.0], 1.1]].forEach(([noseAU, color, strength]) => {
+    const geo = new THREE.SphereGeometry(1, 72, 48), p = geo.attributes.position, v = new THREE.Vector3();
+    for (let s = 0; s < p.count; s++) {
+      v.fromBufferAttribute(p, s).normalize();
+      // the tail is stretched after the squeeze, or the logarithm would round the bubble off
+      const c = v.dot(HELIO_NOSE), f = 1 + 1.4 * Math.pow((1 - c) / 2, 2.4);
+      v.multiplyScalar(auToScene(noseAU) * f);
+      p.setXYZ(s, v.x, v.y, v.z);
+    }
+    geo.computeVertexNormals();
+    const mat = new THREE.ShaderMaterial({
+      uniforms: { uColor: { value: new THREE.Color(...color) }, uS: { value: strength }, uFade: { value: 0 }, uTime: sunMat.uniforms.uTime, uNose: { value: HELIO_NOSE } },
+      vertexShader: `varying vec3 vN; varying vec3 vV; varying vec3 vW;
+        void main(){ vec4 wp = modelMatrix*vec4(position,1.); vW = wp.xyz; vN = normalize(mat3(modelMatrix)*normal); vV = normalize(cameraPosition-wp.xyz); gl_Position = projectionMatrix*viewMatrix*wp; }`,
+      fragmentShader: `uniform vec3 uColor; uniform float uS; uniform float uFade; uniform float uTime; uniform vec3 uNose; varying vec3 vN; varying vec3 vV; varying vec3 vW;
+        void main(){
+          float rim = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.4);
+          float flow = 0.8 + 0.2 * sin(dot(vW, uNose) * 0.09 + uTime * 0.6);   // ripples drifting down the tail
+          gl_FragColor = vec4(uColor * rim * flow * uS * uFade * 0.32, 1.0);
+        }`,
+      transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    scene.add(mesh);
+    helioShells.push(mesh);
+  });
+}
+
+function updateExtras(t) {
+  for (const k in XR) {
+    const x = XR[k], i = +k, d = BODIES[i];
+    if (d.kind === 'moon' && !d.existing) {
+      const a = x.a0 + x.w * t;
+      x.obj.position.set(Math.cos(a) * x.R, 0, -Math.sin(a) * x.R);
+      x.obj.rotation.y = a + Math.PI; // the same face always turned to its planet
+    } else if (d.kind === 'dwarf') {
+      dwarfPos(x.orbit, t, x.obj.position);
+      x.mesh.rotation.y = t * (d.key === 'haumea' ? 1.6 : 0.3);
+    }
+  }
+  if (kuiperPts) kuiperPts.rotation.y = t * 0.004;
+}
+/* the outer layers come in as the camera pulls back, and stay out of the way up close */
+function fadeExtras() {
+  const cd = camera.position.length();
+  const hf = smooth(430, 720, cd);
+  helioShells.forEach((m) => { m.material.uniforms.uFade.value = hf; m.visible = hf > 0.001; });
+  if (oortPts) { oortPts.material.opacity = 0.8 * smooth(1000, 1400, cd); oortPts.visible = oortPts.material.opacity > 0.001; }
+}
+
+/* photographs for the moons and Pluto, fetched once the scene is up so they never delay it */
+function loadMoonTextures() {
+  EXTRAS.forEach((d) => {
+    if (!d.tex) return;
+    const x = XR[KEY_IDX[d.key]];
+    const mesh = x.mesh || x.obj;
+    fetchTex(d.tex, true).then((tex) => {
+      const rocky = d.paint === 'rocky';
+      swapMaps(mesh.material, { map: tex, bumpMap: rocky ? tex : null });
+      if (rocky) mesh.material.bumpScale = 1.2;
+    }, () => {});
+  });
+}
+
 /* ---------------- tour camera (pure function of t) ---------------- */
 const UP = new THREE.Vector3(0, 1, 0);
 // scratch objects reused every frame (no allocations in the render loop)
@@ -787,9 +1214,7 @@ function nearestBeltSpot(out) {
 }
 function focusPoint(idx, out) {
   if (idx < 0) return out.copy(OVERVIEW_Q);
-  if (idx === 0) return out.set(0, 0, 0);
-  if (idx === BELT) return out.copy(beltSpot);
-  return out.copy(bodies[idx - 1].orbit.position);
+  return bodyWorld(idx, out);
 }
 function focusOffset(idx, L, out) {
   const az = Math.atan2(camera.position.z - controls.target.z, camera.position.x - controls.target.x);
@@ -800,12 +1225,21 @@ function focusOffset(idx, L, out) {
     _dir.copy(L).normalize(); _side.set(-_dir.z, 0, _dir.x);
     return out.copy(_dir).multiplyScalar(-7).addScaledVector(_side, 14).addScaledVector(UP, 7.5).multiplyScalar(fit());
   }
+  if (idx === KUIPER) return out.set(Math.cos(az) * 235, 175, Math.sin(az) * 235).multiplyScalar(fit());
+  if (idx === OORT) return out.set(Math.cos(az) * 1000, 640, Math.sin(az) * 1000).multiplyScalar(fit());
+  if (idx === HELIO) { _side.crossVectors(HELIO_NOSE, UP).normalize(); return out.copy(_side).multiplyScalar(620).addScaledVector(UP, 260).multiplyScalar(fit()); }
+  const kd = kindOf(idx);
+  if (kd === 'moon' || kd === 'dwarf') return planetView({}, L, out).multiplyScalar(Math.max(BODIES[idx].r * 5.5, 0.6) * fit());
+  if (kd === 'craft') return planetView({}, L, out).multiplyScalar(3.2 * fit());
   const pl = PLANETS[idx - 1];
   return planetView(pl, L, out).multiplyScalar(viewDist(pl) * fit());
 }
 function setLimits(idx) {
-  controls.minDistance = idx < 0 ? 4 : idx === 0 ? SUN_R * 1.35 : idx === BELT ? 1.5 : PLANETS[idx - 1].r * (PLANETS[idx - 1].ring ? 1.6 : 1.45);
-  controls.maxDistance = 600;
+  const kd = kindOf(idx);
+  // pulling back further is for the outer regions; nearer in, the wheel soon hands back to the page
+  controls.maxDistance = idx === KUIPER ? 900 : idx === HELIO ? 1500 : idx === OORT ? 2400 : 700;
+  controls.minDistance = idx < 0 ? 4 : idx === 0 ? SUN_R * 1.35 : idx === BELT ? 1.5 : kd === 'region' ? 30 : kd === 'craft' ? 0.6
+    : (kd === 'moon' || kd === 'dwarf') ? BODIES[idx].r * 1.5 : PLANETS[idx - 1].r * (PLANETS[idx - 1].ring ? 1.6 : 1.45);
 }
 function flyTo(idx, opts = {}) {
   flushControls();
@@ -842,7 +1276,17 @@ function stepFly(dt) {
    turns with the planet around the sun, so its lit face stays towards us */
 const _o = new THREE.Vector3(), _t = new THREE.Vector3();
 function follow() {
-  if (!isPlanet(focus) || fly) return;
+  if (fly || focus < 1) return;
+  const kd = kindOf(focus);
+  if (kd === 'moon' || kd === 'dwarf') {
+    // a moon or a dwarf planet: move with it
+    focusPoint(focus, _L);
+    _d.subVectors(_L, lastFocus);
+    if (_d.lengthSq() > 0) { camera.position.add(_d); controls.target.add(_d); }
+    lastFocus.copy(_L);
+    return;
+  }
+  if (!isPlanet(focus)) return;
   focusPoint(focus, _L);
   const dA = Math.atan2(-_L.z, _L.x) - Math.atan2(-lastFocus.z, lastFocus.x);
   if (dA) {
@@ -874,20 +1318,49 @@ const chipEls = ORDER.map((k) => {
 });
 chipsEl.addEventListener('click', (e) => { const b = e.target.closest('.bbs-chip'); if (b) select(+b.dataset.i); });
 
+function navFor(idx) {
+  if (ORDER.includes(idx)) return ORDER;
+  const kd = kindOf(idx);
+  if (kd === 'moon') return moonsOf(BODIES[idx].parent);
+  if (kd === 'dwarf') return DWARFS;
+  if (kd === 'craft') return CRAFT;
+  return [idx];
+}
+function kickerFor(idx) {
+  const d = BODIES[idx];
+  if (idx === 0) return T.centre;
+  if (idx === BELT) return T.between;
+  if (d.kind === 'planet') return T.planetOf(idx);
+  if (d.kind === 'moon') return T.moonOf(txt(BODIES[parentIdx(idx)]).name);
+  return EN ? EN_X[d.key].kick : d.kick;
+}
+/* rows of buttons under the facts: a planet's moons, what lies in a region, the way back */
+function relFor(idx) {
+  const d = BODIES[idx], rows = [];
+  if (d.kind === 'planet' || d.kind === 'dwarf') { const m = moonsOf(d.key); if (m.length) rows.push([T.relMoons, m]); }
+  if (idx === BELT) rows.push([T.relHere, [KEY_IDX.ceres]]);
+  if (d.rel) rows.push([T.relHere, d.rel.map((k) => KEY_IDX[k])]);
+  if (d.kind === 'moon') rows.push([T.relBack, [parentIdx(idx)]]);
+  if (d.home) rows.push([T.relBack, [KEY_IDX[d.home]]]);
+  return rows;
+}
 function openCard(idx) {
-  const pos = ORDER.indexOf(idx), pi = ORDER[(pos + ORDER.length - 1) % ORDER.length], ni = ORDER[(pos + 1) % ORDER.length];
+  const list = navFor(idx), pos = list.indexOf(idx);
+  const pi = list[(pos + list.length - 1) % list.length], ni = list[(pos + 1) % list.length];
   const d = BODIES[idx], x = txt(d), prev = txt(BODIES[pi]), next = txt(BODIES[ni]);
-  const kicker = idx === 0 ? T.centre : idx === BELT ? T.between : T.planetOf(idx);
+  const rel = relFor(idx).map(([h, ids]) => `<div class="bbs-card__rel"><span class="bbs-card__rel-h">${h}</span>` +
+    ids.map((i) => `<button type="button" data-i="${i}"><span class="bbs-card__reldot" style="background:${BODIES[i].color}" aria-hidden="true"></span>${txt(BODIES[i]).name}</button>`).join('') + '</div>').join('');
   card.innerHTML =
     `<button type="button" class="bbs-card__close" data-c="close" aria-label="${T.closeCard}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12 19 6.4 17.6 5 12 10.6z"/></svg></button>` +
-    `<p class="bbs-card__kicker">${kicker}</p>` +
+    `<p class="bbs-card__kicker">${kickerFor(idx)}</p>` +
     `<h2 class="bbs-card__name" id="bbs-card-title"><span class="bbs-card__dot" style="background:${d.color}" aria-hidden="true"></span>${x.name} <span class="bbs-card__en" lang="${x.altLang}">${x.alt}</span></h2>` +
     `<p class="bbs-card__note">${x.note}</p>` +
     '<dl class="bbs-card__facts">' + x.facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('') + '</dl>' +
-    '<div class="bbs-card__nav">' +
+    rel +
+    (list.length > 1 ? '<div class="bbs-card__nav">' +
     `<button type="button" data-c="prev" data-i="${pi}"><span aria-hidden="true">‹</span> ${prev.name}</button>` +
     `<button type="button" data-c="next" data-i="${ni}">${next.name} <span aria-hidden="true">›</span></button>` +
-    '</div>';
+    '</div>' : '');
   card.hidden = false;
   card.scrollTop = 0;
   cardIdx = idx;
@@ -929,8 +1402,20 @@ function pick(cx, cy) {
   const tanH = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
   const minHit = COARSE ? 28 : 16;
   let best = -1, bestScore = Infinity;
-  for (let k = 0; k <= 8; k++) {
-    const R = k === 0 ? SUN_R : PLANETS[k - 1].r * (PLANETS[k - 1].ring ? 1.9 : 1.15);
+  for (let k = 0; k < BODIES.length; k++) {
+    const kd = kindOf(k);
+    if (kd === 'belt' || kd === 'region') continue;
+    let R;
+    if (k === 0) R = SUN_R;
+    else if (isPlanet(k)) R = PLANETS[k - 1].r * (PLANETS[k - 1].ring ? 1.9 : 1.15);
+    else {
+      R = (BODIES[k].r || 0.5) * 1.3;
+      if (kd === 'moon') {
+        // a moon can only be picked once its planet is close
+        const p = parentIdx(k), pr = isPlanet(p) ? PLANETS[p - 1].r : BODIES[p].r;
+        if (camera.position.distanceTo(bodyWorld(p, _s)) > pr * 30) continue;
+      }
+    }
     focusPoint(k, _s);
     const dist = camera.position.distanceTo(_s);
     _s.project(camera);
@@ -946,6 +1431,7 @@ function pick(cx, cy) {
     if (raycaster.ray.intersectPlane(PLANE, _s)) {
       const r = Math.hypot(_s.x, _s.z);
       if (Math.abs(r - BELT_R) < 4.2) { best = BELT; beltSpot.set(_s.x, 0, _s.z).setLength(BELT_R); beltPicked = true; }
+      else if (r > 96 && r < 119) best = KUIPER;
     }
   }
   return best;
@@ -997,6 +1483,7 @@ function updateWorld(t, fx) {
   if (moon) { const a = t * 1.1 + 1; moon.position.set(Math.cos(a) * 2.3, Math.sin(a) * 0.25, -Math.sin(a) * 2.3); moon.rotation.y = -a; }
   belt.rotation.y = t * 0.02;
   if (saturnRing) ringC.copy(saturnRing.position);
+  updateExtras(t);
 }
 
 /* with the card open, slide the picture so the chosen body sits in the space
@@ -1018,6 +1505,31 @@ function updateViewShift() {
   return tx !== viewShift.x || ty !== viewShift.y;
 }
 
+const _lw = new THREE.Vector3();
+/* a label shows when its body is worth naming from where the camera is */
+function labelAlpha(k, cd) {
+  const kd = kindOf(k);
+  if (kd === 'sun') return 1 - smooth(900, 1400, cd);
+  if (kd === 'planet' || kd === 'belt') return 1 - smooth(250, 380, cd);
+  if (kd === 'region') return k === KUIPER ? smooth(190, 250, cd) * (1 - smooth(1100, 1500, cd)) : k === HELIO ? smooth(380, 470, cd) : smooth(850, 1000, cd);
+  const dn = camera.position.distanceTo(bodyWorld(k, _lw));
+  if (kd === 'moon') {
+    const p = parentIdx(k), pr = isPlanet(p) ? PLANETS[p - 1].r : BODIES[p].r;
+    return 1 - smooth(pr * 14, pr * 22, camera.position.distanceTo(bodyWorld(p, _lw)));
+  }
+  if (k === KEY_IDX.ceres) return 1 - smooth(18, 30, dn);
+  return Math.max(smooth(kd === 'craft' ? 200 : 150, kd === 'craft' ? 260 : 200, cd) * (1 - smooth(800, 1100, cd)), 1 - smooth(10, 25, dn));
+}
+function labelAnchor(k, out) {
+  if (k === BELT) { nearestBeltSpot(out); out.y += 1.6; return out; }
+  if (k === 0) return out.set(0, SUN_R * 1.2, 0);
+  if (isPlanet(k)) { out.copy(bodies[k - 1].orbit.position); out.y += PLANETS[k - 1].r * (PLANETS[k - 1].ring ? 1.4 : 1.2); return out; }
+  if (k === KUIPER) { const az = Math.atan2(camera.position.z, camera.position.x); return out.set(Math.cos(az) * 112, 6, Math.sin(az) * 112); }
+  if (k === HELIO) return out.copy(HELIO_NOSE).multiplyScalar(auToScene(120) + 4);
+  if (k === OORT) return out.set(0, 470, 0);
+  bodyWorld(k, out); out.y += (BODIES[k].r || 0.5) * 1.5; return out;
+}
+
 let labelsOn = true;
 function renderFrame() {
   const touring = mode === 'tour';
@@ -1027,6 +1539,10 @@ function renderFrame() {
     camera.position.copy(camState.p); camera.lookAt(camState.q);
     controls.target.copy(camState.q);
   }
+  fadeExtras();
+  // the near plane follows the zoom: close enough for a moon, far enough to keep depth precise out at the Oort cloud
+  const nearW = clamp(camera.position.distanceTo(controls.target) * 0.004, 0.02, 6);
+  if (Math.abs(camera.near - nearW) > nearW * 0.2) { camera.near = nearW; camera.updateProjectionMatrix(); }
   sunRim.lookAt(camera.position);
   const sd = camera.position.length();
   rimMat.uniforms.uLimb.value = Math.sqrt(Math.max(0.0001, 1 - (SUN_R / Math.max(sd, SUN_R * 1.0001)) ** 2));
@@ -1047,13 +1563,15 @@ function renderFrame() {
     if (!free) tagA = sh.type === 'wide0' ? smooth(1.5, 2.5, lt) * (1 - smooth(6.3, 7, lt)) : sh.type === 'wide1' ? smooth(2.5, 3.5, lt) : 0;
   }
   const w = renderer.domElement.clientWidth, h = renderer.domElement.clientHeight;
+  const cd = camera.position.length();
   tagEls.forEach((el, k) => {
-    if (tagA <= 0) { el.style.opacity = 0; el.style.visibility = 'hidden'; return; }
-    if (k === BELT) { nearestBeltSpot(tmp); tmp.y += 1.6; } else if (k === 0) tmp.set(0, SUN_R * 1.2, 0); else { tmp.copy(bodies[k - 1].orbit.position); tmp.y += PLANETS[k - 1].r * (PLANETS[k - 1].ring ? 1.4 : 1.2); }
+    const a = tagA * labelAlpha(k, cd);
+    if (a <= 0.01) { el.style.opacity = 0; el.style.visibility = 'hidden'; return; }
+    labelAnchor(k, tmp);
     tmp.project(camera);
     if (tmp.z > 1 || Math.abs(tmp.x) > 1.2 || Math.abs(tmp.y) > 1.2) { el.style.opacity = 0; el.style.visibility = 'hidden'; return; }
     el.style.visibility = 'visible';
-    el.style.opacity = tagA;
+    el.style.opacity = a;
     el.style.transform = `translate(${((tmp.x + 1) / 2 * w).toFixed(1)}px, ${((1 - tmp.y) / 2 * h).toFixed(1)}px) translate(-50%, -150%)`;
   });
 }
@@ -1311,6 +1829,7 @@ function progress(x) {
       progress(0.04 + 0.26 * (n + 1) / PLANETS.length);
       await breathe();
     }
+    buildExtras();
     // each photograph replaces its painting as it arrives; one that fails gets a full-size painting
     for (const b of bodies) jobs[b.p.key].then((tx) => applyReal(b, tx), () => paintBody(b, Q.tex));
     jobs.moon.then(applyMoon, () => paintMoon(Q.moon));
@@ -1335,6 +1854,7 @@ function progress(x) {
     flyTo(-1, { dur: 2.8 });
     renderFrame();
     updateUI();
+    setTimeout(loadMoonTextures, 1200);
     hintEl.classList.add('is-on');
     hintTimer = setTimeout(hideHint, 9000);
   } catch (err) {

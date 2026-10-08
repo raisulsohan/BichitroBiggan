@@ -13,3 +13,29 @@ Earth roughness map is the specular map inverted and rescaled to 0.35-0.9;
 the Saturn ring strip is the ring alpha map cut to 16 rows.
 
 The page credits them under the "How to explore" notes on /solarsystem.
+
+
+Moon and dwarf-planet maps in 2k/ and 1k/
+
+Public domain (NASA, JPL, USGS and the missions named), from Wikimedia Commons,
+verified by SHA-1, resized to 1024 x 512 (2k) and 512 x 256 (1k) and converted to WebP.
+Where a mission never imaged part of a body, that part is filled from the colours
+around it (a smooth blend towards the map's average, with light noise).
+
+  io.webp        File:Io modest scale map Io SSI-only color SIMP0 med.cub.jpg
+  europa.webp    File:Europa Voyager GalileoSSI global mosaic.jpg
+  ganymede.webp  File:Ganymede map NASA JPL Voyager.jpg
+  callisto.webp  File:Callisto map NASA JPL Voyager.jpg  (gaps filled)
+  enceladus.webp File:Enceladus June 2008 PIA08417 moon only.jpg
+  rhea.webp      File:Rhea Color Map.jpg
+  iapetus.webp   File:Iapetus Color Map.jpg
+  triton.webp    File:Triton map no grid.jpg  (gaps filled)
+  pluto.webp     File:Pluto color mapmosaic.jpg  (gaps filled)
+  charon.webp    File:Charon map iau1803c.jpg  (gaps filled)
+  phobos.webp    File:Phobos Viking Mosaic DLRcontrol 7200.jpg
+  miranda.webp   File:Miranda map JPL USGS.jpg  (gaps filled)
+  ariel.webp     File:Ariel map JPL USGS.jpg  (gaps filled)
+  titania.webp   File:Titania map JPL USGS.jpg  (gaps filled)
+  oberon.webp    File:Oberon map JPL USGS.jpg  (gaps filled)
+
+Titan, Ceres, Deimos, Eris, Haumea and Makemake are painted in code.
