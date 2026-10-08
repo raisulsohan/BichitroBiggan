@@ -1,0 +1,15 @@
+Planet textures in 2k/ and 1k/
+
+Source: Solar System Scope, https://www.solarsystemscope.com/textures/
+Licence: Creative Commons Attribution 4.0 International (CC BY 4.0),
+         https://creativecommons.org/licenses/by/4.0/
+
+Taken from the Wikimedia Commons copies of the 2k set
+(File:Solarsystemscope texture 2k *.jpg / .png / .tif, verified by SHA-1).
+
+Changes: resized (2k: 2048 px wide, 1k: 1024 px; the Moon, Venus, Uranus,
+Neptune and the roughness map at half that) and converted to WebP. The
+Earth roughness map is the specular map inverted and rescaled to 0.35-0.9;
+the Saturn ring strip is the ring alpha map cut to 16 rows.
+
+The page credits them under the "How to explore" notes on /solarsystem.

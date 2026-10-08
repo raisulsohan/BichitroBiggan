@@ -60,6 +60,13 @@
   background: var(--bb-brand-blue);
 }
 .bb-solar__content { margin-bottom: 20px; }
+.bb-solar__credit {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #6b7280;
+}
+.bb-solar__credit a { color: #0b64c9; text-decoration: underline; }
 .bb-solar__note {
   font-size: 14px;
   line-height: 1.6;
@@ -74,6 +81,8 @@
 [data-theme="dark"] .bb-solar__howto li { color: #c5ccd6; }
 [data-theme="dark"] .bb-solar__howto li::before { background: #6bb6ff; }
 [data-theme="dark"] .bb-solar__note { color: #9aa3b0; }
+[data-theme="dark"] .bb-solar__credit { color: #9aa3b0; }
+[data-theme="dark"] .bb-solar__credit a { color: #6bb6ff; }
 
 /* ---------- the stage ---------- */
 .bbs {

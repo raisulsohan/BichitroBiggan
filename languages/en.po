@@ -1583,3 +1583,7 @@ msgstr "An interactive 3D Solar System: turn the Sun and the eight planets with 
 
 msgid "থ্রিডি সৌরজগৎ ঘুরে দেখুন"
 msgstr "Explore the 3D Solar System"
+
+#. translators: 1: link to Solar System Scope, 2: link to the licence.
+msgid "গ্রহের ছবির টেক্সচার: %1$s, %2$s লাইসেন্সে (ছোট করে WebP-তে রূপান্তরিত)।"
+msgstr "Planet textures: %1$s, under %2$s (resized and converted to WebP)."

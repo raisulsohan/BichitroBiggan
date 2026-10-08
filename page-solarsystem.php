@@ -180,6 +180,18 @@ while ( have_posts() ) :
 			<?php endif; ?>
 
 			<p class="bb-solar__note"><?php esc_html_e( 'দ্রষ্টব্য: দেখার সুবিধার জন্য গ্রহের আকার ও দূরত্ব বাস্তব অনুপাতে দেখানো হয়নি। গ্রহের চলার গতিও অনেক গুণ বাড়িয়ে দেখানো হয়েছে।', 'bichitro-biggan' ); ?></p>
+			<p class="bb-solar__credit">
+				<?php
+				echo wp_kses_post(
+					sprintf(
+						/* translators: 1: link to Solar System Scope, 2: link to the licence. */
+						esc_html__( 'গ্রহের ছবির টেক্সচার: %1$s, %2$s লাইসেন্সে (ছোট করে WebP-তে রূপান্তরিত)।', 'bichitro-biggan' ),
+						'<a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener">Solar System Scope</a>',
+						'<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener license">CC BY 4.0</a>'
+					)
+				);
+				?>
+			</p>
 		</div>
 
 	</article>

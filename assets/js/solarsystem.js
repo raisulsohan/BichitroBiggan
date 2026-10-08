@@ -307,7 +307,7 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
   scene.traverse((o) => {
     const mats = o.material ? [].concat(o.material) : [];
     for (const m of mats) {
-      for (const k of ['map', 'bumpMap', 'roughnessMap', 'emissiveMap']) if (m[k]) m[k].needsUpdate = true;
+      for (const k of ['map', 'bumpMap', 'roughnessMap', 'emissiveMap', 'alphaMap']) if (m[k]) m[k].needsUpdate = true;
       if (m.uniforms) for (const u of Object.values(m.uniforms)) if (u.value && u.value.isTexture) u.value.needsUpdate = true;
     }
   });
@@ -333,38 +333,126 @@ scene.add(new THREE.PointLight(0xfff1dd, 2.8, 0, 0));
   scene.add(new THREE.Points(g, new THREE.PointsMaterial({ size: 1.7, sizeAttenuation: false, vertexColors: true, depthWrite: false })));
 }
 
-// sun
-const sunMat = new THREE.ShaderMaterial({
-  uniforms: { uTime: { value: 0 } },
-  vertexShader: `varying vec3 vP; varying vec3 vN; varying vec3 vV;
-    void main(){ vP = position; vec4 wp = modelMatrix*vec4(position,1.); vN = normalize(mat3(modelMatrix)*normal); vV = normalize(cameraPosition-wp.xyz); gl_Position = projectionMatrix*viewMatrix*wp; }`,
-  fragmentShader: `precision highp float;
-    uniform float uTime; varying vec3 vP; varying vec3 vN; varying vec3 vV;
+// sun: boiling granulation, limb darkening, sunspots with their penumbrae and faculae.
+// Everything is a function of uTime, so a paused tour frame is always the same frame.
+const NOISE_GLSL = `
     float hash(vec3 p){ p = fract(p*0.3183099+.1); p *= 17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }
     float vnoise(vec3 x){ vec3 i=floor(x), f=fract(x); f=f*f*(3.-2.*f);
       return mix(mix(mix(hash(i),hash(i+vec3(1,0,0)),f.x), mix(hash(i+vec3(0,1,0)),hash(i+vec3(1,1,0)),f.x),f.y),
                  mix(mix(hash(i+vec3(0,0,1)),hash(i+vec3(1,0,1)),f.x), mix(hash(i+vec3(0,1,1)),hash(i+vec3(1,1,1)),f.x),f.y), f.z); }
-    float fbm(vec3 p){ float s=0., a=.5; for(int i=0;i<5;i++){ s+=a*vnoise(p); p*=2.03; a*=.5; } return s; }
+    #ifdef SUN_LITE
+      #define FBM_OCT 3
+    #else
+      #define FBM_OCT 5
+    #endif
+    float fbm(vec3 p){ float s=0., a=.5; for(int i=0;i<FBM_OCT;i++){ s+=a*vnoise(p); p*=2.03; a*=.5; } return s; }`;
+const sunSpot = (lat, lon, r) => { const la = lat * Math.PI / 180, lo = lon * Math.PI / 180; return new THREE.Vector4(Math.cos(la) * Math.cos(lo), Math.sin(la), Math.cos(la) * Math.sin(lo), r); };
+const sunMat = new THREE.ShaderMaterial({
+  uniforms: {
+    uTime: { value: 0 },
+    // two active regions north and south of the equator, as on the real Sun, and a lone spot
+    uSpots: { value: [sunSpot(14, 30, 0.07), sunSpot(17, 41, 0.034), sunSpot(-11, 150, 0.056), sunSpot(-14, 160, 0.026), sunSpot(21, 255, 0.042)] },
+  },
+  defines: IS_MOBILE ? { SUN_LITE: 1 } : {},
+  extensions: { derivatives: true },
+  vertexShader: `varying vec3 vP; varying vec3 vN; varying vec3 vV;
+    void main(){ vP = position; vec4 wp = modelMatrix*vec4(position,1.); vN = normalize(mat3(modelMatrix)*normal); vV = normalize(cameraPosition-wp.xyz); gl_Position = projectionMatrix*viewMatrix*wp; }`,
+  fragmentShader: `precision highp float;
+    uniform float uTime; uniform vec4 uSpots[5]; varying vec3 vP; varying vec3 vN; varying vec3 vV;
+    ${NOISE_GLSL}
+    vec3 hash3(vec3 p){ return fract(sin(vec3(dot(p,vec3(127.1,311.7,74.7)), dot(p,vec3(269.5,183.3,246.1)), dot(p,vec3(113.5,271.9,124.6))))*43758.5453); }
+    #ifdef SUN_LITE
+      #define C0 0
+      #define CELL_OFF 0.5
+      #define JIT 0.3
+    #else
+      #define C0 -1
+      #define CELL_OFF 0.0
+      #define JIT 0.38
+    #endif
+    // granulation: distance to the nearest and second-nearest cell centre; the centres wander, so the cells boil
+    vec2 cells(vec3 p, float t){
+      vec3 i = floor(p - CELL_OFF), f = p - i; float d1 = 9., d2 = 9.;
+      for (int z = C0; z <= 1; z++) for (int y = C0; y <= 1; y++) for (int x = C0; x <= 1; x++) {
+        vec3 g = vec3(float(x), float(y), float(z)), h = hash3(i + g);
+        vec3 r = g + 0.5 + JIT * sin(t * (0.6 + 0.6 * h.zxy) + 6.2831 * h) - f;
+        float d = dot(r, r);
+        if (d < d1) { d2 = d1; d1 = d; } else if (d < d2) { d2 = d; }
+      }
+      return sqrt(vec2(d1, d2));
+    }
+    // x: umbra, y: penumbra with its radial filaments, z: faculae around the group
+    vec3 spots(vec3 n){
+      float um = 0., pen = 0., fac = 0.;
+      for (int k = 0; k < 5; k++) {
+        vec3 c = normalize(uSpots[k].xyz), dl = n - c;
+        float d = length(dl) / uSpots[k].w + 0.2 * (vnoise(n * 48.0 + float(k) * 7.0) - 0.5);
+        vec3 t1 = normalize(cross(c, vec3(0.0, 1.0, 0.001))), t2 = cross(c, t1);
+        float fil = 0.5 + 0.5 * sin(atan(dot(dl, t2), dot(dl, t1)) * 44.0 + vnoise(n * 90.0) * 5.0);
+        pen = max(pen, (1.0 - smoothstep(0.82, 1.0, d)) * (0.75 + 0.25 * fil));
+        um = max(um, 1.0 - smoothstep(0.34, 0.46, d));
+        fac = max(fac, smoothstep(0.9, 1.15, d) * (1.0 - smoothstep(1.3, 3.4, d)));
+      }
+      return vec3(um, pen, fac);
+    }
     void main(){
-      vec3 p = normalize(vP)*2.6;
-      float n = fbm(p + vec3(uTime*0.06, 0., uTime*0.04));
-      float n2 = fbm(p*2.4 - vec3(0., uTime*0.09, 0.) + n*1.5);
-      float c = clamp(n*0.75 + n2*0.55 - 0.15, 0., 1.);
-      vec3 col = mix(vec3(0.95,0.28,0.03), vec3(1.0,0.72,0.22), c);
-      col = mix(col, vec3(1.0,0.97,0.78), pow(c, 2.6));
-      float mu = max(dot(vN, vV), 0.);
-      col *= 0.62 + 0.55*pow(mu, 0.5);
-      gl_FragColor = vec4(pow(col, vec3(2.2)) * 1.5, 1.);  // linear HDR: only the hottest cells cross the bloom threshold
+      vec3 n = normalize(vP);
+      vec3 gp = n * 52.0;
+      vec2 w = cells(gp + vec3(0.0, uTime * 0.01, 0.0), uTime * 0.35);
+      float lanes = smoothstep(0.0, 0.3, w.y - w.x);
+      float gran = (0.66 + 0.34 * lanes) * (0.88 + 0.2 * (1.0 - w.x));
+      // where a cell is smaller than a pixel, fade to its average so the disc never shimmers
+      gran = mix(gran, 0.9, smoothstep(0.3, 0.85, length(fwidth(gp))));
+      float mott = fbm(n * 5.0 + vec3(uTime * 0.02, 0.0, -uTime * 0.015));
+      float I = gran * (0.84 + 0.3 * mott);
+      float mu = clamp(dot(vN, vV), 0.0, 1.0), m1 = 1.0 - mu;
+      vec3 sp = spots(n);
+      I *= 1.0 + sp.z * 0.45 * m1;                 // faculae show up towards the limb
+      I *= mix(1.0, 0.5, sp.y) * mix(1.0, 0.32, sp.x);
+      float limb = 1.0 - 0.56 * m1 - 0.2 * m1 * m1; // limb darkening, quadratic law
+      vec3 hot = pow(vec3(1.0, 0.8, 0.44), vec3(2.2)), warm = pow(vec3(0.96, 0.42, 0.1), vec3(2.2));
+      vec3 col = mix(warm, hot, pow(mu, 0.45)) * I * limb;
+      col *= mix(vec3(1.0), vec3(1.0, 0.6, 0.4), sp.x * 0.7);
+      gl_FragColor = vec4(col * 1.4, 1.);          // linear HDR: only the brightest cells cross the bloom threshold
     }`,
 });
 const sun = new THREE.Mesh(new THREE.SphereGeometry(SUN_R, Q.sunSeg[0], Q.sunSeg[1]), sunMat);
 scene.add(sun);
+// round the limb: the thin red chromosphere, prominences rising and changing, and a faint corona.
+// A sheet through the Sun's centre that turns to face the camera; the disc itself hides its middle.
+const rimMat = new THREE.ShaderMaterial({
+  uniforms: { uTime: sunMat.uniforms.uTime, uLimb: { value: 1 } },
+  defines: IS_MOBILE ? { SUN_LITE: 1 } : {},
+  vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: `precision highp float;
+    uniform float uTime; uniform float uLimb; varying vec2 vUv;
+    ${NOISE_GLSL}
+    void main(){
+      vec2 q = (vUv - 0.5) * 4.4;
+      float r = length(q) * uLimb;               // 1.0 exactly on the limb the camera sees
+      if (r < 0.99) discard;
+      float h = r - 1.0;
+      vec2 dir = q / max(length(q), 1e-4);
+      float chromo = exp(-h * 70.0);
+      float where = smoothstep(0.58, 0.88, vnoise(vec3(dir * 2.2, uTime * 0.015)));
+      float ridge = 1.0 - abs(2.0 * fbm(vec3(dir * 9.0, h * 10.0 - uTime * 0.12)) - 1.0);   // thin, twisting strands
+      float prom = where * smoothstep(0.7, 0.92, ridge + 0.3 * exp(-h * 10.0) - h * 1.2) * exp(-h * 6.0);
+      float corona = pow(1.0 / r, 7.0) * 0.12 * (0.6 + 0.4 * vnoise(vec3(dir * 3.5, uTime * 0.01)));
+      vec3 col = vec3(1.0, 0.13, 0.04) * (chromo * 0.7 + prom * 1.25) + vec3(1.0, 0.86, 0.72) * corona;
+      // fade well before the sheet's own edge, however close the camera is
+      gl_FragColor = vec4(col * (1.0 - smoothstep(1.75, 2.15, length(q))), 1.0);
+    }`,
+  transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide,
+});
+const sunRim = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), rimMat);
+sunRim.scale.setScalar(SUN_R * 4.4);
+scene.add(sunRim);
 function glowTex(stops) {
   const cv = document.createElement('canvas'); cv.width = cv.height = 256; const g = cv.getContext('2d');
   const gr = g.createRadialGradient(128, 128, 0, 128, 128, 128); stops.forEach(([o, c]) => gr.addColorStop(o, c));
   g.fillStyle = gr; g.fillRect(0, 0, 256, 256); const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
-const glow1 = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex([[0, 'rgba(255,230,170,1)'], [0.22, 'rgba(255,190,90,0.85)'], [0.45, 'rgba(255,120,30,0.25)'], [1, 'rgba(255,90,0,0)']]), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0.45 }));
+const glow1 = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex([[0, 'rgba(255,230,170,1)'], [0.22, 'rgba(255,190,90,0.85)'], [0.45, 'rgba(255,120,30,0.25)'], [1, 'rgba(255,90,0,0)']]), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0.38 }));
 glow1.scale.setScalar(SUN_R * 4.2); scene.add(glow1);
 const glow2 = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex([[0, 'rgba(255,200,120,0.5)'], [0.3, 'rgba(255,140,50,0.12)'], [1, 'rgba(255,100,0,0)']]), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0.3 }));
 glow2.scale.setScalar(SUN_R * 12); scene.add(glow2);
@@ -415,9 +503,11 @@ function nightSideEmissive(mat) {
 
 /* Saturn: ring shadow on the planet (march toward the sun, hit the ring plane, read ring opacity) */
 const ringC = new THREE.Vector3(), ringN = new THREE.Vector3();
-function ringShadowOnPlanet(mat, ringTex, inner, outer) {
+// one texture serves the rings and the shadow they throw, so the photograph replaces both at once
+const ringTexU = { value: null }, ringTint = new THREE.Color(0xd8d0c0);
+function ringShadowOnPlanet(mat, inner, outer) {
   mat.onBeforeCompile = (sh) => {
-    Object.assign(sh.uniforms, { uRingC: { value: ringC }, uRingN: { value: ringN }, uRingTex: { value: ringTex }, uRingIn: { value: inner }, uRingOut: { value: outer } });
+    Object.assign(sh.uniforms, { uRingC: { value: ringC }, uRingN: { value: ringN }, uRingTex: ringTexU, uRingIn: { value: inner }, uRingOut: { value: outer } });
     sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vWP;')
       .replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvWP = (modelMatrix * vec4(transformed, 1.0)).xyz;');
     sh.fragmentShader = sh.fragmentShader.replace('#include <common>', `#include <common>
@@ -435,9 +525,9 @@ function ringShadowOnPlanet(mat, ringTex, inner, outer) {
 }
 
 /* Saturn's rings: planet shadow across the rings, and dimmer when seen from the unlit face */
-function ringMaterial(tex, radius) {
+function ringMaterial(radius) {
   return new THREE.ShaderMaterial({
-    uniforms: { uTex: { value: tex }, uC: { value: ringC }, uN: { value: ringN }, uR: { value: radius }, uTint: { value: new THREE.Color(0xd8d0c0) } },
+    uniforms: { uTex: ringTexU, uC: { value: ringC }, uN: { value: ringN }, uR: { value: radius }, uTint: { value: ringTint } },
     vertexShader: `varying vec2 vUv; varying vec3 vWP;
       void main(){ vUv = uv; vec4 wp = modelMatrix*vec4(position,1.); vWP = wp.xyz; gl_Position = projectionMatrix*viewMatrix*wp; }`,
     fragmentShader: `uniform sampler2D uTex; uniform vec3 uC; uniform vec3 uN; uniform float uR; uniform vec3 uTint; varying vec2 vUv; varying vec3 vWP;
@@ -453,29 +543,88 @@ function ringMaterial(tex, radius) {
   });
 }
 
+/* Real maps: Solar System Scope (CC BY 4.0, from their Wikimedia Commons copies), resized
+   and converted to WebP — 2k on a computer, 1k on a phone. Each planet is painted in code at
+   low resolution first; its photograph replaces the painting as soon as it arrives, and a body
+   whose photograph cannot be fetched is painted again at full size instead. */
+const TEX_DIR = new URL('../img/solar/' + (IS_MOBILE ? '1k' : '2k') + '/', import.meta.url).href;
+const TEX_V = '1';
+const LOW = IS_MOBILE ? 192 : 384;
+const REAL = {
+  mercury: { map: 'mercury' }, venus: { map: 'venus' },
+  earth: { map: 'earth-day', night: 'earth-night', clouds: 'earth-clouds', rough: 'earth-rough' },
+  moon: { map: 'moon' }, mars: { map: 'mars' }, jupiter: { map: 'jupiter' },
+  saturn: { map: 'saturn', ring: 'saturn-ring' }, uranus: { map: 'uranus' }, neptune: { map: 'neptune' },
+};
+const SRGB_KEYS = new Set(['map', 'night', 'ring']);
+const BUMP = { mercury: 1.6, mars: 0.8, moon: 1.4 };   // the photograph's own light and shade, used as relief
+let texTotal = 0, texDone = 0;
+function fetchTex(name, srgb) {
+  texTotal++;
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.decoding = 'async';
+    const done = () => {
+      const t = new THREE.Texture(img);
+      t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+      t.anisotropy = Math.min(IS_MOBILE ? 4 : 8, renderer.capabilities.getMaxAnisotropy());
+      t.needsUpdate = true;
+      renderer.initTexture(t);
+      texDone++;
+      resolve(t);
+    };
+    const fail = () => {
+      if (img.complete && img.naturalWidth) { done(); return; }
+      texDone++;
+      reject(new Error('texture ' + name));
+    };
+    img.src = TEX_DIR + name + '.webp?v=' + TEX_V;
+    if (img.decode) img.decode().then(done, fail); else { img.onload = done; img.onerror = fail; }
+  });
+}
+function fetchBody(key) {
+  const spec = REAL[key], names = Object.keys(spec);
+  return Promise.all(names.map((k) => fetchTex(spec[k], SRGB_KEYS.has(k)))).then((list) => {
+    const out = {};
+    names.forEach((k, i) => { out[k] = list[i]; });
+    return out;
+  });
+}
+/* put new maps on a material; a map added or taken away changes its shader */
+function swapMaps(mat, maps) {
+  const keep = Object.values(maps);
+  let rebuild = false;
+  for (const k in maps) {
+    const old = mat[k];
+    if (old === maps[k]) continue;
+    if (!old !== !maps[k]) rebuild = true;
+    if (old && !keep.includes(old)) old.dispose();
+    mat[k] = maps[k];
+  }
+  if (rebuild) mat.needsUpdate = true;
+  dirty = true;
+}
+
 const bodies = [];
 let moon, earthClouds, saturnRing;
 function buildPlanet(p) {
-  const TW = Q.tex, TH = TW / 2;
   const orbit = new THREE.Group(); // positioned on orbit
   const tilt = new THREE.Group(); tilt.rotation.z = p.tilt; orbit.add(tilt);
-  const maps = paintMaps(TW, TH, PAINTERS[p.key]);
-  const mat = new THREE.MeshStandardMaterial({ map: maps.map, roughness: 1, metalness: 0 });
-  if (maps.bumpMap) { mat.bumpMap = maps.bumpMap; mat.bumpScale = p.key === 'earth' ? 1.2 : 2.5; }
-  if (maps.roughnessMap) mat.roughnessMap = maps.roughnessMap;
-  if (maps.emissiveMap) { mat.emissiveMap = maps.emissiveMap; mat.emissive.set(0xffffff); mat.emissiveIntensity = 1.4; nightSideEmissive(mat); }
+  const mat = new THREE.MeshStandardMaterial({ roughness: 1, metalness: 0 });
+  if (p.key === 'earth') { mat.emissive.set(0xffffff); mat.emissiveIntensity = 1.4; nightSideEmissive(mat); }
   const mesh = new THREE.Mesh(new THREE.SphereGeometry(p.r, Q.seg[0], Q.seg[1]), mat);
   tilt.add(mesh);
   if (p.atmo) orbit.add(atmosphere(p.r * 1.05, p.atmo, p.key === 'earth' ? 1.4 : 0.9));
   if (p.key === 'earth') {
-    earthClouds = new THREE.Mesh(new THREE.SphereGeometry(p.r * 1.012, Q.seg[0], Q.seg[1]), new THREE.MeshStandardMaterial({ map: paint(TW, TH, PAINTERS.clouds), transparent: true, depthWrite: false, roughness: 1 }));
+    earthClouds = new THREE.Mesh(new THREE.SphereGeometry(p.r * 1.012, Q.seg[0], Q.seg[1]), new THREE.MeshStandardMaterial({ transparent: true, depthWrite: false, roughness: 1 }));
     tilt.add(earthClouds);
-    const mm = paintMaps(Q.moon, Q.moon / 2, PAINTERS.moon);
-    moon = new THREE.Mesh(new THREE.SphereGeometry(0.27, 48, 32), new THREE.MeshStandardMaterial({ map: mm.map, bumpMap: mm.bumpMap, bumpScale: 2.5, roughness: 1 }));
+    moon = new THREE.Mesh(new THREE.SphereGeometry(0.27, 48, 32), new THREE.MeshStandardMaterial({ roughness: 1 }));
     orbit.add(moon);
   }
   if (p.ring) {
-    const inner = p.r * 1.25, outer = p.r * 2.35, RW = Q.ring;
+    // the photograph of the rings runs from 1.18 to 2.32 Saturn radii
+    const inner = p.r * 1.18, outer = p.r * 2.32, RW = Q.ring;
     const geo = new THREE.RingGeometry(inner, outer, 160, 1);
     const pos = geo.attributes.position, uv = geo.attributes.uv, v = new THREE.Vector3();
     for (let i = 0; i < pos.count; i++) { v.fromBufferAttribute(pos, i); uv.setXY(i, (v.length() - inner) / (outer - inner), 0.5); }
@@ -483,21 +632,61 @@ function buildPlanet(p) {
     for (let x = 0; x < RW; x++) {
       const u = x / RW;
       let a = 0.55 + 0.25 * Math.sin(u * 90) * Math.sin(u * 23) + 0.2 * noise(u * 40, 0.5, 0.5);
-      if (u > 0.58 && u < 0.64) a *= 0.08; // Cassini division
+      if (u > 0.66 && u < 0.71) a *= 0.08; // Cassini division
       if (u < 0.12) a *= u / 0.12 * 0.6;
       a *= smooth(1.0, 0.92, u);
       const b = 200 + 40 * Math.sin(u * 37);
       g.fillStyle = `rgba(${b | 0},${(b * 0.88) | 0},${(b * 0.7) | 0},${clamp(a, 0, 1)})`; g.fillRect(x, 0, 1, 4);
     }
-    const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
-    const ring = new THREE.Mesh(geo, ringMaterial(tex, p.r));
+    ringTexU.value = new THREE.CanvasTexture(cv); ringTexU.value.colorSpace = THREE.SRGBColorSpace;
+    const ring = new THREE.Mesh(geo, ringMaterial(p.r));
     ring.rotation.x = -Math.PI / 2; tilt.add(ring);
-    ringShadowOnPlanet(mat, tex, inner, outer);
+    ringShadowOnPlanet(mat, inner, outer);
     ringN.set(-Math.sin(p.tilt), Math.cos(p.tilt), 0); // ring plane normal: +Y rotated by the axial tilt
     saturnRing = orbit;
   }
   scene.add(orbit);
-  bodies.push({ p, orbit, mesh });
+  const b = { p, orbit, mesh };
+  bodies.push(b);
+  paintBody(b, LOW);
+  if (p.key === 'earth') paintMoon(LOW / 2);
+}
+/* the painting in code: low resolution while the photographs load, full size if one fails */
+function paintBody(b, size) {
+  const p = b.p, maps = paintMaps(size, size / 2, PAINTERS[p.key]);
+  swapMaps(b.mesh.material, { map: maps.map, bumpMap: maps.bumpMap || null, roughnessMap: maps.roughnessMap || null, emissiveMap: maps.emissiveMap || null });
+  b.mesh.material.bumpScale = p.key === 'earth' ? 1.2 : 2.5;
+  if (p.key === 'earth') {
+    swapMaps(earthClouds.material, { map: paint(size, size / 2, PAINTERS.clouds), alphaMap: null });
+    earthClouds.material.opacity = 1;
+  }
+}
+function paintMoon(size) {
+  const mm = paintMaps(size, size / 2, PAINTERS.moon);
+  swapMaps(moon.material, { map: mm.map, bumpMap: mm.bumpMap });
+  moon.material.bumpScale = 2.5;
+}
+function applyReal(b, tx) {
+  const key = b.p.key, m = b.mesh.material;
+  if (key === 'earth') {
+    swapMaps(m, { map: tx.map, bumpMap: null, roughnessMap: tx.rough, emissiveMap: tx.night });
+    m.emissiveIntensity = 1.6;
+    // the cloud photograph is grey: white cloud, its brightness as opacity
+    swapMaps(earthClouds.material, { map: null, alphaMap: tx.clouds });
+    earthClouds.material.opacity = 0.92;
+    return;
+  }
+  swapMaps(m, { map: tx.map, bumpMap: BUMP[key] ? tx.map : null, roughnessMap: null, emissiveMap: null });
+  if (BUMP[key]) m.bumpScale = BUMP[key];
+  if (key === 'saturn') {
+    ringTexU.value.dispose();
+    ringTexU.value = tx.ring;
+    ringTint.set(0xffffff);
+  }
+}
+function applyMoon(tx) {
+  swapMaps(moon.material, { map: tx.map, bumpMap: tx.map });
+  moon.material.bumpScale = BUMP.moon;
 }
 const planetPos = (i, t, out = new THREE.Vector3()) => { const p = PLANETS[i], a = p.a0 + p.w * t; return out.set(Math.cos(a) * p.a, 0, -Math.sin(a) * p.a); };
 
@@ -838,6 +1027,9 @@ function renderFrame() {
     camera.position.copy(camState.p); camera.lookAt(camState.q);
     controls.target.copy(camState.q);
   }
+  sunRim.lookAt(camera.position);
+  const sd = camera.position.length();
+  rimMat.uniforms.uLimb.value = Math.sqrt(Math.max(0.0001, 1 - (SUN_R / Math.max(sd, SUN_R * 1.0001)) ** 2));
   composer.render();
 
   // overlays: title, captions and outro belong to the tour
@@ -1106,14 +1298,29 @@ function progress(x) {
 
 (async () => {
   try {
-    progress(0.05);
+    progress(0.04);
+    // the photographs start downloading at once, while the planets are painted at low resolution
+    const jobs = {};
+    for (const key of Object.keys(REAL)) {
+      jobs[key] = fetchBody(key);
+      jobs[key].catch(() => {}); // handled below, once the planets exist
+    }
     await breathe();
-    // textures are painted one planet per frame, so the loading bar keeps moving
     for (let n = 0; n < PLANETS.length; n++) {
       buildPlanet(PLANETS[n]);
-      progress(0.08 + 0.84 * (n + 1) / PLANETS.length);
+      progress(0.04 + 0.26 * (n + 1) / PLANETS.length);
       await breathe();
     }
+    // each photograph replaces its painting as it arrives; one that fails gets a full-size painting
+    for (const b of bodies) jobs[b.p.key].then((tx) => applyReal(b, tx), () => paintBody(b, Q.tex));
+    jobs.moon.then(applyMoon, () => paintMoon(Q.moon));
+    // wait for them, but not for ever: on a slow line the paintings show first
+    const waitFrom = performance.now();
+    while (texDone < texTotal && performance.now() - waitFrom < 5000) {
+      progress(0.3 + 0.66 * texDone / texTotal);
+      await new Promise((r) => setTimeout(r, 80));
+    }
+    await breathe();
     resize();
     updateWorld(0, 0);
     // start far out and glide in to the whole system

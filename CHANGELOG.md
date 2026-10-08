@@ -2,6 +2,26 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.30.0
+
+- The planets on /solarsystem wear real maps: Solar System Scope's textures
+  (CC BY 4.0, from their Wikimedia Commons copies, checked by SHA-1), resized
+  and converted to WebP in assets/img/solar — about 1.4 MB on a computer
+  (2k) and 0.4 MB on a phone (1k). Earth gets its real continents, clouds,
+  city lights on the night side and a sea that catches the Sun; Saturn its
+  real rings, which still cast and catch shadow; the Moon, Mercury and Mars
+  their relief. The planets are painted in code at low resolution first and
+  each photograph replaces its painting as it arrives (the loading screen
+  waits up to five seconds for them); a body whose photograph cannot be
+  fetched is painted again at full size. The page credits the textures,
+  and assets/img/solar/CREDITS.txt records the source and the changes.
+- A more lifelike Sun, still drawn in its shader and still moving: boiling
+  granulation, limb darkening, sunspots with umbra, filamented penumbra and
+  faculae, and round the limb a red chromosphere, prominences and a faint
+  corona. Granules fade to their average where they would be smaller than a
+  pixel, so the disc never shimmers; phones run a lighter version.
+- The share pictures are rendered again with the real textures.
+
 ## 7.29.0
 
 - The asteroid belt on /solarsystem is now a body of its own: it carries a
