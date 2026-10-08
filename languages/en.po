@@ -1606,5 +1606,8 @@ msgstr "Speed the planets up"
 msgid "পৃথিবী আর গ্রহগুলো আপনার ডিভাইসের ঘড়ি অনুযায়ী এই মুহূর্তের আসল অবস্থানে থাকে — আপনার এখানে রাত হলে পৃথিবীর আপনার দিকটাও অন্ধকার। ⏩ বোতামে গ্রহগুলোকে দ্রুত চালিয়ে দেখা যায়।"
 msgstr "Earth and the planets sit where they really are at this moment, by your device’s clock — when it is night where you are, your side of Earth is dark too. The ⏩ button speeds the planets up."
 
-msgid "ঘুরে দেখার সময় হালকা শব্দ বাজে — দৃশ্যে প্রথম ছোঁয়ার পর শুরু হয়, 🔊 বোতামে বন্ধ করা যায়। গাইডেড ট্যুর নীরব।"
-msgstr "Exploring comes with soft sound, starting the first time you touch the scene; the 🔊 button turns it off. The guided tour is silent."
+msgid "ঘুরে দেখার সময় হালকা শব্দও শোনা যায় — শুরুতে বন্ধ থাকে, 🔊 বোতামে চালু বা বন্ধ করুন। গাইডেড ট্যুর নীরব।"
+msgstr "Exploring can come with soft sound — it starts off; the 🔊 button turns it on or off. The guided tour is silent."
+
+msgid "শব্দ শুনতে এখানে চাপুন"
+msgstr "Tap here to hear the sound"

@@ -2,6 +2,15 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.33.0
+
+- Sound on /solarsystem now starts off. On a first visit a small note under
+  the 🔊 button offers it ("শব্দ শুনতে এখানে চাপুন"); one tap turns it on, it
+  fades away by itself after a few seconds, and once a reader has chosen
+  either way it is not offered again.
+- The shade behind the tour's captions fades out at the top and bottom as
+  well as to the right, so no hard edge cuts across a bright planet.
+
 ## 7.32.0
 
 - Real time: explore mode shows the Solar System as it is at this moment by

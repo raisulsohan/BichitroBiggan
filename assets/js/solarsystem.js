@@ -1527,6 +1527,7 @@ function openCard(idx) {
     '</div>' : '');
   card.hidden = false;
   card.scrollTop = 0;
+  hideSoundTip();
   sfxChime();
   cardIdx = idx;
   chipEls.forEach((c) => c.setAttribute('aria-pressed', +c.dataset.i === idx ? 'true' : 'false'));
@@ -1894,10 +1895,12 @@ root.querySelectorAll('.bbs-bar button').forEach((b) => b.addEventListener('poin
 
 /* ---------------- sound effects (explore mode only; the tour stays silent) ----------------
    All made in code with the Web Audio API: a low drone of space that deepens as the camera pulls
-   back, a whoosh for each flight, a soft chime for a card and the Sun's rumble up close. Starts with
-   the first touch of the scene, as browsers require, and goes quiet when the scene is off screen. */
-const sfx = { on: true, ctx: null };
-try { if (localStorage.getItem('bb_solar_sfx') === '0') sfx.on = false; } catch (e) { /* storage blocked */ }
+   back, a whoosh for each flight, a soft chime for a card and the Sun's rumble up close. Off until
+   the reader turns it on (a small note offers it on a first visit); the choice is remembered, and the
+   sound goes quiet when the scene is off screen. */
+const sfx = { on: false, ctx: null };
+let sfxChosen = false;
+try { const v = localStorage.getItem('bb_solar_sfx'); sfxChosen = v !== null; sfx.on = v === '1'; } catch (e) { /* storage blocked */ }
 function sfxStart() {
   if (!sfx.on) return;
   if (sfx.ctx) { if (sfx.ctx.state === 'suspended') sfx.ctx.resume(); return; }
@@ -1969,13 +1972,31 @@ function syncSoundButton() {
   b.title = sfx.on ? b.dataset.on : b.dataset.off;
   b.setAttribute('aria-label', b.title);
 }
-$('sound').addEventListener('click', () => {
-  sfx.on = !sfx.on;
-  try { localStorage.setItem('bb_solar_sfx', sfx.on ? '1' : '0'); } catch (e) { /* storage blocked */ }
-  if (sfx.on) sfxStart(); else if (sfx.ctx) sfx.ctx.suspend();
+const soundTip = $('soundtip');
+let tipTimer = 0;
+function hideSoundTip() {
+  clearTimeout(tipTimer);
+  if (soundTip.hidden) return;
+  soundTip.classList.remove('is-on');
+  setTimeout(() => { soundTip.hidden = true; }, 400);
+}
+function showSoundTip() {
+  if (sfxChosen || sfx.on || !(window.AudioContext || window.webkitAudioContext)) return;
+  soundTip.hidden = false;
+  requestAnimationFrame(() => soundTip.classList.add('is-on'));
+  tipTimer = setTimeout(hideSoundTip, 12000);
+}
+function setSound(on) {
+  sfx.on = on; sfxChosen = true;
+  try { localStorage.setItem('bb_solar_sfx', on ? '1' : '0'); } catch (e) { /* storage blocked */ }
+  if (on) sfxStart(); else if (sfx.ctx) sfx.ctx.suspend();
   syncSoundButton();
-});
+  hideSoundTip();
+}
+$('sound').addEventListener('click', () => setSound(!sfx.on));
+soundTip.addEventListener('click', () => setSound(true));
 syncSoundButton();
+// a reader who turned sound on before: it starts with the first touch, as browsers require
 root.addEventListener('pointerdown', sfxStart);
 
 /* ---------------- fullscreen (with a stand-in for phones that have none) ---------------- */
@@ -2150,6 +2171,7 @@ function progress(x) {
     updateUI();
     setTimeout(loadMoonTextures, 1200);
     hintEl.classList.add('is-on');
+    setTimeout(showSoundTip, 1500);
     hintTimer = setTimeout(hideHint, 9000);
   } catch (err) {
     fail();
