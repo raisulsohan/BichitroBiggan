@@ -40,16 +40,8 @@ $bb_archive_title = single_term_title( '', false );
 						$duration  = bb_reading_time( get_the_ID() );
 					}
 					
-					$ratio = get_post_meta( get_the_ID(), 'video_ratio', true );
-					if ( empty( $ratio ) ) {
-						// Auto-detect from URL
-						if ( stripos( $video_url, 'shorts' ) !== false || stripos( $video_url, 'reel' ) !== false ) {
-							$ratio = '9/16';
-						} else {
-							$ratio = '16/9';
-						}
-					}
-					
+					$ratio = bb_get_post_video_ratio( get_the_ID(), $video_url );
+
 					$link_href  = $video_url ? $video_url : get_permalink();
 					$popup_attr = $video_url ? 'data-bb-video-popup="' . esc_attr( $video_url ) . '" data-bb-video-ratio="' . esc_attr( $ratio ) . '"' : '';
 				?>

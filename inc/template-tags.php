@@ -324,7 +324,16 @@ function bb_hero_card( $args = array() ) {
 
 	if ( $is_podcast || ! empty( $video_url ) ) {
 		$podcast_class = trim( $args['class'] . ' bb-hero__podcast' . ( ! empty( $video_url ) ? ' bb-has-video' : '' ) );
-		$video_attr    = ! empty( $video_url ) ? ' data-bb-video="' . esc_url( $video_url ) . '"' : '';
+		$video_attr    = '';
+		if ( ! empty( $video_url ) ) {
+			/* A 16:9 video fills the card and plays inside it. An upright or
+			   square one (a reel, 4:5) would sit small in a wide card, so it
+			   opens in the popup player at its own shape, as on the video page. */
+			$video_ratio = bb_get_post_video_ratio( $post_id, $video_url );
+			$video_attr  = '16/9' === $video_ratio
+				? ' data-bb-video="' . esc_url( $video_url ) . '"'
+				: ' data-bb-video-popup="' . esc_url( $video_url ) . '" data-bb-video-ratio="' . esc_attr( $video_ratio ) . '"';
+		}
 		/* The same size the card's width/height and srcset describe — 'full'
 		   meant the browser was handed a 1600px file for a 360px tile. */
 		$thumb_src     = bb_thumb_url( $post_id, $args['image_size'] );
@@ -721,6 +730,32 @@ function bb_get_post_video_url( $post = null ) {
 	}
 
 	return '';
+}
+
+/**
+ * A post video's aspect ratio as "w/h": the Video Settings choice, or else a
+ * guess from the link (Shorts and reels stand upright, the rest are 16/9).
+ *
+ * @param int|WP_Post $post      Post ID or object.
+ * @param string      $video_url The post's embed URL, when already looked up.
+ * @return string
+ */
+function bb_get_post_video_ratio( $post = null, $video_url = null ) {
+	$post = get_post( $post );
+	if ( ! $post ) {
+		return '16/9';
+	}
+
+	$ratio = get_post_meta( $post->ID, 'video_ratio', true );
+	if ( ! empty( $ratio ) ) {
+		return $ratio;
+	}
+
+	if ( null === $video_url ) {
+		$video_url = bb_get_post_video_url( $post );
+	}
+
+	return ( false !== stripos( $video_url, 'shorts' ) || false !== stripos( $video_url, 'reel' ) ) ? '9/16' : '16/9';
 }
 
 /**

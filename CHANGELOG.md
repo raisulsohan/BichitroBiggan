@@ -2,6 +2,14 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.41.0
+
+- A video card at the top of the home page (and of a category page) plays a
+  16:9 video inside the card, as before, but opens an upright or square
+  video (4:5, 9:16, 1:1) in the popup player at its own shape, the way the
+  video page does. The shape comes from Video Settings, or from the link
+  when none is set. The video page and the home page share this rule.
+
 ## 7.40.0
 
 - A Facebook reel or video can be a video post. Paste its link into Video
