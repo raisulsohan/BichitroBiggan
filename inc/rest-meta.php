@@ -1,6 +1,6 @@
 <?php
 /**
- * The SEO and তথ্যসূত্র fields, through the REST API.
+ * The SEO, তথ্যসূত্র and video fields, through the REST API.
  *
  * The meta boxes save these from the editor's own form, which leaves a post
  * sent in over the REST API — from a publishing script signed in with an
@@ -31,6 +31,11 @@ function bb_rest_meta_fields() {
 		'bb_seo_title'          => array( 'types' => array( 'post', 'page' ), 'sanitize' => 'sanitize_text_field' ),
 		'bb_seo_description'    => array( 'types' => array( 'post', 'page' ), 'sanitize' => 'sanitize_textarea_field' ),
 		'bb_references'         => array( 'types' => array( 'post' ), 'sanitize' => 'sanitize_textarea_field' ),
+
+		// The Video Settings box (inc/video-meta-box.php).
+		'video_url'             => array( 'types' => array( 'post' ), 'sanitize' => 'esc_url_raw' ),
+		'video_duration'        => array( 'types' => array( 'post' ), 'sanitize' => 'sanitize_text_field' ),
+		'video_ratio'           => array( 'types' => array( 'post' ), 'sanitize' => 'bb_video_sanitize_ratio' ),
 
 		/*
 		 * The English edition. A translation can be delivered by the same kind

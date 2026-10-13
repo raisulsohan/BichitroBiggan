@@ -27,7 +27,7 @@ function bb_video_meta_box_html( $post ) {
 	$video_ratio    = get_post_meta( $post->ID, 'video_ratio', true );
 	?>
 	<p>
-		<label for="bb_video_url"><strong><?php esc_html_e( 'Video Embed URL (YouTube/Vimeo)', 'bichitro-biggan' ); ?></strong></label><br>
+		<label for="bb_video_url"><strong><?php esc_html_e( 'Video Embed URL (YouTube/Vimeo/Facebook)', 'bichitro-biggan' ); ?></strong></label><br>
 		<input type="url" id="bb_video_url" name="bb_video_url" value="<?php echo esc_attr( $video_url ); ?>" style="width:100%;" placeholder="https://www.youtube.com/watch?v=..." />
 		<small><?php esc_html_e( 'If empty, the theme will try to extract the first video from the post content.', 'bichitro-biggan' ); ?></small>
 	</p>
@@ -68,10 +68,22 @@ function bb_video_save_meta_box( $post_id ) {
 		update_post_meta( $post_id, 'video_duration', sanitize_text_field( wp_unslash( $_POST['bb_video_duration'] ) ) );
 	}
 	if ( isset( $_POST['bb_video_ratio'] ) ) {
-		update_post_meta( $post_id, 'video_ratio', sanitize_text_field( wp_unslash( $_POST['bb_video_ratio'] ) ) );
+		update_post_meta( $post_id, 'video_ratio', bb_video_sanitize_ratio( wp_unslash( $_POST['bb_video_ratio'] ) ) );
 	}
 }
 add_action( 'save_post', 'bb_video_save_meta_box' );
+
+/**
+ * One of the box's aspect ratios, or '' (detect it) for anything else.
+ *
+ * @param mixed $ratio Submitted value.
+ * @return string
+ */
+function bb_video_sanitize_ratio( $ratio ) {
+	$ratio = is_string( $ratio ) ? trim( $ratio ) : '';
+
+	return in_array( $ratio, array( '16/9', '9/16', '4/5', '1/1' ), true ) ? $ratio : '';
+}
 
 /**
  * The YouTube ID of a post's video, or '' when it has none.

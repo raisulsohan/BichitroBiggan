@@ -658,7 +658,7 @@ function bb_is_podcast_post( $post = null ) {
 }
 
 /**
- * Extract first video URL (YouTube, Vimeo, MP4) from post content or meta.
+ * Extract first video URL (YouTube, Vimeo, Facebook) from post content or meta.
  *
  * @param int|WP_Post $post Post ID or object.
  * @return string Embed URL or empty string.
@@ -699,9 +699,21 @@ function bb_get_post_video_url( $post = null ) {
 		return $m[1];
 	}
 
+	// Facebook's player in an iframe. A plain link to a Facebook video in the
+	// text is only a link; it takes the Video URL field to make it the video.
+	if ( preg_match( '/src=["\'](https?:\/\/(?:www\.)?facebook\.com\/plugins\/video\.php\?[^"\']+)["\']/i', $content, $m ) ) {
+		$facebook = bb_facebook_video_embed_url( $m[1] );
+		if ( '' !== $facebook ) {
+			return $facebook;
+		}
+	}
+
 	// Any URLs in post
 	$urls = wp_extract_urls( $content );
 	foreach ( $urls as $url ) {
+		if ( preg_match( '~^https?://(?:[a-z0-9-]+\.)?facebook\.com/~i', $url ) ) {
+			continue;
+		}
 		$norm = bb_normalize_video_embed_url( $url );
 		if ( ! empty( $norm ) ) {
 			return $norm;
@@ -727,7 +739,42 @@ function bb_normalize_video_embed_url( $url ) {
 	if ( preg_match( '/(?:vimeo\.com\/(?:video\/)?)([0-9]+)/i', $url, $m ) ) {
 		return 'https://player.vimeo.com/video/' . $m[1];
 	}
-	return '';
+	return bb_facebook_video_embed_url( $url );
+}
+
+/**
+ * Facebook's video player for a reel or video link, or '' for any other link.
+ *
+ * Takes a link as copied from Facebook (/reel/ID, /<page>/videos/…/ID,
+ * /watch/?v=ID, video.php?v=ID) or a player link already made from one. A reel
+ * keeps "reel" in the player link, which is how the video grid knows to open
+ * it upright (9:16).
+ *
+ * @param string $url Link to look at.
+ * @return string
+ */
+function bb_facebook_video_embed_url( $url ) {
+	$url = html_entity_decode( (string) $url, ENT_QUOTES );
+
+	if ( ! preg_match( '~^https?://(?:[a-z0-9-]+\.)?facebook\.com/~i', $url ) ) {
+		return '';
+	}
+
+	// A player link: look at the video it plays.
+	if ( preg_match( '~/plugins/video\.php\?(?:[^#]*&)?href=([^&#]+)~i', $url, $m ) ) {
+		$url = rawurldecode( $m[1] );
+	}
+
+	if ( preg_match( '~facebook\.com/reels?/([0-9]+)~i', $url, $m ) ) {
+		$href = 'https://www.facebook.com/reel/' . $m[1] . '/';
+	} elseif ( preg_match( '~facebook\.com/(?:[^/?#]+/)?videos/(?:[^/?#]+/)*([0-9]+)~i', $url, $m )
+		|| preg_match( '~facebook\.com/(?:watch/?|video\.php)\?(?:[^#]*&)?v=([0-9]+)~i', $url, $m ) ) {
+		$href = 'https://www.facebook.com/watch/?v=' . $m[1];
+	} else {
+		return '';
+	}
+
+	return 'https://www.facebook.com/plugins/video.php?href=' . rawurlencode( $href ) . '&show_text=false';
 }
 
 

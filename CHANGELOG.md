@@ -2,6 +2,16 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.40.0
+
+- A Facebook reel or video can be a video post. Paste its link into Video
+  Settings, or put Facebook's video player in the post, and the video grid
+  opens it in the popup player like a YouTube video. A plain link to a
+  Facebook video in an article stays a link.
+- The Video Settings fields (link, duration, aspect ratio) can be set
+  through the REST API, so a publishing script can fill them. The aspect
+  ratio only takes one of the box's own choices.
+
 ## 7.39.0
 
 - The planet in the solar system link's icon now always circles its sun, and

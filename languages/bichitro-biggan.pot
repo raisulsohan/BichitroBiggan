@@ -117,7 +117,7 @@ msgstr ""
 #: footer.php:171
 #: footer.php:183
 #: footer.php:198
-#: inc/template-tags.php:777
+#: inc/template-tags.php:824
 msgid "বন্ধ করুন"
 msgstr ""
 
@@ -522,7 +522,7 @@ msgid "সংরক্ষিত লেখাগুলো দেখুন"
 msgstr ""
 
 #: header.php:55
-#: inc/template-tags.php:759
+#: inc/template-tags.php:806
 msgid "পরে পড়ুন"
 msgstr ""
 
@@ -2040,16 +2040,16 @@ msgstr ""
 msgid "— Auto (Latest Post) —"
 msgstr ""
 
-#: inc/template-tags.php:756
-#: inc/template-tags.php:757
+#: inc/template-tags.php:803
+#: inc/template-tags.php:804
 msgid "পরে পড়ার জন্য সংরক্ষণ করুন"
 msgstr ""
 
-#: inc/template-tags.php:774
+#: inc/template-tags.php:821
 msgid "সংরক্ষিত লেখাগুলো"
 msgstr ""
 
-#: inc/template-tags.php:784
+#: inc/template-tags.php:831
 msgid "সব মুছে ফেলুন"
 msgstr ""
 
@@ -2058,7 +2058,7 @@ msgid "Video Settings (For Podcast/Video Grid)"
 msgstr ""
 
 #: inc/video-meta-box.php:30
-msgid "Video Embed URL (YouTube/Vimeo)"
+msgid "Video Embed URL (YouTube/Vimeo/Facebook)"
 msgstr ""
 
 #: inc/video-meta-box.php:32
