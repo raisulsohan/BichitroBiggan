@@ -2,6 +2,11 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 8.0.0
+
+- The version moves to 8.0.0. Only the number changes; the theme is
+  7.41.1 as it was.
+
 ## 7.41.1
 
 - The card that reads a figure off the Statistics chart sits beside the
