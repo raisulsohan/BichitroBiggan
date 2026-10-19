@@ -2,6 +2,16 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 7.41.1
+
+- The card that reads a figure off the Statistics chart sits beside the
+  point, never on it. It used to sit above the point, and with nowhere to
+  go when the point was near the top it covered the dot and the guide it
+  was explaining; it was also drawn 40 px to the left of the point, because
+  the scale's width was left out of where it went. Now it sits to the
+  right of the guide in the left half of the chart and to the left of it
+  in the right half, level with the point as far as the plot allows.
+
 ## 7.41.0
 
 - A video card at the top of the home page (and of a category page) plays a

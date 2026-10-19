@@ -301,11 +301,22 @@ function bb_stats_chart( array $series ) {
 				when.textContent = point.l;
 				tip.hidden = false;
 
-				var left = ( point.x / 100 ) * box.width;
+				/* Beside the guide, never over it: to the right of the point in
+				   the left half of the chart, to the left of it in the right
+				   half, and level with the point as far as the plot allows. A
+				   card above the point had nowhere to go when the point was
+				   near the top, and sat on the very dot and line it was
+				   explaining. The card is placed in the chart, which starts
+				   where the scale does, so the plot's own offset is added. */
+				var x = ( point.x / 100 ) * box.width + plot.offsetLeft;
+				var y = ( point.y / 100 ) * box.height + plot.offsetTop;
 				var width = tip.offsetWidth;
+				var height = tip.offsetHeight;
+				var left = point.x > 50 ? x - 14 - width : x + 14;
+				var top = Math.min( plot.offsetTop + box.height - height, y - height / 2 );
 
-				tip.style.left = Math.max( 0, Math.min( box.width - width, left - width / 2 ) ) + 'px';
-				tip.style.top = Math.max( -8, ( point.y / 100 ) * box.height - tip.offsetHeight - 12 ) + 'px';
+				tip.style.left = Math.max( 0, Math.min( chart.clientWidth - width, left ) ) + 'px';
+				tip.style.top = Math.max( plot.offsetTop, top ) + 'px';
 			}
 
 			function hide() {
