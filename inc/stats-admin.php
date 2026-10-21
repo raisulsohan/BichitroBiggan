@@ -21,6 +21,7 @@ function bb_stats_ranges() {
 		'30d'  => __( 'Last 30 days', 'bichitro-biggan' ),
 		'90d'  => __( 'Last 90 days', 'bichitro-biggan' ),
 		'365d' => __( 'Last year', 'bichitro-biggan' ),
+		'all'  => __( 'All time', 'bichitro-biggan' ),
 	);
 }
 
@@ -214,6 +215,11 @@ function bb_stats_chart( array $series ) {
 
 	foreach ( $rows as $i => $row ) {
 		if ( 0 !== $i % $every && $i !== $count - 1 ) {
+			continue;
+		}
+
+		// The last point always gets its label, so one just before it would sit on top of it.
+		if ( $i !== $count - 1 && ( $count - 1 - $i ) < $every / 2 ) {
 			continue;
 		}
 
@@ -614,8 +620,10 @@ function bb_stats_page() {
 	 * stops being a tile, and the fifteenth row of anything here has never
 	 * told anybody something the tenth did not.
 	 */
+	// All time has no period before it, so nothing on it is compared or "climbing".
+	$all       = ( 'all' === $key );
 	$totals    = bb_stats_totals( $key );
-	$before    = bb_stats_totals( $key, true );
+	$before    = $all ? null : bb_stats_totals( $key, true );
 	$series    = bb_stats_series( $key );
 	$top       = bb_stats_top_posts( $key, 8 );
 	$sources   = bb_stats_grouped( 'source', $key, 8 );
@@ -626,7 +634,7 @@ function bb_stats_page() {
 	$countries = bb_stats_grouped( 'country', $key, 10 );
 	$depth     = bb_stats_depth_summary( $key );
 	$per_post  = bb_stats_depth_by_post( $key );
-	$trending  = bb_stats_trending( $key, 6 );
+	$trending  = $all ? array() : bb_stats_trending( $key, 6 );
 	$entries   = bb_stats_entry_pages( $key, 6 );
 	$outbound  = bb_stats_events( 'out', $key, 8 );
 	$shares    = bb_stats_events( 'share', $key, 6 );
@@ -679,12 +687,20 @@ function bb_stats_page() {
 			<div class="bb-stats-figure">
 				<span class="bb-stats-figure__label"><?php esc_html_e( 'Reads', 'bichitro-biggan' ); ?></span>
 				<strong class="bb-stats-figure__value"><?php echo esc_html( bb_stats_number( $totals['hits'] ) ); ?></strong>
-				<?php bb_stats_change( $totals['hits'], $before['hits'] ); ?>
+				<?php
+				if ( ! $all ) {
+					bb_stats_change( $totals['hits'], $before['hits'] );
+				}
+				?>
 			</div>
 			<div class="bb-stats-figure">
 				<span class="bb-stats-figure__label"><?php esc_html_e( 'Visits', 'bichitro-biggan' ); ?></span>
 				<strong class="bb-stats-figure__value"><?php echo esc_html( bb_stats_number( $totals['visits'] ) ); ?></strong>
-				<?php bb_stats_change( $totals['visits'], $before['visits'] ); ?>
+				<?php
+				if ( ! $all ) {
+					bb_stats_change( $totals['visits'], $before['visits'] );
+				}
+				?>
 				<span class="bb-stats-figure__note">
 					<?php
 					printf(
@@ -726,7 +742,15 @@ function bb_stats_page() {
 		?>
 		<div class="bb-stats__full">
 			<?php
-			bb_stats_tile_open( '24h' === $key ? __( 'Reads by the hour', 'bichitro-biggan' ) : __( 'Reads per day', 'bichitro-biggan' ) );
+			if ( '24h' === $key ) {
+				$chart_title = __( 'Reads by the hour', 'bichitro-biggan' );
+			} elseif ( bb_stats_by_month( $key ) ) {
+				$chart_title = __( 'Reads per month', 'bichitro-biggan' );
+			} else {
+				$chart_title = __( 'Reads per day', 'bichitro-biggan' );
+			}
+
+			bb_stats_tile_open( $chart_title );
 			bb_stats_chart( $series );
 			bb_stats_tile_close();
 			?>
@@ -804,6 +828,7 @@ function bb_stats_page() {
 		<div class="bb-stats__bento">
 
 			<?php
+			if ( ! $all ) :
 			bb_stats_tile_open(
 				__( 'Climbing', 'bichitro-biggan' ),
 				__( 'Read far more than in the period before. Articles with a handful of reads are left out.', 'bichitro-biggan' )
@@ -833,6 +858,7 @@ function bb_stats_page() {
 					</table>
 				<?php endif; ?>
 			<?php bb_stats_tile_close(); ?>
+			<?php endif; ?>
 
 			<?php
 			bb_stats_tile_open(

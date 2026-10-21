@@ -2,6 +2,16 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 9.0.0
+
+- Statistics gets an "All time" tab after "Last year": everything counted
+  from the first day to today. The chart goes by the day, and by the month
+  once counting runs past a year. There is no period before all time, so
+  the "vs the period before" figures and the Climbing tile are left out on
+  that tab.
+- A date along the bottom of the Statistics chart no longer sits on top of
+  the last one when the two fall close together.
+
 ## 8.0.0
 
 - The version moves to 8.0.0. Only the number changes; the theme is

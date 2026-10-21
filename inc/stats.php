@@ -919,7 +919,43 @@ function bb_stats_windows() {
 			'mode'   => 'days',
 			'length' => 365,
 		),
+		// From the first day counted to today. The period before it is the
+		// stretch before counting began, so it always comes back empty.
+		'all'  => array(
+			'mode'   => 'days',
+			'length' => bb_stats_all_days(),
+		),
 	);
+}
+
+/**
+ * How many days "all time" covers: the first day counted to today, at least one.
+ *
+ * @return int
+ */
+function bb_stats_all_days() {
+	static $days = null;
+
+	if ( null === $days ) {
+		$first = bb_stats_first_day();
+		$start = $first ? strtotime( $first . ' 12:00:00' ) : false;
+		$today = strtotime( wp_date( 'Y-m-d' ) . ' 12:00:00' );
+
+		$days = $start ? max( 1, (int) round( ( $today - $start ) / DAY_IN_SECONDS ) + 1 ) : 1;
+	}
+
+	return $days;
+}
+
+/**
+ * Whether the chart for a window goes by the month — all time, once it runs
+ * past a year, would be too many days for one line to show.
+ *
+ * @param string $key Window key.
+ * @return bool
+ */
+function bb_stats_by_month( $key ) {
+	return 'all' === $key && bb_stats_all_days() > 366;
 }
 
 /**
@@ -1009,11 +1045,18 @@ function bb_stats_series( $key ) {
 	$window  = isset( $windows[ $key ] ) ? $windows[ $key ] : $windows['24h'];
 	$length  = (int) $window['length'];
 	$hourly  = ( 'hours' === $window['mode'] );
+	$monthly = bb_stats_by_month( $key );
 
 	list( $where, $params ) = bb_stats_where( $key );
 	$table                  = bb_stats_table();
 
-	$select = $hourly ? "CONCAT(day, ' ', LPAD(hour, 2, '0')) AS slot" : 'day AS slot';
+	if ( $hourly ) {
+		$select = "CONCAT(day, ' ', LPAD(hour, 2, '0')) AS slot";
+	} elseif ( $monthly ) {
+		$select = 'LEFT(day, 7) AS slot';
+	} else {
+		$select = 'day AS slot';
+	}
 
 	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	$rows = $wpdb->get_results(
@@ -1036,6 +1079,28 @@ function bb_stats_series( $key ) {
 	}
 
 	$series = array();
+
+	if ( $monthly ) {
+		// One point per calendar month, from the first one counted to this one.
+		$month = substr( bb_stats_first_day(), 0, 7 ) . '-01';
+		$last  = wp_date( 'Y-m' );
+
+		while ( substr( $month, 0, 7 ) <= $last ) {
+			$slot = substr( $month, 0, 7 );
+			$time = strtotime( $month . ' 12:00:00' );
+
+			$series[ $slot ] = array(
+				'hits'   => isset( $found[ $slot ] ) ? $found[ $slot ]['hits'] : 0,
+				'visits' => isset( $found[ $slot ] ) ? $found[ $slot ]['visits'] : 0,
+				'label'  => wp_date( 'M Y', $time ),
+				'tip'    => wp_date( 'F Y', $time ),
+			);
+
+			$month = gmdate( 'Y-m-d', strtotime( $month . ' +1 month' ) );
+		}
+
+		return $series;
+	}
 
 	for ( $i = $length - 1; $i >= 0; $i-- ) {
 		$time = $hourly ? time() - ( $i * HOUR_IN_SECONDS ) : time() - ( $i * DAY_IN_SECONDS );
