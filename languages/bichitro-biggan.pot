@@ -2126,11 +2126,19 @@ msgstr ""
 msgid "The English video\\'s length on the English edition\\'s cards. If empty, the cards show the duration above."
 msgstr ""
 
-#: inc/video-meta-box.php:66
+#: inc/video-meta-box.php:68
+msgid "English edition image"
+msgstr ""
+
+#: inc/video-meta-box.php:70
+msgid "The English video\\'s still. The English edition shows it in place of the featured image."
+msgstr ""
+
+#: inc/video-meta-box.php:74
 msgid "English video URL for phones"
 msgstr ""
 
-#: inc/video-meta-box.php:68
+#: inc/video-meta-box.php:76
 msgid "Optional, e.g. the Short of the English video. A screen up to 767px wide plays this one instead."
 msgstr ""
 

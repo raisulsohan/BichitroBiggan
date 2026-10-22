@@ -2,6 +2,18 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 9.3.0
+
+- The English edition can show its own image for a post. A post with an
+  English YouTube video gets that video's still as its English image, and
+  /en shows it wherever the featured image would be: on cards, in the
+  article, in the share preview and in the schema. Video Settings shows
+  the image once it is there.
+- The English video's still never becomes the featured image any more
+  (9.1.0 made it one when the post had none). It carries English words, so
+  the Bengali edition showed an English picture. The featured image stays
+  the Bengali video's.
+
 ## 9.2.0
 
 - Video Settings gets an "English video duration" field. When the post has

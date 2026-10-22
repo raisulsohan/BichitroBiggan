@@ -39,6 +39,7 @@ function bb_rest_meta_fields() {
 		'bb_en_video_url'       => array( 'types' => array( 'post' ), 'sanitize' => 'esc_url_raw' ),
 		'bb_en_video_url_phone' => array( 'types' => array( 'post' ), 'sanitize' => 'esc_url_raw' ),
 		'bb_en_video_duration'  => array( 'types' => array( 'post' ), 'sanitize' => 'sanitize_text_field' ),
+		'bb_en_thumbnail_id'    => array( 'types' => array( 'post' ), 'sanitize' => 'bb_rest_sanitize_id' ),
 
 		/*
 		 * The English edition. A translation can be delivered by the same kind
@@ -54,6 +55,18 @@ function bb_rest_meta_fields() {
 		'bb_en_seo_description' => array( 'types' => array( 'post', 'page' ), 'sanitize' => 'sanitize_textarea_field' ),
 		'bb_en_focus_keyphrase' => array( 'types' => array( 'post', 'page' ), 'sanitize' => 'sanitize_text_field' ),
 	);
+}
+
+/**
+ * An attachment ID kept as a string, or '' for anything that is not one.
+ *
+ * @param mixed $value Raw value.
+ * @return string
+ */
+function bb_rest_sanitize_id( $value ) {
+	$id = absint( $value );
+
+	return $id ? (string) $id : '';
 }
 
 function bb_register_rest_meta() {

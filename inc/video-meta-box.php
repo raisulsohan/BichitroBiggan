@@ -62,6 +62,14 @@ function bb_video_meta_box_html( $post ) {
 		<input type="text" id="bb_en_video_duration" name="bb_en_video_duration" value="<?php echo esc_attr( $en_video_time ); ?>" style="width:100%;" placeholder="e.g. 2:59" />
 		<small><?php esc_html_e( 'The English video\'s length on the English edition\'s cards. If empty, the cards show the duration above.', 'bichitro-biggan' ); ?></small>
 	</p>
+	<?php $en_image = bb_en_thumbnail_id( $post->ID ); ?>
+	<?php if ( $en_image ) : ?>
+		<p>
+			<strong><?php esc_html_e( 'English edition image', 'bichitro-biggan' ); ?></strong><br>
+			<?php echo wp_get_attachment_image( $en_image, 'medium', false, array( 'style' => 'width:100%;height:auto;' ) ); ?>
+			<small><?php esc_html_e( 'The English video\'s still. The English edition shows it in place of the featured image.', 'bichitro-biggan' ); ?></small>
+		</p>
+	<?php endif; ?>
 	<p>
 		<label for="bb_en_video_url_phone"><strong><?php esc_html_e( 'English video URL for phones', 'bichitro-biggan' ); ?></strong></label><br>
 		<input type="url" id="bb_en_video_url_phone" name="bb_en_video_url_phone" value="<?php echo esc_attr( $en_video_phone ); ?>" style="width:100%;" placeholder="https://www.youtube.com/shorts/..." />
@@ -120,21 +128,30 @@ function bb_video_sanitize_ratio( $ratio ) {
  * @return string
  */
 function bb_get_post_youtube_id( $post = null ) {
+	return bb_youtube_id_of( bb_get_post_video_url( $post ) );
+}
+
+/**
+ * The YouTube ID of the post's English video, or '' when it has none.
+ *
+ * @param int|WP_Post $post Post ID or object.
+ * @return string
+ */
+function bb_get_post_en_youtube_id( $post = null ) {
 	$post = get_post( $post );
-	if ( ! $post ) {
-		return '';
-	}
 
-	// A Facebook reel has no still to take, so the English video's counts too.
-	$urls = array(
-		bb_get_post_video_url( $post ),
-		bb_normalize_video_embed_url( get_post_meta( $post->ID, 'bb_en_video_url', true ) ),
-	);
+	return $post ? bb_youtube_id_of( bb_normalize_video_embed_url( get_post_meta( $post->ID, 'bb_en_video_url', true ) ) ) : '';
+}
 
-	foreach ( $urls as $url ) {
-		if ( $url && preg_match( '~youtube(?:-nocookie)?\.com/embed/([A-Za-z0-9_-]{11})~i', $url, $m ) ) {
-			return $m[1];
-		}
+/**
+ * The video ID in a YouTube embed URL, or ''.
+ *
+ * @param string $url Embed URL.
+ * @return string
+ */
+function bb_youtube_id_of( $url ) {
+	if ( $url && preg_match( '~youtube(?:-nocookie)?\.com/embed/([A-Za-z0-9_-]{11})~i', $url, $m ) ) {
+		return $m[1];
 	}
 
 	return '';
@@ -144,21 +161,34 @@ function bb_get_post_youtube_id( $post = null ) {
  * Bring a YouTube video's still into the library as the post's featured image.
  *
  * Every card, the share preview and the schema read the featured image, so a
- * video posted with only its link showed the placeholder everywhere. The
- * largest still comes first; hqdefault is letterboxed but every video has one.
+ * video posted with only its link showed the placeholder everywhere.
  *
  * @param int    $post_id  Post to give the image to.
  * @param string $video_id YouTube video ID.
  * @return bool Whether a featured image was set.
  */
 function bb_video_sideload_thumbnail( $post_id, $video_id ) {
+	$attachment_id = bb_video_sideload_still( $post_id, $video_id, get_the_title( $post_id ) );
+
+	return $attachment_id ? (bool) set_post_thumbnail( $post_id, $attachment_id ) : false;
+}
+
+/**
+ * Bring a YouTube video's still into the library, attached to the post. The
+ * largest still comes first; hqdefault is letterboxed but every video has one.
+ *
+ * @param int    $post_id  Post the image belongs to.
+ * @param string $video_id YouTube video ID.
+ * @param string $title    The image's title and alt text.
+ * @return int Attachment ID, or 0.
+ */
+function bb_video_sideload_still( $post_id, $video_id, $title ) {
 	require_once ABSPATH . 'wp-admin/includes/media.php';
 	require_once ABSPATH . 'wp-admin/includes/file.php';
 	require_once ABSPATH . 'wp-admin/includes/image.php';
 
-	$slug  = (string) get_post_field( 'post_name', $post_id );
-	$name  = preg_match( '/^[a-z0-9-]+$/', $slug ) ? $slug : 'video-' . $video_id;
-	$title = get_the_title( $post_id );
+	$slug = (string) get_post_field( 'post_name', $post_id );
+	$name = preg_match( '/^[a-z0-9-]+$/', $slug ) ? $slug . '-' . $video_id : 'video-' . $video_id;
 
 	foreach ( array( 'maxresdefault', 'hq720', 'hqdefault' ) as $still ) {
 		$tmp = download_url( 'https://i.ytimg.com/vi/' . $video_id . '/' . $still . '.jpg', 15 );
@@ -175,19 +205,23 @@ function bb_video_sideload_thumbnail( $post_id, $video_id ) {
 
 		if ( is_wp_error( $attachment_id ) ) {
 			wp_delete_file( $tmp );
-			return false;
+			return 0;
 		}
 
 		update_post_meta( $attachment_id, '_wp_attachment_image_alt', wp_strip_all_tags( $title ) );
 
-		return (bool) set_post_thumbnail( $post_id, $attachment_id );
+		return (int) $attachment_id;
 	}
 
-	return false;
+	return 0;
 }
 
 /**
- * A YouTube post saved without a featured image gets the video's still.
+ * A YouTube post saved without a featured image gets the video's still, and
+ * an English YouTube video gets its still as the English edition's image.
+ *
+ * The featured image belongs to the Bengali video: a still of the English
+ * video carries English words, so it never becomes the featured image.
  *
  * wp_after_insert_post fires once the meta is saved, from the editor and from
  * the REST API alike, so a link in the content or the Video URL field counts.
@@ -199,17 +233,60 @@ function bb_video_auto_thumbnail( $post_id, $post ) {
 	if ( 'post' !== $post->post_type || wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
 		return;
 	}
-	if ( in_array( $post->post_status, array( 'auto-draft', 'trash' ), true ) || has_post_thumbnail( $post_id ) ) {
+	if ( in_array( $post->post_status, array( 'auto-draft', 'trash' ), true ) ) {
 		return;
 	}
 
 	$video_id = bb_get_post_youtube_id( $post );
 
-	if ( '' !== $video_id ) {
+	if ( '' !== $video_id && ! has_post_thumbnail( $post_id ) ) {
 		bb_video_sideload_thumbnail( $post_id, $video_id );
+	}
+
+	$en_video_id = bb_get_post_en_youtube_id( $post );
+
+	if ( '' !== $en_video_id && ! bb_en_thumbnail_id( $post_id ) ) {
+		$title         = bb_en_get( $post_id, 'bb_en_title' );
+		$attachment_id = bb_video_sideload_still( $post_id, $en_video_id, '' !== $title ? $title : get_the_title( $post_id ) );
+
+		if ( $attachment_id ) {
+			update_post_meta( $post_id, 'bb_en_thumbnail_id', (string) $attachment_id );
+		}
 	}
 }
 add_action( 'wp_after_insert_post', 'bb_video_auto_thumbnail', 10, 2 );
+
+/**
+ * The English edition's own image for a post, or 0 when it uses the
+ * featured image.
+ *
+ * @param int $post_id Post ID.
+ * @return int
+ */
+function bb_en_thumbnail_id( $post_id ) {
+	$attachment_id = (int) get_post_meta( $post_id, 'bb_en_thumbnail_id', true );
+
+	return ( $attachment_id && wp_attachment_is_image( $attachment_id ) ) ? $attachment_id : 0;
+}
+
+/**
+ * In the English edition, a post with an English image shows it wherever the
+ * featured image would be: cards, the article, the share preview, the schema.
+ *
+ * @param int|false    $thumbnail_id Featured image ID.
+ * @param WP_Post|null $post         Post.
+ * @return int|false
+ */
+function bb_en_filter_thumbnail_id( $thumbnail_id, $post = null ) {
+	if ( ! $post || ! bb_is_en() ) {
+		return $thumbnail_id;
+	}
+
+	$en_id = bb_en_thumbnail_id( $post->ID );
+
+	return $en_id ? $en_id : $thumbnail_id;
+}
+add_filter( 'post_thumbnail_id', 'bb_en_filter_thumbnail_id', 10, 2 );
 
 /**
  * Video posts published before this existed get their still once, in the
