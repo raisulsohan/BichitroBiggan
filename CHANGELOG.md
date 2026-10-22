@@ -2,6 +2,13 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 9.2.0
+
+- Video Settings gets an "English video duration" field. When the post has
+  an English video, the English edition's cards show this length instead
+  of the Bengali video's. Left empty, they show the duration above, as
+  before. It can be set through the REST API too.
+
 ## 9.1.0
 
 - A video post can play a different video in the English edition. Video

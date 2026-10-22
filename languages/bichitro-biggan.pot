@@ -117,7 +117,7 @@ msgstr ""
 #: footer.php:171
 #: footer.php:183
 #: footer.php:198
-#: inc/template-tags.php:925
+#: inc/template-tags.php:944
 msgid "বন্ধ করুন"
 msgstr ""
 
@@ -522,7 +522,7 @@ msgid "সংরক্ষিত লেখাগুলো দেখুন"
 msgstr ""
 
 #: header.php:55
-#: inc/template-tags.php:907
+#: inc/template-tags.php:926
 msgid "পরে পড়ুন"
 msgstr ""
 
@@ -1239,7 +1239,7 @@ msgstr ""
 #: inc/english-meta-box.php:30
 #: inc/english-meta-box.php:264
 #: inc/lang.php:1574
-#: inc/video-meta-box.php:53
+#: inc/video-meta-box.php:54
 msgid "English edition (/en)"
 msgstr ""
 
@@ -2049,16 +2049,16 @@ msgstr ""
 msgid "— Auto (Latest Post) —"
 msgstr ""
 
-#: inc/template-tags.php:904
-#: inc/template-tags.php:905
+#: inc/template-tags.php:923
+#: inc/template-tags.php:924
 msgid "পরে পড়ার জন্য সংরক্ষণ করুন"
 msgstr ""
 
-#: inc/template-tags.php:922
+#: inc/template-tags.php:941
 msgid "সংরক্ষিত লেখাগুলো"
 msgstr ""
 
-#: inc/template-tags.php:932
+#: inc/template-tags.php:951
 msgid "সব মুছে ফেলুন"
 msgstr ""
 
@@ -2066,63 +2066,71 @@ msgstr ""
 msgid "Video Settings (For Podcast/Video Grid)"
 msgstr ""
 
-#: inc/video-meta-box.php:32
+#: inc/video-meta-box.php:33
 msgid "Video Embed URL (YouTube/Vimeo/Facebook)"
 msgstr ""
 
-#: inc/video-meta-box.php:34
+#: inc/video-meta-box.php:35
 msgid "If empty, the theme will try to extract the first video from the post content."
 msgstr ""
 
-#: inc/video-meta-box.php:37
+#: inc/video-meta-box.php:38
 msgid "Video Duration (Time)"
 msgstr ""
 
-#: inc/video-meta-box.php:39
+#: inc/video-meta-box.php:40
 msgid "Overrides the default reading time calculation."
 msgstr ""
 
-#: inc/video-meta-box.php:42
+#: inc/video-meta-box.php:43
 msgid "Video Aspect Ratio"
 msgstr ""
 
-#: inc/video-meta-box.php:44
+#: inc/video-meta-box.php:45
 msgid "Auto Detect (Default)"
 msgstr ""
 
-#: inc/video-meta-box.php:45
+#: inc/video-meta-box.php:46
 msgid "Landscape (16:9)"
 msgstr ""
 
-#: inc/video-meta-box.php:46
+#: inc/video-meta-box.php:47
 msgid "Portrait / Mobile (9:16)"
 msgstr ""
 
-#: inc/video-meta-box.php:47
+#: inc/video-meta-box.php:48
 msgid "Standard Mobile (4:5)"
 msgstr ""
 
-#: inc/video-meta-box.php:48
+#: inc/video-meta-box.php:49
 msgid "Square (1:1)"
 msgstr ""
 
-#: inc/video-meta-box.php:50
+#: inc/video-meta-box.php:51
 msgid "Forces the video popup size. Auto will detect Shorts/Reels."
 msgstr ""
 
-#: inc/video-meta-box.php:55
+#: inc/video-meta-box.php:56
 msgid "English video URL"
 msgstr ""
 
-#: inc/video-meta-box.php:57
+#: inc/video-meta-box.php:58
 msgid "Plays in the English edition. If empty, the English edition plays the video above. Its shape comes from the link (Shorts and Reels stand upright)."
 msgstr ""
 
-#: inc/video-meta-box.php:60
+#: inc/video-meta-box.php:61
+msgid "English video duration"
+msgstr ""
+
+#: inc/video-meta-box.php:63
+msgid "The English video\\'s length on the English edition\\'s cards. If empty, the cards show the duration above."
+msgstr ""
+
+#: inc/video-meta-box.php:66
 msgid "English video URL for phones"
 msgstr ""
 
-#: inc/video-meta-box.php:62
+#: inc/video-meta-box.php:68
 msgid "Optional, e.g. the Short of the English video. A screen up to 767px wide plays this one instead."
 msgstr ""
 

@@ -319,8 +319,8 @@ function bb_hero_card( $args = array() ) {
 	$cat        = bb_primary_category( $post_id );
 	
 	// Check for specific custom duration field first, then arg, then reading time
-	$video_duration = get_post_meta( $post_id, 'video_duration', true );
-	$duration = ! empty( $video_duration ) ? $video_duration : ( ! empty( $args['custom_time'] ) ? $args['custom_time'] : bb_reading_time( $post_id ) );
+	$video_duration = bb_get_post_video_duration( $post_id );
+	$duration =! empty( $video_duration ) ? $video_duration : ( ! empty( $args['custom_time'] ) ? $args['custom_time'] : bb_reading_time( $post_id ) );
 
 	if ( $is_podcast || ! empty( $video_url ) ) {
 		$podcast_class = trim( $args['class'] . ' bb-hero__podcast' . ( ! empty( $video_url ) ? ' bb-has-video' : '' ) );
@@ -774,6 +774,25 @@ function bb_get_post_video_ratio( $post = null, $video_url = null ) {
 
 	// The embed link of a YouTube Short no longer says "shorts"; the pasted one does.
 	return bb_video_link_ratio( get_post_meta( $post->ID, 'video_url', true ) . ' ' . $video_url );
+}
+
+/**
+ * A post video's length as typed in Video Settings, or '' when none is set.
+ * The English edition shows the English video's own length when the post
+ * has an English video and that length is filled in.
+ *
+ * @param int $post_id Post ID.
+ * @return string
+ */
+function bb_get_post_video_duration( $post_id ) {
+	if ( bb_is_en() && '' !== bb_normalize_video_embed_url( get_post_meta( $post_id, 'bb_en_video_url', true ) ) ) {
+		$en_duration = trim( (string) get_post_meta( $post_id, 'bb_en_video_duration', true ) );
+		if ( '' !== $en_duration ) {
+			return $en_duration;
+		}
+	}
+
+	return (string) get_post_meta( $post_id, 'video_duration', true );
 }
 
 /**

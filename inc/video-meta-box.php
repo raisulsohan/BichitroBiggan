@@ -27,6 +27,7 @@ function bb_video_meta_box_html( $post ) {
 	$video_ratio    = get_post_meta( $post->ID, 'video_ratio', true );
 	$en_video_url   = get_post_meta( $post->ID, 'bb_en_video_url', true );
 	$en_video_phone = get_post_meta( $post->ID, 'bb_en_video_url_phone', true );
+	$en_video_time  = get_post_meta( $post->ID, 'bb_en_video_duration', true );
 	?>
 	<p>
 		<label for="bb_video_url"><strong><?php esc_html_e( 'Video Embed URL (YouTube/Vimeo/Facebook)', 'bichitro-biggan' ); ?></strong></label><br>
@@ -55,6 +56,11 @@ function bb_video_meta_box_html( $post ) {
 		<label for="bb_en_video_url"><strong><?php esc_html_e( 'English video URL', 'bichitro-biggan' ); ?></strong></label><br>
 		<input type="url" id="bb_en_video_url" name="bb_en_video_url" value="<?php echo esc_attr( $en_video_url ); ?>" style="width:100%;" placeholder="https://youtu.be/..." />
 		<small><?php esc_html_e( 'Plays in the English edition. If empty, the English edition plays the video above. Its shape comes from the link (Shorts and Reels stand upright).', 'bichitro-biggan' ); ?></small>
+	</p>
+	<p>
+		<label for="bb_en_video_duration"><strong><?php esc_html_e( 'English video duration', 'bichitro-biggan' ); ?></strong></label><br>
+		<input type="text" id="bb_en_video_duration" name="bb_en_video_duration" value="<?php echo esc_attr( $en_video_time ); ?>" style="width:100%;" placeholder="e.g. 2:59" />
+		<small><?php esc_html_e( 'The English video\'s length on the English edition\'s cards. If empty, the cards show the duration above.', 'bichitro-biggan' ); ?></small>
 	</p>
 	<p>
 		<label for="bb_en_video_url_phone"><strong><?php esc_html_e( 'English video URL for phones', 'bichitro-biggan' ); ?></strong></label><br>
@@ -88,6 +94,9 @@ function bb_video_save_meta_box( $post_id ) {
 		if ( isset( $_POST[ $key ] ) ) {
 			update_post_meta( $post_id, $key, esc_url_raw( wp_unslash( $_POST[ $key ] ) ) );
 		}
+	}
+	if ( isset( $_POST['bb_en_video_duration'] ) ) {
+		update_post_meta( $post_id, 'bb_en_video_duration', sanitize_text_field( wp_unslash( $_POST['bb_en_video_duration'] ) ) );
 	}
 }
 add_action( 'save_post', 'bb_video_save_meta_box' );
