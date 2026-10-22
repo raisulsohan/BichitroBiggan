@@ -1776,6 +1776,22 @@
 	}
 
 	/* ---------------------------------------------------------------
+	 * Phone video
+	 *
+	 * A video card can carry a second video for phones
+	 * (data-bb-video-phone: the English video cut as a Short) and its
+	 * shape. A screen up to 767px wide plays that one instead.
+	 * ------------------------------------------------------------ */
+	var phoneScreen = window.matchMedia ? window.matchMedia('(max-width: 767px)') : null;
+	var openVideoModal = null;
+
+	function phoneVideo(el) {
+		if (!phoneScreen || !phoneScreen.matches) return null;
+		var url = el.getAttribute('data-bb-video-phone');
+		return url ? { url: url, ratio: el.getAttribute('data-bb-video-phone-ratio') || '9/16' } : null;
+	}
+
+	/* ---------------------------------------------------------------
 	 * Direct Video Player on Hero Cards
 	 *
 	 * When clicking a video/podcast card with data-bb-video, embeds
@@ -1809,6 +1825,15 @@
 
 				// If already playing, do nothing
 				if (card.querySelector('.bb-hero__video-wrap')) return;
+
+				// An upright phone video would sit small in the wide card,
+				// so it opens in the popup player at its own shape.
+				var phone = phoneVideo(card);
+				if (phone && phone.ratio !== '16/9' && openVideoModal) {
+					openVideoModal(phone.url, phone.ratio, card);
+					return;
+				}
+				if (phone) videoUrl = phone.url;
 
 				// Append autoplay param
 				var sep = videoUrl.indexOf('?') === -1 ? '?' : '&';
@@ -1875,10 +1900,14 @@
 			if (!trigger) return;
 
 			e.preventDefault();
-			var videoUrl = trigger.getAttribute('data-bb-video-popup');
+			var phone = phoneVideo(trigger);
+			var videoUrl = phone ? phone.url : trigger.getAttribute('data-bb-video-popup');
 			if (!videoUrl) return;
-			
-			var ratio = trigger.getAttribute('data-bb-video-ratio') || '16/9';
+
+			openVideoModal(videoUrl, phone ? phone.ratio : (trigger.getAttribute('data-bb-video-ratio') || '16/9'), trigger);
+		});
+
+		openVideoModal = function (videoUrl, ratio, trigger) {
 			lastFocus = trigger;
 
 			if (!modal) {
@@ -1920,7 +1949,7 @@
 
 			var closeBtn = modal.querySelector('.bb-video-modal__close');
 			if (closeBtn) closeBtn.focus({ preventScroll: true });
-		});
+		};
 
 		document.addEventListener('keydown', function (e) {
 			if ((e.key === 'Escape' || e.key === 'Esc') && modal && modal.classList.contains('is-active')) {

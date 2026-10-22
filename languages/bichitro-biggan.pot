@@ -117,7 +117,7 @@ msgstr ""
 #: footer.php:171
 #: footer.php:183
 #: footer.php:198
-#: inc/template-tags.php:859
+#: inc/template-tags.php:925
 msgid "বন্ধ করুন"
 msgstr ""
 
@@ -240,7 +240,7 @@ msgstr ""
 
 #: functions.php:1817
 #: functions.php:1839
-#: inc/template-tags.php:431
+#: inc/template-tags.php:432
 msgid "প্রথম পাতা"
 msgstr ""
 
@@ -289,7 +289,7 @@ msgid "লিংক কপি হয়েছে"
 msgstr ""
 
 #: functions.php:235
-#: inc/template-tags.php:507
+#: inc/template-tags.php:508
 msgid "শেয়ার করুন"
 msgstr ""
 
@@ -522,7 +522,7 @@ msgid "সংরক্ষিত লেখাগুলো দেখুন"
 msgstr ""
 
 #: header.php:55
-#: inc/template-tags.php:841
+#: inc/template-tags.php:907
 msgid "পরে পড়ুন"
 msgstr ""
 
@@ -1239,6 +1239,7 @@ msgstr ""
 #: inc/english-meta-box.php:30
 #: inc/english-meta-box.php:264
 #: inc/lang.php:1574
+#: inc/video-meta-box.php:53
 msgid "English edition (/en)"
 msgstr ""
 
@@ -2003,27 +2004,27 @@ msgstr ""
 msgid "Every search so far has found something."
 msgstr ""
 
-#: inc/template-tags.php:359
+#: inc/template-tags.php:360
 msgid "পডকাস্ট"
 msgstr ""
 
-#: inc/template-tags.php:470
+#: inc/template-tags.php:471
 msgid "ফেসবুক"
 msgstr ""
 
-#: inc/template-tags.php:476
+#: inc/template-tags.php:477
 msgid "হোয়াটসঅ্যাপ"
 msgstr ""
 
-#: inc/template-tags.php:482
+#: inc/template-tags.php:483
 msgid "টেলিগ্রাম"
 msgstr ""
 
-#: inc/template-tags.php:488
+#: inc/template-tags.php:489
 msgid "এক্স"
 msgstr ""
 
-#: inc/template-tags.php:495
+#: inc/template-tags.php:496
 msgid "শেয়ার"
 msgstr ""
 
@@ -2031,7 +2032,7 @@ msgstr ""
 msgid "আগের লেখাগুলো"
 msgstr ""
 
-#: inc/template-tags.php:505
+#: inc/template-tags.php:506
 msgid "লিংক কপি"
 msgstr ""
 
@@ -2044,20 +2045,20 @@ msgstr ""
 msgid "প্রথম স্লাইডে ফিরে যান"
 msgstr ""
 
-#: inc/template-tags.php:584
+#: inc/template-tags.php:585
 msgid "— Auto (Latest Post) —"
 msgstr ""
 
-#: inc/template-tags.php:838
-#: inc/template-tags.php:839
+#: inc/template-tags.php:904
+#: inc/template-tags.php:905
 msgid "পরে পড়ার জন্য সংরক্ষণ করুন"
 msgstr ""
 
-#: inc/template-tags.php:856
+#: inc/template-tags.php:922
 msgid "সংরক্ষিত লেখাগুলো"
 msgstr ""
 
-#: inc/template-tags.php:866
+#: inc/template-tags.php:932
 msgid "সব মুছে ফেলুন"
 msgstr ""
 
@@ -2065,48 +2066,64 @@ msgstr ""
 msgid "Video Settings (For Podcast/Video Grid)"
 msgstr ""
 
-#: inc/video-meta-box.php:30
+#: inc/video-meta-box.php:32
 msgid "Video Embed URL (YouTube/Vimeo/Facebook)"
 msgstr ""
 
-#: inc/video-meta-box.php:32
+#: inc/video-meta-box.php:34
 msgid "If empty, the theme will try to extract the first video from the post content."
 msgstr ""
 
-#: inc/video-meta-box.php:35
+#: inc/video-meta-box.php:37
 msgid "Video Duration (Time)"
 msgstr ""
 
-#: inc/video-meta-box.php:37
+#: inc/video-meta-box.php:39
 msgid "Overrides the default reading time calculation."
 msgstr ""
 
-#: inc/video-meta-box.php:40
+#: inc/video-meta-box.php:42
 msgid "Video Aspect Ratio"
 msgstr ""
 
-#: inc/video-meta-box.php:42
+#: inc/video-meta-box.php:44
 msgid "Auto Detect (Default)"
 msgstr ""
 
-#: inc/video-meta-box.php:43
+#: inc/video-meta-box.php:45
 msgid "Landscape (16:9)"
 msgstr ""
 
-#: inc/video-meta-box.php:44
+#: inc/video-meta-box.php:46
 msgid "Portrait / Mobile (9:16)"
 msgstr ""
 
-#: inc/video-meta-box.php:45
+#: inc/video-meta-box.php:47
 msgid "Standard Mobile (4:5)"
 msgstr ""
 
-#: inc/video-meta-box.php:46
+#: inc/video-meta-box.php:48
 msgid "Square (1:1)"
 msgstr ""
 
-#: inc/video-meta-box.php:48
+#: inc/video-meta-box.php:50
 msgid "Forces the video popup size. Auto will detect Shorts/Reels."
+msgstr ""
+
+#: inc/video-meta-box.php:55
+msgid "English video URL"
+msgstr ""
+
+#: inc/video-meta-box.php:57
+msgid "Plays in the English edition. If empty, the English edition plays the video above. Its shape comes from the link (Shorts and Reels stand upright)."
+msgstr ""
+
+#: inc/video-meta-box.php:60
+msgid "English video URL for phones"
+msgstr ""
+
+#: inc/video-meta-box.php:62
+msgid "Optional, e.g. the Short of the English video. A screen up to 767px wide plays this one instead."
 msgstr ""
 
 #: inc/webp-admin.php:101

@@ -43,7 +43,7 @@ $bb_archive_title = single_term_title( '', false );
 					$ratio = bb_get_post_video_ratio( get_the_ID(), $video_url );
 
 					$link_href  = $video_url ? $video_url : get_permalink();
-					$popup_attr = $video_url ? 'data-bb-video-popup="' . esc_attr( $video_url ) . '" data-bb-video-ratio="' . esc_attr( $ratio ) . '"' : '';
+					$popup_attr = $video_url ? 'data-bb-video-popup="' . esc_attr( $video_url ) . '" data-bb-video-ratio="' . esc_attr( $ratio ) . '"' . bb_video_phone_attrs( get_the_ID() ) : '';
 				?>
 					<article class="bb-pod-item">
 						<a href="<?php echo esc_url( $link_href ); ?>" 

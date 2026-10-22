@@ -25,6 +25,8 @@ function bb_video_meta_box_html( $post ) {
 	$video_url      = get_post_meta( $post->ID, 'video_url', true );
 	$video_duration = get_post_meta( $post->ID, 'video_duration', true );
 	$video_ratio    = get_post_meta( $post->ID, 'video_ratio', true );
+	$en_video_url   = get_post_meta( $post->ID, 'bb_en_video_url', true );
+	$en_video_phone = get_post_meta( $post->ID, 'bb_en_video_url_phone', true );
 	?>
 	<p>
 		<label for="bb_video_url"><strong><?php esc_html_e( 'Video Embed URL (YouTube/Vimeo/Facebook)', 'bichitro-biggan' ); ?></strong></label><br>
@@ -46,6 +48,18 @@ function bb_video_meta_box_html( $post ) {
 			<option value="1/1" <?php selected( $video_ratio, '1/1' ); ?>><?php esc_html_e( 'Square (1:1)', 'bichitro-biggan' ); ?></option>
 		</select>
 		<small><?php esc_html_e( 'Forces the video popup size. Auto will detect Shorts/Reels.', 'bichitro-biggan' ); ?></small>
+	</p>
+	<hr>
+	<p><strong><?php esc_html_e( 'English edition (/en)', 'bichitro-biggan' ); ?></strong></p>
+	<p>
+		<label for="bb_en_video_url"><strong><?php esc_html_e( 'English video URL', 'bichitro-biggan' ); ?></strong></label><br>
+		<input type="url" id="bb_en_video_url" name="bb_en_video_url" value="<?php echo esc_attr( $en_video_url ); ?>" style="width:100%;" placeholder="https://youtu.be/..." />
+		<small><?php esc_html_e( 'Plays in the English edition. If empty, the English edition plays the video above. Its shape comes from the link (Shorts and Reels stand upright).', 'bichitro-biggan' ); ?></small>
+	</p>
+	<p>
+		<label for="bb_en_video_url_phone"><strong><?php esc_html_e( 'English video URL for phones', 'bichitro-biggan' ); ?></strong></label><br>
+		<input type="url" id="bb_en_video_url_phone" name="bb_en_video_url_phone" value="<?php echo esc_attr( $en_video_phone ); ?>" style="width:100%;" placeholder="https://www.youtube.com/shorts/..." />
+		<small><?php esc_html_e( 'Optional, e.g. the Short of the English video. A screen up to 767px wide plays this one instead.', 'bichitro-biggan' ); ?></small>
 	</p>
 	<?php
 }
@@ -70,6 +84,11 @@ function bb_video_save_meta_box( $post_id ) {
 	if ( isset( $_POST['bb_video_ratio'] ) ) {
 		update_post_meta( $post_id, 'video_ratio', bb_video_sanitize_ratio( wp_unslash( $_POST['bb_video_ratio'] ) ) );
 	}
+	foreach ( array( 'bb_en_video_url', 'bb_en_video_url_phone' ) as $key ) {
+		if ( isset( $_POST[ $key ] ) ) {
+			update_post_meta( $post_id, $key, esc_url_raw( wp_unslash( $_POST[ $key ] ) ) );
+		}
+	}
 }
 add_action( 'save_post', 'bb_video_save_meta_box' );
 
@@ -92,10 +111,21 @@ function bb_video_sanitize_ratio( $ratio ) {
  * @return string
  */
 function bb_get_post_youtube_id( $post = null ) {
-	$url = bb_get_post_video_url( $post );
+	$post = get_post( $post );
+	if ( ! $post ) {
+		return '';
+	}
 
-	if ( $url && preg_match( '~youtube(?:-nocookie)?\.com/embed/([A-Za-z0-9_-]{11})~i', $url, $m ) ) {
-		return $m[1];
+	// A Facebook reel has no still to take, so the English video's counts too.
+	$urls = array(
+		bb_get_post_video_url( $post ),
+		bb_normalize_video_embed_url( get_post_meta( $post->ID, 'bb_en_video_url', true ) ),
+	);
+
+	foreach ( $urls as $url ) {
+		if ( $url && preg_match( '~youtube(?:-nocookie)?\.com/embed/([A-Za-z0-9_-]{11})~i', $url, $m ) ) {
+			return $m[1];
+		}
 	}
 
 	return '';

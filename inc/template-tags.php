@@ -333,6 +333,7 @@ function bb_hero_card( $args = array() ) {
 			$video_attr  = '16/9' === $video_ratio
 				? ' data-bb-video="' . esc_url( $video_url ) . '"'
 				: ' data-bb-video-popup="' . esc_url( $video_url ) . '" data-bb-video-ratio="' . esc_attr( $video_ratio ) . '"';
+			$video_attr .= bb_video_phone_attrs( $post_id );
 		}
 		/* The same size the card's width/height and srcset describe — 'full'
 		   meant the browser was handed a 1600px file for a 360px tile. */
@@ -678,6 +679,14 @@ function bb_get_post_video_url( $post = null ) {
 		return '';
 	}
 
+	// 0. The English edition plays its own video, when the post has one.
+	if ( bb_is_en() ) {
+		$en_url = bb_normalize_video_embed_url( get_post_meta( $post->ID, 'bb_en_video_url', true ) );
+		if ( '' !== $en_url ) {
+			return $en_url;
+		}
+	}
+
 	// 1. Custom field override if provided
 	$meta_url = get_post_meta( $post->ID, '_bb_video_url', true );
 	if ( empty( $meta_url ) ) {
@@ -746,6 +755,14 @@ function bb_get_post_video_ratio( $post = null, $video_url = null ) {
 		return '16/9';
 	}
 
+	// The English video's shape is its own; the box's choice is the Bengali one's.
+	if ( bb_is_en() ) {
+		$en_link = (string) get_post_meta( $post->ID, 'bb_en_video_url', true );
+		if ( '' !== bb_normalize_video_embed_url( $en_link ) ) {
+			return bb_video_link_ratio( $en_link );
+		}
+	}
+
 	$ratio = get_post_meta( $post->ID, 'video_ratio', true );
 	if ( ! empty( $ratio ) ) {
 		return $ratio;
@@ -755,7 +772,56 @@ function bb_get_post_video_ratio( $post = null, $video_url = null ) {
 		$video_url = bb_get_post_video_url( $post );
 	}
 
-	return ( false !== stripos( $video_url, 'shorts' ) || false !== stripos( $video_url, 'reel' ) ) ? '9/16' : '16/9';
+	// The embed link of a YouTube Short no longer says "shorts"; the pasted one does.
+	return bb_video_link_ratio( get_post_meta( $post->ID, 'video_url', true ) . ' ' . $video_url );
+}
+
+/**
+ * A video link's shape guessed from the link: Shorts and reels stand upright
+ * (9/16), the rest are 16/9.
+ *
+ * @param string $url Link as pasted or as embedded.
+ * @return string
+ */
+function bb_video_link_ratio( $url ) {
+	$url = (string) $url;
+
+	return ( false !== stripos( $url, 'shorts' ) || false !== stripos( $url, 'reel' ) ) ? '9/16' : '16/9';
+}
+
+/**
+ * The video a phone screen plays instead of the post's video, as an embed
+ * URL, or '' when phones play the same one. Only the English edition has
+ * one: the English video cut as a Short.
+ *
+ * @param int|WP_Post $post Post ID or object.
+ * @return string
+ */
+function bb_get_post_phone_video_url( $post = null ) {
+	$post = get_post( $post );
+	if ( ! $post || ! bb_is_en() ) {
+		return '';
+	}
+
+	return bb_normalize_video_embed_url( get_post_meta( $post->ID, 'bb_en_video_url_phone', true ) );
+}
+
+/**
+ * The attributes that hand a video card its phone video and that video's
+ * shape. theme.js plays it on a screen up to 767px wide.
+ *
+ * @param int $post_id Post ID.
+ * @return string Attributes with a leading space, or ''.
+ */
+function bb_video_phone_attrs( $post_id ) {
+	$url = bb_get_post_phone_video_url( $post_id );
+	if ( '' === $url ) {
+		return '';
+	}
+
+	$ratio = bb_video_link_ratio( get_post_meta( $post_id, 'bb_en_video_url_phone', true ) );
+
+	return ' data-bb-video-phone="' . esc_url( $url ) . '" data-bb-video-phone-ratio="' . esc_attr( $ratio ) . '"';
 }
 
 /**

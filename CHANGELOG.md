@@ -2,6 +2,23 @@
 
 All notable changes to Bichitro Biggan are recorded here, newest first.
 
+## 9.1.0
+
+- A video post can play a different video in the English edition. Video
+  Settings has two new fields for it: "English video URL" (a YouTube video,
+  say) and "English video URL for phones" (the same video cut as a Short).
+  On a screen up to 767px wide the English edition plays the phone video,
+  in the popup player at its own shape; a wider screen plays the English
+  video. With neither field filled, /en plays the post's video, as before.
+  Both fields can be set through the REST API.
+- The English video's shape comes from its own link; the aspect ratio
+  chosen in Video Settings is the Bengali video's.
+- A YouTube Short pasted into Video Settings with the ratio left on Auto
+  now opens upright (9:16). The embed link had lost the word "shorts", so
+  it opened 16:9.
+- A post whose own video is a Facebook reel takes the English YouTube
+  video's still as its featured image when it has none.
+
 ## 9.0.0
 
 - Statistics gets an "All time" tab after "Last year": everything counted

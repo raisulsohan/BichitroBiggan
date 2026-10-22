@@ -36,6 +36,8 @@ function bb_rest_meta_fields() {
 		'video_url'             => array( 'types' => array( 'post' ), 'sanitize' => 'esc_url_raw' ),
 		'video_duration'        => array( 'types' => array( 'post' ), 'sanitize' => 'sanitize_text_field' ),
 		'video_ratio'           => array( 'types' => array( 'post' ), 'sanitize' => 'bb_video_sanitize_ratio' ),
+		'bb_en_video_url'       => array( 'types' => array( 'post' ), 'sanitize' => 'esc_url_raw' ),
+		'bb_en_video_url_phone' => array( 'types' => array( 'post' ), 'sanitize' => 'esc_url_raw' ),
 
 		/*
 		 * The English edition. A translation can be delivered by the same kind
